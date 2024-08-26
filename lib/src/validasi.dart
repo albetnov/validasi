@@ -1,7 +1,21 @@
-import 'package:validasi/src/string_validator.dart';
+import 'package:validasi/src/validators/array_validator.dart';
+import 'package:validasi/src/validators/number_validator.dart';
+import 'package:validasi/src/validators/object_validator.dart';
+import 'package:validasi/src/validators/string_validator.dart';
+import 'package:validasi/src/validators/validator.dart';
 
 class Validasi {
-  static StringValidator string({bool strict = true}) {
-    return StringValidator(strict: strict);
-  }
+  static StringValidator string({bool strict = true}) =>
+      StringValidator(strict: strict);
+
+  static ObjectValidator<T> object<T extends Map>(
+          Map<String, Validator> schema) =>
+      ObjectValidator<T>(schema);
+
+  static ArrayValidator<V, T> array<V extends Validator, T extends List>(
+          V validator) =>
+      ArrayValidator<V, T>(validator);
+
+  static NumberValidator number({bool strict = true}) =>
+      NumberValidator(strict: strict);
 }
