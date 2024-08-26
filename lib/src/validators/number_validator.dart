@@ -2,7 +2,7 @@ import 'package:validasi/src/field_error.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
-class NumberValidator extends Validator<double> {
+class NumberValidator extends Validator<num> {
   final bool strict;
 
   NumberValidator({this.strict = true});
@@ -18,7 +18,7 @@ class NumberValidator extends Validator<double> {
   }
 
   @override
-  Result<double> parse(dynamic value, {String path = 'field'}) {
+  Result<num> parse(dynamic value, {String path = 'field'}) {
     if (strict && value is! num && value != null) {
       throw FieldError(
         name: 'invalidType',
@@ -34,7 +34,7 @@ class NumberValidator extends Validator<double> {
   }
 
   @override
-  Result<double> tryParse(dynamic value, {String path = 'field'}) {
+  Result<num> tryParse(dynamic value, {String path = 'field'}) {
     var result = super.tryParse(
         value != num && value != null ? num.tryParse(value) : value,
         path: path);
