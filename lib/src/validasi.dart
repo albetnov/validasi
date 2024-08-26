@@ -1,4 +1,5 @@
 import 'package:validasi/src/validators/array_validator.dart';
+import 'package:validasi/src/validators/date_validator.dart';
 import 'package:validasi/src/validators/number_validator.dart';
 import 'package:validasi/src/validators/object_validator.dart';
 import 'package:validasi/src/validators/string_validator.dart';
@@ -18,4 +19,7 @@ class Validasi {
 
   static NumberValidator number({bool strict = true}) =>
       NumberValidator(strict: strict);
+
+  static DateValidator date({String pattern = 'y-MM-dd'}) =>
+      DateValidator(pattern: pattern);
 }
