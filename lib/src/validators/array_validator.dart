@@ -1,6 +1,6 @@
 import 'package:validasi/src/field_error.dart';
 import 'package:validasi/src/result.dart';
-import 'package:validasi/src/validator.dart';
+import 'package:validasi/src/validators/validator.dart';
 
 class ArrayValidator<V extends Validator, T extends List> extends Validator<T> {
   final V validator;

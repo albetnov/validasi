@@ -1,6 +1,6 @@
 import 'package:validasi/src/field_error.dart';
 import 'package:validasi/src/result.dart';
-import 'package:validasi/src/validator.dart';
+import 'package:validasi/src/validators/validator.dart';
 
 class ObjectValidator<T extends Map> extends Validator<T> {
   final Map<String, Validator> schema;

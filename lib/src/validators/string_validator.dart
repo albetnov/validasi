@@ -1,5 +1,5 @@
 import 'package:validasi/src/field_error.dart';
-import 'package:validasi/src/validator.dart';
+import 'package:validasi/src/validators/validator.dart';
 
 class StringValidator extends Validator<String> {
   final bool strict;
@@ -46,7 +46,7 @@ class StringValidator extends Validator<String> {
 
   @override
   parse(dynamic value, {String path = 'field'}) {
-    if (strict && value is! String) {
+    if (strict && value is! String && value != null) {
       throw FieldError(
         path: path,
         name: 'invalidType',
@@ -54,13 +54,16 @@ class StringValidator extends Validator<String> {
       );
     }
 
-    return super.parse(value != null ? value.toString() : value, path: path);
+    return super.parse(
+        value != null && value is! String ? value.toString() : value,
+        path: path);
   }
 
   @override
   tryParse(dynamic value, {String path = 'field'}) {
-    var result =
-        super.tryParse(value != null ? value.toString() : value, path: path);
+    var result = super.tryParse(
+        value != null && value is! String ? value.toString() : value,
+        path: path);
 
     if (strict && value is! String && value != null) {
       result.addError(FieldError(
