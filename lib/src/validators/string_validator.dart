@@ -1,10 +1,12 @@
 import 'package:validasi/src/field_error.dart';
+import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 class StringValidator extends Validator<String> {
   final bool strict;
+  final String? message;
 
-  StringValidator({this.strict = true});
+  StringValidator({this.strict = true, this.message});
 
   StringValidator required({String? message}) {
     addRule(
@@ -50,7 +52,7 @@ class StringValidator extends Validator<String> {
       throw FieldError(
         path: path,
         name: 'invalidType',
-        message: "$path is not a valid string",
+        message: Message(path, "$path is not a valid string", message).message,
       );
     }
 
@@ -69,7 +71,7 @@ class StringValidator extends Validator<String> {
       result.addError(FieldError(
         path: path,
         name: 'invalidType',
-        message: "$path is not a valid string",
+        message: Message(path, "$path is not a valid string", message).message,
       ));
     }
 

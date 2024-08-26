@@ -1,15 +1,14 @@
-import 'package:validasi/src/array_validator.dart';
-import 'package:validasi/src/string_validator.dart';
+import 'package:validasi/src/utils/message.dart';
+
+class Example {
+  final String message;
+  const Example(this.message);
+}
 
 void main() {
-  var schema = ArrayValidator<ArrayValidator, List<dynamic>>(
-      ArrayValidator(ArrayValidator(StringValidator().required())));
+  var example = Example(Message('path', 'fallback', 'original').message);
 
-  var result = schema.tryParse([
-    ['persist']
-  ]);
-
-  for (var error in result.errors) {
-    print(error.message);
+  for (var i = 0; i < 10; i++) {
+    print(example.message);
   }
 }

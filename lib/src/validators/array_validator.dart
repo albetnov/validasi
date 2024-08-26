@@ -1,18 +1,20 @@
 import 'package:validasi/src/field_error.dart';
 import 'package:validasi/src/result.dart';
+import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 class ArrayValidator<V extends Validator, T extends List> extends Validator<T> {
   final V validator;
+  final String? message;
 
-  ArrayValidator(this.validator);
+  ArrayValidator(this.validator, {this.message});
 
   @override
   Result<T> parse(dynamic value, {String path = 'field'}) {
     if (value == null || value is! List) {
       throw FieldError(
         name: 'invalidType',
-        message: "$path is not type of Array",
+        message: Message(path, "$path is not type of Array", message).message,
         path: path,
       );
     }
@@ -33,7 +35,7 @@ class ArrayValidator<V extends Validator, T extends List> extends Validator<T> {
       return Result(value: null, errors: [
         FieldError(
           name: 'invalidType',
-          message: "$path is not type of Array",
+          message: Message(path, "$path is not type of Array", message).message,
           path: path,
         )
       ]);

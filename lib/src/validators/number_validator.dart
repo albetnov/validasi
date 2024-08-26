@@ -1,17 +1,19 @@
 import 'package:validasi/src/field_error.dart';
 import 'package:validasi/src/result.dart';
+import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 class NumberValidator extends Validator<num> {
   final bool strict;
+  final String? message;
 
-  NumberValidator({this.strict = true});
+  NumberValidator({this.strict = true, this.message});
 
-  NumberValidator required() {
+  NumberValidator required({String? message}) {
     addRule(
       name: 'required',
       test: (value) => value != null,
-      message: ':name is required',
+      message: message ?? ':name is required',
     );
 
     return this;
@@ -22,7 +24,7 @@ class NumberValidator extends Validator<num> {
     if (strict && value is! num && value != null) {
       throw FieldError(
         name: 'invalidType',
-        message: "$path is not a valid number",
+        message: Message(path, "$path is not a valid number", message).message,
         path: path,
       );
     }
@@ -42,7 +44,7 @@ class NumberValidator extends Validator<num> {
     if (strict && value is! num && value != null) {
       result.addError(FieldError(
         name: 'invalidType',
-        message: "$path is not a valid number",
+        message: Message(path, "$path is not a valid number", message).message,
         path: path,
       ));
     }
