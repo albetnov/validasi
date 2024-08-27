@@ -20,20 +20,15 @@ var result = schema.tryParse({
 });
 
 print(result.isValid); // true
-print(result.messages); // <String>[]
-print(result.form); // for usage in Flutter's FormField.
-
-final nameSchema = Validasi.string()
-    .required()
-    .minLength(3)
-    .maxLength(255)
+print(result.errors); // <FieldError>[]
 
 // flutter example
 TextFormField(
     decoration: const InputDecoration(
         labelText: 'Name *'
     ),
-    validator: (value) => nameSchema.tryParse(value, name: 'name').errors.firstOrNull?.message
+    validator: (value) => Form.field(Validasi.string().required().minLength(3).maxLength(255))
+        .validate(value, path: 'name')
 );
 ```
 
