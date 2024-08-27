@@ -20,7 +20,7 @@ class NumberValidator extends Validator<num> with StrictCheck<num> {
     return this;
   }
 
-  num _valueToNum(dynamic value) =>
+  num? _valueToNum(dynamic value) =>
       value is! num && value != null ? num.parse(value) : value;
 
   @override

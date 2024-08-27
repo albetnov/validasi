@@ -57,7 +57,7 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
     return this;
   }
 
-  String _valueToString(dynamic value) =>
+  String? _valueToString(dynamic value) =>
       value != null && value is! String ? value.toString() : value;
 
   @override
