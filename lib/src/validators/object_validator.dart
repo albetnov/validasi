@@ -1,4 +1,4 @@
-import 'package:validasi/src/field_error.dart';
+import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
