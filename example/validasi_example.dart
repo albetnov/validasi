@@ -1,14 +1,10 @@
-import 'package:validasi/src/utils/message.dart';
-
-class Example {
-  final String message;
-  const Example(this.message);
-}
+import 'package:validasi/validasi.dart';
 
 void main() {
-  var example = Example(Message('path', 'fallback', 'original').message);
+  var schema = Validasi.string().custom((value) async {
+    await Future.delayed(Duration(milliseconds: 200));
+    return false;
+  }, 'User is not registered in the database!');
 
-  for (var i = 0; i < 10; i++) {
-    print(example.message);
-  }
+  schema.parse('value');
 }

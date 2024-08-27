@@ -1,10 +1,11 @@
-import 'package:validasi/src/exceptions/field_error.dart';
+import 'package:validasi/src/mixins/strict_check.dart';
 import 'package:validasi/src/result.dart';
-import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validators/validator.dart';
 
-class NumberValidator extends Validator<num> {
+class NumberValidator extends Validator<num> with StrictCheck<num> {
+  @override
   final bool strict;
+  @override
   final String? message;
 
   NumberValidator({this.strict = true, this.message});
@@ -19,35 +20,38 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  num _valueToNum(dynamic value) =>
+      value is! num && value != null ? num.parse(value) : value;
+
   @override
   Result<num> parse(dynamic value, {String path = 'field'}) {
-    if (strict && value is! num && value != null) {
-      throw FieldError(
-        name: 'invalidType',
-        message: Message(path, "$path is not a valid number", message).message,
-        path: path,
-      );
-    }
+    strictCheck(value, path, type: 'number');
 
-    return super.parse(
-      value is! num && value != null ? num.parse(value) : value,
-      path: path,
-    );
+    return super.parse(_valueToNum(value), path: path);
   }
 
   @override
   Result<num> tryParse(dynamic value, {String path = 'field'}) {
-    var result = super.tryParse(
-        value != num && value != null ? num.tryParse(value) : value,
-        path: path);
+    var result = super.tryParse(_valueToNum(value), path: path);
 
-    if (strict && value is! num && value != null) {
-      result.addError(FieldError(
-        name: 'invalidType',
-        message: Message(path, "$path is not a valid number", message).message,
-        path: path,
-      ));
-    }
+    tryStrictCheck(result, value, path, type: 'number');
+
+    return result;
+  }
+
+  @override
+  Future<Result<num>> parseAsync(num? value, {String path = 'field'}) {
+    strictCheck(value, path, type: 'number');
+
+    return super.parseAsync(value, path: path);
+  }
+
+  @override
+  Future<Result<num>> tryParseAsync(dynamic value,
+      {String path = 'field'}) async {
+    var result = await super.tryParseAsync(_valueToNum(value), path: path);
+
+    tryStrictCheck(result, value, path, type: 'number');
 
     return result;
   }
