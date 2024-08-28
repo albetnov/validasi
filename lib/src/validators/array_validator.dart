@@ -3,23 +3,34 @@ import 'package:validasi/src/result.dart';
 import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validators/validator.dart';
 
-class ArrayValidator<V extends Validator, T extends List> extends Validator<T> {
+class ArrayValidator<V extends Validator, T extends dynamic>
+    extends Validator<List<T>> {
   final V validator;
   final String? message;
 
   ArrayValidator(this.validator, {this.message});
 
+  ArrayValidator<V, T> required({String? message}) {
+    addRule(
+      name: 'required',
+      test: (value) => value != null,
+      message: message ?? ':name is required',
+    );
+
+    return this;
+  }
+
   _typeCheck(dynamic value, String path) {
-    if (value == null || value is! List) {
+    if (value != null && value is! List) {
       throw FieldError(
         name: 'invalidType',
-        message: Message(path, "$path is not type of Array", message).message,
+        message: Message(path, "$path must be an array", message).message,
         path: path,
       );
     }
   }
 
-  Result<T>? _tryTypeCheck(dynamic value, String path) {
+  Result<List<T>>? _tryTypeCheck(dynamic value, String path) {
     try {
       _typeCheck(value, path);
       return null;
@@ -29,12 +40,18 @@ class ArrayValidator<V extends Validator, T extends List> extends Validator<T> {
   }
 
   @override
-  Result<T> parse(dynamic value, {String path = 'field'}) {
+  Result<List<T>> parse(dynamic value, {String path = 'field'}) {
     _typeCheck(value, path);
 
-    final values = [] as T;
+    var result = super.parse(value, path: path);
 
-    for (var (i, row) in value.indexed) {
+    if (result.value == null) {
+      return result;
+    }
+
+    final List<T> values = [];
+
+    for (var (i, row) in result.value!.indexed) {
       var result = validator.parse(row, path: "$path.$i");
       values.add(result.value);
     }
@@ -43,12 +60,19 @@ class ArrayValidator<V extends Validator, T extends List> extends Validator<T> {
   }
 
   @override
-  Future<Result<T>> parseAsync(dynamic value, {String path = 'field'}) async {
+  Future<Result<List<T>>> parseAsync(dynamic value,
+      {String path = 'field'}) async {
     _typeCheck(value, path);
 
-    final values = [] as T;
+    var result = await super.parseAsync(value, path: path);
 
-    for (var (i, row) in value.indexed) {
+    if (result.value == null) {
+      return result;
+    }
+
+    final List<T> values = [];
+
+    for (var (i, row) in result.value!.indexed) {
       var result = await validator.parseAsync(row, path: "$path.$i");
       values.add(result.value);
     }
@@ -57,17 +81,22 @@ class ArrayValidator<V extends Validator, T extends List> extends Validator<T> {
   }
 
   @override
-  Result<T> tryParse(dynamic value, {String path = 'field'}) {
-    var check = _tryTypeCheck(value, path);
-
-    if (check != null) {
-      return check;
+  Result<List<T>> tryParse(dynamic value, {String path = 'field'}) {
+    var typeCheck = _tryTypeCheck(value, path);
+    if (typeCheck != null) {
+      return typeCheck;
     }
 
-    final values = [] as T;
+    var result = super.tryParse(value, path: path);
+
+    if (result.value == null) {
+      return result;
+    }
+
+    final List<T> values = [];
     final List<FieldError> errors = [];
 
-    for (var (i, row) in value.indexed) {
+    for (var (i, row) in result.value!.indexed) {
       var result = validator.tryParse(row, path: "$path.$i");
       values.add(result.value);
 
@@ -80,18 +109,23 @@ class ArrayValidator<V extends Validator, T extends List> extends Validator<T> {
   }
 
   @override
-  Future<Result<T>> tryParseAsync(dynamic value,
+  Future<Result<List<T>>> tryParseAsync(dynamic value,
       {String path = 'field'}) async {
-    var check = _tryTypeCheck(value, path);
-
-    if (check != null) {
-      return check;
+    var typeCheck = _tryTypeCheck(value, path);
+    if (typeCheck != null) {
+      return typeCheck;
     }
 
-    final values = [] as T;
+    var result = await super.tryParseAsync(value, path: path);
+
+    if (result.value == null) {
+      return result;
+    }
+
+    final List<T> values = [];
     final List<FieldError> errors = [];
 
-    for (var (i, row) in value.indexed) {
+    for (var (i, row) in result.value!.indexed) {
       var result = await validator.tryParseAsync(row, path: "$path.$i");
       values.add(result.value);
 
