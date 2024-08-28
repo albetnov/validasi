@@ -20,6 +20,7 @@ class Validasi {
   static NumberValidator number({bool strict = true}) =>
       NumberValidator(strict: strict);
 
-  static DateValidator date({String pattern = 'y-MM-dd'}) =>
-      DateValidator(pattern: pattern);
+  static DateValidator date(
+          {String pattern = 'y-MM-dd', bool strict = true, String? message}) =>
+      DateValidator(pattern: pattern, strict: strict, message: message);
 }

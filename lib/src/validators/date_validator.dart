@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:intl/intl.dart';
+import 'package:validasi/src/mixins/strict_check.dart';
+import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 enum DateUnit {
@@ -14,10 +18,14 @@ enum DateCompare {
   invalid;
 }
 
-class DateValidator extends Validator<DateTime> {
+class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
+  @override
+  final String? message;
+  @override
+  final bool strict;
   final String pattern;
 
-  DateValidator({this.pattern = 'y-MM-dd'});
+  DateValidator({this.pattern = 'y-MM-dd', this.message, this.strict = true});
 
   DateValidator required() {
     addRule(
@@ -130,5 +138,50 @@ class DateValidator extends Validator<DateTime> {
     );
 
     return this;
+  }
+
+  DateTime? _valueToDateTime(dynamic value) {
+    if (value is DateTime) {
+      return value;
+    }
+
+    if (value is String) {
+      return DateFormat(pattern).tryParse(value);
+    }
+
+    return null;
+  }
+
+  @override
+  Result<DateTime> parse(dynamic value, {String path = 'field'}) {
+    strictCheck(value, path);
+
+    return super.parse(_valueToDateTime(value), path: path);
+  }
+
+  @override
+  Result<DateTime> tryParse(dynamic value, {String path = 'field'}) {
+    var result = super.tryParse(_valueToDateTime(value), path: path);
+
+    tryStrictCheck(result, value, path);
+
+    return result;
+  }
+
+  @override
+  Future<Result<DateTime>> parseAsync(dynamic value, {String path = 'field'}) {
+    strictCheck(value, path);
+
+    return super.parseAsync(value, path: path);
+  }
+
+  @override
+  Future<Result<DateTime>> tryParseAsync(dynamic value,
+      {String path = 'field'}) async {
+    var result = await super.tryParseAsync(value, path: path);
+
+    tryStrictCheck(result, value, path);
+
+    return result;
   }
 }
