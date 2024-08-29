@@ -23,6 +23,9 @@ class NumberValidator extends Validator<num> with StrictCheck<num> {
   @override
   NumberValidator custom(callback) => super.custom(callback);
 
+  @override
+  NumberValidator customFor(customRule) => super.customFor(customRule);
+
   num? _valueToNum(dynamic value) =>
       value is! num && value != null ? num.parse(value) : value;
 

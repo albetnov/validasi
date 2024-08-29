@@ -23,6 +23,9 @@ class ArrayValidator<V extends Validator, T extends dynamic>
   @override
   ArrayValidator custom(callback) => super.custom(callback);
 
+  @override
+  ArrayValidator customFor(customRule) => super.customFor(customRule);
+
   _typeCheck(dynamic value, String path) {
     if (value != null && value is! List) {
       throw FieldError(

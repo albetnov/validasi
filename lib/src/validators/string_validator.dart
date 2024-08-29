@@ -53,6 +53,9 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
   @override
   StringValidator custom(callback) => super.custom(callback);
 
+  @override
+  StringValidator customFor(customRule) => super.customFor(customRule);
+
   String? _valueToString(dynamic value) =>
       value != null && value is! String ? value.toString() : value;
 

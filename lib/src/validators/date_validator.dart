@@ -40,6 +40,9 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
   @override
   DateValidator custom(callback) => super.custom(callback);
 
+  @override
+  DateValidator customFor(customRule) => super.customFor(customRule);
+
   int _getDifference(DateTime from, DateTime to, DateUnit unit) {
     switch (unit) {
       case DateUnit.year:

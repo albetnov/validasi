@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
+import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/exceptions/validasi_exception.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validator_rule.dart';
-
-typedef CustomCallback<T> = FutureOr<bool> Function(
-    T value, bool Function(String message) fail);
 
 abstract class Validator<T> {
   final List<ValidatorRule<T>> _rules = [];
@@ -24,13 +22,20 @@ abstract class Validator<T> {
   }
 
   @mustBeOverridden
-  custom(CustomCallback<T?> callback) {
+  custom(CustomCallback<T> callback) {
     _customCallback = callback;
 
     return this;
   }
 
-  List<FieldError>? _runCustom(T? value, String path) {
+  @mustBeOverridden
+  customFor(CustomRule<T> customRule) {
+    _customCallback = customRule.handle;
+
+    return this;
+  }
+
+  void _runCustom(T? value, String path) {
     if (_customCallback == null) return null;
 
     String? error;
@@ -46,19 +51,17 @@ abstract class Validator<T> {
     }
 
     // not error
-    if (result) return null;
+    if (result) return;
 
-    return [
-      FieldError(
-        name: 'custom',
-        message:
-            Message(path, fallback: ':name is not valid', message: error).parse,
-        path: path,
-      )
-    ];
+    throw FieldError(
+      name: 'custom',
+      message:
+          Message(path, fallback: ':name is not valid', message: error).parse,
+      path: path,
+    );
   }
 
-  Future<List<FieldError>?> _runCustomAsync(T? value, String path) async {
+  Future<void> _runCustomAsync(T? value, String path) async {
     if (_customCallback == null) return null;
 
     String error = 'Field is not valid';
@@ -69,9 +72,9 @@ abstract class Validator<T> {
     });
 
     // not error
-    if (result) return null;
+    if (result) return;
 
-    return [FieldError(name: 'custom', message: error, path: path)];
+    throw FieldError(name: 'custom', message: error, path: path);
   }
 
   void _parseImpl(T? value, String path) {
@@ -86,14 +89,17 @@ abstract class Validator<T> {
 
   Result<T> parse(T? value, {String path = 'field'}) {
     _parseImpl(value, path);
+    _runCustom(value, path);
 
-    return Result(value: value, errors: _runCustom(value, path));
+    return Result(value: value);
   }
 
   Future<Result<T>> parseAsync(T? value, {String path = 'field'}) async {
     _parseImpl(value, path);
 
-    return Result(value: value, errors: await _runCustomAsync(value, path));
+    await _runCustomAsync(value, path);
+
+    return Result(value: value);
   }
 
   List<FieldError> _tryParseImpl(T? value, String path) {
@@ -113,10 +119,10 @@ abstract class Validator<T> {
   Result<T> tryParse(T? value, {String path = 'field'}) {
     var errors = _tryParseImpl(value, path);
 
-    var customErr = _runCustom(value, path);
-
-    if (customErr != null) {
-      errors.add(customErr.first);
+    try {
+      _runCustom(value, path);
+    } on FieldError catch (e) {
+      errors.add(e);
     }
 
     return Result(value: value, errors: errors);
@@ -125,10 +131,10 @@ abstract class Validator<T> {
   Future<Result<T>> tryParseAsync(T? value, {String path = 'field'}) async {
     var errors = _tryParseImpl(value, path);
 
-    var customErr = await _runCustomAsync(value, path);
-
-    if (customErr != null) {
-      errors.add(customErr.first);
+    try {
+      await _runCustomAsync(value, path);
+    } on FieldError catch (e) {
+      errors.add(e);
     }
 
     return Result(value: value, errors: errors);

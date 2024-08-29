@@ -19,6 +19,9 @@ class ObjectValidator<T extends Map> extends Validator<T> {
   @override
   ObjectValidator custom(callback) => super.custom(callback);
 
+  @override
+  ObjectValidator customFor(customRule) => super.customFor(customRule);
+
   _parse(Result result) {
     if (result.value is Map) {
       Map<String, dynamic> results = {};
