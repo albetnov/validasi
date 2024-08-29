@@ -14,8 +14,11 @@ mixin StrictCheck<T> {
       throw FieldError(
         path: path,
         name: 'invalidType',
-        message: Message(path, "$path is not a valid ${type ?? T.toString()}", message)
-            .message,
+        message: Message(
+          path,
+          fallback: ":name is not a valid ${type ?? T.toString()}",
+          message: message,
+        ).parse,
       );
     }
   }

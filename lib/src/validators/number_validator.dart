@@ -20,6 +20,9 @@ class NumberValidator extends Validator<num> with StrictCheck<num> {
     return this;
   }
 
+  @override
+  NumberValidator custom(callback) => super.custom(callback);
+
   num? _valueToNum(dynamic value) =>
       value is! num && value != null ? num.parse(value) : value;
 

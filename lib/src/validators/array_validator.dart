@@ -20,11 +20,16 @@ class ArrayValidator<V extends Validator, T extends dynamic>
     return this;
   }
 
+  @override
+  ArrayValidator custom(callback) => super.custom(callback);
+
   _typeCheck(dynamic value, String path) {
     if (value != null && value is! List) {
       throw FieldError(
         name: 'invalidType',
-        message: Message(path, "$path must be an array", message).message,
+        message:
+            Message(path, fallback: ":name must be an array", message: message)
+                .parse,
         path: path,
       );
     }
@@ -94,18 +99,17 @@ class ArrayValidator<V extends Validator, T extends dynamic>
     }
 
     final List<T> values = [];
-    final List<FieldError> errors = [];
 
     for (var (i, row) in result.value!.indexed) {
       var result = validator.tryParse(row, path: "$path.$i");
       values.add(result.value);
 
       if (!result.isValid) {
-        errors.addAll(result.errors);
+        result.errors.addAll(result.errors);
       }
     }
 
-    return Result(value: values, errors: errors);
+    return Result(value: values, errors: result.errors);
   }
 
   @override
@@ -123,17 +127,16 @@ class ArrayValidator<V extends Validator, T extends dynamic>
     }
 
     final List<T> values = [];
-    final List<FieldError> errors = [];
 
     for (var (i, row) in result.value!.indexed) {
       var result = await validator.tryParseAsync(row, path: "$path.$i");
       values.add(result.value);
 
       if (!result.isValid) {
-        errors.addAll(result.errors);
+        result.errors.addAll(result.errors);
       }
     }
 
-    return Result(value: values, errors: errors);
+    return Result(value: values, errors: result.errors);
   }
 }

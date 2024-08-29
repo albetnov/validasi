@@ -50,12 +50,8 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
     return this;
   }
 
-  StringValidator custom(
-      FutureOr<bool> Function(String?) callback, String message) {
-    addRule(name: 'custom', test: callback, message: message);
-
-    return this;
-  }
+  @override
+  StringValidator custom(callback) => super.custom(callback);
 
   String? _valueToString(dynamic value) =>
       value != null && value is! String ? value.toString() : value;
