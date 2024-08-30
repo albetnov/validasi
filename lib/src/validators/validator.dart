@@ -36,7 +36,7 @@ abstract class Validator<T> {
   }
 
   void _runCustom(T? value, String path) {
-    if (_customCallback == null) return null;
+    if (_customCallback == null) return;
 
     String? error;
 
@@ -62,7 +62,7 @@ abstract class Validator<T> {
   }
 
   Future<void> _runCustomAsync(T? value, String path) async {
-    if (_customCallback == null) return null;
+    if (_customCallback == null) return;
 
     String error = 'Field is not valid';
 
