@@ -12,6 +12,8 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
 
   StringValidator({this.strict = true, this.message});
 
+  /// [required] indicate that the value should not be [null] and is
+  /// not empty and blank.
   StringValidator required({String? message}) {
     addRule(
       name: 'required',
@@ -22,6 +24,8 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
     return this;
   }
 
+  /// [minLength] check if the value satisfy the minimum length based on
+  /// [length].
   StringValidator minLength(int length, {String? message}) {
     addRule(
       name: 'minLength',
@@ -36,6 +40,7 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
     return this;
   }
 
+  /// [maxLength] check if the value is under or equal to maximum [length].
   StringValidator maxLength(int length, {String? message}) {
     addRule(
       name: 'maxLength',
@@ -56,6 +61,8 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
   @override
   StringValidator customFor(customRule) => super.customFor(customRule);
 
+  /// Convert the value to [String] if they were not a String or null in
+  /// the first place.
   String? _valueToString(dynamic value) =>
       value != null && value is! String ? value.toString() : value;
 
@@ -67,7 +74,7 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
   }
 
   @override
-  Future<Result<String>> parseAsync(String? value, {String path = 'field'}) {
+  Future<Result<String>> parseAsync(dynamic value, {String path = 'field'}) {
     strictCheck(value, path);
 
     return super.parseAsync(_valueToString(value), path: path);
@@ -83,7 +90,7 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
   }
 
   @override
-  Future<Result<String>> tryParseAsync(String? value,
+  Future<Result<String>> tryParseAsync(dynamic value,
       {String path = 'field'}) async {
     var result = await super.tryParseAsync(_valueToString(value), path: path);
 

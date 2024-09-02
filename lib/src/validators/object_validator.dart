@@ -1,3 +1,4 @@
+import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
@@ -6,6 +7,7 @@ class ObjectValidator<T extends Map> extends Validator<T> {
 
   ObjectValidator(this.schema);
 
+  /// [required] indicate that the object cannot be [null].
   ObjectValidator required({String? message}) {
     addRule(
       name: 'required',
@@ -36,6 +38,10 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     return result.value;
   }
 
+  /// [parse] will run recursively validating each values from the [schema].
+  ///
+  /// throw [FieldError] if any error encountered, return freshly recreated
+  /// [Result] if success (alongside with the type-casts if available).
   @override
   Result<T> parse(T? value, {String path = 'field'}) {
     var values = super.parse(value, path: path);
@@ -55,6 +61,10 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     return Result(value: results);
   }
 
+  /// Similar to [parse]. [parseAsync] however will run in asyncronous context.
+  ///
+  /// throw [FieldError] if any error encountered, return freshly recreated
+  /// [Result] if success (alongside with the type-casts if available).
   @override
   Future<Result<T>> parseAsync(T? value, {String path = 'field'}) async {
     var values = await super.parseAsync(value, path: path);
@@ -75,6 +85,8 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     return Result(value: results);
   }
 
+  /// [tryParse] will return [Result] and contains [errors] if any error
+  /// encountered.
   @override
   Result<T> tryParse(T? value, {String path = 'field'}) {
     var values = super.tryParse(value, path: path);
@@ -95,6 +107,8 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     return Result(value: results, errors: values.errors);
   }
 
+  /// Similar to [tryParse]. But, The [tryParseAsync] will run on Asyncronous
+  /// context instead.
   @override
   Future<Result<T>> tryParseAsync(T? value, {String path = 'field'}) async {
     var values = await super.tryParseAsync(value, path: path);

@@ -5,6 +5,7 @@ import 'package:validasi/src/validators/object_validator.dart';
 import 'package:validasi/src/validators/string_validator.dart';
 import 'package:validasi/src/validators/validator.dart';
 
+/// This class reponsible to group available Validators to a single class.
 class Validasi {
   static StringValidator string({bool strict = true}) =>
       StringValidator(strict: strict);

@@ -10,6 +10,7 @@ class NumberValidator extends Validator<num> with StrictCheck<num> {
 
   NumberValidator({this.strict = true, this.message});
 
+  /// [required] indicate that the [value] cannot be [null]
   NumberValidator required({String? message}) {
     addRule(
       name: 'required',

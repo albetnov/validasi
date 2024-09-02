@@ -10,6 +10,7 @@ class ArrayValidator<V extends Validator, T extends dynamic>
 
   ArrayValidator(this.validator, {this.message});
 
+  /// [required] indicate that the [value] cannot be [null]
   ArrayValidator<V, T> required({String? message}) {
     addRule(
       name: 'required',
