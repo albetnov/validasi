@@ -4,8 +4,7 @@ import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 /// Responsible for validating arrays based on [validator].
-class ArrayValidator<V extends Validator, T extends dynamic>
-    extends Validator<List<T>> {
+class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
   final V validator;
   final String? message;
 
