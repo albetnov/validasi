@@ -1,21 +1,17 @@
 /// [Message] is an validation message processor to parse template like `:name`
-/// or maybe other (in the future?). The [Message] takes [path], [message], and
-/// [fallback].
-///
-/// The [message] is optional. If the [message] is `null` then [fallback] will be
-/// used instead.
-///
-/// The [parse] getter return parsed [message] or [fallback] based on above
-/// description.
 class Message {
   final String path;
-  final String? message;
-  final String fallback;
+  final String? _message;
+  final String _fallback;
 
   const Message(this.path,
-      {this.fallback = ':name is not valid', this.message});
+      {String fallback = ':name is not valid', String? message})
+      : _message = message,
+        _fallback = fallback;
 
-  String get parse => message != null
-      ? message!.replaceAll(':name', path)
-      : fallback.replaceAll(':name', path);
+  /// The [parse] getter return parsed `message`
+  /// if not null or `fallback` if `message` is null.
+  String get parse => _message != null
+      ? _message.replaceAll(':name', path)
+      : _fallback.replaceAll(':name', path);
 }
