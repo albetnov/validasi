@@ -18,5 +18,5 @@ abstract class CustomRule<T> {
   /// `Future<bool>` or just `bool`. If you use [Future] make sure to
   /// run the rule with `async` variants.
   @mustBeOverridden
-  FutureOr<bool> handle(T? value, bool Function(String message) fail);
+  FutureOr<bool> handle(T? value, FailFn fail);
 }
