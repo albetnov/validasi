@@ -5,12 +5,15 @@ import 'package:validasi/src/mixins/strict_check.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
+/// The Supported Unit of Date.
 enum DateUnit {
   day,
   month,
   year;
 }
 
+/// The result of Date Comparasion determing if the date is
+/// before, after, same, or is invalid.
 enum DateCompare {
   before,
   after,
@@ -18,6 +21,7 @@ enum DateCompare {
   invalid;
 }
 
+/// Responsible for validating [DateTime] or formatted [String] Date Time.
 class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
   @override
   final String? message;
@@ -27,6 +31,7 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
 
   DateValidator({this.pattern = 'y-MM-dd', this.message, this.strict = true});
 
+  /// [required] indicate that the [value] cannot be `null`
   DateValidator required() {
     addRule(
       name: 'required',
@@ -36,6 +41,12 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
 
     return this;
   }
+
+  @override
+  DateValidator custom(callback) => super.custom(callback);
+
+  @override
+  DateValidator customFor(customRule) => super.customFor(customRule);
 
   int _getDifference(DateTime from, DateTime to, DateUnit unit) {
     switch (unit) {
@@ -64,6 +75,8 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
     }
   }
 
+  /// [before] indicate that the value must be before of [target] based on
+  /// given [unit] and [difference] for comparasion.
   DateValidator before(DateTime target,
       {DateUnit unit = DateUnit.day, int difference = 1, String? message}) {
     addRule(
@@ -83,6 +96,8 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
     return this;
   }
 
+  /// [after] indicate that the value must be after of [target] based on
+  /// given [unit] and [difference] for comparasion.
   DateValidator after(DateTime target,
       {DateUnit unit = DateUnit.day, int difference = 1, String? message}) {
     addRule(
@@ -102,6 +117,8 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
     return this;
   }
 
+  /// Similar to [before]. [beforeSame] allows if the [target] is the same as
+  /// value.
   DateValidator beforeSame(DateTime target,
       {DateUnit unit = DateUnit.day, String? message}) {
     addRule(
@@ -121,6 +138,8 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
     return this;
   }
 
+  /// Similar to [after]. [afterSame] allows if the [target] is the same as
+  /// value.
   DateValidator afterSame(DateTime target,
       {DateUnit unit = DateUnit.day, String? message}) {
     addRule(
@@ -140,6 +159,9 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
     return this;
   }
 
+  /// Convert the [value] to [DateTime] if parse-able (from string).
+  /// If [value] is not string and not already [DateTime] then `null`
+  /// will be returned instead.
   DateTime? _valueToDateTime(dynamic value) {
     if (value is DateTime) {
       return value;
