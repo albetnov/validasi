@@ -2,12 +2,13 @@ import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
+/// Responsible for validating the object based on [schema].
 class ObjectValidator<T extends Map> extends Validator<T> {
   final Map<String, Validator> schema;
 
   ObjectValidator(this.schema);
 
-  /// [required] indicate that the object cannot be [null].
+  /// [required] indicate that the object cannot be `null`.
   ObjectValidator required({String? message}) {
     addRule(
       name: 'required',
@@ -85,7 +86,7 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     return Result(value: results);
   }
 
-  /// [tryParse] will return [Result] and contains [errors] if any error
+  /// [tryParse] will return [Result] and contains `errors` if any error
   /// encountered.
   @override
   Result<T> tryParse(T? value, {String path = 'field'}) {

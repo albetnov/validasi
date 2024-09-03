@@ -4,14 +4,14 @@ import 'package:validasi/src/validators/validator.dart';
 /// [FieldValidator] is a inline wrapper for single validator.
 ///
 /// The wrapper expose [validate] and [validateAsync] method both for returning
-/// first error message on error, or return [null] if success.
+/// first error message on error, or return `null` if success.
 class FieldValidator<T> {
   /// The [Validator] to be wrapped
   final Validator validator;
 
   const FieldValidator(this.validator);
 
-  /// Perform the validation and catch the [message]. Return [null] if success
+  /// Perform the validation and catch the `message`. Return `null` if success
   /// instead.
   String? validate(T? value, {String path = 'field'}) {
     try {

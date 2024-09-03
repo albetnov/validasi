@@ -4,6 +4,7 @@ import 'package:validasi/src/mixins/strict_check.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
+/// Responsible for validating [String] also support [toString] conversion.
 class StringValidator extends Validator<String> with StrictCheck<String> {
   @override
   final bool strict;
@@ -12,7 +13,7 @@ class StringValidator extends Validator<String> with StrictCheck<String> {
 
   StringValidator({this.strict = true, this.message});
 
-  /// [required] indicate that the value should not be [null] and is
+  /// [required] indicate that the value should not be `null` and is
   /// not empty and blank.
   StringValidator required({String? message}) {
     addRule(

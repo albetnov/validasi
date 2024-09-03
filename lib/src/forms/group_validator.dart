@@ -9,7 +9,7 @@ import 'package:validasi/src/validators/validator.dart';
 ///
 /// The [GroupValidator] allows you to use [validate] to quickly return
 /// first error message or null if success. Suitable to be passed on Flutter's
-/// [FormField].
+/// `FormField`.
 class GroupValidator {
   /// [schema] to store the validator.
   final Map<String, Validator> schema;
@@ -28,7 +28,7 @@ class GroupValidator {
   /// ([field]).
   ///
   /// If [field] not found in [schema], [validate] will throw [ValidasiException].
-  /// return [String] first error message if found, or [null] if success.
+  /// return [String] first error message if found, or `null` if success.
   String? validate(String field, dynamic value, {String path = 'field'}) {
     _containKey(field);
 

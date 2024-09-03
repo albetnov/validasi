@@ -2,6 +2,8 @@ import 'package:validasi/src/mixins/strict_check.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
+/// Responsible for validating [num] for both [double] and [int] also
+/// support type conversion from [String] based on [num.tryParse].
 class NumberValidator extends Validator<num> with StrictCheck<num> {
   @override
   final bool strict;
@@ -10,7 +12,7 @@ class NumberValidator extends Validator<num> with StrictCheck<num> {
 
   NumberValidator({this.strict = true, this.message});
 
-  /// [required] indicate that the [value] cannot be [null]
+  /// [required] indicate that the [value] cannot be `null`
   NumberValidator required({String? message}) {
     addRule(
       name: 'required',

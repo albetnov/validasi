@@ -5,12 +5,15 @@ import 'package:validasi/src/mixins/strict_check.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
+/// The Supported Unit of Date.
 enum DateUnit {
   day,
   month,
   year;
 }
 
+/// The result of Date Comparasion determing if the date is
+/// before, after, same, or is invalid.
 enum DateCompare {
   before,
   after,
@@ -18,6 +21,7 @@ enum DateCompare {
   invalid;
 }
 
+/// Responsible for validating [DateTime] or formatted [String] Date Time.
 class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
   @override
   final String? message;
@@ -27,7 +31,7 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
 
   DateValidator({this.pattern = 'y-MM-dd', this.message, this.strict = true});
 
-  /// [required] indicate that the [value] cannot be [null]
+  /// [required] indicate that the [value] cannot be `null`
   DateValidator required() {
     addRule(
       name: 'required',
@@ -156,7 +160,7 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
   }
 
   /// Convert the [value] to [DateTime] if parse-able (from string).
-  /// If [value] is not string and not already [DateTime] then [null]
+  /// If [value] is not string and not already [DateTime] then `null`
   /// will be returned instead.
   DateTime? _valueToDateTime(dynamic value) {
     if (value is DateTime) {

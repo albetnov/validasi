@@ -3,6 +3,7 @@ import 'package:validasi/src/result.dart';
 import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validators/validator.dart';
 
+/// Responsible for validating arrays based on [validator].
 class ArrayValidator<V extends Validator, T extends dynamic>
     extends Validator<List<T>> {
   final V validator;
@@ -10,7 +11,7 @@ class ArrayValidator<V extends Validator, T extends dynamic>
 
   ArrayValidator(this.validator, {this.message});
 
-  /// [required] indicate that the [value] cannot be [null]
+  /// [required] indicate that the [value] cannot be `null`
   ArrayValidator<V, T> required({String? message}) {
     addRule(
       name: 'required',

@@ -7,8 +7,8 @@ import 'package:validasi/src/utils/message.dart';
 /// and type conversion. This mixins will add [strict] and [message] property.
 mixin StrictCheck<T> {
   /// The [strict] responsible to enforce type and perform runtime check
-  /// and throw [FieldError] on [parse] variants, or append [errors] for [tryParse]
-  /// variants.
+  /// and throw [FieldError] on `parse` variants, or append `errors` for
+  /// `tryParse` variants.
   bool get strict;
 
   /// The [message] will be used to as a custom message for failing type check
@@ -16,7 +16,7 @@ mixin StrictCheck<T> {
   String? get message;
 
   /// The [strictCheck] function to throw [FieldError]. Should be implemented
-  /// for the [parse] variants.
+  /// for the `parse` variants.
   @internal
   @protected
   void strictCheck(dynamic value, String path, {String? type}) {
@@ -33,7 +33,7 @@ mixin StrictCheck<T> {
     }
   }
 
-  /// The [tryParse] variants equivalent for [strictCheck].
+  /// The `tryParse` variants equivalent for [strictCheck].
   @internal
   @protected
   void tryStrictCheck(Result result, dynamic value, String path,
@@ -41,7 +41,7 @@ mixin StrictCheck<T> {
     try {
       strictCheck(value, path, type: type);
     } on FieldError catch (e) {
-      result.addError(e);
+      result.errors.add(e);
     }
   }
 }

@@ -1,6 +1,4 @@
 import 'package:validasi/src/exceptions/field_error.dart';
-import 'package:validasi/src/validators/array_validator.dart';
-import 'package:validasi/src/validators/object_validator.dart';
 
 /// The [Result] responsible for returning a value with errors
 /// (under `try` method) and the converted [value] to target type
@@ -17,10 +15,4 @@ class Result<T> {
 
   /// The checks for validity is as simple as ensuring that [errors] is empty.
   bool get isValid => errors.isEmpty;
-
-  /// The [addError] allow public access to append an error to [errors].
-  /// This is useful for create a custom Validation logic but still
-  /// inherting the Validator behaviour.
-  /// see [ArrayValidator] and [ObjectValidator] for example.
-  void addError(FieldError error) => errors.add(error);
 }
