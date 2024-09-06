@@ -19,6 +19,7 @@ mixin StrictCheck<T> {
   /// for the `parse` variants.
   @internal
   @protected
+  @visibleForTesting
   void strictCheck(dynamic value, String path, {String? type}) {
     if (strict && value is! T && value != null) {
       throw FieldError(
@@ -36,6 +37,7 @@ mixin StrictCheck<T> {
   /// The `tryParse` variants equivalent for [strictCheck].
   @internal
   @protected
+  @visibleForTesting
   void tryStrictCheck(Result result, dynamic value, String path,
       {String? type}) {
     try {

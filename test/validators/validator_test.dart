@@ -6,25 +6,10 @@ import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/exceptions/validasi_exception.dart';
 import 'package:validasi/src/result.dart';
 
+import '../test_utils.dart';
 import 'validator_test_stub.dart';
 @GenerateNiceMocks([MockSpec<CustomRule<String>>()])
 import 'validator_test.mocks.dart';
-
-void shouldNotThrow(void Function() callback) {
-  try {
-    callback();
-  } catch (e) {
-    fail("Should not thrown any exception, get $e instead");
-  }
-}
-
-Future<void> shouldNotThrowAsync(Future<void> Function() callback) async {
-  try {
-    await callback();
-  } catch (e) {
-    fail("Should not thrown any exception, get $e instead");
-  }
-}
 
 void main() {
   group('Validator Test', () {
