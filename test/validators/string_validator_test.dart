@@ -65,7 +65,7 @@ void main() {
 
       shouldNotThrow(() => schema.parse('text'));
 
-      var mock = MockCustomRule();
+      var mock = MockCustomRule<String>();
 
       when(mock.handle(any, any)).thenAnswer((args) {
         if (args.positionalArguments[0] == 'value') {

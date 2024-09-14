@@ -29,8 +29,17 @@ class NumberValidator extends Validator<num> with StrictCheck<num> {
   @override
   NumberValidator customFor(customRule) => super.customFor(customRule);
 
-  num? _valueToNum(dynamic value) =>
-      value is! num && value != null ? num.parse(value) : value;
+  num? _valueToNum(dynamic value) {
+    if (value is String) {
+      return num.tryParse(value);
+    }
+
+    if (value is num || value == null) {
+      return value;
+    }
+
+    return null;
+  }
 
   @override
   Result<num> parse(dynamic value, {String path = 'field'}) {
@@ -49,7 +58,7 @@ class NumberValidator extends Validator<num> with StrictCheck<num> {
   }
 
   @override
-  Future<Result<num>> parseAsync(num? value, {String path = 'field'}) {
+  Future<Result<num>> parseAsync(dynamic value, {String path = 'field'}) {
     strictCheck(value, path, type: 'number');
 
     return super.parseAsync(value, path: path);

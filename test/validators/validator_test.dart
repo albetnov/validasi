@@ -8,7 +8,7 @@ import 'package:validasi/src/result.dart';
 
 import '../test_utils.dart';
 import 'validator_test_stub.dart';
-@GenerateNiceMocks([MockSpec<CustomRule<String>>()])
+@GenerateNiceMocks([MockSpec<CustomRule>()])
 import 'validator_test.mocks.dart';
 
 void main() {
@@ -74,7 +74,7 @@ void main() {
     });
 
     test('customFor should be able to attach custom rule from class', () {
-      var stub = MockCustomRule();
+      var stub = MockCustomRule<String>();
 
       when(stub.handle('value', any)).thenReturn(true);
 

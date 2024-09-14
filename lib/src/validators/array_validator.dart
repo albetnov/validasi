@@ -31,9 +31,9 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
     if (value != null && value is! List) {
       throw FieldError(
         name: 'invalidType',
-        message:
-            Message(path, fallback: ":name must be an array", message: message)
-                .parse,
+        message: Message(path,
+                fallback: ":name is not a valid array", message: message)
+            .parse,
         path: path,
       );
     }
@@ -105,11 +105,11 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
     final List<T> values = [];
 
     for (var (i, row) in result.value!.indexed) {
-      var result = validator.tryParse(row, path: "$path.$i");
-      values.add(result.value);
+      var currentResult = validator.tryParse(row, path: "$path.$i");
+      values.add(currentResult.value);
 
-      if (!result.isValid) {
-        result.errors.addAll(result.errors);
+      if (!currentResult.isValid) {
+        result.errors.addAll(currentResult.errors);
       }
     }
 
@@ -133,11 +133,11 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
     final List<T> values = [];
 
     for (var (i, row) in result.value!.indexed) {
-      var result = await validator.tryParseAsync(row, path: "$path.$i");
-      values.add(result.value);
+      var currentResult = await validator.tryParseAsync(row, path: "$path.$i");
+      values.add(currentResult.value);
 
-      if (!result.isValid) {
-        result.errors.addAll(result.errors);
+      if (!currentResult.isValid) {
+        result.errors.addAll(currentResult.errors);
       }
     }
 

@@ -32,11 +32,11 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
   DateValidator({this.pattern = 'y-MM-dd', this.message, this.strict = true});
 
   /// [required] indicate that the [value] cannot be `null`
-  DateValidator required() {
+  DateValidator required({String? message}) {
     addRule(
       name: 'required',
       test: (value) => value != null,
-      message: ':name is required',
+      message: message ?? ':name is required',
     );
 
     return this;
@@ -51,12 +51,12 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
   int _getDifference(DateTime from, DateTime to, DateUnit unit) {
     switch (unit) {
       case DateUnit.year:
-        return from.year - to.year;
+        return (from.year - to.year).abs();
       case DateUnit.month:
         return (from.month - to.month).abs();
       default:
         Duration diff = from.difference(to);
-        return diff.inDays;
+        return diff.inDays.abs();
     }
   }
 
@@ -108,7 +108,7 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
           return false;
         }
 
-        return _getDifference(value!, target, unit) <= difference;
+        return _getDifference(value!, target, unit) >= difference;
       },
       message: message ??
           ":name must be after ${DateFormat(pattern).format(target)}",
@@ -129,7 +129,7 @@ class DateValidator extends Validator<DateTime> with StrictCheck<DateTime> {
           return false;
         }
 
-        return _getDifference(value!, target, unit) <= 0;
+        return _getDifference(value!, target, unit) >= 0;
       },
       message: message ??
           ":name must be before or equal ${DateFormat(pattern).format(target)}",

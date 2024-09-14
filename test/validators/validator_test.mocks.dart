@@ -24,10 +24,10 @@ import 'package:validasi/src/custom_rule.dart' as _i2;
 /// A class which mocks [CustomRule].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCustomRule extends _i1.Mock implements _i2.CustomRule<String> {
+class MockCustomRule<T> extends _i1.Mock implements _i2.CustomRule<T> {
   @override
   _i3.FutureOr<bool> handle(
-    String? value,
+    T? value,
     _i2.FailFn? fail,
   ) =>
       (super.noSuchMethod(
