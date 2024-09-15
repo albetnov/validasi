@@ -44,7 +44,7 @@ class ObjectValidator<T extends Map> extends Validator<T> {
   /// throw [FieldError] if any error encountered, return freshly recreated
   /// [Result] if success (alongside with the type-casts if available).
   @override
-  Result<T> parse(T? value, {String path = 'field'}) {
+  Result<T> parse(dynamic value, {String path = 'field'}) {
     var values = super.parse(value, path: path);
 
     if (values.value == null) {
@@ -67,7 +67,7 @@ class ObjectValidator<T extends Map> extends Validator<T> {
   /// throw [FieldError] if any error encountered, return freshly recreated
   /// [Result] if success (alongside with the type-casts if available).
   @override
-  Future<Result<T>> parseAsync(T? value, {String path = 'field'}) async {
+  Future<Result<T>> parseAsync(dynamic value, {String path = 'field'}) async {
     var values = await super.parseAsync(value, path: path);
 
     if (values.value == null) {
@@ -89,7 +89,7 @@ class ObjectValidator<T extends Map> extends Validator<T> {
   /// [tryParse] will return [Result] and contains `errors` if any error
   /// encountered.
   @override
-  Result<T> tryParse(T? value, {String path = 'field'}) {
+  Result<T> tryParse(dynamic value, {String path = 'field'}) {
     var values = super.tryParse(value, path: path);
 
     final T results = {} as T;
@@ -111,7 +111,8 @@ class ObjectValidator<T extends Map> extends Validator<T> {
   /// Similar to [tryParse]. But, The [tryParseAsync] will run on Asyncronous
   /// context instead.
   @override
-  Future<Result<T>> tryParseAsync(T? value, {String path = 'field'}) async {
+  Future<Result<T>> tryParseAsync(dynamic value,
+      {String path = 'field'}) async {
     var values = await super.tryParseAsync(value, path: path);
 
     final T results = {} as T;
