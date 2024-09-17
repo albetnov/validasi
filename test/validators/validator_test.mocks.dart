@@ -7,6 +7,7 @@ import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:validasi/src/custom_rule.dart' as _i2;
+import 'package:validasi/src/transformers/transformer.dart' as _i4;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -42,3 +43,8 @@ class MockCustomRule<T> extends _i1.Mock implements _i2.CustomRule<T> {
         returnValueForMissingStub: _i3.Future<bool>.value(false),
       ) as _i3.FutureOr<bool>);
 }
+
+/// A class which mocks [Transformer].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTransformer<T> extends _i1.Mock implements _i4.Transformer<T> {}

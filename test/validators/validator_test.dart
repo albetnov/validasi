@@ -5,10 +5,11 @@ import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/exceptions/validasi_exception.dart';
 import 'package:validasi/src/result.dart';
+import 'package:validasi/src/transformers/transformer.dart';
 
 import '../test_utils.dart';
 import 'validator_test_stub.dart';
-@GenerateNiceMocks([MockSpec<CustomRule>()])
+@GenerateNiceMocks([MockSpec<CustomRule>(), MockSpec<Transformer>()])
 import 'validator_test.mocks.dart';
 
 void main() {
@@ -414,6 +415,28 @@ void main() {
       expect(result.isValid, isFalse);
       expect(result.errors.map((e) => e.message).toList(),
           containsAll(['example 1', 'example 2', 'example 3']));
+    });
+
+    test('can attach transformer and execute it', () async {
+      var mock = MockTransformer<String>();
+
+      when(mock.transform(1)).thenReturn('transformed');
+
+      var stub = ValidatorStub(transformer: mock);
+
+      var result = stub.parse(1);
+      expect(result.value, equals('transformed'));
+
+      result = stub.tryParse(1);
+      expect(result.value, equals('transformed'));
+
+      result = await stub.parseAsync(1);
+      expect(result.value, equals('transformed'));
+
+      result = await stub.tryParseAsync(1);
+      expect(result.value, equals('transformed'));
+
+      verify(mock.transform(1)).called(4);
     });
   });
 }
