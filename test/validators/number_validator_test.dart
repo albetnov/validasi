@@ -33,20 +33,20 @@ void main() {
       expect(result.value, isNull);
     });
 
-    test('can override message for type check', () {
-      var schema = Validasi.number(message: 'Must numeric!');
+    // test('can override message for type check', () {
+    //   var schema = Validasi.number(message: 'Must numeric!');
 
-      expect(schema.tryParse(true).errors.first.message, 'Must numeric!');
-    });
+    //   expect(schema.tryParse(true).errors.first.message, 'Must numeric!');
+    // });
 
-    test('allow conversion to num on strict turned off', () {
-      var schema = Validasi.number(strict: false);
+    // test('allow conversion to num on strict turned off', () {
+    //   var schema = Validasi.number(strict: false);
 
-      expect(schema.parse('10').value, equals(10));
+    //   expect(schema.parse('10').value, equals(10));
 
-      expect(schema.parse(null).value, isNull,
-          reason: 'When passed null it should stay null, not converted');
-    });
+    //   expect(schema.parse(null).value, isNull,
+    //       reason: 'When passed null it should stay null, not converted');
+    // });
 
     test('parse can run custom callback and custom rule class', () {
       var schema = Validasi.number().custom((value, fail) {

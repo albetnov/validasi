@@ -12,10 +12,10 @@ void main() {
   nameSchema.parse(null, path: 'name'); // FieldError: name is required
 
   // non-strict validation (allowing type conversion in the end).
-  var roomNumberSchema = Validasi.number(strict: false).required();
+  // var roomNumberSchema = Validasi.number(strict: false).required();
 
-  var roomNumber = roomNumberSchema.parse('35');
-  print(roomNumber.value); // num(35).
+  // var roomNumber = roomNumberSchema.parse('35');
+  // print(roomNumber.value); // num(35).
 
   // object schema validation
   var payloadSchema = Validasi.object({

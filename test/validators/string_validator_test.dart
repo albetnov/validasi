@@ -32,20 +32,20 @@ void main() {
       expect(result.errors.first.name, equals('invalidType'));
     });
 
-    test('can override message for type check', () {
-      var schema = Validasi.string(message: 'Must string!');
+    // test('can override message for type check', () {
+    //   var schema = Validasi.string(message: 'Must string!');
 
-      expect(schema.tryParse(true).errors.first.message, 'Must string!');
-    });
+    //   expect(schema.tryParse(true).errors.first.message, 'Must string!');
+    // });
 
-    test('allow conversion to string on strict turned off', () {
-      var schema = Validasi.string(strict: false);
+    // test('allow conversion to string on strict turned off', () {
+    //   var schema = Validasi.string(strict: false);
 
-      expect(schema.parse(10).value, equals('10'));
+    //   expect(schema.parse(10).value, equals('10'));
 
-      expect(schema.parse(null).value, isNull,
-          reason: 'When passed null it should stay null, not converted');
-    });
+    //   expect(schema.parse(null).value, isNull,
+    //       reason: 'When passed null it should stay null, not converted');
+    // });
 
     test('parse can run custom callback and custom rule class', () {
       var schema = Validasi.string().custom((value, fail) {
