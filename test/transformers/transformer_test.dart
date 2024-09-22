@@ -3,7 +3,7 @@ import 'package:validasi/src/transformers/transformer.dart';
 
 class TransformerTestStub extends Transformer<int> {
   @override
-  int? transform(value) {
+  int? transform(value, fail) {
     throw UnimplementedError();
   }
 }
@@ -25,7 +25,8 @@ void main() {
     test('transform method should throw UnimplementedError', () {
       var transformer = TransformerTestStub();
 
-      expect(() => transformer.transform(''), throwsUnimplementedError);
+      expect(() => transformer.transform('', (message) {}),
+          throwsUnimplementedError);
     });
   });
 }

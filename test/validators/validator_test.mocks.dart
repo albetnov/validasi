@@ -47,4 +47,20 @@ class MockCustomRule<T> extends _i1.Mock implements _i2.CustomRule<T> {
 /// A class which mocks [Transformer].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTransformer<T> extends _i1.Mock implements _i4.Transformer<T> {}
+class MockTransformer<T> extends _i1.Mock implements _i4.Transformer<T> {
+  @override
+  T? transform(
+    dynamic value,
+    _i4.FailCallback? fail,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #transform,
+          [
+            value,
+            fail,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      ) as T?);
+}

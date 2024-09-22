@@ -133,15 +133,20 @@ abstract class Validator<T> {
 
   T? _typeCheck(dynamic value, String path) {
     if (value != null && value is! T) {
+      String fallbackMessage =
+          "Expected type ${T.toString()}. Got ${value.runtimeType} instead.";
       if (transformer != null) {
-        return transformer!.transform(value);
+        return transformer!.transform(
+            value,
+            (message) => throw FieldError(
+                name: 'invalidType',
+                message:
+                    Message(path, message: message, fallback: message).parse,
+                path: path));
       }
 
       throw FieldError(
-          name: 'invalidType',
-          message:
-              "Expected type ${T.toString()}. Got ${value.runtimeType} instead.",
-          path: path);
+          name: 'invalidType', message: fallbackMessage, path: path);
     }
 
     return value;

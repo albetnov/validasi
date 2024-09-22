@@ -420,7 +420,7 @@ void main() {
     test('can attach transformer and execute it', () async {
       var mock = MockTransformer<String>();
 
-      when(mock.transform(1)).thenReturn('transformed');
+      when(mock.transform(1, any)).thenReturn('transformed');
 
       var stub = ValidatorStub(transformer: mock);
 
@@ -436,7 +436,19 @@ void main() {
       result = await stub.tryParseAsync(1);
       expect(result.value, equals('transformed'));
 
-      verify(mock.transform(1)).called(4);
+      verify(mock.transform(1, any)).called(4);
+    });
+
+    test('can capture transformer error', () {
+      var mock = MockTransformer<String>();
+
+      var validator = ValidatorStub(transformer: mock);
+
+      when(mock.transform(1, any))
+          .thenAnswer((invoke) => invoke.positionalArguments[1]('error'));
+
+      throwFieldError(() => validator.parse(1),
+          name: 'invalidType', message: 'error');
     });
   });
 }

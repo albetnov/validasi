@@ -7,5 +7,6 @@ class DateTransformer extends Transformer<DateTime> {
   const DateTransformer({this.pattern = 'y-MM-dd'});
 
   @override
-  DateTime? transform(value) => DateFormat(pattern).tryParse(value.toString());
+  DateTime? transform(value, fail) =>
+      DateFormat(pattern).tryParse(value.toString());
 }

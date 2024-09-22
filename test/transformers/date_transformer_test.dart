@@ -6,7 +6,7 @@ void main() {
     test('should convet to DateTime', () {
       var transformer = DateTransformer();
 
-      var result = transformer.transform('2021-01-01');
+      var result = transformer.transform('2021-01-01', (_) {});
 
       expect(result, isA<DateTime>());
 
@@ -16,11 +16,11 @@ void main() {
     test('should return null if value is not a date', () {
       var transformer = DateTransformer();
 
-      var result = transformer.transform('abc');
+      var result = transformer.transform('abc', (_) {});
 
       expect(result, isNull);
 
-      result = transformer.transform(true);
+      result = transformer.transform(true, (_) {});
 
       expect(result, isNull);
     });

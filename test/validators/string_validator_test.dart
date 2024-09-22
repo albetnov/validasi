@@ -7,7 +7,7 @@ import 'validator_test.mocks.dart';
 
 void main() {
   group('String Validator Test', () {
-    test('passes strict check on value match string or null', () {
+    test('passes type check on value match string or null', () {
       var schema = Validasi.string();
 
       shouldNotThrow(() {
@@ -16,7 +16,7 @@ void main() {
       });
     });
 
-    test('fails strict check on value not match string or not null', () {
+    test('fails type check on value not match string or not null', () {
       var schema = Validasi.string();
 
       expect(
@@ -32,20 +32,13 @@ void main() {
       expect(result.errors.first.name, equals('invalidType'));
     });
 
-    // test('can override message for type check', () {
-    //   var schema = Validasi.string(message: 'Must string!');
+    test('can attach StringTransformer', () {
+      var schema = Validasi.string(transformer: StringTransformer());
 
-    //   expect(schema.tryParse(true).errors.first.message, 'Must string!');
-    // });
+      var result = schema.parse(123);
 
-    // test('allow conversion to string on strict turned off', () {
-    //   var schema = Validasi.string(strict: false);
-
-    //   expect(schema.parse(10).value, equals('10'));
-
-    //   expect(schema.parse(null).value, isNull,
-    //       reason: 'When passed null it should stay null, not converted');
-    // });
+      expect(result.value, equals('123'));
+    });
 
     test('parse can run custom callback and custom rule class', () {
       var schema = Validasi.string().custom((value, fail) {

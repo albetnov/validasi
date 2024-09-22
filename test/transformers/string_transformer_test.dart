@@ -6,7 +6,7 @@ void main() {
     test('can convert to string', () {
       var transformer = StringTransformer();
 
-      var result = transformer.transform(123);
+      var result = transformer.transform(123, (_) {});
 
       expect(result, isA<String>());
       expect(result, equals('123'));
