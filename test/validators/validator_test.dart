@@ -2,7 +2,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:validasi/src/custom_rule.dart';
-import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/exceptions/validasi_exception.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/transformers/transformer.dart';
