@@ -7,7 +7,7 @@ import 'validator_test.mocks.dart';
 
 void main() {
   group('Number Validator Test', () {
-    test('passes strict check on value match num or null', () {
+    test('passes type check on value match num or null', () {
       var schema = Validasi.number();
 
       shouldNotThrow(() {
@@ -16,7 +16,7 @@ void main() {
       });
     });
 
-    test('fails strict check on value not match num or not null', () {
+    test('fails type check on value not match num or not null', () {
       var schema = Validasi.number();
 
       expect(
@@ -33,20 +33,13 @@ void main() {
       expect(result.value, isNull);
     });
 
-    // test('can override message for type check', () {
-    //   var schema = Validasi.number(message: 'Must numeric!');
+    test('can attach NumberTransformer', () {
+      var schema = Validasi.number(transformer: NumberTransformer());
 
-    //   expect(schema.tryParse(true).errors.first.message, 'Must numeric!');
-    // });
+      var result = schema.parse('123');
 
-    // test('allow conversion to num on strict turned off', () {
-    //   var schema = Validasi.number(strict: false);
-
-    //   expect(schema.parse('10').value, equals(10));
-
-    //   expect(schema.parse(null).value, isNull,
-    //       reason: 'When passed null it should stay null, not converted');
-    // });
+      expect(result.value, equals(123));
+    });
 
     test('parse can run custom callback and custom rule class', () {
       var schema = Validasi.number().custom((value, fail) {

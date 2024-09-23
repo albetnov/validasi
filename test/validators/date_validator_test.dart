@@ -1,13 +1,11 @@
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:validasi/validasi.dart';
 
 import '../test_utils.dart';
-import 'validator_test.mocks.dart';
 
 void main() {
   group('Date Validator Test', () {
-    test('passes strict check on value match date or null', () {
+    test('passes type check on value match date or null', () {
       var schema = Validasi.date();
 
       shouldNotThrow(() {
@@ -16,7 +14,7 @@ void main() {
       });
     });
 
-    test('fails strict check on value not match date or not null', () {
+    test('fails type check on value not match date or not null', () {
       var schema = Validasi.date();
 
       throwFieldError(() => schema.parse(true),
@@ -29,88 +27,14 @@ void main() {
       expect(result.value, isNull);
     });
 
-    // test('can override message for type check', () {
-    //   var schema = Validasi.date(message: 'Must date!');
+    test('can attach transformer', () {
+      var schema = Validasi.date(transformer: DateTransformer());
 
-    //   expect(getMsg(schema.tryParse(true)), 'Must date!');
-    // });
+      var result = schema.parse('2024-09-23');
 
-    // test('allow conversion to DateTime on strict turned off', () {
-    //   var schema = Validasi.date(strict: false);
-
-    //   expect(
-    //       schema
-    //           .parse('2024-09-09')
-    //           .value
-    //           ?.isAtSameMomentAs(DateTime(2024, 9, 9)),
-    //       isTrue);
-
-    //   expect(schema.parse(null).value, isNull,
-    //       reason: 'When passed null it should stay null, not converted');
-    // });
-
-    // test('can customize pattern for conversion on strict off', () {
-    //   var schema = Validasi.date(strict: false, pattern: 'dd/MM/y');
-
-    //   expect(
-    //       schema
-    //           .parse('09/09/2024')
-    //           .value
-    //           ?.isAtSameMomentAs(DateTime(2024, 9, 9)),
-    //       isTrue);
-    // });
-
-    // test('invalid format resulting in null on strict off', () {
-    //   var schema = Validasi.date(strict: false);
-
-    //   expect(schema.parse('09/09/2024').value, isNull);
-    // });
-
-    // test('parse can run custom callback and custom rule class', () {
-    //   var schema = Validasi.date(strict: false).custom((value, fail) {
-    //     if (value?.isAtSameMomentAs(DateTime(2024, 9, 9)) ?? false) {
-    //       return fail(':name should not be 2024-09-09');
-    //     }
-
-    //     return true;
-    //   });
-
-    //   expect(
-    //       () => schema.parse('2024-09-09'),
-    //       throwsA(predicate((e) =>
-    //           e is FieldError &&
-    //           e.name == 'custom' &&
-    //           e.message == 'field should not be 2024-09-09')));
-
-    //   shouldNotThrow(() => schema.parse('2024-09-10'));
-
-    //   var mock = MockCustomRule<DateTime>();
-
-    //   when(mock.handle(any, any)).thenAnswer((args) {
-    //     if (args.positionalArguments[0] is DateTime &&
-    //         args.positionalArguments[0]
-    //             .isAtSameMomentAs(DateTime(2024, 9, 9))) {
-    //       return args.positionalArguments[1](':name should not be 2024-09-09');
-    //     }
-
-    //     return true;
-    //   });
-
-    //   schema.customFor(mock);
-
-    //   expect(
-    //       () => schema.parse('2024-09-09'),
-    //       throwsA(predicate((e) =>
-    //           e is FieldError &&
-    //           e.name == 'custom' &&
-    //           e.message == 'field should not be 2024-09-09')));
-
-    //   verify(mock.handle(DateTime(2024, 9, 9), any)).called(1);
-
-    //   shouldNotThrow(() {
-    //     schema.parse('2024-09-10');
-    //   });
-    // });
+      expect(result.value, isA<DateTime>());
+      expect(result.value!.isAtSameMomentAs(DateTime(2024, 9, 23)), isTrue);
+    });
 
     test('parseAsync can also run custom rule', () async {
       var schema =
