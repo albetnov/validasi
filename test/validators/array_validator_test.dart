@@ -10,7 +10,7 @@ import 'validator_test.mocks.dart';
 @GenerateNiceMocks([MockSpec<Validator>()])
 void main() {
   group('Array Validator Test', () {
-    test('passes strict check on value match num or null', () {
+    test('passes type check on value match num or null', () {
       var schema = Validasi.array(Validasi.string());
 
       shouldNotThrow(() {
@@ -19,28 +19,20 @@ void main() {
       });
     });
 
-    test('fails strict check on value not match array or not null', () {
+    test('fails types check on value not match array or not null', () {
       var schema = Validasi.array(Validasi.number());
 
       expect(
           () => schema.parse(true),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'invalidType' &&
-              e.message == 'field is not a valid array')));
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type List<dynamic>. Got bool instead.'));
 
       var result = schema.tryParse(true);
 
       expect(result.isValid, isFalse);
       expect(getName(result), equals('invalidType'));
       expect(result.value, isNull);
-    });
-
-    test('can override message for type check', () {
-      var schema =
-          Validasi.array(Validasi.number(), message: 'Must array of numeric!');
-
-      expect(getMsg(schema.tryParse(true)), 'Must array of numeric!');
     });
 
     test('parse can run custom callback and custom rule class', () {
@@ -54,10 +46,8 @@ void main() {
 
       expect(
           () => schema.parse([1, 2, 3]),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is already registered')));
+          throwFieldError(
+              name: 'custom', message: 'field is already registered'));
 
       shouldNotThrow(() => schema.parse([2, 3]));
 
@@ -75,10 +65,8 @@ void main() {
 
       expect(
           () => schema.parse([1, 2, 3]),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is already registered')));
+          throwFieldError(
+              name: 'custom', message: 'field is already registered'));
 
       verify(mock.handle([1, 2, 3], any)).called(1);
 
@@ -205,8 +193,11 @@ void main() {
     test('parse error should contain paths with index', () async {
       var schema = Validasi.array(Validasi.number());
 
-      throwFieldError(() => schema.parse([1, 2, 'a']),
-          name: 'invalidType', message: 'field.2 is not a valid number');
+      expect(
+          () => schema.parse([1, 2, 'a']),
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type num. Got String instead.'));
 
       expect(
           () => schema.parse([1, 2, 'a']),
@@ -214,16 +205,20 @@ void main() {
             predicate((e) => e is FieldError && e.path == 'field.2'),
           ));
 
-      throwFieldError(() => schema.parse([1, 'a', 3]),
-          name: 'invalidType', message: 'field.1 is not a valid number');
+      expect(
+          () => schema.parse([1, 'a', 3]),
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type num. Got String instead.'));
 
-      throwFieldError(() => schema.parse(['a', 2, 3], path: 'sample'),
-          name: 'invalidType', message: 'sample.0 is not a valid number');
+      expect(
+          () => schema.parse(['a', 2, 3], path: 'sample'),
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type num. Got String instead.'));
 
-      await expectLater(
-        () => schema.parseAsync(['a', 1, 2]),
-        throwsA(predicate((e) => e is FieldError && e.path == 'field.0')),
-      );
+      await expectLater(() => schema.parseAsync(['a', 1, 2]),
+          throwsA(predicate((e) => e is FieldError && e.path == 'field.0')));
     });
 
     test('tryParse error should contains paths with index', () async {
@@ -233,7 +228,7 @@ void main() {
 
       expect(result.isValid, isFalse);
       expect(result.errors.first.path, 'field.2');
-      expect(getMsg(result), 'field.2 is not a valid number');
+      expect(getMsg(result), 'Expected type num. Got String instead.');
 
       expect(schema.tryParse([1, 'a', 3], path: 'sample').errors.first.path,
           'sample.1');

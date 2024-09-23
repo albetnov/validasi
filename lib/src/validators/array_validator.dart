@@ -4,9 +4,8 @@ import 'package:validasi/src/validators/validator.dart';
 /// Responsible for validating arrays based on [validator].
 class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
   final V validator;
-  final String? message;
 
-  ArrayValidator(this.validator, {this.message});
+  ArrayValidator(this.validator);
 
   /// [required] indicate that the [value] cannot be `null`
   ArrayValidator<V, T> required({String? message}) {

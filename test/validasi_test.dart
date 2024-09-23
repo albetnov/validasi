@@ -1,4 +1,5 @@
 import 'package:test/test.dart';
+import 'package:validasi/src/transformers/transformer.dart';
 import 'package:validasi/src/validasi.dart';
 import 'package:validasi/src/validators/array_validator.dart';
 import 'package:validasi/src/validators/date_validator.dart';
@@ -11,14 +12,14 @@ void main() {
   group('Validasi Test', () {
     test('return valid String signature', () {
       expect(Validasi.string,
-          isA<StringValidator Function({bool strict, String? message})>());
+          isA<StringValidator Function({Transformer<String>? transformer})>());
 
       expect(Validasi.string(), isA<StringValidator>());
     });
 
     test('return valid Number signature', () {
       expect(Validasi.number,
-          isA<NumberValidator Function({bool strict, String? message})>());
+          isA<NumberValidator Function({Transformer<num>? transformer})>());
 
       expect(Validasi.number(), isA<NumberValidator>());
     });
@@ -46,7 +47,7 @@ void main() {
           Validasi.date,
           isA<
               DateValidator Function(
-                  {String pattern, bool strict, String? message})>());
+                  {String pattern, Transformer<DateTime>? transformer})>());
 
       expect(Validasi.date(), isA<DateValidator>());
     });

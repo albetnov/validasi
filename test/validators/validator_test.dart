@@ -447,8 +447,8 @@ void main() {
       when(mock.transform(1, any))
           .thenAnswer((invoke) => invoke.positionalArguments[1]('error'));
 
-      throwFieldError(() => validator.parse(1),
-          name: 'invalidType', message: 'error');
+      expect(() => validator.parse(1),
+          throwFieldError(name: 'invalidType', message: 'error'));
     });
   });
 }

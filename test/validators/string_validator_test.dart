@@ -21,10 +21,9 @@ void main() {
 
       expect(
           () => schema.parse(true),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'invalidType' &&
-              e.message == 'field is not a valid String')));
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type String. Got bool instead.'));
 
       var result = schema.tryParse(true);
 
@@ -49,12 +48,8 @@ void main() {
         return true;
       });
 
-      expect(
-          () => schema.parse('value'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is not registered')));
+      expect(() => schema.parse('value'),
+          throwFieldError(name: 'custom', message: 'field is not registered'));
 
       shouldNotThrow(() => schema.parse('text'));
 
@@ -70,12 +65,8 @@ void main() {
 
       schema.customFor(mock);
 
-      expect(
-          () => schema.parse('value'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is not registered')));
+      expect(() => schema.parse('value'),
+          throwFieldError(name: 'custom', message: 'field is not registered'));
 
       verify(mock.handle('value', any)).called(1);
 
@@ -90,10 +81,8 @@ void main() {
 
       await expectLater(
           () => schema.parseAsync('value', path: 'amount'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'amount balance is not enough')));
+          throwFieldError(
+              name: 'custom', message: 'amount balance is not enough'));
     });
 
     test('tryParse can run custom rule', () {

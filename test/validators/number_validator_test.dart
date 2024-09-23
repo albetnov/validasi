@@ -21,10 +21,9 @@ void main() {
 
       expect(
           () => schema.parse(true),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'invalidType' &&
-              e.message == 'field is not a valid number')));
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type num. Got bool instead.'));
 
       var result = schema.tryParse(true);
 
@@ -50,12 +49,8 @@ void main() {
         return true;
       });
 
-      expect(
-          () => schema.parse(1),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is not registered')));
+      expect(() => schema.parse(1),
+          throwFieldError(name: 'custom', message: 'field is not registered'));
 
       shouldNotThrow(() => schema.parse(2));
 
@@ -71,12 +66,8 @@ void main() {
 
       schema.customFor(mock);
 
-      expect(
-          () => schema.parse(1),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is not registered')));
+      expect(() => schema.parse(1),
+          throwFieldError(name: 'custom', message: 'field is not registered'));
 
       verify(mock.handle(1, any)).called(1);
 
@@ -91,10 +82,8 @@ void main() {
 
       await expectLater(
           () => schema.parseAsync(3, path: 'order no'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'order no need to be in between 5-20.')));
+          throwFieldError(
+              name: 'custom', message: 'order no need to be in between 5-20.'));
     });
 
     test('tryParse can run custom rule', () {

@@ -17,7 +17,7 @@ class Validasi {
 
   static ArrayValidator<V, T> array<V extends Validator, T>(V validator,
           {String? message}) =>
-      ArrayValidator<V, T>(validator, message: message);
+      ArrayValidator<V, T>(validator);
 
   static NumberValidator number({Transformer<num>? transformer}) =>
       NumberValidator(transformer: transformer);
