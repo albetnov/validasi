@@ -131,6 +131,11 @@ abstract class Validator<T> {
     }
   }
 
+  /// [_typeCheck] is a helper function to check the type of the value.
+  /// If the value is not the expected type, it will throw [FieldError].
+  ///
+  /// If the [transformer] is set, it will transform the value and return
+  /// the transformed value.
   T? _typeCheck(dynamic value, String path) {
     if (value != null && value is! T) {
       String fallbackMessage =
