@@ -17,9 +17,10 @@ Future<void> shouldNotThrowAsync(Future<void> Function() callback) async {
   }
 }
 
-Matcher throwFieldError({String? name, String? message}) => throwsA(predicate(
-    (e) =>
+Matcher throwFieldError({String? name, String? message, String? path}) =>
+    throwsA(predicate((e) =>
         e is FieldError &&
+        (path != null ? e.path == path : true) &&
         (name != null ? e.name == name : true) &&
         (message != null ? e.message == message : true)));
 

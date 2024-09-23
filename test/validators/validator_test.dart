@@ -107,20 +107,15 @@ void main() {
     test('runCustom should fail on failing rule', () {
       var stub = ValidatorStub().custom((value, fail) => fail('ups'));
 
-      expect(
-          () => stub.runCustom('value', 'path'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.message == 'ups' &&
-              e.path == 'path' &&
-              e.name == 'custom')));
+      expect(() => stub.runCustom('value', 'path'),
+          throwFieldError(name: 'custom', message: 'ups', path: 'path'));
     });
 
     test('runCustom should able to parse :name on failing rule', () {
       var stub = ValidatorStub().custom((value, fail) => fail(':name'));
 
       expect(() => stub.runCustom('value', 'path'),
-          throwsA(predicate((e) => e is FieldError && e.message == 'path')));
+          throwFieldError(message: 'path'));
     });
 
     test('runCustom should throw ValidasiException running async custom rule',
@@ -163,25 +158,22 @@ void main() {
 
       await expectLater(
           () => stub.runCustomAsync('value', 'path'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.message == 'path is not valid' &&
-              e.name == 'custom' &&
-              e.path == 'path')));
+          throwFieldError(
+              name: 'custom', path: 'path', message: 'path is not valid'));
     });
 
     test('runCustomAsync should return erorr message on fail', () async {
       var stub = ValidatorStub().custom((value, fail) async => fail('fail'));
 
       await expectLater(() => stub.runCustomAsync('value', 'path'),
-          throwsA(predicate((e) => e is FieldError && e.message == 'fail')));
+          throwFieldError(message: 'fail'));
     });
 
     test('runCustomAsync should able to parse :name on failing rule', () async {
       var stub = ValidatorStub().custom((value, fail) async => fail(':name'));
 
       await expectLater(() => stub.runCustomAsync('value', 'path'),
-          throwsA(predicate((e) => e is FieldError && e.message == 'path')));
+          throwFieldError(message: 'path'));
     });
 
     test('parse should return success (success rule)', () {
@@ -200,12 +192,8 @@ void main() {
         ..addRuleTest('fail', false, ':name is failing')
         ..addRuleTest('success', true, 'should success');
 
-      expect(
-          () => stub.parse('value'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'fail' &&
-              e.message == 'field is failing')));
+      expect(() => stub.parse('value'),
+          throwFieldError(name: 'fail', message: 'field is failing'));
     });
 
     test('parse should able to run custom rule', () {
@@ -217,8 +205,7 @@ void main() {
 
       stub.custom((value, fail) => false);
 
-      expect(() => stub.parse('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'custom')));
+      expect(() => stub.parse('value'), throwFieldError(name: 'custom'));
     });
 
     test('parse should fail when trying to validate async custom rule', () {
@@ -239,24 +226,21 @@ void main() {
         ..addRuleTest('rule2', false, 'msg')
         ..custom((value, fail) => false);
 
-      expect(() => stub.parse('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'rule2')));
+      expect(() => stub.parse('value'), throwFieldError(name: 'rule2'));
 
       var stub2 = ValidatorStub()
         ..addRuleTest('rule1', false, 'msg')
         ..addRuleTest('rule2', true, 'msg')
         ..custom((value, fail) => false);
 
-      expect(() => stub2.parse('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'rule1')));
+      expect(() => stub2.parse('value'), throwFieldError(name: 'rule1'));
 
       var stub3 = ValidatorStub()
         ..addRuleTest('rule1', true, 'msg')
         ..addRuleTest('rule2', true, 'msg')
         ..custom((value, fail) => false);
 
-      expect(() => stub3.parse('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'custom')));
+      expect(() => stub3.parse('value'), throwFieldError(name: 'custom'));
     });
 
     test('parseAsync should be able to run async rule', () async {
@@ -266,16 +250,15 @@ void main() {
 
       stub.custom((value, fail) async => false);
 
-      await expectLater(() => stub.parseAsync('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'custom')));
+      await expectLater(
+          () => stub.parseAsync('value'), throwFieldError(name: 'custom'));
     });
 
     test('parseAsync should still be able to run non-async custom rule',
         () async {
       var stub = ValidatorStub().custom((value, fail) => false);
 
-      await expectLater(
-          () => stub.parseAsync('value'), throwsA(isA<FieldError>()));
+      await expectLater(() => stub.parseAsync('value'), throwFieldError());
 
       stub.custom((value, fail) => true);
 
@@ -293,8 +276,8 @@ void main() {
           return false;
         });
 
-      await expectLater(() => stub.parseAsync('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'name2')));
+      await expectLater(
+          () => stub.parseAsync('value'), throwFieldError(name: 'name2'));
 
       expect(customRun, isFalse);
     });

@@ -79,12 +79,8 @@ void main() {
       var schema = Validasi.array(Validasi.number())
           .custom((value, fail) async => fail(':name are invalid'));
 
-      await expectLater(
-          () => schema.parseAsync([3, 5], path: 'ids'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'ids are invalid')));
+      await expectLater(() => schema.parseAsync([3, 5], path: 'ids'),
+          throwFieldError(name: 'custom', message: 'ids are invalid'));
     });
 
     test('tryParse can run custom rule', () {
@@ -199,11 +195,7 @@ void main() {
               name: 'invalidType',
               message: 'Expected type num. Got String instead.'));
 
-      expect(
-          () => schema.parse([1, 2, 'a']),
-          throwsA(
-            predicate((e) => e is FieldError && e.path == 'field.2'),
-          ));
+      expect(() => schema.parse([1, 2, 'a']), throwFieldError(path: 'field.2'));
 
       expect(
           () => schema.parse([1, 'a', 3]),
@@ -218,7 +210,7 @@ void main() {
               message: 'Expected type num. Got String instead.'));
 
       await expectLater(() => schema.parseAsync(['a', 1, 2]),
-          throwsA(predicate((e) => e is FieldError && e.path == 'field.0')));
+          throwFieldError(path: 'field.0'));
     });
 
     test('tryParse error should contains paths with index', () async {
