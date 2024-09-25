@@ -26,3 +26,4 @@ Matcher throwFieldError({String? name, String? message, String? path}) =>
 
 String? getMsg(Result result) => result.errors.firstOrNull?.message;
 String? getName(Result result) => result.errors.firstOrNull?.name;
+String? getPath(Result result) => result.errors.firstOrNull?.path;

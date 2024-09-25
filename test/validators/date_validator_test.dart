@@ -1,7 +1,9 @@
+import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:validasi/validasi.dart';
 
 import '../test_utils.dart';
+import 'validator_test.mocks.dart';
 
 void main() {
   group('Date Validator Test', () {
@@ -37,6 +39,46 @@ void main() {
 
       expect(result.value, isA<DateTime>());
       expect(result.value!.isAtSameMomentAs(DateTime(2024, 9, 23)), isTrue);
+    });
+
+    test('parse can run custom callback and custom rule class', () {
+      var date = DateTime(2024, 9, 25);
+
+      var schema = Validasi.date().custom((value, fail) {
+        if (value != null && value.isAtSameMomentAs(date)) {
+          return fail(':name is already full');
+        }
+
+        return true;
+      });
+
+      expect(() => schema.parse(date),
+          throwFieldError(name: 'custom', message: 'field is already full'));
+
+      shouldNotThrow(() => schema.parse(DateTime(2024, 9, 22)));
+
+      var mock = MockCustomRule<DateTime>();
+
+      when(mock.handle(any, any)).thenAnswer((args) {
+        var firstArg = args.positionalArguments.first;
+
+        if (firstArg is DateTime && firstArg.isAtSameMomentAs(date)) {
+          return args.positionalArguments[1](':name is already full');
+        }
+
+        return true;
+      });
+
+      schema.customFor(mock);
+
+      expect(() => schema.parse(date),
+          throwFieldError(name: 'custom', message: 'field is already full'));
+
+      verify(mock.handle(date, any)).called(1);
+
+      shouldNotThrow(() {
+        schema.parse(DateTime(2024, 9, 22));
+      });
     });
 
     test('parseAsync can also run custom rule', () async {

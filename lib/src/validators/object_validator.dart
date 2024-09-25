@@ -54,7 +54,8 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     final T results = {} as T;
 
     for (var row in schema.entries) {
-      var result = row.value.parse(values.value?[row.key], path: path);
+      var result =
+          row.value.parse(values.value?[row.key], path: "$path.${row.key}");
 
       results[row.key] = _parse(result);
     }
@@ -77,8 +78,8 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     final T results = {} as T;
 
     for (var row in schema.entries) {
-      var result =
-          await row.value.parseAsync(values.value?[row.key], path: path);
+      var result = await row.value
+          .parseAsync(values.value?[row.key], path: "$path.${row.key}");
 
       results[row.key] = _parse(result);
     }

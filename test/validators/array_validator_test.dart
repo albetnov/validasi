@@ -10,7 +10,7 @@ import 'validator_test.mocks.dart';
 @GenerateNiceMocks([MockSpec<Validator>()])
 void main() {
   group('Array Validator Test', () {
-    test('passes type check on value match num or null', () {
+    test('passes type check on value match array or null', () {
       var schema = Validasi.array(Validasi.string());
 
       shouldNotThrow(() {
@@ -219,7 +219,7 @@ void main() {
       var result = schema.tryParse([1, 2, 'a']);
 
       expect(result.isValid, isFalse);
-      expect(result.errors.first.path, 'field.2');
+      expect(getPath(result), 'field.2');
       expect(getMsg(result), 'Expected type num. Got String instead.');
 
       expect(schema.tryParse([1, 'a', 3], path: 'sample').errors.first.path,
@@ -235,23 +235,110 @@ void main() {
           containsAllInOrder(['field.0', 'field.3']));
     });
 
-    test('parse could validate nested array', () {
+    test('parse could validate nested array', () async {
       var schema = Validasi.array(
         Validasi.array(Validasi.number().required()).required(),
       );
 
-      // shouldNotThrow(() {
-      //   schema.parse([
-      //     [
-      //       [0]
-      //     ]
-      //   ]);
-      // });
+      expect(
+          () => schema.parse([
+                [null]
+              ]),
+          throwFieldError(
+              name: 'required',
+              path: 'field.0.0',
+              message: 'field.0.0 is required'));
 
-      schema.parse([]);
+      shouldNotThrow(() {
+        schema.parse([
+          [1]
+        ]);
+      });
 
-      // throwFieldError(() => schema.parse([]),
-      // name: 'field.0.0', message: 'field.0.0 is required');
+      await expectLater(
+          () => schema.parseAsync([
+                [null]
+              ]),
+          throwFieldError(
+              name: 'required',
+              path: 'field.0.0',
+              message: 'field.0.0 is required'));
+
+      await shouldNotThrowAsync(() => schema.parseAsync([
+            [1]
+          ]));
+    });
+
+    test('tryParse could validate nested array', () async {
+      var schema = Validasi.array(
+        Validasi.array(Validasi.number().required()).required(),
+      );
+
+      var result = schema.tryParse([
+        [null]
+      ]);
+
+      expect(result.isValid, isFalse);
+      expect(getPath(result), 'field.0.0');
+      expect(getMsg(result), 'field.0.0 is required');
+
+      result = schema.tryParse([
+        [1]
+      ]);
+
+      expect(result.isValid, isTrue);
+
+      result = await schema.tryParseAsync([
+        [null]
+      ]);
+
+      expect(result.isValid, isFalse);
+      expect(getPath(result), 'field.0.0');
+      expect(getMsg(result), 'field.0.0 is required');
+
+      result = await schema.tryParseAsync([
+        [1]
+      ]);
+
+      expect(result.isValid, isTrue);
+    });
+
+    test('parse and tryParse reconstruct array correctly', () async {
+      var schema =
+          Validasi.array(Validasi.number(transformer: NumberTransformer()));
+
+      var result = schema.parse(['1', '2', '3']);
+
+      expect(result.value, equals([1, 2, 3]));
+
+      result = await schema.parseAsync(['1', '2', '3']);
+
+      await expectLater(result.value, equals([1, 2, 3]));
+
+      var scenarios = [
+        {
+          'case': ['123', '456', true, '789'],
+          'expected': [123, 456, null, 789]
+        },
+        {
+          'case': ['123', '456', 'true', '789'],
+          'expected': [123, 456, null, 789]
+        },
+        {
+          'case': ['123', '456'],
+          'expected': [123, 456]
+        }
+      ];
+
+      for (var scenario in scenarios) {
+        result = schema.tryParse(scenario['case']);
+
+        expect(result.value, equals(scenario['expected']));
+
+        result = await schema.tryParseAsync(scenario['case']);
+
+        expect(result.value, equals(scenario['expected']));
+      }
     });
   });
 }
