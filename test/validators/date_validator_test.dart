@@ -7,7 +7,7 @@ import 'validator_test.mocks.dart';
 
 void main() {
   group('Date Validator Test', () {
-    test('passes strict check on value match date or null', () {
+    test('passes type check on value match date or null', () {
       var schema = Validasi.date();
 
       shouldNotThrow(() {
@@ -16,11 +16,14 @@ void main() {
       });
     });
 
-    test('fails strict check on value not match date or not null', () {
+    test('fails type check on value not match date or not null', () {
       var schema = Validasi.date();
 
-      throwFieldError(() => schema.parse(true),
-          name: 'invalidType', message: 'field is not a valid DateTime');
+      expect(
+          () => schema.parse(true),
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type DateTime. Got bool instead.'));
 
       var result = schema.tryParse(true);
 
@@ -29,68 +32,38 @@ void main() {
       expect(result.value, isNull);
     });
 
-    test('can override message for type check', () {
-      var schema = Validasi.date(message: 'Must date!');
+    test('can attach transformer', () {
+      var schema = Validasi.date(transformer: DateTransformer());
 
-      expect(getMsg(schema.tryParse(true)), 'Must date!');
-    });
+      var result = schema.parse('2024-09-23');
 
-    test('allow conversion to DateTime on strict turned off', () {
-      var schema = Validasi.date(strict: false);
-
-      expect(
-          schema
-              .parse('2024-09-09')
-              .value
-              ?.isAtSameMomentAs(DateTime(2024, 9, 9)),
-          isTrue);
-
-      expect(schema.parse(null).value, isNull,
-          reason: 'When passed null it should stay null, not converted');
-    });
-
-    test('can customize pattern for conversion on strict off', () {
-      var schema = Validasi.date(strict: false, pattern: 'dd/MM/y');
-
-      expect(
-          schema
-              .parse('09/09/2024')
-              .value
-              ?.isAtSameMomentAs(DateTime(2024, 9, 9)),
-          isTrue);
-    });
-
-    test('invalid format resulting in null on strict off', () {
-      var schema = Validasi.date(strict: false);
-
-      expect(schema.parse('09/09/2024').value, isNull);
+      expect(result.value, isA<DateTime>());
+      expect(result.value!.isAtSameMomentAs(DateTime(2024, 9, 23)), isTrue);
     });
 
     test('parse can run custom callback and custom rule class', () {
-      var schema = Validasi.date(strict: false).custom((value, fail) {
-        if (value?.isAtSameMomentAs(DateTime(2024, 9, 9)) ?? false) {
-          return fail(':name should not be 2024-09-09');
+      var date = DateTime(2024, 9, 25);
+
+      var schema = Validasi.date().custom((value, fail) {
+        if (value != null && value.isAtSameMomentAs(date)) {
+          return fail(':name is already full');
         }
 
         return true;
       });
 
-      expect(
-          () => schema.parse('2024-09-09'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field should not be 2024-09-09')));
+      expect(() => schema.parse(date),
+          throwFieldError(name: 'custom', message: 'field is already full'));
 
-      shouldNotThrow(() => schema.parse('2024-09-10'));
+      shouldNotThrow(() => schema.parse(DateTime(2024, 9, 22)));
 
       var mock = MockCustomRule<DateTime>();
 
       when(mock.handle(any, any)).thenAnswer((args) {
-        if (args.positionalArguments[0] is DateTime &&
-            args.positionalArguments[0]
-                .isAtSameMomentAs(DateTime(2024, 9, 9))) {
-          return args.positionalArguments[1](':name should not be 2024-09-09');
+        var firstArg = args.positionalArguments.first;
+
+        if (firstArg is DateTime && firstArg.isAtSameMomentAs(date)) {
+          return args.positionalArguments[1](':name is already full');
         }
 
         return true;
@@ -98,17 +71,13 @@ void main() {
 
       schema.customFor(mock);
 
-      expect(
-          () => schema.parse('2024-09-09'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field should not be 2024-09-09')));
+      expect(() => schema.parse(date),
+          throwFieldError(name: 'custom', message: 'field is already full'));
 
-      verify(mock.handle(DateTime(2024, 9, 9), any)).called(1);
+      verify(mock.handle(date, any)).called(1);
 
       shouldNotThrow(() {
-        schema.parse('2024-09-10');
+        schema.parse(DateTime(2024, 9, 22));
       });
     });
 
@@ -118,10 +87,7 @@ void main() {
 
       await expectLater(
           () => schema.parseAsync(DateTime(2024, 9, 10), path: 'date'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'date is taken')));
+          throwFieldError(name: 'custom', message: 'date is taken'));
     });
 
     test('tryParse can run custom rule', () {
@@ -184,16 +150,12 @@ void main() {
 
       expect(
           () => schema.parse(DateTime(2024, 9, 10)),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'before' &&
-              e.message == 'field must be before 2024-09-10')));
+          throwFieldError(
+              name: 'before', message: 'field must be before 2024-09-10'));
       expect(
           () => schema.parse(DateTime(2024, 9, 11)),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'before' &&
-              e.message == 'field must be before 2024-09-10')));
+          throwFieldError(
+              name: 'before', message: 'field must be before 2024-09-10'));
     });
 
     test('should pass for before rule with unit and difference', () {
@@ -201,7 +163,7 @@ void main() {
           .before(DateTime(2024, 9, 10), unit: DateUnit.day, difference: 2);
 
       expect(() => schema.parse(DateTime(2024, 9, 9)),
-          throwsA(predicate((e) => e is FieldError && e.name == 'before')));
+          throwFieldError(name: 'before'));
 
       expect(schema.parse(DateTime(2024, 9, 8)).isValid, isTrue);
       expect(schema.parse(DateTime(2024, 9, 7)).isValid, isTrue);
@@ -212,7 +174,7 @@ void main() {
       expect(schema2.parse(DateTime(2024, 9, 9)).isValid, isTrue);
 
       expect(() => schema2.parse(DateTime(2024, 10, 9)),
-          throwsA(predicate((e) => e is FieldError && e.name == 'before')));
+          throwFieldError(name: 'before'));
 
       var schema3 =
           Validasi.date().before(DateTime(2025, 10, 1), unit: DateUnit.year);
@@ -220,10 +182,10 @@ void main() {
       expect(schema3.parse(DateTime(2024, 9, 9)).isValid, isTrue);
 
       expect(() => schema3.parse(DateTime(2025, 9, 30)),
-          throwsA(predicate((e) => e is FieldError && e.name == 'before')));
+          throwFieldError(name: 'before'));
 
       expect(() => schema3.parse(DateTime(2025, 1, 1)),
-          throwsA(predicate((e) => e is FieldError && e.name == 'before')));
+          throwFieldError(name: 'before'));
     });
 
     test('can customize path name for before rule', () {
@@ -258,16 +220,12 @@ void main() {
 
       expect(
           () => schema.parse(DateTime(2024, 9, 10)),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'after' &&
-              e.message == 'field must be after 2024-09-10')));
+          throwFieldError(
+              name: 'after', message: 'field must be after 2024-09-10'));
       expect(
           () => schema.parse(DateTime(2024, 9, 9)),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'after' &&
-              e.message == 'field must be after 2024-09-10')));
+          throwFieldError(
+              name: 'after', message: 'field must be after 2024-09-10'));
     });
 
     test('should pass for after rule with unit and difference', () {
@@ -275,7 +233,7 @@ void main() {
           .after(DateTime(2024, 9, 10), unit: DateUnit.day, difference: 2);
 
       expect(() => schema.parse(DateTime(2024, 9, 11)),
-          throwsA(predicate((e) => e is FieldError && e.name == 'after')));
+          throwFieldError(name: 'after'));
 
       expect(schema.parse(DateTime(2024, 9, 12)).isValid, isTrue);
 
@@ -285,7 +243,7 @@ void main() {
       expect(schema2.parse(DateTime(2024, 11, 9)).isValid, isTrue);
 
       expect(() => schema2.parse(DateTime(2024, 10, 6)),
-          throwsA(predicate((e) => e is FieldError && e.name == 'after')));
+          throwFieldError(name: 'after'));
 
       var schema3 =
           Validasi.date().after(DateTime(2025, 10, 1), unit: DateUnit.year);
@@ -293,13 +251,13 @@ void main() {
       expect(schema3.parse(DateTime(2026, 1, 1)).isValid, isTrue);
 
       expect(() => schema3.parse(DateTime(2025, 10, 1)),
-          throwsA(predicate((e) => e is FieldError && e.name == 'after')));
+          throwFieldError(name: 'after'));
 
       expect(() => schema3.parse(DateTime(2026, 1, 0)),
-          throwsA(predicate((e) => e is FieldError && e.name == 'after')));
+          throwFieldError(name: 'after'));
 
       expect(() => schema3.parse(DateTime(2025, 1, 0)),
-          throwsA(predicate((e) => e is FieldError && e.name == 'after')));
+          throwFieldError(name: 'after'));
     });
 
     test('can customize path name for after rule', () {
@@ -337,10 +295,9 @@ void main() {
 
       expect(
           () => schema.parse(DateTime(2024, 9, 11)),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'beforeSame' &&
-              e.message == 'field must be before or equal 2024-09-10')));
+          throwFieldError(
+              name: 'beforeSame',
+              message: 'field must be before or equal 2024-09-10'));
     });
 
     test('should pass for beforeSame rule with unit', () {
@@ -351,8 +308,8 @@ void main() {
       expect(schema.parse(DateTime(2024, 10, 9)).isValid, isTrue);
       expect(schema.parse(DateTime(2024, 10, 10)).isValid, isTrue);
 
-      throwFieldError(() => schema.parse(DateTime(2024, 10, 11)),
-          name: 'beforeSame');
+      expect(() => schema.parse(DateTime(2024, 10, 11)),
+          throwFieldError(name: 'beforeSame'));
 
       var schema2 = Validasi.date()
           .beforeSame(DateTime(2025, 10, 1), unit: DateUnit.year);
@@ -362,8 +319,8 @@ void main() {
       expect(schema2.parse(DateTime(2025, 9, 30)).isValid, isTrue,
           reason: 'Still within same year should be allowed');
 
-      throwFieldError(() => schema2.parse(DateTime(2025, 10, 2)),
-          name: 'beforeSame');
+      expect(() => schema2.parse(DateTime(2025, 10, 2)),
+          throwFieldError(name: 'beforeSame'));
     });
 
     test('can customize path name for beforeSame rule', () {
@@ -395,10 +352,9 @@ void main() {
       var schema = Validasi.date().afterSame(DateTime(2024, 9, 10));
       expect(
           () => schema.parse(DateTime(2024, 9, 9)),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'afterSame' &&
-              e.message == 'field must be after or equal 2024-09-10')));
+          throwFieldError(
+              name: 'afterSame',
+              message: 'field must be after or equal 2024-09-10'));
     });
 
     test('should pass for afterSame rule with unit', () {
@@ -409,8 +365,8 @@ void main() {
       expect(schema.parse(DateTime(2024, 10, 11)).isValid, isTrue);
       expect(schema.parse(DateTime(2024, 10, 10)).isValid, isTrue);
 
-      throwFieldError(() => schema.parse(DateTime(2024, 10, 9)),
-          name: 'afterSame');
+      expect(() => schema.parse(DateTime(2024, 10, 9)),
+          throwFieldError(name: 'afterSame'));
 
       var schema2 =
           Validasi.date().afterSame(DateTime(2025, 10, 1), unit: DateUnit.year);
@@ -420,8 +376,8 @@ void main() {
       expect(schema2.parse(DateTime(2025, 10, 2)).isValid, isTrue,
           reason: 'Still within same year should be allowed');
 
-      throwFieldError(() => schema2.parse(DateTime(2025, 9, 30)),
-          name: 'afterSame');
+      expect(() => schema2.parse(DateTime(2025, 9, 30)),
+          throwFieldError(name: 'afterSame'));
     });
 
     test('can customize path name for afterSame rule', () {

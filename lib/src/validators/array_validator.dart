@@ -1,14 +1,11 @@
-import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/result.dart';
-import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 /// Responsible for validating arrays based on [validator].
 class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
   final V validator;
-  final String? message;
 
-  ArrayValidator(this.validator, {this.message});
+  ArrayValidator(this.validator);
 
   /// [required] indicate that the [value] cannot be `null`
   ArrayValidator<V, T> required({String? message}) {
@@ -27,31 +24,8 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
   @override
   ArrayValidator customFor(customRule) => super.customFor(customRule);
 
-  _typeCheck(dynamic value, String path) {
-    if (value != null && value is! List) {
-      throw FieldError(
-        name: 'invalidType',
-        message: Message(path,
-                fallback: ":name is not a valid array", message: message)
-            .parse,
-        path: path,
-      );
-    }
-  }
-
-  Result<List<T>>? _tryTypeCheck(dynamic value, String path) {
-    try {
-      _typeCheck(value, path);
-      return null;
-    } on FieldError catch (e) {
-      return Result(value: null, errors: [e]);
-    }
-  }
-
   @override
   Result<List<T>> parse(dynamic value, {String path = 'field'}) {
-    _typeCheck(value, path);
-
     var result = super.parse(value, path: path);
 
     if (result.value == null) {
@@ -71,8 +45,6 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
   @override
   Future<Result<List<T>>> parseAsync(dynamic value,
       {String path = 'field'}) async {
-    _typeCheck(value, path);
-
     var result = await super.parseAsync(value, path: path);
 
     if (result.value == null) {
@@ -91,11 +63,6 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
 
   @override
   Result<List<T>> tryParse(dynamic value, {String path = 'field'}) {
-    var typeCheck = _tryTypeCheck(value, path);
-    if (typeCheck != null) {
-      return typeCheck;
-    }
-
     var result = super.tryParse(value, path: path);
 
     if (result.value == null) {
@@ -119,11 +86,6 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
   @override
   Future<Result<List<T>>> tryParseAsync(dynamic value,
       {String path = 'field'}) async {
-    var typeCheck = _tryTypeCheck(value, path);
-    if (typeCheck != null) {
-      return typeCheck;
-    }
-
     var result = await super.tryParseAsync(value, path: path);
 
     if (result.value == null) {

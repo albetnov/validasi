@@ -110,30 +110,6 @@ void main() {
 }
 ```
 
-### Allow non-strict validation
-
-By default, some validators on Validasi accept `dynamic` in the `parse` and it's variants 
-(`tryParse`, `parseAsync`, `tryParseAsync`) method. This is intentional as these type with `dynamic`
-signature means they support type conversion.
-
-Currently, Validasi supports:
-
-- DateTime (from String conversion)
-- Number (from `num.tryParse` conversion)
-- String (from `toString` method calls)
-
-```dart
-import 'package:validasi/validasi.dart';
-
-void main() {
-    var schema = Validasi.number(strict: false).required();
-
-    var result = schema.parse(20);
-
-    print(result.value); // 20
-}
-```
-
 ### Replacing default path/field.
 
 Validation erorr message usually contains `field`. For example, `required` rule have failed error below:

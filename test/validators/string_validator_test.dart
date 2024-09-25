@@ -7,7 +7,7 @@ import 'validator_test.mocks.dart';
 
 void main() {
   group('String Validator Test', () {
-    test('passes strict check on value match string or null', () {
+    test('passes type check on value match string or null', () {
       var schema = Validasi.string();
 
       shouldNotThrow(() {
@@ -16,15 +16,14 @@ void main() {
       });
     });
 
-    test('fails strict check on value not match string or not null', () {
+    test('fails type check on value not match string or not null', () {
       var schema = Validasi.string();
 
       expect(
           () => schema.parse(true),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'invalidType' &&
-              e.message == 'field is not a valid String')));
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type String. Got bool instead.'));
 
       var result = schema.tryParse(true);
 
@@ -32,19 +31,12 @@ void main() {
       expect(result.errors.first.name, equals('invalidType'));
     });
 
-    test('can override message for type check', () {
-      var schema = Validasi.string(message: 'Must string!');
+    test('can attach StringTransformer', () {
+      var schema = Validasi.string(transformer: StringTransformer());
 
-      expect(schema.tryParse(true).errors.first.message, 'Must string!');
-    });
+      var result = schema.parse(123);
 
-    test('allow conversion to string on strict turned off', () {
-      var schema = Validasi.string(strict: false);
-
-      expect(schema.parse(10).value, equals('10'));
-
-      expect(schema.parse(null).value, isNull,
-          reason: 'When passed null it should stay null, not converted');
+      expect(result.value, equals('123'));
     });
 
     test('parse can run custom callback and custom rule class', () {
@@ -56,12 +48,8 @@ void main() {
         return true;
       });
 
-      expect(
-          () => schema.parse('value'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is not registered')));
+      expect(() => schema.parse('value'),
+          throwFieldError(name: 'custom', message: 'field is not registered'));
 
       shouldNotThrow(() => schema.parse('text'));
 
@@ -77,12 +65,8 @@ void main() {
 
       schema.customFor(mock);
 
-      expect(
-          () => schema.parse('value'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is not registered')));
+      expect(() => schema.parse('value'),
+          throwFieldError(name: 'custom', message: 'field is not registered'));
 
       verify(mock.handle('value', any)).called(1);
 
@@ -97,10 +81,8 @@ void main() {
 
       await expectLater(
           () => schema.parseAsync('value', path: 'amount'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'amount balance is not enough')));
+          throwFieldError(
+              name: 'custom', message: 'amount balance is not enough'));
     });
 
     test('tryParse can run custom rule', () {

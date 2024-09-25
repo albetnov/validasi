@@ -3,11 +3,12 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
+import 'dart:async' as _i7;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:validasi/src/custom_rule.dart' as _i5;
 import 'package:validasi/src/result.dart' as _i2;
+import 'package:validasi/src/transformers/transformer.dart' as _i6;
 import 'package:validasi/src/validator_rule.dart' as _i4;
 import 'package:validasi/src/validators/validator.dart' as _i3;
 
@@ -51,6 +52,15 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
         Invocation.setter(
           #customCallback,
           _customCallback,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set transformer(_i6.Transformer<T>? _transformer) => super.noSuchMethod(
+        Invocation.setter(
+          #transformer,
+          _transformer,
         ),
         returnValueForMissingStub: null,
       );
@@ -109,7 +119,7 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
       );
 
   @override
-  _i6.Future<void> runCustomAsync(
+  _i7.Future<void> runCustomAsync(
     T? value,
     String? path,
   ) =>
@@ -121,13 +131,13 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
             path,
           ],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
   _i2.Result<T> parse(
-    T? value, {
+    dynamic value, {
     String? path = r'field',
   }) =>
       (super.noSuchMethod(
@@ -155,8 +165,8 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
       ) as _i2.Result<T>);
 
   @override
-  _i6.Future<_i2.Result<T>> parseAsync(
-    T? value, {
+  _i7.Future<_i2.Result<T>> parseAsync(
+    dynamic value, {
     String? path = r'field',
   }) =>
       (super.noSuchMethod(
@@ -165,7 +175,7 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
           [value],
           {#path: path},
         ),
-        returnValue: _i6.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
+        returnValue: _i7.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
           this,
           Invocation.method(
             #parseAsync,
@@ -174,7 +184,7 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
           ),
         )),
         returnValueForMissingStub:
-            _i6.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
+            _i7.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
           this,
           Invocation.method(
             #parseAsync,
@@ -182,11 +192,11 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
             {#path: path},
           ),
         )),
-      ) as _i6.Future<_i2.Result<T>>);
+      ) as _i7.Future<_i2.Result<T>>);
 
   @override
   _i2.Result<T> tryParse(
-    T? value, {
+    dynamic value, {
     String? path = r'field',
   }) =>
       (super.noSuchMethod(
@@ -214,8 +224,8 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
       ) as _i2.Result<T>);
 
   @override
-  _i6.Future<_i2.Result<T>> tryParseAsync(
-    T? value, {
+  _i7.Future<_i2.Result<T>> tryParseAsync(
+    dynamic value, {
     String? path = r'field',
   }) =>
       (super.noSuchMethod(
@@ -224,7 +234,7 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
           [value],
           {#path: path},
         ),
-        returnValue: _i6.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
+        returnValue: _i7.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
           this,
           Invocation.method(
             #tryParseAsync,
@@ -233,7 +243,7 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
           ),
         )),
         returnValueForMissingStub:
-            _i6.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
+            _i7.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
           this,
           Invocation.method(
             #tryParseAsync,
@@ -241,5 +251,5 @@ class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
             {#path: path},
           ),
         )),
-      ) as _i6.Future<_i2.Result<T>>);
+      ) as _i7.Future<_i2.Result<T>>);
 }

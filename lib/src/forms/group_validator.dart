@@ -20,7 +20,7 @@ class GroupValidator {
   /// found instead.
   void _containKey(String field) {
     if (!schema.containsKey(field)) {
-      throw ValidasiException("$field is not found on the schema.");
+      throw ValidasiException("$field is not found on the schema");
     }
   }
 

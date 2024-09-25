@@ -5,6 +5,7 @@ import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/exceptions/validasi_exception.dart';
 import 'package:validasi/src/result.dart';
+import 'package:validasi/src/transformers/transformer.dart';
 import 'package:validasi/src/utils/message.dart';
 import 'package:validasi/src/validator_rule.dart';
 
@@ -28,6 +29,10 @@ abstract class Validator<T> {
   @visibleForTesting
   @internal
   CustomCallback<T?>? customCallback;
+
+  Transformer<T>? transformer;
+
+  Validator({this.transformer});
 
   /// The [addRule] responsible to append value to [rules]. This method should
   /// only be used internally by the inheritors, hence the [protected]
@@ -126,26 +131,55 @@ abstract class Validator<T> {
     }
   }
 
+  /// [_typeCheck] is a helper function to check the type of the value.
+  /// If the value is not the expected type, it will throw [FieldError].
+  ///
+  /// If the [transformer] is set, it will transform the value and return
+  /// the transformed value.
+  T? _typeCheck(dynamic value, String path) {
+    if (value != null && value is! T) {
+      String fallbackMessage =
+          "Expected type ${T.toString()}. Got ${value.runtimeType} instead.";
+      if (transformer != null) {
+        return transformer!.transform(
+            value,
+            (message) => throw FieldError(
+                name: 'invalidType',
+                message:
+                    Message(path, message: message, fallback: message).parse,
+                path: path));
+      }
+
+      throw FieldError(
+          name: 'invalidType', message: fallbackMessage, path: path);
+    }
+
+    return value;
+  }
+
   /// [parse] run the validation
   ///
   /// throw [FieldError] if any error encountered and stop execution afterwards.
   /// throw [ValidasiException] if the custom rule requires async context
-  Result<T> parse(T? value, {String path = 'field'}) {
-    _parseImpl(value, path);
-    runCustom(value, path);
+  Result<T> parse(dynamic value, {String path = 'field'}) {
+    T? finalValue = _typeCheck(value, path);
 
-    return Result(value: value);
+    _parseImpl(finalValue, path);
+    runCustom(finalValue, path);
+
+    return Result(value: finalValue);
   }
 
   /// [parseAsync] run validation with asyncronous context
   ///
   /// throw [FieldError] if any error encountered and stop execution afterwards.
-  Future<Result<T>> parseAsync(T? value, {String path = 'field'}) async {
-    _parseImpl(value, path);
+  Future<Result<T>> parseAsync(dynamic value, {String path = 'field'}) async {
+    T? finalValue = _typeCheck(value, path);
 
-    await runCustomAsync(value, path);
+    _parseImpl(finalValue, path);
+    await runCustomAsync(finalValue, path);
 
-    return Result(value: value);
+    return Result(value: finalValue);
   }
 
   /// [_tryParseImpl] is a rules runner similar to [parse] but instead of
@@ -171,31 +205,50 @@ abstract class Validator<T> {
   /// async context.
   ///
   /// All the recorded errors will be contained in the [Result] itself.
-  Result<T> tryParse(T? value, {String path = 'field'}) {
-    var errors = _tryParseImpl(value, path);
+  Result<T> tryParse(dynamic value, {String path = 'field'}) {
+    List<FieldError> errors = [];
+    T? finalValue;
 
     try {
-      runCustom(value, path);
+      finalValue = _typeCheck(value, path);
     } on FieldError catch (e) {
       errors.add(e);
     }
 
-    return Result(value: value, errors: errors);
+    errors.addAll(_tryParseImpl(finalValue, path));
+
+    try {
+      runCustom(finalValue, path);
+    } on FieldError catch (e) {
+      errors.add(e);
+    }
+
+    return Result(value: finalValue, errors: errors);
   }
 
   /// [tryParseAsync] run validation without throwing any errors on
   /// asyncronous context.
   ///
   /// All the recorded errors will be contained in the [Result] itself.
-  Future<Result<T>> tryParseAsync(T? value, {String path = 'field'}) async {
-    var errors = _tryParseImpl(value, path);
+  Future<Result<T>> tryParseAsync(dynamic value,
+      {String path = 'field'}) async {
+    List<FieldError> errors = [];
+    T? finalValue;
 
     try {
-      await runCustomAsync(value, path);
+      finalValue = _typeCheck(value, path);
     } on FieldError catch (e) {
       errors.add(e);
     }
 
-    return Result(value: value, errors: errors);
+    errors.addAll(_tryParseImpl(finalValue, path));
+
+    try {
+      await runCustomAsync(finalValue, path);
+    } on FieldError catch (e) {
+      errors.add(e);
+    }
+
+    return Result(value: finalValue, errors: errors);
   }
 }

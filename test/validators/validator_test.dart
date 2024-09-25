@@ -2,13 +2,13 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:validasi/src/custom_rule.dart';
-import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/exceptions/validasi_exception.dart';
 import 'package:validasi/src/result.dart';
+import 'package:validasi/src/transformers/transformer.dart';
 
 import '../test_utils.dart';
 import 'validator_test_stub.dart';
-@GenerateNiceMocks([MockSpec<CustomRule>()])
+@GenerateNiceMocks([MockSpec<CustomRule>(), MockSpec<Transformer>()])
 import 'validator_test.mocks.dart';
 
 void main() {
@@ -106,20 +106,15 @@ void main() {
     test('runCustom should fail on failing rule', () {
       var stub = ValidatorStub().custom((value, fail) => fail('ups'));
 
-      expect(
-          () => stub.runCustom('value', 'path'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.message == 'ups' &&
-              e.path == 'path' &&
-              e.name == 'custom')));
+      expect(() => stub.runCustom('value', 'path'),
+          throwFieldError(name: 'custom', message: 'ups', path: 'path'));
     });
 
     test('runCustom should able to parse :name on failing rule', () {
       var stub = ValidatorStub().custom((value, fail) => fail(':name'));
 
       expect(() => stub.runCustom('value', 'path'),
-          throwsA(predicate((e) => e is FieldError && e.message == 'path')));
+          throwFieldError(message: 'path'));
     });
 
     test('runCustom should throw ValidasiException running async custom rule',
@@ -162,25 +157,22 @@ void main() {
 
       await expectLater(
           () => stub.runCustomAsync('value', 'path'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.message == 'path is not valid' &&
-              e.name == 'custom' &&
-              e.path == 'path')));
+          throwFieldError(
+              name: 'custom', path: 'path', message: 'path is not valid'));
     });
 
     test('runCustomAsync should return erorr message on fail', () async {
       var stub = ValidatorStub().custom((value, fail) async => fail('fail'));
 
       await expectLater(() => stub.runCustomAsync('value', 'path'),
-          throwsA(predicate((e) => e is FieldError && e.message == 'fail')));
+          throwFieldError(message: 'fail'));
     });
 
     test('runCustomAsync should able to parse :name on failing rule', () async {
       var stub = ValidatorStub().custom((value, fail) async => fail(':name'));
 
       await expectLater(() => stub.runCustomAsync('value', 'path'),
-          throwsA(predicate((e) => e is FieldError && e.message == 'path')));
+          throwFieldError(message: 'path'));
     });
 
     test('parse should return success (success rule)', () {
@@ -199,12 +191,8 @@ void main() {
         ..addRuleTest('fail', false, ':name is failing')
         ..addRuleTest('success', true, 'should success');
 
-      expect(
-          () => stub.parse('value'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'fail' &&
-              e.message == 'field is failing')));
+      expect(() => stub.parse('value'),
+          throwFieldError(name: 'fail', message: 'field is failing'));
     });
 
     test('parse should able to run custom rule', () {
@@ -216,8 +204,7 @@ void main() {
 
       stub.custom((value, fail) => false);
 
-      expect(() => stub.parse('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'custom')));
+      expect(() => stub.parse('value'), throwFieldError(name: 'custom'));
     });
 
     test('parse should fail when trying to validate async custom rule', () {
@@ -238,24 +225,21 @@ void main() {
         ..addRuleTest('rule2', false, 'msg')
         ..custom((value, fail) => false);
 
-      expect(() => stub.parse('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'rule2')));
+      expect(() => stub.parse('value'), throwFieldError(name: 'rule2'));
 
       var stub2 = ValidatorStub()
         ..addRuleTest('rule1', false, 'msg')
         ..addRuleTest('rule2', true, 'msg')
         ..custom((value, fail) => false);
 
-      expect(() => stub2.parse('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'rule1')));
+      expect(() => stub2.parse('value'), throwFieldError(name: 'rule1'));
 
       var stub3 = ValidatorStub()
         ..addRuleTest('rule1', true, 'msg')
         ..addRuleTest('rule2', true, 'msg')
         ..custom((value, fail) => false);
 
-      expect(() => stub3.parse('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'custom')));
+      expect(() => stub3.parse('value'), throwFieldError(name: 'custom'));
     });
 
     test('parseAsync should be able to run async rule', () async {
@@ -265,16 +249,15 @@ void main() {
 
       stub.custom((value, fail) async => false);
 
-      await expectLater(() => stub.parseAsync('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'custom')));
+      await expectLater(
+          () => stub.parseAsync('value'), throwFieldError(name: 'custom'));
     });
 
     test('parseAsync should still be able to run non-async custom rule',
         () async {
       var stub = ValidatorStub().custom((value, fail) => false);
 
-      await expectLater(
-          () => stub.parseAsync('value'), throwsA(isA<FieldError>()));
+      await expectLater(() => stub.parseAsync('value'), throwFieldError());
 
       stub.custom((value, fail) => true);
 
@@ -292,8 +275,8 @@ void main() {
           return false;
         });
 
-      await expectLater(() => stub.parseAsync('value'),
-          throwsA(predicate((e) => e is FieldError && e.name == 'name2')));
+      await expectLater(
+          () => stub.parseAsync('value'), throwFieldError(name: 'name2'));
 
       expect(customRun, isFalse);
     });
@@ -414,6 +397,40 @@ void main() {
       expect(result.isValid, isFalse);
       expect(result.errors.map((e) => e.message).toList(),
           containsAll(['example 1', 'example 2', 'example 3']));
+    });
+
+    test('can attach transformer and execute it', () async {
+      var mock = MockTransformer<String>();
+
+      when(mock.transform(1, any)).thenReturn('transformed');
+
+      var stub = ValidatorStub(transformer: mock);
+
+      var result = stub.parse(1);
+      expect(result.value, equals('transformed'));
+
+      result = stub.tryParse(1);
+      expect(result.value, equals('transformed'));
+
+      result = await stub.parseAsync(1);
+      expect(result.value, equals('transformed'));
+
+      result = await stub.tryParseAsync(1);
+      expect(result.value, equals('transformed'));
+
+      verify(mock.transform(1, any)).called(4);
+    });
+
+    test('can capture transformer error', () {
+      var mock = MockTransformer<String>();
+
+      var validator = ValidatorStub(transformer: mock);
+
+      when(mock.transform(1, any))
+          .thenAnswer((invoke) => invoke.positionalArguments[1]('error'));
+
+      expect(() => validator.parse(1),
+          throwFieldError(name: 'invalidType', message: 'error'));
     });
   });
 }

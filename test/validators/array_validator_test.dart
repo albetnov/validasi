@@ -10,7 +10,7 @@ import 'validator_test.mocks.dart';
 @GenerateNiceMocks([MockSpec<Validator>()])
 void main() {
   group('Array Validator Test', () {
-    test('passes strict check on value match num or null', () {
+    test('passes type check on value match array or null', () {
       var schema = Validasi.array(Validasi.string());
 
       shouldNotThrow(() {
@@ -19,28 +19,20 @@ void main() {
       });
     });
 
-    test('fails strict check on value not match array or not null', () {
+    test('fails types check on value not match array or not null', () {
       var schema = Validasi.array(Validasi.number());
 
       expect(
           () => schema.parse(true),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'invalidType' &&
-              e.message == 'field is not a valid array')));
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type List<dynamic>. Got bool instead.'));
 
       var result = schema.tryParse(true);
 
       expect(result.isValid, isFalse);
       expect(getName(result), equals('invalidType'));
       expect(result.value, isNull);
-    });
-
-    test('can override message for type check', () {
-      var schema =
-          Validasi.array(Validasi.number(), message: 'Must array of numeric!');
-
-      expect(getMsg(schema.tryParse(true)), 'Must array of numeric!');
     });
 
     test('parse can run custom callback and custom rule class', () {
@@ -54,10 +46,8 @@ void main() {
 
       expect(
           () => schema.parse([1, 2, 3]),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is already registered')));
+          throwFieldError(
+              name: 'custom', message: 'field is already registered'));
 
       shouldNotThrow(() => schema.parse([2, 3]));
 
@@ -75,10 +65,8 @@ void main() {
 
       expect(
           () => schema.parse([1, 2, 3]),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'field is already registered')));
+          throwFieldError(
+              name: 'custom', message: 'field is already registered'));
 
       verify(mock.handle([1, 2, 3], any)).called(1);
 
@@ -91,12 +79,8 @@ void main() {
       var schema = Validasi.array(Validasi.number())
           .custom((value, fail) async => fail(':name are invalid'));
 
-      await expectLater(
-          () => schema.parseAsync([3, 5], path: 'ids'),
-          throwsA(predicate((e) =>
-              e is FieldError &&
-              e.name == 'custom' &&
-              e.message == 'ids are invalid')));
+      await expectLater(() => schema.parseAsync([3, 5], path: 'ids'),
+          throwFieldError(name: 'custom', message: 'ids are invalid'));
     });
 
     test('tryParse can run custom rule', () {
@@ -205,25 +189,28 @@ void main() {
     test('parse error should contain paths with index', () async {
       var schema = Validasi.array(Validasi.number());
 
-      throwFieldError(() => schema.parse([1, 2, 'a']),
-          name: 'invalidType', message: 'field.2 is not a valid number');
-
       expect(
           () => schema.parse([1, 2, 'a']),
-          throwsA(
-            predicate((e) => e is FieldError && e.path == 'field.2'),
-          ));
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type num. Got String instead.'));
 
-      throwFieldError(() => schema.parse([1, 'a', 3]),
-          name: 'invalidType', message: 'field.1 is not a valid number');
+      expect(() => schema.parse([1, 2, 'a']), throwFieldError(path: 'field.2'));
 
-      throwFieldError(() => schema.parse(['a', 2, 3], path: 'sample'),
-          name: 'invalidType', message: 'sample.0 is not a valid number');
+      expect(
+          () => schema.parse([1, 'a', 3]),
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type num. Got String instead.'));
 
-      await expectLater(
-        () => schema.parseAsync(['a', 1, 2]),
-        throwsA(predicate((e) => e is FieldError && e.path == 'field.0')),
-      );
+      expect(
+          () => schema.parse(['a', 2, 3], path: 'sample'),
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type num. Got String instead.'));
+
+      await expectLater(() => schema.parseAsync(['a', 1, 2]),
+          throwFieldError(path: 'field.0'));
     });
 
     test('tryParse error should contains paths with index', () async {
@@ -232,8 +219,8 @@ void main() {
       var result = schema.tryParse([1, 2, 'a']);
 
       expect(result.isValid, isFalse);
-      expect(result.errors.first.path, 'field.2');
-      expect(getMsg(result), 'field.2 is not a valid number');
+      expect(getPath(result), 'field.2');
+      expect(getMsg(result), 'Expected type num. Got String instead.');
 
       expect(schema.tryParse([1, 'a', 3], path: 'sample').errors.first.path,
           'sample.1');
@@ -248,23 +235,110 @@ void main() {
           containsAllInOrder(['field.0', 'field.3']));
     });
 
-    test('parse could validate nested array', () {
+    test('parse could validate nested array', () async {
       var schema = Validasi.array(
         Validasi.array(Validasi.number().required()).required(),
       );
 
-      // shouldNotThrow(() {
-      //   schema.parse([
-      //     [
-      //       [0]
-      //     ]
-      //   ]);
-      // });
+      expect(
+          () => schema.parse([
+                [null]
+              ]),
+          throwFieldError(
+              name: 'required',
+              path: 'field.0.0',
+              message: 'field.0.0 is required'));
 
-      schema.parse([]);
+      shouldNotThrow(() {
+        schema.parse([
+          [1]
+        ]);
+      });
 
-      // throwFieldError(() => schema.parse([]),
-      // name: 'field.0.0', message: 'field.0.0 is required');
+      await expectLater(
+          () => schema.parseAsync([
+                [null]
+              ]),
+          throwFieldError(
+              name: 'required',
+              path: 'field.0.0',
+              message: 'field.0.0 is required'));
+
+      await shouldNotThrowAsync(() => schema.parseAsync([
+            [1]
+          ]));
+    });
+
+    test('tryParse could validate nested array', () async {
+      var schema = Validasi.array(
+        Validasi.array(Validasi.number().required()).required(),
+      );
+
+      var result = schema.tryParse([
+        [null]
+      ]);
+
+      expect(result.isValid, isFalse);
+      expect(getPath(result), 'field.0.0');
+      expect(getMsg(result), 'field.0.0 is required');
+
+      result = schema.tryParse([
+        [1]
+      ]);
+
+      expect(result.isValid, isTrue);
+
+      result = await schema.tryParseAsync([
+        [null]
+      ]);
+
+      expect(result.isValid, isFalse);
+      expect(getPath(result), 'field.0.0');
+      expect(getMsg(result), 'field.0.0 is required');
+
+      result = await schema.tryParseAsync([
+        [1]
+      ]);
+
+      expect(result.isValid, isTrue);
+    });
+
+    test('parse and tryParse reconstruct array correctly', () async {
+      var schema =
+          Validasi.array(Validasi.number(transformer: NumberTransformer()));
+
+      var result = schema.parse(['1', '2', '3']);
+
+      expect(result.value, equals([1, 2, 3]));
+
+      result = await schema.parseAsync(['1', '2', '3']);
+
+      await expectLater(result.value, equals([1, 2, 3]));
+
+      var scenarios = [
+        {
+          'case': ['123', '456', true, '789'],
+          'expected': [123, 456, null, 789]
+        },
+        {
+          'case': ['123', '456', 'true', '789'],
+          'expected': [123, 456, null, 789]
+        },
+        {
+          'case': ['123', '456'],
+          'expected': [123, 456]
+        }
+      ];
+
+      for (var scenario in scenarios) {
+        result = schema.tryParse(scenario['case']);
+
+        expect(result.value, equals(scenario['expected']));
+
+        result = await schema.tryParseAsync(scenario['case']);
+
+        expect(result.value, equals(scenario['expected']));
+      }
     });
   });
 }

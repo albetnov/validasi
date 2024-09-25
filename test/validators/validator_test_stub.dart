@@ -4,6 +4,8 @@ import 'package:validasi/src/validators/validator.dart';
 import 'package:validasi/src/custom_rule.dart';
 
 class ValidatorStub extends Validator<String> {
+  ValidatorStub({super.transformer});
+
   @override
   ValidatorStub custom(CustomCallback<String> callback) {
     return super.custom(callback);
