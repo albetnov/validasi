@@ -6,8 +6,6 @@ A flexible and easy to use Dart Validation Library.
 The Validasi Library will try to infer types based on Dart Generic System capabilities. Some types are not supported for infer
 are `array` and `object` for now. The `number` also returning `num` which can represents both `double` and `int`.
 
-> The library is still on-going active development.
-
 ## Installation
 
 Add `validasi` to your pubspec dependencies or use `pub get`.
@@ -30,9 +28,116 @@ void main(List<String> args) {
 }
 ```
 
+## Supported Validations
+
+- [String](#string)
+- [Numeric](#numbernumdouble-int)
+- [Date](#date)
+- [Array / List](#arraylist)
+- [Map](#objectmap)
+
+### String
+```dart
+Validasi.string();
+```
+- required()
+
+    check if the input is not empty (`''`) and not null
+- minLength(int length)
+    
+    check if the input length above given `length`
+- maxLength(int length)
+
+    check if the input length below given `length`
+
+### Number/num(double, int)
+```dart
+Validasi.number();
+```
+- required()
+
+    check if the input is not null
+
+### Date
+```dart
+Validasi.date();
+```
+- required()
+
+    check if the input is not null
+- before(DateTime target, {DateUnit unit, int difference})
+
+    check if the input is before `target` based on `unit` and `difference`
+- beforeSame(DateTime target, {DateUnit unit})
+
+    check if the input is before or the same to `target` based on `unit`. This is similar to `difference: 0` of the `before` method.
+- after(DateTime target, {DateUnit unit, int difference})
+
+    check if the input is after `target` based on `unit` and
+    `difference`
+- afterSame(DateTime target, {DateUnit unit})
+
+    check if the input is after or the same to `target` based on `unit`. This is similar to `difference: 0` of the `after` method.
+
+### Array/List
+```dart
+Validasi.array(Validator);
+```
+- required()
+
+    check if the input is not null
+
+### Object/Map
+```dart
+Validasi.object(Map<String, Validator> schema);
+```
+
+- required()
+
+    check if the input is not null
+    
+> More rules are planned to be added!
+
 ## Features
 
-### Validating without throwing exception
+- [Transformer](#transformer)
+- [Safe Validation](#safe-validation)
+- [Replacing Default Path](#replacing-default-pathfield)
+- [Replacing Default Message](#replacing-default-message)
+- [Custom Rule](#custom-rule)
+- [Helpers](#helpers)
+
+### Transformer
+
+By concept, Validasi takes `dynamic` as the input. Allowing you, as the developer or the user to immediately put any
+value there. Each of the type checking mechanism are done via Runtime. For the input that mismatch the expected type
+Validasi will return `invalidType` error.
+
+In case you want to perform losess type validation like using Number Validation but from String input, you may use Transformer. Transformer allow you to convert and handle type conversion further. The Transformer will only execute
+when the given input is already mismatch with the validation type.
+
+```dart
+var schema = Validasi.number(transformer: NumberTransformer())
+
+schema.parse('10');
+```
+
+The `NumberTransformer` will only be executed when the received input is differs with the validation type (`num` in this case). Since the input on above is string `'10'` it satisfy the constraint and therefore the transformer will be called. Thus, allowing type conversion to occur and is handled by `NumberTransformer`.
+
+The `NumberTransformer` itself is a subclass of `Transformer` and under the hood contains code below:
+
+```dart
+class NumberTransformer extends Transformer<num> {
+  @override
+  num? transform(value, fail) => num.tryParse(value.toString());
+}
+```
+
+You can create your own Transformer by extending the `Transformer` class and override `transform` method. The `transform`
+method receive raw `value` and `fail` function. If for some reason you can't transform the `value` then use `fail` to 
+throw `invalidType` exception again.
+
+### Safe Validation
 
 In order to validate without throwing Exception, make sure to use the `try` variants of `parse`.
 Different to `parse`, `tryParse` will keep running even if previous rule fails. The errors will then
@@ -57,59 +162,6 @@ void main() {
 }
 ```
 
-### Validating an object
-
-Validasi also support Object/Map Validation simply by using `Validasi.object`. The method expect `schema` which is
-`Map<String, Validator>`. The Object Validator also support nesting.
-
-> Object Validation can actually be more strictier and can perform runtime checks by overriding the Generic 
-interface from the `ObjectValidator` itself. However, keep in mind that the check will be done on Dart side
-so you should handle it as how you handle TypeError in general. Both Try Catch from `FieldError` and `try` 
-variants methods won't capture this type of error for you.
-
-```dart
-import 'package:validasi/validasi.dart';
-
-void main() {
-  var schema = Validasi.object({
-    'name': Validasi.string().required().maxLength(255),
-    'address': Validasi.object({
-        'streetName': Validasi.string().required().maxLength(255),
-        'cityName': Validasi.string().required().maxLength(255)
-    }).required()
-  });
-
-  var result = schema.parse({
-    'name': 'Asep Surasep',
-    'address': {
-        'streetName': 'Jl. Tidak tahu',
-        'cityName': 'Unknown City'
-    }
-  });
-
-  print("Hi, ${result.value.name}! I also happen to live in ${result.value.address.cityName}");
-}
-```
-
-### Validating an array
-
-Validasi support array validation for it's child. The Array Validator also support nesting.
-
-> Similar to `ObjectValidator` The `ArrayValidator` also support strictier checks by overriding the Generic 
-Interface. However, keep in mind that the check will be done on Dart side so you should
-handle it as how you handle TypeError in general. Both Try Catch from `FieldError` and `try` variants methods
-won't capture this type of error for you.
-
-```dart
-import 'package:validasi/validasi.dart';
-
-void main() {
-    var schema = Validasi.array(Validasi.string().required());
-
-    schema.parse([1,2,3], path: 'names'); // Exception, FieldError: 'names.0 must be a string'
-}
-```
-
 ### Replacing default path/field.
 
 Validation erorr message usually contains `field`. For example, `required` rule have failed error below:
@@ -130,10 +182,8 @@ void main() {
 
 ### Replacing default message
 
-You can also replace the default message for each rules. For some validators that perform Type Check in runtime
-like `Date`, `Number`, `String` (thus with non-strict support) the default message can also be overriden.
-
-You can also access the `path` above by specifiying custom template `:name`.
+You can also replace the default message for each rules. The message string support template literals `:name` to later on
+be mapped on based on `path`.
 
 ```dart
 import 'package:validasi/validasi.dart';
@@ -267,7 +317,12 @@ Both the async variants will return `Future<Result>`.
 > If you try to use non-async variant with an Async Custom, the `parse` or `tryParse` method will throw `ValidasiException`
 to warn you to use the `async` variant.
 
-### Field Helpers
+### Helpers
+
+To make work with Validasi easier, two helpers class are exposed. These classes are best to work with when you are validating
+Flutter FormField widget.
+
+#### Field Helpers
 
 The `FieldValidator` is a Helper for Validasi to run and extract first error message as a `String` or `null`. This is useful
 if you want to pass in for Flutter's `FormField`.
@@ -281,7 +336,7 @@ TextFormField(
 
 The `FieldValidator` also support `validateAsync` in which you can use to run custom validators that require asyncronous context.
 
-### Group Helpers
+#### Group Helpers
 
 The `GroupValidator` at a glance might be similar to `ObjectValidator`. But the purpose is difference, the GroupValidator used to
 grouping your validation under `Map<String, Validator>` schema. It did not support nested.
