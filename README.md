@@ -50,6 +50,30 @@ Validasi.string();
 
     check if the input length below given `length`
 
+- email({bool allowTopLevelDomain, bool allowInternational})
+
+    check if the input is a valid email address based on international schema if `allowInternational: true` 
+    and allowing top level domain if `allowTopLevelDomain: true`.
+
+- startsWith(String text)
+
+    check if the input starts with the given `text`.
+
+- endsWith(String text)
+
+    check if the input ends with the given `text`.
+
+- contains(String text)
+
+    check if the input contains `text`.
+
+- url()
+
+    check if the input is a valid URL scheme.
+
+- regex(String pattern)
+
+    check if the input match with regex `pattern`.
 ### Number/num(double, int)
 ```dart
 Validasi.number();
@@ -358,3 +382,20 @@ group.validate('name', 'Asep Surasep'); // Under the hood: FieldValidator(schema
 ```
 
 It will throw `ValidasiException` if the key not found.
+
+### License
+
+The Validasi Library is licensed under [MIT License](./LICENSE).
+
+### Contribution
+
+You can use below script to spin up development environment for this library base:
+
+```bash
+# Clone the repo
+git clone https://github.com/albetnov/validasi
+# Install the dependencies
+dart pub get
+```
+
+The Tests in `test/` directory are mapped 1:1 to `lib` and `src` folder. So their structure are similar.

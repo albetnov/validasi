@@ -194,5 +194,167 @@ void main() {
       expect(schema.tryParse('abcdef', path: 'nid').errors.first.message,
           equals('nid is too long!'));
     });
+
+    test('should pass for email', () {
+      var schema = Validasi.string().email();
+
+      expect(schema.tryParse('example@mail.com').isValid, isTrue);
+
+      var internationalSchema =
+          Validasi.string().email(allowInternational: true);
+
+      // example from Wikipedia (https://en.wikipedia.org/wiki/International_email).
+      expect(internationalSchema.tryParse('用户@例子.广告').isValid, isTrue);
+
+      var topLevelDomainSchema =
+          Validasi.string().email(allowTopLevelDomain: true);
+
+      expect(topLevelDomainSchema.tryParse('example@mail').isValid, isTrue);
+    });
+
+    test('should fail for email', () {
+      var schema = Validasi.string().email();
+
+      expect(schema.tryParse('example@mail').isValid, isFalse);
+      expect(schema.tryParse('用户@例子.广告').isValid, isFalse);
+    });
+
+    test('can customize field name on email message', () {
+      var schema = Validasi.string().email();
+
+      expect(getMsg(schema.tryParse('example@mail', path: 'email')),
+          equals('email must be a valid email'));
+    });
+
+    test('can customize default error message on email', () {
+      var schema = Validasi.string().email(message: 'invalid email');
+
+      expect(getMsg(schema.tryParse('example@mail')), equals('invalid email'));
+    });
+
+    test('should pass for startsWith', () {
+      var schema = Validasi.string().startsWith('hello');
+
+      expect(schema.tryParse('hello world').isValid, isTrue);
+    });
+
+    test('should fail for startsWith', () {
+      var schema = Validasi.string().startsWith('hello');
+
+      expect(schema.tryParse('world').isValid, isFalse);
+    });
+
+    test('can customize field name on startsWith message', () {
+      var schema = Validasi.string().startsWith('hello');
+
+      expect(getMsg(schema.tryParse('world', path: 'greeting')),
+          equals('greeting must start with "hello"'));
+    });
+
+    test('can customize default error message on startsWith', () {
+      var schema = Validasi.string().startsWith('hello', message: 'no hello');
+
+      expect(getMsg(schema.tryParse('world')), equals('no hello'));
+    });
+
+    test('should pass for endsWith', () {
+      var schema = Validasi.string().endsWith('world');
+
+      expect(schema.tryParse('hello world').isValid, isTrue);
+    });
+
+    test('should fail for endsWith', () {
+      var schema = Validasi.string().endsWith('world');
+
+      expect(schema.tryParse('hello').isValid, isFalse);
+    });
+
+    test('can customize field name on endsWith message', () {
+      var schema = Validasi.string().endsWith('world');
+
+      expect(getMsg(schema.tryParse('hello', path: 'greeting')),
+          equals('greeting must end with "world"'));
+    });
+
+    test('can customize default error message on endsWith', () {
+      var schema = Validasi.string().endsWith('world', message: 'no world');
+
+      expect(getMsg(schema.tryParse('hello')), equals('no world'));
+    });
+
+    test('should pass for contains', () {
+      var schema = Validasi.string().contains('world');
+
+      expect(schema.tryParse('hello world').isValid, isTrue);
+    });
+
+    test('should fail for contains', () {
+      var schema = Validasi.string().contains('world');
+
+      expect(schema.tryParse('hello').isValid, isFalse);
+    });
+
+    test('can customize field name on contains message', () {
+      var schema = Validasi.string().contains('world');
+
+      expect(getMsg(schema.tryParse('hello', path: 'greeting')),
+          equals('greeting must contain "world"'));
+    });
+
+    test('can customize default error message on contains', () {
+      var schema = Validasi.string().contains('world', message: 'no world');
+
+      expect(getMsg(schema.tryParse('hello')), equals('no world'));
+    });
+
+    test('should pass for url', () {
+      var schema = Validasi.string().url();
+
+      expect(schema.tryParse('https://example.com').isValid, isTrue);
+    });
+
+    test('should fail for url', () {
+      var schema = Validasi.string().url();
+
+      expect(schema.tryParse(':: not valid ::').isValid, isFalse);
+    });
+
+    test('can customize field name on url message', () {
+      var schema = Validasi.string().url();
+
+      expect(getMsg(schema.tryParse(':: not valid ::', path: 'url')),
+          equals('url must be a valid url'));
+    });
+
+    test('can customize default error message on url', () {
+      var schema = Validasi.string().url(message: 'invalid url');
+
+      expect(getMsg(schema.tryParse(':: not valid ::')), equals('invalid url'));
+    });
+
+    test('should pass for regex', () {
+      var schema = Validasi.string().regex(r'^[a-z]+$');
+
+      expect(schema.tryParse('hello').isValid, isTrue);
+    });
+
+    test('should fail for regex', () {
+      var schema = Validasi.string().regex(r'^[a-z]+$');
+
+      expect(schema.tryParse('hello world').isValid, isFalse);
+    });
+
+    test('can customize field name on regex message', () {
+      var schema = Validasi.string().regex(r'^[a-z]+$');
+
+      expect(getMsg(schema.tryParse('hello world', path: 'greeting')),
+          equals('greeting must match the pattern'));
+    });
+
+    test('can customize default error message on regex', () {
+      var schema = Validasi.string().regex(r'^[a-z]+$', message: 'invalid');
+
+      expect(getMsg(schema.tryParse('hello world')), equals('invalid'));
+    });
   });
 }
