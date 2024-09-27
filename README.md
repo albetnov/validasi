@@ -82,6 +82,50 @@ Validasi.number();
 
     check if the input is not null
 
+- nonDecimal()
+    
+    check if the input is not decimal (int)
+
+- decimal()
+
+    check if the input is decimal (double)
+
+- positive()
+
+    check if the input is positive (> 0)
+
+- nonPositive()
+
+    check if the input is non-positive (<= 0)
+
+- negative()
+
+    check if the input is negative (< 0)
+
+- nonNegative()
+
+    check if the input is non-negative (>= 0)
+
+- gt(num target)
+
+    check if the input is greater than `target`
+
+- gte(num target)
+
+    check if the input is greater than or equal to `target`
+
+- lt(num target)
+
+    check if the input is less than `target`
+
+- lte(num target)
+
+    check if the input is less than or equal to `target`
+
+- finite()
+
+    check if the input is finite number
+
 ### Date
 ```dart
 Validasi.date();
