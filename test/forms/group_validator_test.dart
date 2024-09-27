@@ -5,16 +5,16 @@ import 'package:validasi/src/exceptions/validasi_exception.dart';
 import 'package:validasi/src/forms/group_validator.dart';
 import 'package:validasi/src/result.dart';
 
-import '../validators/array_validator_test.mocks.dart';
+import '../validators/validator_test_stub.dart';
 
 void main() {
   group('Group Validator Test', () {
     late GroupValidator groupValidator;
-    late MockValidator<int> mockValidatorAge;
-    late MockValidator<String> mockValidatorName;
+    late MockValidatorStub<int> mockValidatorAge;
+    late MockValidatorStub<String> mockValidatorName;
 
     setUp(() {
-      mockValidatorAge = MockValidator<int>();
+      mockValidatorAge = MockValidatorStub();
 
       when(mockValidatorAge.parse(argThat(isA<int>()), path: anyNamed('path')))
           .thenReturn(Result(value: 1));
@@ -32,7 +32,7 @@ void main() {
           .thenThrow(FieldError(
               name: 'example', message: 'example message', path: 'field'));
 
-      mockValidatorName = MockValidator<String>();
+      mockValidatorName = MockValidatorStub();
 
       when(mockValidatorName.parse(argThat(isA<String>()),
               path: anyNamed('path')))

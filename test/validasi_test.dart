@@ -25,8 +25,11 @@ void main() {
     });
 
     test('return valid Array signature', () {
-      expect(Validasi.array,
-          isA<ArrayValidator<V, T> Function<V extends Validator, T>(V)>());
+      expect(
+          Validasi.array,
+          isA<
+              ArrayValidator<V, T>
+                  Function<V extends Validator<dynamic, dynamic>, T>(V)>());
 
       expect(Validasi.array(Validasi.string()),
           isA<ArrayValidator<StringValidator, dynamic>>());

@@ -3,7 +3,7 @@ import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 /// Responsible for validating the object based on [schema].
-class ObjectValidator<T extends Map> extends Validator<T> {
+class ObjectValidator<T extends Map> extends Validator<T, ObjectValidator<T>> {
   final Map<String, Validator> schema;
 
   ObjectValidator(this.schema);
@@ -18,12 +18,6 @@ class ObjectValidator<T extends Map> extends Validator<T> {
 
     return this;
   }
-
-  @override
-  ObjectValidator custom(callback) => super.custom(callback);
-
-  @override
-  ObjectValidator customFor(customRule) => super.customFor(customRule);
 
   _parse(Result result) {
     if (result.value is Map) {

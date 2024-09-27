@@ -3,8 +3,7 @@ import 'package:test/test.dart';
 import 'package:validasi/validasi.dart';
 
 import '../test_utils.dart';
-import 'array_validator_test.mocks.dart';
-import 'validator_test.mocks.dart';
+import 'validator_test_stub.dart';
 
 void main() {
   group('Object Validator Test', () {
@@ -36,79 +35,8 @@ void main() {
       expect(result.value, equals({'name': null}));
     });
 
-    test('parse can run custom callback and custom rule class', () {
-      var schema =
-          Validasi.object({'id': Validasi.number()}).custom((value, fail) {
-        if (value == null) return false;
-
-        if (value['id'] == 1) {
-          return fail(':name is already registered');
-        }
-
-        return true;
-      });
-
-      expect(
-          () => schema.parse({'id': 1}),
-          throwFieldError(
-              name: 'custom', message: 'field is already registered'));
-
-      shouldNotThrow(() => schema.parse({'id': 3}));
-
-      var mock = MockCustomRule<Map<dynamic, dynamic>>();
-
-      when(mock.handle(any, any)).thenAnswer((args) {
-        if (args.positionalArguments[0]['id'] == 1) {
-          return args.positionalArguments[1](':name is already registered');
-        }
-
-        return true;
-      });
-
-      schema.customFor(mock);
-
-      expect(
-          () => schema.parse({'id': 1}),
-          throwFieldError(
-              name: 'custom', message: 'field is already registered'));
-
-      verify(mock.handle({'id': 1}, any)).called(1);
-
-      shouldNotThrow(() {
-        schema.parse({'id': 2});
-      });
-    });
-
-    test('parseAsync can also run custom rule', () async {
-      var schema = Validasi.object({'id': Validasi.number()})
-          .custom((value, fail) async => fail(':name is invalid'));
-
-      await expectLater(() => schema.parseAsync({'id': 1}, path: 'id'),
-          throwFieldError(name: 'custom', message: 'id is invalid'));
-    });
-
-    test('tryParse can run custom rule', () {
-      var schema = Validasi.object({'id': Validasi.number()})
-          .custom((value, fail) => fail(':name contains invalid value'));
-
-      var result = schema.tryParse({'id': 1}, path: 'users');
-
-      expect(result.isValid, isFalse);
-      expect(getMsg(result), 'users contains invalid value');
-    });
-
-    test('tryParseAsync can also run custom rule', () async {
-      var schema = Validasi.object({'id': Validasi.number()})
-          .custom((value, fail) async => fail(':name contains invalid value'));
-
-      var result = await schema.tryParseAsync({'id': 1}, path: 'users');
-
-      expect(result.isValid, isFalse);
-      expect(getMsg(result), 'users contains invalid value');
-    });
-
     test('verify the validator schema parse method get called', () async {
-      var mock = MockValidator<int>();
+      var mock = MockValidatorStub<int>();
 
       when(mock.parse(1, path: 'field.id')).thenReturn(Result(value: 1));
       when(mock.parseAsync(1, path: 'field.id'))
@@ -124,7 +52,7 @@ void main() {
     });
 
     test('verify the validator schema tryParse method get called', () async {
-      var mock = MockValidator<int>();
+      var mock = MockValidatorStub<int>();
 
       when(mock.tryParse(1, path: 'field.id')).thenReturn(Result(value: 1));
 
@@ -457,7 +385,7 @@ void main() {
     test('should pass for required rule', () {
       var schema = Validasi.object({
         'id': Validasi.number(),
-        'name': Validasi.string().required(),
+        'name': Validasi.string().minLength(1),
       }).required();
 
       shouldNotThrow(() {
@@ -469,7 +397,7 @@ void main() {
     test('should fail for required rule', () {
       var schema = Validasi.object({
         'id': Validasi.number(),
-        'name': Validasi.string().required(),
+        'name': Validasi.string().minLength(1),
       }).required();
 
       expect(

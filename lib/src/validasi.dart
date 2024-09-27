@@ -15,7 +15,8 @@ class Validasi {
           Map<String, Validator> schema) =>
       ObjectValidator<T>(schema);
 
-  static ArrayValidator<V, T> array<V extends Validator, T>(V validator,
+  static ArrayValidator<V, T> array<V extends Validator<dynamic, dynamic>, T>(
+          V validator,
           {String? message}) =>
       ArrayValidator<V, T>(validator);
 

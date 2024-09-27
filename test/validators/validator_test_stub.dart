@@ -1,20 +1,13 @@
 import 'dart:async';
 
+import 'package:mockito/annotations.dart';
 import 'package:validasi/src/validators/validator.dart';
-import 'package:validasi/src/custom_rule.dart';
 
-class ValidatorStub extends Validator<String> {
+@GenerateNiceMocks([MockSpec<Validator>()])
+import 'validator_test_stub.mocks.dart';
+
+class ValidatorStub extends Validator<String, ValidatorStub> {
   ValidatorStub({super.transformer});
-
-  @override
-  ValidatorStub custom(CustomCallback<String> callback) {
-    return super.custom(callback);
-  }
-
-  @override
-  ValidatorStub customFor(CustomRule<String> customRule) {
-    return super.customFor(customRule);
-  }
 
   void addRuleTest(String name, bool shouldPass, String message) {
     addRule(name: name, test: (value) => shouldPass, message: message);
@@ -30,3 +23,5 @@ class ValidatorStub extends Validator<String> {
     return super.runCustomAsync(value, path);
   }
 }
+
+class MockValidatorStub<T> extends MockValidator<T, MockValidatorStub<T>> {}

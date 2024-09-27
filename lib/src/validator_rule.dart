@@ -6,7 +6,7 @@ import 'package:validasi/src/utils/message.dart';
 class ValidatorRule<T> {
   /// The [test] function will run and expect [bool] for the return value
   /// to determine whatever it passes or not.
-  final bool Function(T? value) test;
+  final bool Function(T value) test;
 
   /// The [_isPassed] will then be changed based on return value of [test].
   bool _isPassed = false;
@@ -25,7 +25,7 @@ class ValidatorRule<T> {
 
   /// The rule should be runned using [check] instead of [test]. So the [passed]
   /// value can be properly tracked.
-  void check(T? value) {
+  void check(T value) {
     var result = test(value);
 
     _isPassed = result;

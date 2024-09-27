@@ -2,7 +2,8 @@ import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 /// Responsible for validating arrays based on [validator].
-class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
+class ArrayValidator<V extends Validator<dynamic, dynamic>, T>
+    extends Validator<List<T>, ArrayValidator<V, T>> {
   final V validator;
 
   ArrayValidator(this.validator);
@@ -18,11 +19,15 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
     return this;
   }
 
-  @override
-  ArrayValidator custom(callback) => super.custom(callback);
+  ArrayValidator<V, T> min(int min, {String? message}) {
+    addRule(
+      name: 'min',
+      test: (value) => value != null && value.length >= min,
+      message: message ?? ':name must have at least $min items',
+    );
 
-  @override
-  ArrayValidator customFor(customRule) => super.customFor(customRule);
+    return this;
+  }
 
   @override
   Result<List<T>> parse(dynamic value, {String path = 'field'}) {

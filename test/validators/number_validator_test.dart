@@ -1,9 +1,7 @@
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:validasi/validasi.dart';
 
 import '../test_utils.dart';
-import 'validator_test.mocks.dart';
 
 void main() {
   group('Number Validator Test', () {
@@ -38,74 +36,6 @@ void main() {
       var result = schema.parse('123');
 
       expect(result.value, equals(123));
-    });
-
-    test('parse can run custom callback and custom rule class', () {
-      var schema = Validasi.number().custom((value, fail) {
-        if (value == 1) {
-          return fail(':name is not registered');
-        }
-
-        return true;
-      });
-
-      expect(() => schema.parse(1),
-          throwFieldError(name: 'custom', message: 'field is not registered'));
-
-      shouldNotThrow(() => schema.parse(2));
-
-      var mock = MockCustomRule<num>();
-
-      when(mock.handle(any, any)).thenAnswer((args) {
-        if (args.positionalArguments[0] == 1) {
-          return args.positionalArguments[1](':name is not registered');
-        }
-
-        return true;
-      });
-
-      schema.customFor(mock);
-
-      expect(() => schema.parse(1),
-          throwFieldError(name: 'custom', message: 'field is not registered'));
-
-      verify(mock.handle(1, any)).called(1);
-
-      shouldNotThrow(() {
-        schema.parse(2);
-      });
-    });
-
-    test('parseAsync can also run custom rule', () async {
-      var schema = Validasi.number().custom(
-          (value, fail) async => fail(':name need to be in between 5-20.'));
-
-      await expectLater(
-          () => schema.parseAsync(3, path: 'order no'),
-          throwFieldError(
-              name: 'custom', message: 'order no need to be in between 5-20.'));
-    });
-
-    test('tryParse can run custom rule', () {
-      var schema = Validasi.number()
-          .custom((value, fail) => fail('your chosen :name is not available'));
-
-      var result = schema.tryParse(1, path: 'order no');
-
-      expect(result.isValid, isFalse);
-      expect(
-          result.errors.first.message, 'your chosen order no is not available');
-    });
-
-    test('tryParseAsync can also run custom rule', () async {
-      var schema = Validasi.number().custom(
-          (value, fail) async => fail('your chosen :name is not available'));
-
-      var result = await schema.tryParseAsync(1, path: 'order no');
-
-      expect(result.isValid, isFalse);
-      expect(
-          result.errors.first.message, 'your chosen order no is not available');
     });
 
     test('should pass for required rule', () {
@@ -487,13 +417,17 @@ void main() {
     test('should fail for lte', () {
       var schema = Validasi.number().lte(0);
 
-      expect(() => schema.parse(1),
-          throwFieldError(name: 'lte', message: 'field must be less than or equal to 0'));
+      expect(
+          () => schema.parse(1),
+          throwFieldError(
+              name: 'lte', message: 'field must be less than or equal to 0'));
 
       schema = Validasi.number().lte(5);
 
-      expect(() => schema.parse(6),
-          throwFieldError(name: 'lte', message: 'field must be less than or equal to 5'));
+      expect(
+          () => schema.parse(6),
+          throwFieldError(
+              name: 'lte', message: 'field must be less than or equal to 5'));
     });
 
     test('can customize field name on lte', () {

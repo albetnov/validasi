@@ -18,7 +18,7 @@ import 'package:validasi/src/validator_rule.dart';
 ///
 /// The Validator accepts Generic [T]. This generic used to infer the return
 /// type from [parse] and it's variants.
-abstract class Validator<T> {
+abstract class Validator<T, R extends Validator<T, R>> {
   /// The [rules] contains all rules required to run
   @visibleForTesting
   @internal
@@ -30,9 +30,11 @@ abstract class Validator<T> {
   @internal
   CustomCallback<T?>? customCallback;
 
+  bool _isOptional = false;
+
   Transformer<T>? transformer;
 
-  Validator({this.transformer});
+  Validator({this.transformer, String? message});
 
   /// The [addRule] responsible to append value to [rules]. This method should
   /// only be used internally by the inheritors, hence the [protected]
@@ -40,27 +42,36 @@ abstract class Validator<T> {
   @protected
   void addRule({
     required String name,
-    required bool Function(T? value) test,
+    required bool Function(T value) test,
     required String message,
   }) {
     rules.add(ValidatorRule(name: name, test: test, message: message));
   }
 
+  /// Mark the field as optional. If the field is empty, then the rules
+  /// will not be executed.
+  R optional() {
+    _isOptional = true;
+
+    return this as R;
+  }
+
   /// [custom] add custom callback to be executed after all rules executed.
-  custom(CustomCallback<T> callback) {
+  @mustCallSuper
+  R custom(CustomCallback<T> callback) {
     customCallback = callback;
 
-    return this;
+    return this as R;
   }
 
   /// [customFor] add a Custom Rule based on the instance inheriting [CustomRule].
   ///
   /// Check [CustomRule] for implementation details.
-  @mustBeOverridden
-  customFor(CustomRule<T> customRule) {
+  @mustCallSuper
+  R customFor(CustomRule<T> customRule) {
     customCallback = customRule.handle;
 
-    return this;
+    return this as R;
   }
 
   /// This is the custom runner implementation, responsible to run
@@ -122,8 +133,15 @@ abstract class Validator<T> {
   /// This function will run through all [rules] and throw
   /// [FieldError] if any errors encountered thoughout the [rules].
   void _parseImpl(T? value, String path) {
+    /// If [_isOptional] is `true`, then no reason to run the rules since
+    /// we have nothing to test against.
+    if (_isOptional && value == null) return;
+
     for (var rule in rules) {
-      rule.check(value);
+      _required(path, value);
+
+      // ignore: null_check_on_nullable_type_parameter
+      rule.check(value!);
 
       if (!rule.passed) {
         throw rule.toFieldError(path);
@@ -157,10 +175,21 @@ abstract class Validator<T> {
     return value;
   }
 
+  void _required(String path, T? value) {
+    if (value == null) {
+      throw FieldError(
+        name: 'required',
+        message: Message(path, fallback: ':name is required').parse,
+        path: path,
+      );
+    }
+  }
+
   /// [parse] run the validation
   ///
   /// throw [FieldError] if any error encountered and stop execution afterwards.
   /// throw [ValidasiException] if the custom rule requires async context
+  @mustCallSuper
   Result<T> parse(dynamic value, {String path = 'field'}) {
     T? finalValue = _typeCheck(value, path);
 
@@ -173,6 +202,7 @@ abstract class Validator<T> {
   /// [parseAsync] run validation with asyncronous context
   ///
   /// throw [FieldError] if any error encountered and stop execution afterwards.
+  @mustCallSuper
   Future<Result<T>> parseAsync(dynamic value, {String path = 'field'}) async {
     T? finalValue = _typeCheck(value, path);
 
@@ -188,8 +218,22 @@ abstract class Validator<T> {
   List<FieldError> _tryParseImpl(T? value, String path) {
     final List<FieldError> errors = [];
 
+    /// If [_isOptional] is `true`, then no reason to run the rules since
+    /// we have nothing to test against.
+    if (_isOptional && value == null) return errors;
+
     for (var rule in rules) {
-      rule.check(value);
+      try {
+        _required(path, value);
+      } on FieldError catch (e) {
+        errors.add(e);
+
+        // stop execution if the field is required
+        break;
+      }
+
+      // ignore: null_check_on_nullable_type_parameter
+      rule.check(value!);
 
       if (!rule.passed) {
         errors.add(rule.toFieldError(path));
@@ -205,6 +249,7 @@ abstract class Validator<T> {
   /// async context.
   ///
   /// All the recorded errors will be contained in the [Result] itself.
+  @mustCallSuper
   Result<T> tryParse(dynamic value, {String path = 'field'}) {
     List<FieldError> errors = [];
     T? finalValue;
@@ -230,6 +275,7 @@ abstract class Validator<T> {
   /// asyncronous context.
   ///
   /// All the recorded errors will be contained in the [Result] itself.
+  @mustCallSuper
   Future<Result<T>> tryParseAsync(dynamic value,
       {String path = 'field'}) async {
     List<FieldError> errors = [];

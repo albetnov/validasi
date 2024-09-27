@@ -2,7 +2,7 @@ import 'package:validasi/src/validators/validator.dart';
 
 /// Responsible for validating [num] for both [double] and [int] also
 /// support type conversion from [String] based on [num.tryParse].
-class NumberValidator extends Validator<num> {
+class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator({super.transformer});
 
   /// [required] indicate that the [value] cannot be `null`
@@ -118,10 +118,4 @@ class NumberValidator extends Validator<num> {
 
     return this;
   }
-
-  @override
-  NumberValidator custom(callback) => super.custom(callback);
-
-  @override
-  NumberValidator customFor(customRule) => super.customFor(customRule);
 }

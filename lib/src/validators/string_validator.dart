@@ -2,20 +2,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 /// Responsible for validating [String] also support [toString] conversion.
-class StringValidator extends Validator<String> {
+class StringValidator extends Validator<String, StringValidator> {
   StringValidator({super.transformer});
-
-  /// [required] indicate that the value should not be `null` and is
-  /// not empty and blank.
-  StringValidator required({String? message}) {
-    addRule(
-      name: 'required',
-      test: (text) => text != null && text.trim() != '' && text.isNotEmpty,
-      message: message ?? ":name is required",
-    );
-
-    return this;
-  }
 
   /// [minLength] check if the value satisfy the minimum length based on
   /// [length].
@@ -138,10 +126,4 @@ class StringValidator extends Validator<String> {
 
     return this;
   }
-
-  @override
-  StringValidator custom(callback) => super.custom(callback);
-
-  @override
-  StringValidator customFor(customRule) => super.customFor(customRule);
 }

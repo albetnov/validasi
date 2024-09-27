@@ -7,14 +7,14 @@ void main() {
   idSchema.parse(null); // FieldErorr exception: field is required
 
   // customize message and field name
-  var nameSchema = Validasi.string().required(message: ':name must be filled');
+  var nameSchema = Validasi.string().minLength(1, message: 'Name is reqiured!');
 
   nameSchema.parse(null, path: 'name'); // FieldError: name is required
 
   // object schema validation
   var payloadSchema = Validasi.object({
-    'name': Validasi.string().required().maxLength(200),
-    'address': Validasi.string().required().maxLength(255)
+    'name': Validasi.string().minLength(1).maxLength(200),
+    'address': Validasi.string().minLength(1).maxLength(255)
   });
 
   var payload =
@@ -23,7 +23,7 @@ void main() {
   print(payload.value); // return the parse payload (with casting)
 
   // array validation
-  var arrSchema = Validasi.array(Validasi.string().required());
+  var arrSchema = Validasi.array(Validasi.string().minLength(1));
 
   // use `try` prefix to avoid raised any exceptions
   var arr = arrSchema.tryParse(['test']);

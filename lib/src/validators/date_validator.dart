@@ -18,7 +18,7 @@ enum DateCompare {
 }
 
 /// Responsible for validating [DateTime] or formatted [String] Date Time.
-class DateValidator extends Validator<DateTime> {
+class DateValidator extends Validator<DateTime, DateValidator> {
   final String pattern;
 
   DateValidator({super.transformer, this.pattern = 'y-MM-dd'});
@@ -33,12 +33,6 @@ class DateValidator extends Validator<DateTime> {
 
     return this;
   }
-
-  @override
-  DateValidator custom(callback) => super.custom(callback);
-
-  @override
-  DateValidator customFor(customRule) => super.customFor(customRule);
 
   int _getDifference(DateTime from, DateTime to, DateUnit unit) {
     switch (unit) {
