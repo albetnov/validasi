@@ -1,6 +1,5 @@
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/validasi.dart';
 
 import 'validators/validator_test.mocks.dart';
