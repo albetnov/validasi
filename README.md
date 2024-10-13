@@ -4,6 +4,9 @@
 
 A flexible and straightforward Dart Validation Library.
 
+[Documentation](https://albetnov.github.io/validasi/)
+[API Documentation](https://pub.dev/documentation/validasi/latest)
+
 ## Installation
 
 Add `validasi` to your pubspec dependencies or use `pub get`.

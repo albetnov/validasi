@@ -12,7 +12,7 @@ hero:
       link: /quick-start
     - theme: alt
       text: API Documentation
-      # link: /api-examples
+      link: https://pub.dev/documentation/validasi/latest
 
 features:
   - title: Easy to Use

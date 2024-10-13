@@ -1,7 +1,8 @@
 name: validasi
 description: An easy to use and flexible validation library
 version: 0.0.1
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/albetnov/validasi
+homepage: https://albetnov.github.io/validasi
 
 environment:
   sdk: ^3.4.4
