@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Validasi Docs",
   description: "Validasi Documentation Website",
+  base: '/validasi/',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
