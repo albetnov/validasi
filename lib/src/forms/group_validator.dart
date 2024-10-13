@@ -7,11 +7,14 @@ import 'package:validasi/src/validators/validator.dart';
 /// Map syntax and grouped them together. Do note, that [GroupValidator] is
 /// not for validating [Map], you should use [ObjectValidator] instead.
 ///
-/// The [GroupValidator] allows you to use [validate] to quickly return
+/// The [GroupValidator] allow you to use [validate] to quickly return
 /// first error message or null if success. Suitable to be passed on Flutter's
 /// `FormField`.
+///
+/// The [GroupValidator] takes [schema] as parameter. The [schema] is a Map
+/// with [String] as key and [Validator] as value.
 class GroupValidator {
-  /// [schema] to store the validator.
+  /// The [schema] contains all [Validator] to be used on [validate].
   final Map<String, Validator> schema;
 
   const GroupValidator(this.schema);
@@ -24,19 +27,19 @@ class GroupValidator {
     }
   }
 
-  /// The [validate] function to run the validation based on [schema] key
-  /// ([field]).
-  ///
-  /// If [field] not found in [schema], [validate] will throw [ValidasiException].
-  /// return [String] first error message if found, or `null` if success.
+  /// Perform the validation and catch the `message`.
+  /// Return `null` if success.
+  /// Return `string` if any error encountered.
+  /// Throw [ValidasiException] if [field] not found in [schema].
   String? validate(String field, dynamic value, {String path = 'field'}) {
     _containKey(field);
 
     return FieldValidator(schema[field]!).validate(value, path: path);
   }
 
-  /// Similar to [validate] but with Asyncronous context.
-  ///
+  /// Perform the validation asynchronously and catch the `message`.
+  /// Return `null` if success.
+  /// Return `string` if any error encountered.
   /// Throw [ValidasiException] if [field] not found in [schema].
   Future<String?> validateAsync(String field, dynamic value,
       {String path = 'field'}) {

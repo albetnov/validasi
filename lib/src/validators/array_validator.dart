@@ -2,7 +2,7 @@ import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/result.dart';
 import 'package:validasi/src/validators/validator.dart';
 
-/// Responsible for validating arrays based on [validator].
+/// Responsible for validating arrays/[List] based on provided [validator].
 class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
   final V validator;
 
@@ -19,6 +19,7 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
   ArrayValidator customFor(CustomRule<List<T>> customRule) =>
       super.customFor(customRule);
 
+  /// Check if the value length is more or equal to [min].
   ArrayValidator<V, T> min(int min, {String? message}) {
     addRule(
       name: 'min',

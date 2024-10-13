@@ -30,8 +30,13 @@ abstract class Validator<T> {
   @internal
   CustomCallback<T?>? customCallback;
 
+  /// The [_isOptional] flag to mark the field as nullable.
+  /// If the field is `null`, then the rules will not be executed.
   bool _isOptional = false;
 
+  /// The [transformer] responsible to transform the value to the desired type.
+  /// If the value is not the expected type, the transformer will be used.
+  /// If no transformer provided, the validator will throw [FieldError].
   Transformer<T>? transformer;
 
   Validator({this.transformer, String? message});
@@ -82,6 +87,9 @@ abstract class Validator<T> {
   /// This is the custom runner implementation, responsible to run
   /// [customCallback] in syncronous context. The [runCustom] by default,
   /// are already included in `parse` variants methods.
+  ///
+  /// If the custom rule requires async context, it will throw [ValidasiException].
+  /// IF the custom rule return `false`, it will throw [FieldError].
   @protected
   void runCustom(T? value, String path) {
     if (customCallback == null) return;
@@ -109,8 +117,10 @@ abstract class Validator<T> {
     );
   }
 
-  /// Similar to [runCustom] but run on async context. The [runCustomAsync]
-  /// have already been included by default in the `async` parse variants.
+  /// This is the custom runner implementation, responsible to run asyncronous
+  /// [customCallback].
+  ///
+  /// If the custom rule return `false`, it will throw [FieldError].
   @protected
   Future<void> runCustomAsync(T? value, String path) async {
     if (customCallback == null) return;
@@ -244,6 +254,8 @@ abstract class Validator<T> {
     }
   }
 
+  /// [_getResultOrThrow] is a helper function to get the result from [tryParse]
+  /// and [tryParseAsync] and throw the first error if any.
   Result<T> _getResultOrThrow(Result<T> result) {
     var err = result.errors.firstOrNull;
 
@@ -256,7 +268,7 @@ abstract class Validator<T> {
 
   /// [parse] run the validation
   ///
-  /// throw [FieldError] if any error encountered and stop execution afterwards.
+  /// throw [FieldError] if any error encountered.
   /// throw [ValidasiException] if the custom rule requires async context
   @mustCallSuper
   Result<T> parse(dynamic value, {String path = 'field'}) =>
@@ -264,7 +276,7 @@ abstract class Validator<T> {
 
   /// [parseAsync] run validation with asyncronous context
   ///
-  /// throw [FieldError] if any error encountered and stop execution afterwards.
+  /// throw [FieldError] if any error encountered.
   @mustCallSuper
   Future<Result<T>> parseAsync(dynamic value, {String path = 'field'}) async =>
       _getResultOrThrow(await tryParseAsync(value, path: path));

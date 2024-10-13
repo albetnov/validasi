@@ -17,6 +17,7 @@ class NumberValidator extends Validator<num> {
   NumberValidator customFor(CustomRule<num> customRule) =>
       super.customFor(customRule);
 
+  /// Check if the value is an integer, not a decimal/float.
   NumberValidator nonDecimal({String? message}) {
     addRule(
         name: 'nonDecimal',
@@ -26,6 +27,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is a decimal/float, not an integer.
   NumberValidator decimal({String? message}) {
     addRule(
         name: 'decimal',
@@ -35,6 +37,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is a positive number (> 0).
   NumberValidator positive({String? message}) {
     addRule(
         name: 'positive',
@@ -44,6 +47,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is a negative number (< 0).
   NumberValidator negative({String? message}) {
     addRule(
         name: 'negative',
@@ -53,6 +57,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is a non-positive number (<= 0).
   NumberValidator nonPositive({String? message}) {
     addRule(
         name: 'nonPositive',
@@ -62,6 +67,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is a non-negative number (>= 0).
   NumberValidator nonNegative({String? message}) {
     addRule(
         name: 'nonNegative',
@@ -71,6 +77,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is greater than [min].
   NumberValidator gt(num min, {String? message}) {
     addRule(
         name: 'gt',
@@ -80,6 +87,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is greater than or equal to [min].
   NumberValidator gte(num min, {String? message}) {
     addRule(
         name: 'gte',
@@ -89,6 +97,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is less than [max].
   NumberValidator lt(num max, {String? message}) {
     addRule(
         name: 'lt',
@@ -98,6 +107,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is less than or equal to [max].
   NumberValidator lte(num max, {String? message}) {
     addRule(
         name: 'lte',
@@ -107,6 +117,7 @@ class NumberValidator extends Validator<num> {
     return this;
   }
 
+  /// Check if the value is a finite number.
   NumberValidator finite({String? message}) {
     addRule(
         name: 'finite',

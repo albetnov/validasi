@@ -9,3 +9,4 @@ pubspec.lock
 coverage/
 node_modules/
 docs/.vitepress/cache
+.vscode/

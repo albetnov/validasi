@@ -37,13 +37,12 @@ export default defineConfig({
         text: 'Extending',
         items: [
           {text: 'New Validation', link: '/extending/new-validation'},
-          {text: 'Existing Validation', link: '/extending/existing-validation'},
         ]
       }
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/albetnov/validasi' },
     ]
   }
 })

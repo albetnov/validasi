@@ -32,8 +32,6 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     return result.value;
   }
 
-  /// [tryParse] will return [Result] and contains `errors` if any error
-  /// encountered.
   @override
   Result<T> tryParse(dynamic value, {String path = 'field'}) {
     var values = super.tryParse(value, path: path);
@@ -58,8 +56,6 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     return Result(value: results, errors: values.errors);
   }
 
-  /// Similar to [tryParse]. But, The [tryParseAsync] will run on Asyncronous
-  /// context instead.
   @override
   Future<Result<T>> tryParseAsync(dynamic value,
       {String path = 'field'}) async {

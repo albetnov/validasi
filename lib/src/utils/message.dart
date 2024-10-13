@@ -1,4 +1,7 @@
-/// [Message] is an validation message processor to parse template like `:name`
+/// A class that represents a message.
+///
+/// The [Message] class is used to represent a message that can be parsed
+/// with a [path] and a [_fallback] message.
 class Message {
   final String path;
   final String? _message;
