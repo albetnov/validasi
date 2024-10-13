@@ -1,29 +1,26 @@
+import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 /// Responsible for validating [num] for both [double] and [int] also
 /// support type conversion from [String] based on [num.tryParse].
-class NumberValidator extends Validator<num, NumberValidator> {
+class NumberValidator extends Validator<num> {
   NumberValidator({super.transformer});
 
-  /// [required] indicate that the [value] cannot be `null`
-  NumberValidator required({String? message}) {
-    addRule(
-      name: 'required',
-      test: (value) => value != null,
-      message: message ?? ':name is required',
-    );
+  @override
+  NumberValidator nullable() => super.nullable();
 
-    return this;
-  }
+  @override
+  NumberValidator custom(CustomCallback<num> callback) =>
+      super.custom(callback);
+
+  @override
+  NumberValidator customFor(CustomRule<num> customRule) =>
+      super.customFor(customRule);
 
   NumberValidator nonDecimal({String? message}) {
     addRule(
         name: 'nonDecimal',
-        test: (value) {
-          if (value == null) return false;
-
-          return value is int || value == value.roundToDouble();
-        },
+        test: (value) => value is int || value == value.roundToDouble(),
         message: message ?? ':name must be non-decimal number');
 
     return this;
@@ -41,7 +38,7 @@ class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator positive({String? message}) {
     addRule(
         name: 'positive',
-        test: (value) => value != null && value > 0,
+        test: (value) => value > 0,
         message: message ?? ':name must be positive number');
 
     return this;
@@ -50,7 +47,7 @@ class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator negative({String? message}) {
     addRule(
         name: 'negative',
-        test: (value) => value != null && value < 0,
+        test: (value) => value < 0,
         message: message ?? ':name must be negative number');
 
     return this;
@@ -59,7 +56,7 @@ class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator nonPositive({String? message}) {
     addRule(
         name: 'nonPositive',
-        test: (value) => value != null && value <= 0,
+        test: (value) => value <= 0,
         message: message ?? ':name must be non-positive number');
 
     return this;
@@ -68,7 +65,7 @@ class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator nonNegative({String? message}) {
     addRule(
         name: 'nonNegative',
-        test: (value) => value != null && value >= 0,
+        test: (value) => value >= 0,
         message: message ?? ':name must be non-negative number');
 
     return this;
@@ -77,7 +74,7 @@ class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator gt(num min, {String? message}) {
     addRule(
         name: 'gt',
-        test: (value) => value != null && value > min,
+        test: (value) => value > min,
         message: message ?? ':name must be greater than $min');
 
     return this;
@@ -86,7 +83,7 @@ class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator gte(num min, {String? message}) {
     addRule(
         name: 'gte',
-        test: (value) => value != null && value >= min,
+        test: (value) => value >= min,
         message: message ?? ':name must be greater than or equal to $min');
 
     return this;
@@ -95,7 +92,7 @@ class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator lt(num max, {String? message}) {
     addRule(
         name: 'lt',
-        test: (value) => value != null && value < max,
+        test: (value) => value < max,
         message: message ?? ':name must be less than $max');
 
     return this;
@@ -104,7 +101,7 @@ class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator lte(num max, {String? message}) {
     addRule(
         name: 'lte',
-        test: (value) => value != null && value <= max,
+        test: (value) => value <= max,
         message: message ?? ':name must be less than or equal to $max');
 
     return this;
@@ -113,7 +110,7 @@ class NumberValidator extends Validator<num, NumberValidator> {
   NumberValidator finite({String? message}) {
     addRule(
         name: 'finite',
-        test: (value) => value != null && value.isFinite,
+        test: (value) => value.isFinite,
         message: message ?? ':name must be finite number');
 
     return this;

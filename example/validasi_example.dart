@@ -2,12 +2,16 @@ import 'package:validasi/validasi.dart';
 
 void main() {
   // simple single validation
-  var idSchema = Validasi.number().required();
+  var idSchema = Validasi.number();
 
   idSchema.parse(null); // FieldErorr exception: field is required
 
+  // nullable skip validation
+  // will skip any rules (except custom rule) if the given value is null.
+  Validasi.number().nullable().parse(null); // success
+
   // customize message and field name
-  var nameSchema = Validasi.string().minLength(1, message: 'Name is reqiured!');
+  var nameSchema = Validasi.string().minLength(1, message: 'Name is required!');
 
   nameSchema.parse(null, path: 'name'); // FieldError: name is required
 

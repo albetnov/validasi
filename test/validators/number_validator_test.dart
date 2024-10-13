@@ -5,16 +5,15 @@ import '../test_utils.dart';
 
 void main() {
   group('Number Validator Test', () {
-    test('passes type check on value match num or null', () {
+    test('passes type check on value match num', () {
       var schema = Validasi.number();
 
       shouldNotThrow(() {
         schema.parse(10);
-        schema.parse(null);
       });
     });
 
-    test('fails type check on value not match num or not null', () {
+    test('fails type check on value not match num', () {
       var schema = Validasi.number();
 
       expect(
@@ -26,7 +25,7 @@ void main() {
       var result = schema.tryParse(true);
 
       expect(result.isValid, isFalse);
-      expect(result.errors.first.name, equals('invalidType'));
+      expect(getName(result), equals('invalidType'));
       expect(result.value, isNull);
     });
 
@@ -38,32 +37,27 @@ void main() {
       expect(result.value, equals(123));
     });
 
-    test('should pass for required rule', () {
-      var schema = Validasi.number().required();
+    test('should pass if nullable is set for value null', () {
+      var schema = Validasi.number().nullable();
 
-      shouldNotThrow(() {
-        schema.parse(1);
-      });
+      expect(schema.tryParse(null).isValid, isTrue);
     });
 
-    test('should fail for required rule', () {
-      var schema = Validasi.number().required();
+    test('should fail if nullable is not set for value null', () {
+      var schema = Validasi.number();
 
-      expect(() => schema.parse(null),
-          throwFieldError(name: 'required', message: 'field is required'));
+      var result = schema.tryParse(null);
+
+      expect(getName(result), equals('required'));
+      expect(getMsg(result), equals('field is required'));
     });
 
-    test('can customize field name on required message', () {
-      var schema = Validasi.number().required();
-
-      expect(schema.tryParse(null, path: 'id').errors.first.message,
-          equals('id is required'));
-    });
-
-    test('can customize default error message on required', () {
-      var schema = Validasi.number().required(message: 'fill this!');
-
-      expect(schema.tryParse(null).errors.first.message, equals('fill this!'));
+    test('verify can attach custom', () async {
+      testCanAttachCustom(
+        valid: 10,
+        invalid: 5,
+        validator: () => Validasi.number(),
+      );
     });
 
     test('should pass for nonDecimal', () {

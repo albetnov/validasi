@@ -3,10 +3,9 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i8;
+import 'dart:async' as _i7;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i7;
 import 'package:validasi/src/custom_rule.dart' as _i5;
 import 'package:validasi/src/result.dart' as _i2;
 import 'package:validasi/src/transformers/transformer.dart' as _i6;
@@ -39,8 +38,7 @@ class _FakeResult_0<T1> extends _i1.SmartFake implements _i2.Result<T1> {
 /// A class which mocks [Validator].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockValidator<T, R extends _i3.Validator<T, R>> extends _i1.Mock
-    implements _i3.Validator<T, R> {
+class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
   @override
   List<_i4.ValidatorRule<T>> get rules => (super.noSuchMethod(
         Invocation.getter(#rules),
@@ -87,70 +85,22 @@ class MockValidator<T, R extends _i3.Validator<T, R>> extends _i1.Mock
       );
 
   @override
-  R optional() => (super.noSuchMethod(
-        Invocation.method(
-          #optional,
-          [],
-        ),
-        returnValue: _i7.dummyValue<R>(
-          this,
-          Invocation.method(
-            #optional,
-            [],
-          ),
-        ),
-        returnValueForMissingStub: _i7.dummyValue<R>(
-          this,
-          Invocation.method(
-            #optional,
-            [],
-          ),
-        ),
-      ) as R);
-
-  @override
-  R custom(_i5.CustomCallback<T>? callback) => (super.noSuchMethod(
+  dynamic custom(_i5.CustomCallback<T>? callback) => super.noSuchMethod(
         Invocation.method(
           #custom,
           [callback],
         ),
-        returnValue: _i7.dummyValue<R>(
-          this,
-          Invocation.method(
-            #custom,
-            [callback],
-          ),
-        ),
-        returnValueForMissingStub: _i7.dummyValue<R>(
-          this,
-          Invocation.method(
-            #custom,
-            [callback],
-          ),
-        ),
-      ) as R);
+        returnValueForMissingStub: null,
+      );
 
   @override
-  R customFor(_i5.CustomRule<T>? customRule) => (super.noSuchMethod(
+  dynamic customFor(_i5.CustomRule<T>? customRule) => super.noSuchMethod(
         Invocation.method(
           #customFor,
           [customRule],
         ),
-        returnValue: _i7.dummyValue<R>(
-          this,
-          Invocation.method(
-            #customFor,
-            [customRule],
-          ),
-        ),
-        returnValueForMissingStub: _i7.dummyValue<R>(
-          this,
-          Invocation.method(
-            #customFor,
-            [customRule],
-          ),
-        ),
-      ) as R);
+        returnValueForMissingStub: null,
+      );
 
   @override
   void runCustom(
@@ -169,7 +119,7 @@ class MockValidator<T, R extends _i3.Validator<T, R>> extends _i1.Mock
       );
 
   @override
-  _i8.Future<void> runCustomAsync(
+  _i7.Future<void> runCustomAsync(
     T? value,
     String? path,
   ) =>
@@ -181,68 +131,9 @@ class MockValidator<T, R extends _i3.Validator<T, R>> extends _i1.Mock
             path,
           ],
         ),
-        returnValue: _i8.Future<void>.value(),
-        returnValueForMissingStub: _i8.Future<void>.value(),
-      ) as _i8.Future<void>);
-
-  @override
-  _i2.Result<T> parse(
-    dynamic value, {
-    String? path = r'field',
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #parse,
-          [value],
-          {#path: path},
-        ),
-        returnValue: _FakeResult_0<T>(
-          this,
-          Invocation.method(
-            #parse,
-            [value],
-            {#path: path},
-          ),
-        ),
-        returnValueForMissingStub: _FakeResult_0<T>(
-          this,
-          Invocation.method(
-            #parse,
-            [value],
-            {#path: path},
-          ),
-        ),
-      ) as _i2.Result<T>);
-
-  @override
-  _i8.Future<_i2.Result<T>> parseAsync(
-    dynamic value, {
-    String? path = r'field',
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #parseAsync,
-          [value],
-          {#path: path},
-        ),
-        returnValue: _i8.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
-          this,
-          Invocation.method(
-            #parseAsync,
-            [value],
-            {#path: path},
-          ),
-        )),
-        returnValueForMissingStub:
-            _i8.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
-          this,
-          Invocation.method(
-            #parseAsync,
-            [value],
-            {#path: path},
-          ),
-        )),
-      ) as _i8.Future<_i2.Result<T>>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
   _i2.Result<T> tryParse(
@@ -274,7 +165,7 @@ class MockValidator<T, R extends _i3.Validator<T, R>> extends _i1.Mock
       ) as _i2.Result<T>);
 
   @override
-  _i8.Future<_i2.Result<T>> tryParseAsync(
+  _i7.Future<_i2.Result<T>> tryParseAsync(
     dynamic value, {
     String? path = r'field',
   }) =>
@@ -284,7 +175,7 @@ class MockValidator<T, R extends _i3.Validator<T, R>> extends _i1.Mock
           [value],
           {#path: path},
         ),
-        returnValue: _i8.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
+        returnValue: _i7.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
           this,
           Invocation.method(
             #tryParseAsync,
@@ -293,7 +184,7 @@ class MockValidator<T, R extends _i3.Validator<T, R>> extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i8.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
+            _i7.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
           this,
           Invocation.method(
             #tryParseAsync,
@@ -301,5 +192,64 @@ class MockValidator<T, R extends _i3.Validator<T, R>> extends _i1.Mock
             {#path: path},
           ),
         )),
-      ) as _i8.Future<_i2.Result<T>>);
+      ) as _i7.Future<_i2.Result<T>>);
+
+  @override
+  _i2.Result<T> parse(
+    dynamic value, {
+    String? path = r'field',
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #parse,
+          [value],
+          {#path: path},
+        ),
+        returnValue: _FakeResult_0<T>(
+          this,
+          Invocation.method(
+            #parse,
+            [value],
+            {#path: path},
+          ),
+        ),
+        returnValueForMissingStub: _FakeResult_0<T>(
+          this,
+          Invocation.method(
+            #parse,
+            [value],
+            {#path: path},
+          ),
+        ),
+      ) as _i2.Result<T>);
+
+  @override
+  _i7.Future<_i2.Result<T>> parseAsync(
+    dynamic value, {
+    String? path = r'field',
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #parseAsync,
+          [value],
+          {#path: path},
+        ),
+        returnValue: _i7.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
+          this,
+          Invocation.method(
+            #parseAsync,
+            [value],
+            {#path: path},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i2.Result<T>>.value(_FakeResult_0<T>(
+          this,
+          Invocation.method(
+            #parseAsync,
+            [value],
+            {#path: path},
+          ),
+        )),
+      ) as _i7.Future<_i2.Result<T>>);
 }

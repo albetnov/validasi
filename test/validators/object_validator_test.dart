@@ -3,22 +3,19 @@ import 'package:test/test.dart';
 import 'package:validasi/validasi.dart';
 
 import '../test_utils.dart';
-import 'validator_test_stub.dart';
+import 'validator_test_stub.mocks.dart';
 
 void main() {
   group('Object Validator Test', () {
-    test('passes type check on value match schema or null', () {
+    test('passes type check on value match schema', () {
       var schema = Validasi.object({'name': Validasi.string()});
 
       shouldNotThrow(() {
-        schema.parse({'name': null});
         schema.parse({'name': 'Asep'});
-        schema.parse({});
-        schema.parse(null);
       });
     });
 
-    test('fails types check on value not match schema or not null', () {
+    test('fails types check on value not match schema', () {
       var schema = Validasi.object({'name': Validasi.string()});
 
       expect(
@@ -32,27 +29,51 @@ void main() {
 
       expect(result.isValid, isFalse);
       expect(getName(result), equals('invalidType'));
-      expect(result.value, equals({'name': null}));
+      expect(result.value, isNull);
+
+      expect(schema.tryParse({}).value, equals({'name': null}));
     });
 
-    test('verify the validator schema parse method get called', () async {
-      var mock = MockValidatorStub<int>();
+    test('should pass if nullable is set for value null', () {
+      var schema = Validasi.object({'name': Validasi.string()}).nullable();
 
-      when(mock.parse(1, path: 'field.id')).thenReturn(Result(value: 1));
-      when(mock.parseAsync(1, path: 'field.id'))
-          .thenAnswer((_) async => Result(value: 1));
+      expect(schema.tryParse(null).isValid, isTrue);
 
-      var schema = Validasi.object({'id': mock});
+      var nestedSchema = Validasi.object({
+        'address': Validasi.object({'street': Validasi.string()}).nullable(),
+      });
 
-      schema.parse({'id': 1});
-      verify(mock.parse(1, path: 'field.id')).called(1);
+      shouldNotThrow(() {
+        nestedSchema.parse({});
+      });
+    });
 
-      await schema.parseAsync({'id': 1});
-      verify(mock.parseAsync(1, path: 'field.id')).called(1);
+    test('should fail if nullable is not set for value null', () {
+      var schema = Validasi.object({'name': Validasi.string()});
+
+      var result = schema.tryParse(null);
+
+      expect(getName(result), equals('required'));
+      expect(getMsg(result), equals('field is required'));
+
+      var nestedSchema = Validasi.object({
+        'address': Validasi.object({'street': Validasi.string()}),
+      });
+
+      expect(() => nestedSchema.parse({}),
+          throwFieldError(path: 'field.address', name: 'required'));
+    });
+
+    test('verify can attach custom', () {
+      testCanAttachCustom(
+        valid: {'name': 'valid'},
+        invalid: {'name': 'invalid'},
+        validator: () => Validasi.object({'name': Validasi.string()}),
+      );
     });
 
     test('verify the validator schema tryParse method get called', () async {
-      var mock = MockValidatorStub<int>();
+      var mock = MockValidator<int>();
 
       when(mock.tryParse(1, path: 'field.id')).thenReturn(Result(value: 1));
 
@@ -65,6 +86,12 @@ void main() {
       verify(mock.tryParse(1, path: 'field.id')).called(1);
 
       await schema.tryParseAsync({'id': 1});
+      verify(mock.tryParseAsync(1, path: 'field.id')).called(1);
+
+      schema.parse({'id': 1});
+      verify(mock.tryParse(1, path: 'field.id')).called(1);
+
+      await schema.parseAsync({'id': 1});
       verify(mock.tryParseAsync(1, path: 'field.id')).called(1);
     });
 
@@ -315,17 +342,7 @@ void main() {
       var scenarios = [
         {
           'case': {'id': 1},
-          'expectation': {
-            'id': 1,
-            'name': null,
-            'address': {
-              'street': null,
-              'city': null,
-              'zip': {
-                'code': null,
-              }
-            }
-          }
+          'expectation': {'id': 1, 'name': null, 'address': null}
         },
         {
           'case': {
@@ -380,55 +397,6 @@ void main() {
 
         expect(resultAsync.value, equals(scenario['expectation']));
       }
-    });
-
-    test('should pass for required rule', () {
-      var schema = Validasi.object({
-        'id': Validasi.number(),
-        'name': Validasi.string().minLength(1),
-      }).required();
-
-      shouldNotThrow(() {
-        schema.parse({'id': null, 'name': 'Asep'});
-        schema.parse({'id': 1, 'name': 'Asep'});
-      });
-    });
-
-    test('should fail for required rule', () {
-      var schema = Validasi.object({
-        'id': Validasi.number(),
-        'name': Validasi.string().minLength(1),
-      }).required();
-
-      expect(
-          () => schema.parse({'id': 1}),
-          throwFieldError(
-              name: 'required',
-              path: 'field.name',
-              message: 'field.name is required'));
-
-      expect(
-          () => schema.parse(null),
-          throwFieldError(
-              name: 'required', path: 'field', message: 'field is required'));
-    });
-
-    test('can customize field name on required rule', () {
-      var schema = Validasi.object({
-        'id': Validasi.number(),
-      }).required();
-
-      expect(() => schema.parse(null, path: 'custom'),
-          throwFieldError(path: 'custom', message: 'custom is required'));
-    });
-
-    test('can customize default error message for required rule', () {
-      var schema = Validasi.object({
-        'id': Validasi.number(),
-      }).required(message: ':name must be filled');
-
-      expect(() => schema.parse(null),
-          throwFieldError(message: 'field must be filled'));
     });
   });
 }

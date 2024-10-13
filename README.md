@@ -1,10 +1,8 @@
 # Validasi
 
-A flexible and easy to use Dart Validation Library.
+![image](/img/validasi.png)
 
-> Type Inference Limitation:
-The Validasi Library will try to infer types based on Dart Generic System capabilities. Some types are not supported for infer
-are `array` and `object` for now. The `number` also returning `num` which can represents both `double` and `int`.
+A flexible and straightforward Dart Validation Library.
 
 ## Installation
 
@@ -15,12 +13,11 @@ Add `validasi` to your pubspec dependencies or use `pub get`.
 To use the library, simply import the package and use `Validasi` class to access to available
 validator.
 
-
 ```dart
 import 'package:validasi/validasi.dart';
 
 void main(List<String> args) {
-  var schema = Validasi.string().required().maxLength(255);
+  var schema = Validasi.string().maxLength(255);
 
   var result = schema.parse(args.firstOrNull);
 

@@ -5,16 +5,15 @@ import '../test_utils.dart';
 
 void main() {
   group('Date Validator Test', () {
-    test('passes type check on value match date or null', () {
+    test('passes type check on value match date', () {
       var schema = Validasi.date();
 
       shouldNotThrow(() {
         schema.parse(DateTime(2024, 9, 9));
-        schema.parse(null);
       });
     });
 
-    test('fails type check on value not match date or not null', () {
+    test('fails type check on value not match date', () {
       var schema = Validasi.date();
 
       expect(
@@ -39,31 +38,28 @@ void main() {
       expect(result.value!.isAtSameMomentAs(DateTime(2024, 9, 23)), isTrue);
     });
 
-    test('should pass for required rule', () {
-      var schema = Validasi.date().required();
+    test('should pass if nullable is set for value null', () {
+      var schema = Validasi.date().nullable();
 
-      shouldNotThrow(() {
-        schema.parse(DateTime.now());
-      });
+      expect(schema.tryParse(null).isValid, isTrue);
     });
 
-    test('should fail for required rule', () {
-      var schema = Validasi.date().required();
+    test('should fail if nullable is not set for value null', () {
+      var schema = Validasi.date();
 
-      expect(schema.tryParse(null).errors.first.name, 'required');
+      var result = schema.tryParse(null);
+
+      expect(getName(result), equals('required'));
+      expect(getMsg(result), equals('field is required'));
     });
 
-    test('can customize field name on required message', () {
-      var schema = Validasi.date().required();
-
-      expect(schema.tryParse(null, path: 'date').errors.first.message,
-          equals('date is required'));
-    });
-
-    test('can customize default error message on required', () {
-      var schema = Validasi.date().required(message: 'fill this!');
-
-      expect(schema.tryParse(null).errors.first.message, equals('fill this!'));
+    test('verify can attach custom', () async {
+      testCanAttachCustom<DateTime>(
+        valid: DateTime(2024, 10, 11),
+        invalid: DateTime(2024, 10, 12),
+        validator: () => Validasi.date(),
+        comparator: (oldValue, newValue) => oldValue.isAtSameMomentAs(newValue),
+      );
     });
 
     test('should pass for before rule', () {
@@ -119,12 +115,7 @@ void main() {
     test('can customize path name for before rule', () {
       var schema = Validasi.date().before(DateTime(2024, 9, 10));
 
-      expect(
-          schema
-              .tryParse(DateTime(2024, 9, 11), path: 'date')
-              .errors
-              .first
-              .message,
+      expect(getMsg(schema.tryParse(DateTime(2024, 9, 11), path: 'date')),
           equals('date must be before 2024-09-10'));
     });
 
@@ -191,12 +182,7 @@ void main() {
     test('can customize path name for after rule', () {
       var schema = Validasi.date().after(DateTime(2024, 9, 10));
 
-      expect(
-          schema
-              .tryParse(DateTime(2024, 9, 9), path: 'date')
-              .errors
-              .first
-              .message,
+      expect(getMsg(schema.tryParse(DateTime(2024, 9, 9), path: 'date')),
           equals('date must be after 2024-09-10'));
     });
 

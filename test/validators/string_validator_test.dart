@@ -5,16 +5,15 @@ import '../test_utils.dart';
 
 void main() {
   group('String Validator Test', () {
-    test('passes type check on value match string or null', () {
+    test('should pass type check when value is string', () {
       var schema = Validasi.string();
 
       shouldNotThrow(() {
         schema.parse('value');
-        schema.parse(null);
       });
     });
 
-    test('fails type check on value not match string or not null', () {
+    test('should fail type check when value is not a string', () {
       var schema = Validasi.string();
 
       expect(
@@ -22,11 +21,6 @@ void main() {
           throwFieldError(
               name: 'invalidType',
               message: 'Expected type String. Got bool instead.'));
-
-      var result = schema.tryParse(true);
-
-      expect(result.isValid, isFalse);
-      expect(result.errors.first.name, equals('invalidType'));
     });
 
     test('can attach StringTransformer', () {
@@ -35,6 +29,29 @@ void main() {
       var result = schema.parse(123);
 
       expect(result.value, equals('123'));
+    });
+
+    test('should pass if nullable is set for value null', () {
+      var schema = Validasi.string().nullable();
+
+      expect(schema.tryParse(null).isValid, isTrue);
+    });
+
+    test('should fail if nullable is not set for value null', () {
+      var schema = Validasi.string();
+
+      var result = schema.tryParse(null);
+
+      expect(getName(result), equals('required'));
+      expect(getMsg(result), equals('field is required'));
+    });
+
+    test('verify can attach custom', () async {
+      testCanAttachCustom(
+        valid: 'valid',
+        invalid: 'invalid',
+        validator: () => Validasi.string(),
+      );
     });
 
     test('should pass for minLength', () {
@@ -47,26 +64,27 @@ void main() {
     test('should fail for minLength', () {
       var schema = Validasi.string().minLength(3);
 
-      var result = schema.tryParse(null);
+      expect(schema.tryParse('').isValid, isFalse);
+
+      var result = schema.tryParse('ab');
 
       expect(result.isValid, isFalse);
-      expect(result.errors.first.name, 'minLength');
-      expect(schema.tryParse('').isValid, isFalse);
-      expect(schema.tryParse('ab').isValid, isFalse);
-      expect(schema.tryParse(null).isValid, isFalse);
+      expect(getName(result), equals('minLength'));
+      expect(
+          getMsg(result), equals('field must contains at least 3 characters'));
     });
 
     test('can customize field name on minLength message', () {
       var schema = Validasi.string().minLength(3);
 
-      expect(schema.tryParse(null, path: 'label').errors.first.message,
-          equals('label must be at least contains 3 characters'));
+      expect(getMsg(schema.tryParse('ab', path: 'label')),
+          equals('label must contains at least 3 characters'));
     });
 
     test('can customize default error message on minLength', () {
       var schema = Validasi.string().minLength(3, message: 'too short!');
 
-      expect(schema.tryParse(null).errors.first.message, equals('too short!'));
+      expect(getMsg(schema.tryParse('ab')), equals('too short!'));
     });
 
     test('should pass for maxLength', () {
@@ -79,8 +97,11 @@ void main() {
     test('should fail for maxLength', () {
       var schema = Validasi.string().maxLength(5);
 
-      expect(schema.tryParse('abcdef').isValid, isFalse);
-      expect(schema.tryParse(null).isValid, isFalse);
+      var result = schema.tryParse('abcdef');
+
+      expect(result.isValid, isFalse);
+      expect(getName(result), equals('maxLength'));
+      expect(getMsg(result), 'field must not be longer than 5 characters');
     });
 
     test('can customize field name on maxLength message', () {
@@ -118,7 +139,11 @@ void main() {
     test('should fail for email', () {
       var schema = Validasi.string().email();
 
-      expect(schema.tryParse('example@mail').isValid, isFalse);
+      var result = schema.tryParse('example@mail');
+      expect(result.isValid, isFalse);
+      expect(getMsg(result), equals('field must be a valid email'));
+      expect(getName(result), equals('email'));
+
       expect(schema.tryParse('用户@例子.广告').isValid, isFalse);
     });
 
@@ -144,7 +169,11 @@ void main() {
     test('should fail for startsWith', () {
       var schema = Validasi.string().startsWith('hello');
 
-      expect(schema.tryParse('world').isValid, isFalse);
+      var result = schema.tryParse('world');
+
+      expect(result.isValid, isFalse);
+      expect(getName(result), equals('startsWith'));
+      expect(getMsg(result), equals('field must start with "hello"'));
     });
 
     test('can customize field name on startsWith message', () {
@@ -169,7 +198,11 @@ void main() {
     test('should fail for endsWith', () {
       var schema = Validasi.string().endsWith('world');
 
-      expect(schema.tryParse('hello').isValid, isFalse);
+      var result = schema.tryParse('hello');
+
+      expect(result.isValid, isFalse);
+      expect(getName(result), equals('endsWith'));
+      expect(getMsg(result), equals('field must end with "world"'));
     });
 
     test('can customize field name on endsWith message', () {
@@ -194,7 +227,11 @@ void main() {
     test('should fail for contains', () {
       var schema = Validasi.string().contains('world');
 
-      expect(schema.tryParse('hello').isValid, isFalse);
+      var result = schema.tryParse('hello');
+
+      expect(result.isValid, isFalse);
+      expect(getName(result), equals('contains'));
+      expect(getMsg(result), equals('field must contain "world"'));
     });
 
     test('can customize field name on contains message', () {
@@ -219,7 +256,11 @@ void main() {
     test('should fail for url', () {
       var schema = Validasi.string().url();
 
-      expect(schema.tryParse(':: not valid ::').isValid, isFalse);
+      var result = schema.tryParse(':: not valid ::');
+
+      expect(result.isValid, isFalse);
+      expect(getName(result), equals('url'));
+      expect(getMsg(result), equals('field must be a valid url'));
     });
 
     test('can customize field name on url message', () {
@@ -244,7 +285,11 @@ void main() {
     test('should fail for regex', () {
       var schema = Validasi.string().regex(r'^[a-z]+$');
 
-      expect(schema.tryParse('hello world').isValid, isFalse);
+      var result = schema.tryParse('hello world');
+
+      expect(result.isValid, isFalse);
+      expect(getName(result), equals('regex'));
+      expect(getMsg(result), equals('field must match the pattern'));
     });
 
     test('can customize field name on regex message', () {

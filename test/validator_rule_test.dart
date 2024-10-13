@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
-import 'package:validasi/validasi.dart';
+import 'package:validasi/src/exceptions/field_error.dart';
+import 'package:validasi/src/validator_rule.dart';
 
 void main() {
   group('Validator Rule Test', () {
@@ -24,8 +25,8 @@ void main() {
           },
           message: 'message');
 
-      expect(rule.test, isA<bool Function(String? value)>());
-      expect(rule.check, isA<void Function(String? value)>());
+      expect(rule.test, isA<bool Function(String value)>());
+      expect(rule.check, isA<void Function(String value)>());
     });
 
     test('check correctly adjust the isPassed', () {

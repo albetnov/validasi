@@ -4,15 +4,15 @@ import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/forms/field_validator.dart';
 import 'package:validasi/src/result.dart';
 
-import '../validators/validator_test_stub.dart';
+import '../validators/validator_test_stub.mocks.dart';
 
 void main() {
   group('Field Validator Test', () {
     late FieldValidator fieldValidator;
-    late MockValidatorStub<int> mockValidator;
+    late MockValidator<int> mockValidator;
 
     setUp(() {
-      mockValidator = MockValidatorStub();
+      mockValidator = MockValidator();
 
       when(mockValidator.parse(argThat(isA<int>()), path: anyNamed('path')))
           .thenReturn(Result(value: 1));

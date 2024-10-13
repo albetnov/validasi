@@ -4,21 +4,20 @@ import 'package:test/test.dart';
 import 'package:validasi/validasi.dart';
 
 import '../test_utils.dart';
-import 'validator_test_stub.dart';
+import 'validator_test_stub.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<Validator>()])
 void main() {
   group('Array Validator Test', () {
-    test('passes type check on value match array or null', () {
+    test('passes type check on value match array', () {
       var schema = Validasi.array(Validasi.string());
 
       shouldNotThrow(() {
         schema.parse(['a', 'b']);
-        schema.parse(null);
       });
     });
 
-    test('fails types check on value not match array or not null', () {
+    test('fails types check on value not match array', () {
       var schema = Validasi.array(Validasi.number());
 
       expect(
@@ -34,63 +33,48 @@ void main() {
       expect(result.value, isNull);
     });
 
-    test('should pass for required rule', () {
-      var schema = Validasi.array(Validasi.number()).required();
+    test('should pass if nullable is set for value null', () {
+      var schema = Validasi.array(Validasi.string()).nullable();
+
+      expect(schema.tryParse(null).isValid, isTrue);
+
+      var nestedSchema =
+          Validasi.array(Validasi.array(Validasi.string()).nullable());
 
       shouldNotThrow(() {
-        schema.parse([1]);
-        schema.parse([]);
+        nestedSchema.parse([null]);
       });
     });
 
-    test('should fail for required rule', () {
-      var schema = Validasi.array(Validasi.number()).required();
+    test('should fail if nullable is not set for value null', () {
+      var schema = Validasi.array(Validasi.string());
 
-      expect(getName(schema.tryParse(null)), 'required');
+      var result = schema.tryParse(null);
+
+      expect(getName(result), equals('required'));
+      expect(getMsg(result), equals('field is required'));
+
+      var nestedSchema = Validasi.array(Validasi.array(Validasi.string()));
+
+      expect(
+          () => nestedSchema.parse([null]),
+          throwFieldError(
+            name: 'required',
+            message: 'field.0 is required',
+            path: 'field.0',
+          ));
     });
 
-    test('can customize field name on required message', () {
-      var schema = Validasi.array(Validasi.number()).required();
-
-      expect(getMsg(schema.tryParse(null, path: 'ids')),
-          equals('ids is required'));
-    });
-
-    test('can customize default error message on required', () {
-      var schema = Validasi.array(Validasi.number())
-          .required(message: 'where is ur array?');
-
-      expect(getMsg(schema.tryParse(null)), equals('where is ur array?'));
-    });
-
-    test('verify the derived validator parse method got called', () async {
-      var mock = MockValidatorStub<int>();
-
-      when(mock.parse(argThat(isA<int>()), path: anyNamed('path'))).thenAnswer(
-        (realInvocation) =>
-            Result(value: realInvocation.positionalArguments.first),
+    test('verify can attach custom', () async {
+      await testCanAttachCustom(
+        valid: [8, 9, 10],
+        invalid: [1, 2, 3],
+        validator: () => Validasi.array(Validasi.number()),
       );
-
-      var schema = Validasi.array(mock);
-
-      schema.parse([1, 2, 3]);
-
-      verify(mock.parse(argThat(isA<int>()), path: anyNamed('path'))).called(3);
-
-      when(mock.parseAsync(argThat(isA<int>()), path: anyNamed('path')))
-          .thenAnswer(
-        (realInvocation) async =>
-            Result(value: realInvocation.positionalArguments.first),
-      );
-
-      await schema.parseAsync([1, 2, 3]);
-
-      verify(mock.parseAsync(argThat(isA<int>()), path: anyNamed('path')))
-          .called(3);
     });
 
     test('verify the derived validator tryParse method got called', () async {
-      var mock = MockValidatorStub<int>();
+      var mock = MockValidator<int>();
 
       when(mock.tryParse(argThat(isA<int>()), path: anyNamed('path')))
           .thenAnswer(
@@ -112,6 +96,16 @@ void main() {
       );
 
       await schema.tryParseAsync([1, 2, 3]);
+
+      verify(mock.tryParseAsync(argThat(isA<int>()), path: anyNamed('path')))
+          .called(3);
+
+      schema.parse([1, 2, 3]);
+
+      verify(mock.tryParse(argThat(isA<int>()), path: anyNamed('path')))
+          .called(3);
+
+      await schema.parseAsync([1, 2, 3]);
 
       verify(mock.tryParseAsync(argThat(isA<int>()), path: anyNamed('path')))
           .called(3);
@@ -168,7 +162,7 @@ void main() {
 
     test('parse could validate nested array', () async {
       var schema = Validasi.array(
-        Validasi.array(Validasi.number().required()).required(),
+        Validasi.array(Validasi.number()),
       );
 
       expect(
@@ -202,7 +196,7 @@ void main() {
 
     test('tryParse could validate nested array', () async {
       var schema = Validasi.array(
-        Validasi.array(Validasi.number().required()).required(),
+        Validasi.array(Validasi.number()),
       );
 
       var result = schema.tryParse([
@@ -271,5 +265,34 @@ void main() {
         expect(result.value, equals(scenario['expected']));
       }
     });
+  });
+
+  test('should pass for min', () {
+    var schema = Validasi.array(Validasi.number()).min(3);
+
+    expect(schema.tryParse([1, 2, 3]).isValid, isTrue);
+    expect(schema.tryParse([1, 2, 3, 4]).isValid, isTrue);
+  });
+
+  test('should fail for min', () {
+    var schema = Validasi.array(Validasi.number()).min(3);
+
+    expect(schema.tryParse([1, 2]).isValid, isFalse);
+    expect(getMsg(schema.tryParse([1, 2])), 'field must have at least 3 items');
+  });
+
+  test('can customize field name on min message', () {
+    var schema = Validasi.array(Validasi.number()).min(3);
+
+    expect(getMsg(schema.tryParse([1, 2], path: 'label')),
+        'label must have at least 3 items');
+  });
+
+  test('can customize message on min', () {
+    var schema = Validasi.array(Validasi.number())
+        .min(3, message: ':name should have 3 items');
+
+    expect(getMsg(schema.tryParse([1, 2], path: 'cart')),
+        'cart should have 3 items');
   });
 }

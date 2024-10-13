@@ -1,21 +1,29 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/validators/validator.dart';
 
 /// Responsible for validating [String] also support [toString] conversion.
-class StringValidator extends Validator<String, StringValidator> {
+class StringValidator extends Validator<String> {
   StringValidator({super.transformer});
+
+  @override
+  StringValidator nullable() => super.nullable();
+
+  @override
+  StringValidator custom(CustomCallback<String> callback) =>
+      super.custom(callback);
+
+  @override
+  StringValidator customFor(CustomRule<String> customRule) =>
+      super.customFor(customRule);
 
   /// [minLength] check if the value satisfy the minimum length based on
   /// [length].
   StringValidator minLength(int length, {String? message}) {
     addRule(
       name: 'minLength',
-      test: (text) {
-        if (text == null) return false;
-
-        return text.length >= length;
-      },
-      message: message ?? ":name must be at least contains $length characters",
+      test: (text) => text.length >= length,
+      message: message ?? ":name must contains at least $length characters",
     );
 
     return this;
@@ -25,11 +33,7 @@ class StringValidator extends Validator<String, StringValidator> {
   StringValidator maxLength(int length, {String? message}) {
     addRule(
       name: 'maxLength',
-      test: (text) {
-        if (text == null) return false;
-
-        return text.length <= length;
-      },
+      test: (text) => text.length <= length,
       message: message ?? ":name must not be longer than $length characters",
     );
 
@@ -46,12 +50,8 @@ class StringValidator extends Validator<String, StringValidator> {
       String? message}) {
     addRule(
         name: 'email',
-        test: (text) {
-          if (text == null) return false;
-
-          return EmailValidator.validate(
-              text, allowTopLevelDomain, allowInternational);
-        },
+        test: (text) => EmailValidator.validate(
+            text, allowTopLevelDomain, allowInternational),
         message: message ?? ':name must be a valid email');
 
     return this;
@@ -61,11 +61,7 @@ class StringValidator extends Validator<String, StringValidator> {
   StringValidator startsWith(String text, {String? message}) {
     addRule(
         name: 'startsWith',
-        test: (value) {
-          if (value == null) return false;
-
-          return value.startsWith(text);
-        },
+        test: (value) => value.startsWith(text),
         message: message ?? ':name must start with "$text"');
 
     return this;
@@ -75,11 +71,7 @@ class StringValidator extends Validator<String, StringValidator> {
   StringValidator endsWith(String text, {String? message}) {
     addRule(
         name: 'endsWith',
-        test: (value) {
-          if (value == null) return false;
-
-          return value.endsWith(text);
-        },
+        test: (value) => value.endsWith(text),
         message: message ?? ':name must end with "$text"');
 
     return this;
@@ -89,39 +81,27 @@ class StringValidator extends Validator<String, StringValidator> {
   StringValidator contains(String text, {String? message}) {
     addRule(
         name: 'contains',
-        test: (value) {
-          if (value == null) return false;
-
-          return value.contains(text);
-        },
+        test: (value) => value.contains(text),
         message: message ?? ':name must contain "$text"');
 
     return this;
   }
 
-  /// Check if the value is a valid url.
+  /// Check if the value is a valid url using [Uri.tryParse].
   StringValidator url({String? message}) {
     addRule(
         name: 'url',
-        test: (value) {
-          if (value == null) return false;
-
-          return Uri.tryParse(value) != null;
-        },
+        test: (value) => Uri.tryParse(value) != null,
         message: message ?? ':name must be a valid url');
 
     return this;
   }
 
-  /// Check if the value match given [pattern].
+  /// Check if the value match given [pattern] using [RegExp].
   StringValidator regex(String pattern, {String? message}) {
     addRule(
         name: 'regex',
-        test: (value) {
-          if (value == null) return false;
-
-          return RegExp(pattern).hasMatch(value);
-        },
+        test: (value) => RegExp(pattern).hasMatch(value),
         message: message ?? ':name must match the pattern');
 
     return this;

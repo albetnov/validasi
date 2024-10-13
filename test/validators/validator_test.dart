@@ -3,7 +3,6 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/exceptions/validasi_exception.dart';
-import 'package:validasi/src/result.dart';
 import 'package:validasi/src/transformers/transformer.dart';
 
 import '../test_utils.dart';
@@ -175,130 +174,6 @@ void main() {
           throwFieldError(message: 'path'));
     });
 
-    test('parse should return success (success rule)', () {
-      var stub = ValidatorStub()..addRuleTest('pass', true, 'should pass');
-
-      shouldNotThrow(() {
-        var result = stub.parse('value');
-        expect(result.value, equals('value'));
-        expect(result.errors, isEmpty);
-        expect(result.isValid, isTrue);
-      });
-    });
-
-    test('parse should throw FieldError on failing rule', () {
-      var stub = ValidatorStub()
-        ..addRuleTest('fail', false, ':name is failing')
-        ..addRuleTest('success', true, 'should success');
-
-      expect(() => stub.parse('value'),
-          throwFieldError(name: 'fail', message: 'field is failing'));
-    });
-
-    test('parse should able to run custom rule', () {
-      var stub = ValidatorStub().custom((value, fail) => true);
-
-      shouldNotThrow(() {
-        stub.parse('value');
-      });
-
-      stub.custom((value, fail) => false);
-
-      expect(() => stub.parse('value'), throwFieldError(name: 'custom'));
-    });
-
-    test('parse should fail when trying to validate async custom rule', () {
-      var stub = ValidatorStub();
-      stub.custom((value, fail) async => true);
-
-      expect(
-          () => stub.parse('value'),
-          throwsA(predicate((e) =>
-              e is ValidasiException &&
-              e.message ==
-                  'The custom function require async context, please use `async` equivalent for parse.')));
-    });
-
-    test('parse should be able to validate multiple rules (in-order)', () {
-      var stub = ValidatorStub()
-        ..addRuleTest('rule1', true, 'msg')
-        ..addRuleTest('rule2', false, 'msg')
-        ..custom((value, fail) => false);
-
-      expect(() => stub.parse('value'), throwFieldError(name: 'rule2'));
-
-      var stub2 = ValidatorStub()
-        ..addRuleTest('rule1', false, 'msg')
-        ..addRuleTest('rule2', true, 'msg')
-        ..custom((value, fail) => false);
-
-      expect(() => stub2.parse('value'), throwFieldError(name: 'rule1'));
-
-      var stub3 = ValidatorStub()
-        ..addRuleTest('rule1', true, 'msg')
-        ..addRuleTest('rule2', true, 'msg')
-        ..custom((value, fail) => false);
-
-      expect(() => stub3.parse('value'), throwFieldError(name: 'custom'));
-    });
-
-    test('parseAsync should be able to run async rule', () async {
-      var stub = ValidatorStub().custom((value, fail) async => true);
-
-      await shouldNotThrowAsync(() => stub.parseAsync('value'));
-
-      stub.custom((value, fail) async => false);
-
-      await expectLater(
-          () => stub.parseAsync('value'), throwFieldError(name: 'custom'));
-    });
-
-    test('parseAsync should still be able to run non-async custom rule',
-        () async {
-      var stub = ValidatorStub().custom((value, fail) => false);
-
-      await expectLater(() => stub.parseAsync('value'), throwFieldError());
-
-      stub.custom((value, fail) => true);
-
-      await shouldNotThrowAsync(() => stub.parseAsync('value'));
-    });
-
-    test('parseAsync should able to run normal rules', () async {
-      var customRun = false;
-
-      var stub = ValidatorStub()
-        ..addRuleTest('name', true, 'message')
-        ..addRuleTest('name2', false, 'message')
-        ..custom((value, fail) {
-          customRun = true;
-          return false;
-        });
-
-      await expectLater(
-          () => stub.parseAsync('value'), throwFieldError(name: 'name2'));
-
-      expect(customRun, isFalse);
-    });
-
-    test('parseAsync should return success on passing rules', () async {
-      var customRun = false;
-
-      var stub = ValidatorStub()
-        ..addRuleTest('name', true, 'message')
-        ..addRuleTest('name2', true, 'message')
-        ..custom((value, fail) {
-          customRun = true;
-          return true;
-        });
-
-      await shouldNotThrowAsync(() => stub.parseAsync('value'));
-      expect(customRun, isTrue);
-      var result = await stub.parseAsync('value');
-      expect(result, isA<Result<String>>());
-      expect(result.value, equals('value'));
-    });
-
     test('tryParse should return success on passing rules', () {
       var stub = ValidatorStub()
         ..addRuleTest('name', true, 'message')
@@ -399,6 +274,84 @@ void main() {
           containsAll(['example 1', 'example 2', 'example 3']));
     });
 
+    test('parse should be able to intercept errors and throw it immediately',
+        () {
+      var stub = ValidatorStub()
+        ..addRuleTest('name', false, 'message')
+        ..addRuleTest('name2', false, 'message')
+        ..custom((value, fail) => false);
+
+      expect(() => stub.parse('value'),
+          throwFieldError(name: 'name', message: 'message'));
+
+      stub = ValidatorStub()
+        ..addRuleTest('name', true, 'message')
+        ..addRuleTest('name2', false, 'message')
+        ..custom((value, fail) => false);
+
+      expect(() => stub.parse('value'),
+          throwFieldError(name: 'name2', message: 'message'));
+    });
+
+    test('parse should be able to format errors (:name)', () {
+      var stub = ValidatorStub()..addRuleTest('name', false, 'message :name');
+
+      expect(
+          () => stub.parse('value', path: 'example'),
+          throwFieldError(
+              name: 'name', message: 'message example', path: 'example'));
+    });
+
+    test('parse should be able to run custom', () {
+      var stub = ValidatorStub().custom((value, fail) => true);
+
+      shouldNotThrow(() {
+        var result = stub.parse('value');
+
+        expect(result.value, 'value');
+        expect(result.errors, isEmpty);
+        expect(result.isValid, isTrue);
+      });
+
+      stub = ValidatorStub().custom((value, fail) => false);
+
+      expect(() => stub.parse('value'),
+          throwFieldError(name: 'custom', message: 'field is not valid'));
+
+      stub = ValidatorStub().custom((value, fail) => fail('ups'));
+
+      expect(() => stub.parse('value'),
+          throwFieldError(name: 'custom', message: 'ups'));
+
+      stub = ValidatorStub().custom((value, fail) => fail(':name'));
+
+      expect(() => stub.parse('value', path: 'example'),
+          throwFieldError(name: 'custom', message: 'example'));
+
+      stub = ValidatorStub().custom((value, fail) async => true);
+
+      expect(() => stub.parse('value'), throwsA(predicate((e) {
+        return e is ValidasiException &&
+            e.message ==
+                'The custom function require async context, please use `async` equivalent for parse.';
+      })));
+    });
+
+    test('parseAsync should be able to run async custom', () async {
+      var stub = ValidatorStub().custom((value, fail) async => true);
+
+      var result = await stub.parseAsync('value');
+
+      expect(result.value, 'value');
+      expect(result.errors, isEmpty);
+      expect(result.isValid, isTrue);
+
+      stub = ValidatorStub().custom((value, fail) async => false);
+
+      expect(() => stub.parseAsync('value'),
+          throwFieldError(name: 'custom', message: 'field is not valid'));
+    });
+
     test('can attach transformer and execute it', () async {
       var mock = MockTransformer<String>();
 
@@ -431,6 +384,32 @@ void main() {
 
       expect(() => validator.parse(1),
           throwFieldError(name: 'invalidType', message: 'error'));
+    });
+
+    test('can perform type check and throw error when no transformer supplied',
+        () {
+      var validator = ValidatorStub();
+
+      expect(
+          () => validator.parse(1),
+          throwFieldError(
+              name: 'invalidType',
+              message: 'Expected type String. Got int instead.'));
+    });
+
+    test('should fail if null passed without nullable rule', () {
+      var validator = ValidatorStub();
+
+      expect(() => validator.parse(null),
+          throwFieldError(name: 'required', message: 'field is required'));
+    });
+
+    test('should pass if null passed with nullable rule', () {
+      var validator = ValidatorStub().nullable();
+
+      shouldNotThrow(() {
+        validator.parse(null);
+      });
     });
   });
 }
