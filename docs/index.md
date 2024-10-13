@@ -12,7 +12,7 @@ hero:
       link: /quick-start
     - theme: alt
       text: API Documentation
-      link: /api-examples
+      # link: /api-examples
 
 features:
   - title: Easy to Use

@@ -48,4 +48,4 @@ This example creates a validator that validates an object with two fields: `name
 
 The `tryParse` method is used to validate the object. If the object is valid, the `isValid` property will be `true`. Otherwise, the `isValid` property will be `false`, and the `errors` property will contain a list of validation errors.
 
-That's it! You're now ready to start using Validasi in your Dart projects. For more information, check out the [API Documentation](/api-examples).
+That's it! You're now ready to start using Validasi in your Dart projects. For more information, check out the [API Documentation](/).

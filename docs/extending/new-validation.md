@@ -51,7 +51,7 @@ The rule will be registered using the `addRule` method. The `addRule` method req
 - `test`: The test function to validate the input value.
 - `message`: The error message to return if the test function fails.
 
-Similarly to [customizing default error message](guide/basic-concept.html#replacing-default-message) you can also use `:name` here!
+Similarly to [customizing default error message](/guide/basic-concept.html#replacing-default-message) you can also use `:name` here!
 
 ## Adding Transformer Support
 
