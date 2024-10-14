@@ -1,6 +1,6 @@
 # Validasi
 
-![image](/img/validasi.png)
+![image](https://github.com/albetnov/validasi/blob/main/img/validasi.png?raw=true)
 
 A flexible and straightforward Dart Validation Library.
 

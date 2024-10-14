@@ -50,7 +50,7 @@ import 'package:validasi/validasi.dart';
 import 'package:app/data.dart';
 
 void main() {
-    final schema = Validasi.string().customAsync((value, fail) async {
+    final schema = Validasi.string().custom((value, fail) async {
         if (await Data.user().contains(value)) {
             return true;
         }

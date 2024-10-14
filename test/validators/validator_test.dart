@@ -27,9 +27,13 @@ void main() {
       expect(stub.rules, hasLength(2));
 
       for (var i = 0; i < rules.length; i++) {
-        expect(stub.rules[i].name, equals(rules[i]['name']));
-        expect(stub.rules[i].test('value'), equals(rules[i]['passing']));
-        expect(stub.rules[i].message, equals(rules[i]['message']));
+        var rule = rules[i];
+        var ruleName = rule['name'];
+
+        expect(stub.rules[ruleName]!.name, equals(ruleName));
+        expect(
+            stub.rules[ruleName]!.test('value'), equals(rules[i]['passing']));
+        expect(stub.rules[ruleName]!.message, equals(rules[i]['message']));
       }
     });
 
@@ -410,6 +414,17 @@ void main() {
       shouldNotThrow(() {
         validator.parse(null);
       });
+    });
+
+    test('should only register rule once', () {
+      var validator = ValidatorStub()
+        ..addRuleTest('name', false, 'message')
+        ..addRuleTest('name', false, 'message');
+
+      var result = validator.tryParse('value');
+
+      expect(result.errors, hasLength(1));
+      expect(getName(result), equals('name'));
     });
   });
 }

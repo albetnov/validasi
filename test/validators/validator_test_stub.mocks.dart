@@ -40,11 +40,11 @@ class _FakeResult_0<T1> extends _i1.SmartFake implements _i2.Result<T1> {
 /// See the documentation for Mockito's code generation for more information.
 class MockValidator<T> extends _i1.Mock implements _i3.Validator<T> {
   @override
-  List<_i4.ValidatorRule<T>> get rules => (super.noSuchMethod(
+  Map<String, _i4.ValidatorRule<T>> get rules => (super.noSuchMethod(
         Invocation.getter(#rules),
-        returnValue: <_i4.ValidatorRule<T>>[],
-        returnValueForMissingStub: <_i4.ValidatorRule<T>>[],
-      ) as List<_i4.ValidatorRule<T>>);
+        returnValue: <String, _i4.ValidatorRule<T>>{},
+        returnValueForMissingStub: <String, _i4.ValidatorRule<T>>{},
+      ) as Map<String, _i4.ValidatorRule<T>>);
 
   @override
   set customCallback(_i5.CustomCallback<T?>? _customCallback) =>

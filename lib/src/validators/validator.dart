@@ -22,7 +22,7 @@ abstract class Validator<T> {
   /// The [rules] contains all rules required to run
   @visibleForTesting
   @internal
-  final List<ValidatorRule<T>> rules = [];
+  final Map<String, ValidatorRule<T>> rules = {};
 
   /// The [customCallback] responsible to execute custom in-line or user-defined
   /// class validation logic.
@@ -50,7 +50,7 @@ abstract class Validator<T> {
     required bool Function(T value) test,
     required String message,
   }) {
-    rules.add(ValidatorRule(name: name, test: test, message: message));
+    rules[name] = ValidatorRule(name: name, test: test, message: message);
   }
 
   /// Mark the field as nullable. If the field is `null`, then the rules
@@ -169,7 +169,7 @@ abstract class Validator<T> {
       return errors..add(requiredErr);
     }
 
-    for (var rule in rules) {
+    for (var rule in rules.values) {
       // ignore: null_check_on_nullable_type_parameter
       rule.check(value!);
 

@@ -17,6 +17,10 @@ TextFormField(
 );
 ```
 
+::: info
+For asyncronous validation, you can use `validateAsync` method instead.
+:::
+
 ## GroupValidator
 
 The `GroupValidator` is a wrapper around the `FieldValidator` that can be used to nicely grouped some schema
@@ -38,3 +42,7 @@ TextFormField(
     validator: (value) => schema.validate('email', value),
 );
 ```
+
+::: info
+For asyncronous validation, you can use `validateAsync` method instead.
+:::
