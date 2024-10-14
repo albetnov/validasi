@@ -4,17 +4,10 @@ This is a quick start guide to get you up and running with Validasi.
 
 ## Installation
 
-Add the following to your `pubspec.yaml` file:
-
-```yaml
-dependencies:
-  validasi: ^0.0.1
-```
-
-or use pub command:
+Simply run this command:
 
 ```bash
-pub get validasi
+pub add validasi
 ```
 
 ## Usage
