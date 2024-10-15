@@ -18,3 +18,5 @@ export 'src/transformers/transformer.dart';
 export 'src/transformers/date_transformer.dart';
 export 'src/transformers/number_transformer.dart';
 export 'src/transformers/string_transformer.dart';
+
+export 'src/custom_rule.dart';

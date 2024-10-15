@@ -18,3 +18,9 @@ This release includes the following changes:
 introduce `should only register rule once` test and adjust the `rules` from array to map
 - Update package description to meet dart package criteria
 - Update image in `README.md` to use absolute link
+
+## 0.0.3
+
+Minor release to update the following:
+
+- Expose `FailFn`, `CustomRule`, `CustomCallback` API
