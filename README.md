@@ -35,6 +35,7 @@ void main(List<String> args) {
 - Date
 - List
 - Map
+- Generic
 
 ## Features
 
