@@ -325,4 +325,90 @@ void main() {
     expect(getMsg(schema.tryParse([1, 2, 3, 4], path: 'cart')),
         'cart should have 3 items');
   });
+
+  test('should pass for notContains', () {
+    var schema = Validasi.array(Validasi.number()).notContains([4, 5]);
+
+    expect(schema.tryParse([1, 2, 3]).isValid, isTrue);
+  });
+
+  test('should fail for notContains', () {
+    var schema = Validasi.array(Validasi.number()).notContains([4, 5]);
+
+    expect(schema.tryParse([1, 2, 3, 4]).isValid, isFalse);
+    expect(
+        getMsg(schema.tryParse([1, 2, 3, 4])), 'field must not contain [4, 5]');
+  });
+
+  test('can customize field name on notContains message', () {
+    var schema = Validasi.array(Validasi.number()).notContains([4, 5]);
+
+    expect(getMsg(schema.tryParse([1, 2, 3, 4], path: 'label')),
+        'label must not contain [4, 5]');
+  });
+
+  test('can customize message on notContains', () {
+    var schema = Validasi.array(Validasi.number())
+        .notContains([4, 5], message: ':name should not contain [4, 5]');
+
+    expect(getMsg(schema.tryParse([1, 2, 3, 4], path: 'cart')),
+        'cart should not contain [4, 5]');
+  });
+
+  test('should pass for contains', () {
+    var schema = Validasi.array(Validasi.number()).contains([1, 2]);
+
+    expect(schema.tryParse([1, 2]).isValid, isTrue);
+    expect(schema.tryParse([1]).isValid, isTrue);
+  });
+
+  test('should fail for contains', () {
+    var schema = Validasi.array(Validasi.number()).contains([1, 2]);
+
+    expect(schema.tryParse([1, 3]).isValid, isFalse);
+    expect(getMsg(schema.tryParse([1, 3])), 'field must contain [1, 2]');
+  });
+
+  test('can customize field name on contains message', () {
+    var schema = Validasi.array(Validasi.number()).contains([1, 2]);
+
+    expect(getMsg(schema.tryParse([1, 3], path: 'label')),
+        'label must contain [1, 2]');
+  });
+
+  test('can customize message on contains', () {
+    var schema = Validasi.array(Validasi.number())
+        .contains([1, 2], message: ':name should contain [1, 2]');
+
+    expect(getMsg(schema.tryParse([1, 3], path: 'cart')),
+        'cart should contain [1, 2]');
+  });
+
+  test('should pass for unique', () {
+    var schema = Validasi.array(Validasi.number()).unique();
+
+    expect(schema.tryParse([1, 2, 3]).isValid, isTrue);
+  });
+
+  test('should fail for unique', () {
+    var schema = Validasi.array(Validasi.number()).unique();
+
+    expect(schema.tryParse([1, 2, 1]).isValid, isFalse);
+    expect(
+        getMsg(schema.tryParse([1, 2, 1])), 'field must contain unique items');
+  });
+
+  test('can customize message on unique', () {
+    var schema =
+        Validasi.array(Validasi.number()).unique(message: 'unique only');
+
+    expect(getMsg(schema.tryParse([1, 2, 1])), 'unique only');
+  });
+
+  test('can customize field name on unique message', () {
+    var schema = Validasi.array(Validasi.number()).unique();
+
+    expect(getMsg(schema.tryParse([1, 2, 1], path: 'label')),
+        'label must contain unique items');
+  });
 }

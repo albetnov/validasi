@@ -27,7 +27,8 @@ Minor release to update the following:
 
 ## 0.0.4
 
-This release introduce `GenericValidator` and some rules for Array Validation.
+This release introduce `GenericValidator`, add some rules for Array Validation, and add some methods for Object Validation.
 
-- Add `max` rule for `ArrayValidator`.
+- Add `max`, `notContains`, `contains`, and `unique` rule for `ArrayValidator`.
+- Add `extend` and `without` method for `ObjectValidator`.
 - Add new `GenericValidator` through `Validasi.generic<T>(transformer)` to help validate any type.

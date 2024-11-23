@@ -18,6 +18,27 @@ class ObjectValidator<T extends Map> extends Validator<T> {
   ObjectValidator customFor(CustomRule<T> customRule) =>
       super.customFor(customRule);
 
+  /// Extend the schema with the provided [key] and [validator].
+  /// Return new instance of [ObjectValidator].
+  ObjectValidator<T> extend(Map<String, Validator> newSchema) {
+    var schema = Map<String, Validator>.from(this.schema);
+    schema.addAll(newSchema);
+
+    return ObjectValidator(schema);
+  }
+
+  /// Remove the [key] from the schema.
+  /// Return new instance of [ObjectValidator].
+  ObjectValidator<T> without(List<String> key) {
+    var newSchema = Map<String, Validator>.from(schema);
+
+    for (var element in key) {
+      newSchema.remove(element);
+    }
+
+    return ObjectValidator(newSchema);
+  }
+
   _parse(Result result) {
     if (result.value is Map) {
       Map<String, dynamic> results = {};

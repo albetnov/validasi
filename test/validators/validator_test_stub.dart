@@ -1,11 +1,8 @@
 import 'dart:async';
 
-import 'package:mockito/annotations.dart';
 import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/validators/validator.dart';
 
-@GenerateNiceMocks([MockSpec<Validator>()])
-import 'validator_test_stub.mocks.dart';
 
 class ValidatorStub extends Validator<String> {
   ValidatorStub({super.transformer});

@@ -82,7 +82,7 @@ deno run docs:dev
 Alternatively, you could use your package manager to just execute `vitepress` command:
 
 ```bash
-npx vitepress dev docs
-bunx vitepress dev docs
-pnpm dlx vitepress dev docs
+npx vitepress dev doc
+bunx vitepress dev doc
+pnpm dlx vitepress dev doc
 ```

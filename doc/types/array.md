@@ -72,3 +72,83 @@ void main() {
     print(result.errors.first.message); // 'field must have at least 3 items'
 }
 ```
+
+## max
+
+```dart
+Validasi.array(Validasi.string()).max(int length, {String? message});
+```
+
+The `max` method is used to validate the maximum number of items in the array. This method will return an error message if the array contains more items than the specified length.
+
+```dart
+import 'package:validasi/validasi.dart';
+
+void main() {
+    final schema = Validasi.array(Validasi.string()).max(3);
+
+    final result = schema.tryParse(['a', 'b', 'c', 'd']);
+
+    print(result.errors.first.message); // 'field must have at most 3 items'
+}
+```
+
+## contains
+
+```dart
+Validasi.array(Validasi.string()).contains(List<T> value, {String? message});
+```
+
+The `contains` method is used to validate that the array contains the specified value. This method will return an error if the array contains any value that is not in the specified list. 
+
+```dart
+import 'package:validasi/validasi.dart';
+
+void main() {
+    final schema = Validasi.array(Validasi.string()).contains(['a']);
+
+    final result = schema.tryParse(['b', 'c']);
+
+    print(result.errors.first.message); // 'field must contain a'
+}
+```
+
+## notContains
+
+```dart
+Validasi.array(Validasi.string()).notContains(List<T> value, {String? message});
+```
+
+The `notContains` method is used to validate that the array does not contain the specified value. This method will return an error message if the array contains the specified value.
+
+```dart
+import 'package:validasi/validasi.dart';
+
+void main() {
+    final schema = Validasi.array(Validasi.string()).notContains(['a']);
+
+    final result = schema.tryParse(['a', 'b', 'c']);
+
+    print(result.errors.first.message); // 'field must not contain a'
+}
+```
+
+## unique
+
+```dart
+Validasi.array(Validasi.string()).unique({String? message});
+```
+
+The `unique` method is used to validate that all items in the array are unique. This method will return an error message if the array contains duplicate items.
+
+```dart
+import 'package:validasi/validasi.dart';
+
+void main() {
+    final schema = Validasi.array(Validasi.string()).unique();
+
+    final result = schema.tryParse(['a', 'b', 'a']);
+
+    print(result.errors.first.message); // 'field must have unique items'
+}
+```

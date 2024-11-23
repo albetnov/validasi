@@ -27,6 +27,6 @@ class Validasi {
           {String pattern = 'y-MM-dd', Transformer<DateTime>? transformer}) =>
       DateValidator(pattern: pattern, transformer: transformer);
 
-  static GenericValidator generic<T>({Transformer<T>? transformer}) =>
+  static GenericValidator<T> generic<T>({Transformer<T>? transformer}) =>
       GenericValidator<T>(transformer: transformer);
 }

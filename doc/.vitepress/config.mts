@@ -32,6 +32,7 @@ export default defineConfig({
           {text: 'Date', link: '/types/date'},
           {text: 'Array', link: '/types/array'},
           {text: 'Object', link: '/types/object'},
+          {text: 'Generic', link: '/types/generic'},
         ]
       },
       {

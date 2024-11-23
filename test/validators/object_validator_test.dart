@@ -399,4 +399,50 @@ void main() {
       }
     });
   });
+
+  test('can extend schema', () {
+    var schema = Validasi.object({
+      'id': Validasi.number(),
+      'name': Validasi.string(),
+    });
+
+    var extendedSchema = schema.extend({
+      'address': Validasi.object({
+        'street': Validasi.string(),
+        'city': Validasi.string(),
+      }),
+    });
+
+    // ensure the original schema not changed
+    expect(schema.schema['address'], isNull);
+
+    shouldNotThrow(() {
+      var result = extendedSchema.parse({
+        'id': 1,
+        'name': 'Asep',
+        'address': {
+          'street': 'Jalan Jendral Sudirman',
+          'city': 'Jakarta',
+        }
+      });
+
+      expect(result.value?.containsKey('address'), isTrue);
+    });
+  });
+
+  test('can remove schema', () {
+    var schema = Validasi.object({
+      'id': Validasi.number(),
+      'name': Validasi.string(),
+    });
+
+    var newSchema = schema.without(['id']);
+
+    // ensure the original schema not changed
+    expect(schema.schema['id'], isNotNull);
+
+    var result = newSchema.parse({'id': 1, 'name': 'Asep Surasep'});
+
+    expect(result.value?.containsKey('id'), isFalse);
+  });
 }
