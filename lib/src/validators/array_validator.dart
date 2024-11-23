@@ -30,6 +30,17 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
     return this;
   }
 
+  /// Check if the value length is less or equal to [max].
+  ArrayValidator<V, T> max(int max, {String? message}) {
+    addRule(
+      name: 'max',
+      test: (value) => value.length <= max,
+      message: message ?? ':name must have at most $max items',
+    );
+
+    return this;
+  }
+
   @override
   Result<List<T>> tryParse(dynamic value, {String path = 'field'}) {
     var result = super.tryParse(value, path: path);

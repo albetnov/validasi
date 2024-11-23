@@ -295,4 +295,34 @@ void main() {
     expect(getMsg(schema.tryParse([1, 2], path: 'cart')),
         'cart should have 3 items');
   });
+
+  test('should pass for max', () {
+    var schema = Validasi.array(Validasi.number()).max(3);
+
+    expect(schema.tryParse([1, 2, 3]).isValid, isTrue);
+    expect(schema.tryParse([1, 2]).isValid, isTrue);
+  });
+
+  test('should fail for max', () {
+    var schema = Validasi.array(Validasi.number()).max(3);
+
+    expect(schema.tryParse([1, 2, 3, 4]).isValid, isFalse);
+    expect(getMsg(schema.tryParse([1, 2, 3, 4])),
+        'field must have at most 3 items');
+  });
+
+  test('can customize field name on max message', () {
+    var schema = Validasi.array(Validasi.number()).max(3);
+
+    expect(getMsg(schema.tryParse([1, 2, 3, 4], path: 'label')),
+        'label must have at most 3 items');
+  });
+
+  test('can customize message on max', () {
+    var schema = Validasi.array(Validasi.number())
+        .max(3, message: ':name should have 3 items');
+
+    expect(getMsg(schema.tryParse([1, 2, 3, 4], path: 'cart')),
+        'cart should have 3 items');
+  });
 }

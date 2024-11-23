@@ -24,3 +24,10 @@ introduce `should only register rule once` test and adjust the `rules` from arra
 Minor release to update the following:
 
 - Expose `FailFn`, `CustomRule`, `CustomCallback` API
+
+## 0.0.4
+
+This release introduce `GenericValidator` and some rules for Array Validation.
+
+- Add `max` rule for `ArrayValidator`.
+- Add new `GenericValidator` through `Validasi.generic<T>(transformer)` to help validate any type.

@@ -13,6 +13,7 @@ export 'src/validators/date_validator.dart' hide DateCompare;
 export 'src/validators/number_validator.dart';
 export 'src/validators/object_validator.dart';
 export 'src/validators/string_validator.dart';
+export 'src/validators/generic_validator.dart';
 
 export 'src/transformers/transformer.dart';
 export 'src/transformers/date_transformer.dart';
