@@ -1,6 +1,7 @@
 import 'package:validasi/src/transformers/transformer.dart';
 import 'package:validasi/src/validators/array_validator.dart';
 import 'package:validasi/src/validators/date_validator.dart';
+import 'package:validasi/src/validators/generic_validator.dart';
 import 'package:validasi/src/validators/number_validator.dart';
 import 'package:validasi/src/validators/object_validator.dart';
 import 'package:validasi/src/validators/string_validator.dart';
@@ -25,4 +26,7 @@ class Validasi {
   static DateValidator date(
           {String pattern = 'y-MM-dd', Transformer<DateTime>? transformer}) =>
       DateValidator(pattern: pattern, transformer: transformer);
+
+  static GenericValidator<T> generic<T>({Transformer<T>? transformer}) =>
+      GenericValidator<T>(transformer: transformer);
 }

@@ -30,6 +30,51 @@ class ArrayValidator<V extends Validator, T> extends Validator<List<T>> {
     return this;
   }
 
+  /// Check if the value length is less or equal to [max].
+  ArrayValidator<V, T> max(int max, {String? message}) {
+    addRule(
+      name: 'max',
+      test: (value) => value.length <= max,
+      message: message ?? ':name must have at most $max items',
+    );
+
+    return this;
+  }
+
+  /// Ensure the value not contains any of the provided [values].
+  ArrayValidator<V, T> notContains(List<T> values, {String? message}) {
+    addRule(
+      name: 'notContains',
+      test: (value) => !value.any((element) => values.contains(element)),
+      message: message ?? ':name must not contain $values',
+    );
+
+    return this;
+  }
+
+  /// Ensure the value should only contains the provided values. If
+  /// the value contains other values, it will be considered invalid.
+  ArrayValidator<V, T> contains(List<T> values, {String? message}) {
+    addRule(
+      name: 'contains',
+      test: (value) => value.every((element) => values.contains(element)),
+      message: message ?? ':name must contain $values',
+    );
+
+    return this;
+  }
+
+  /// Ensure the value are all unique.
+  ArrayValidator<V, T> unique({String? message}) {
+    addRule(
+      name: 'unique',
+      test: (value) => value.toSet().length == value.length,
+      message: message ?? ':name must contain unique items',
+    );
+
+    return this;
+  }
+
   @override
   Result<List<T>> tryParse(dynamic value, {String path = 'field'}) {
     var result = super.tryParse(value, path: path);

@@ -91,3 +91,46 @@ var schema = Validasi.object({
 
 print(schema.tryParse({}).value); // {name: null, age: null}
 ```
+
+## Available Methods
+
+The `Object` schema has the following methods:
+
+### `extend`
+
+The `extend` method is used to add more keys and validators to the object schema. The following code shows how to use the `extend` method:
+
+```dart
+var schema = Validasi.object({
+  'name': Validasi.string(),
+});
+
+schema.extend({
+  'age': Validasi.number(),
+});
+
+print(schema.tryParse({'name': 'John', 'age': 20}).value); // {name: John, age: 20}
+```
+
+::: info
+The `extend` method is immutable, which means it will return a new object schema with the new keys and validators added.
+:::
+
+### `without`
+
+The `without` method is used to remove keys from the object schema. The following code shows how to use the `without` method:
+
+```dart
+var schema = Validasi.object({
+  'name': Validasi.string(),
+  'age': Validasi.number(),
+});
+
+schema.without('age');
+
+print(schema.tryParse({'name': 'John', 'age': 20}).value); // {name: John}
+```
+
+::: info
+The `without` method is immutable, which means it will return a new object schema with the keys removed.
+:::
