@@ -8,7 +8,6 @@ import '../validators/validator_test_stub.mocks.dart';
 
 void main() {
   group('Field Validator Test', () {
-    late FieldValidator fieldValidator;
     late MockValidator<int> mockValidator;
 
     setUp(() {
@@ -28,36 +27,35 @@ void main() {
               path: anyNamed('path')))
           .thenThrow(FieldError(
               name: 'example', message: 'example message', path: 'field'));
-
-      fieldValidator = FieldValidator(mockValidator);
     });
 
     test('should pass for validate', () {
-      fieldValidator.validate(123);
+      FieldValidator(mockValidator).validate(123);
 
       verify(mockValidator.parse(123)).called(1);
 
-      fieldValidator.validate(123, path: 'custom');
+      FieldValidator(mockValidator, path: 'custom').validate(123);
 
       verify(mockValidator.parse(123, path: 'custom')).called(1);
     });
 
     test('should fail for validate when rule fail', () {
-      expect(fieldValidator.validate('text'), equals('example message'));
+      expect(FieldValidator(mockValidator).validate('text'),
+          equals('example message'));
     });
 
     test('should pass for validateAsync', () async {
-      await fieldValidator.validateAsync(123);
+      await FieldValidator(mockValidator).validateAsync(123);
 
       verify(mockValidator.parseAsync(123)).called(1);
 
-      await fieldValidator.validateAsync(123, path: 'custom');
+      await FieldValidator(mockValidator, path: 'custom').validateAsync(123);
 
       verify(mockValidator.parseAsync(123, path: 'custom')).called(1);
     });
 
     test('shold fail for validateAsync when rule fail', () async {
-      expect(await fieldValidator.validateAsync('text'),
+      expect(await FieldValidator(mockValidator).validateAsync('text'),
           equals('example message'));
     });
   });

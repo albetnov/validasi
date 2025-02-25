@@ -38,9 +38,11 @@ void main() {
 
   // the group helper
   var group = GroupValidator(
-      {'field1': Validasi.string(), 'field2': Validasi.number()});
+    {'field1': Validasi.string(), 'field2': Validasi.number()},
+  );
 
-  group.validate('field1', 10); // String?(field1 is not a string.)
+  group.on('field1').validate(10); // String?(field1 is not a string.)
+  group.on('field2').validate('test'); // num?(field2 is not a number.)
 
   // the inline field helper
   FieldValidator(Validasi.string())

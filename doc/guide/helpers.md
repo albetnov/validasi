@@ -13,7 +13,7 @@ import 'package:validasi/validasi.dart';
 final schema = Validasi.string().minLength(3);
 
 TextFormField(
-    validator: (value) => FieldValidator(schema).validate(value),
+    validator: FieldValidator(schema).validate,
 );
 ```
 
@@ -35,14 +35,28 @@ final schema = GroupValidator({
 });
 
 TextFormField(
-    validator: (value) => schema.validate('name', value),
+    validator: schema.on('name').validate,
 );
 
 TextFormField(
-    validator: (value) => schema.validate('email', value),
+    validator: (value) => schema.on('email').validate,
 );
 ```
 
 ::: info
 For asyncronous validation, you can use `validateAsync` method instead.
 :::
+
+## Customizing The Path Error Message
+
+You can customize the path error message by passing the `path` parameter to the `FieldValidator` or `GroupValidator`:
+
+```dart
+import 'package:validasi/validasi.dart';
+
+FieldValidator(Validasi.string(), path: 'Custom Path').validate('Invalid Value');
+GroupValidator({
+    'name': Validasi.string().minLength(3),
+    'email': Validasi.string().email(),
+}).on('name', path: 'Custom Path').validate('Invalid Value');
+```

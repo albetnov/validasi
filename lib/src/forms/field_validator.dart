@@ -7,13 +7,15 @@ import 'package:validasi/src/validators/validator.dart';
 class FieldValidator {
   /// The [Validator] to be wrapped
   final Validator validator;
+  // Custom path for the error message
+  final String path;
 
-  const FieldValidator(this.validator);
+  const FieldValidator(this.validator, {this.path = 'field'});
 
   /// Perform the validation and catch the `message`.
   /// Return `null` if success.
   /// Return `string` if any error encountered.
-  String? validate(dynamic value, {String path = 'field'}) {
+  String? validate(dynamic value) {
     try {
       validator.parse(value, path: path);
       return null;
@@ -25,7 +27,7 @@ class FieldValidator {
   /// Perform the validation asynchronously and catch the `message`.
   /// Return `null` if success.
   /// Return `string` if any error encountered.
-  Future<String?> validateAsync(dynamic value, {String path = 'field'}) async {
+  Future<String?> validateAsync(dynamic value) async {
     try {
       await validator.parseAsync(value, path: path);
       return null;

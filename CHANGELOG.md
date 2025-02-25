@@ -32,3 +32,44 @@ This release introduce `GenericValidator`, add some rules for Array Validation, 
 - Add `max`, `notContains`, `contains`, and `unique` rule for `ArrayValidator`.
 - Add `extend` and `without` method for `ObjectValidator`.
 - Add new `GenericValidator` through `Validasi.generic<T>(transformer)` to help validate any type.
+
+## 0.0.5
+
+This release introduce breaking changes!
+It simplifies the `FieldValidator` and `GroupValidator` Helpers API from previously when used in flutter:
+
+```dart
+var group = GroupValidator({
+    'example': Validasi.string()
+})
+
+TextFormField(
+  validator: (v) => FieldValidator(Validasi.string()).validate(v, path: 'Custom Path'),
+)
+
+TextFormField(
+    validator: (v) => group.validate('example', v)
+)
+```
+
+To a more simpler API:
+
+```dart
+var group = GroupValidator({
+    'example': Validasi.string()
+})
+
+TextFormField(
+  validator: FieldValidator(Validasi.string(), path: 'Custom Path').validate,
+)
+
+TextFormField(
+    validator: group.on('example', path: 'Custom Path').validate
+)
+```
+
+This means the previous code is not longer valid and should be updated to the new API.
+
+Affected methods:
+- `FieldValidator.validate`
+- `GroupValidator.validate`

@@ -16,35 +16,50 @@ import 'package:validasi/src/validators/validator.dart';
 class GroupValidator {
   /// The [schema] contains all [Validator] to be used on [validate].
   final Map<String, Validator> schema;
+  String? field;
+  String path = 'field';
 
-  const GroupValidator(this.schema);
+  GroupValidator(this.schema);
 
   /// Check if the schema contains [field]. Throw [ValidasiException] if not
   /// found instead.
-  void _containKey(String field) {
+  void _checkKey() {
+    if (field == null) {
+      throw ValidasiException('field argument is required');
+    }
+
     if (!schema.containsKey(field)) {
       throw ValidasiException("$field is not found on the schema");
     }
+  }
+
+  // Set the [field] to be validated.
+  // The [path] is optional, default to 'field'.
+  GroupValidator on(String field, {String? path}) {
+    this.field = field;
+
+    if (path != null) {
+      this.path = path;
+    }
+
+    return this;
   }
 
   /// Perform the validation and catch the `message`.
   /// Return `null` if success.
   /// Return `string` if any error encountered.
   /// Throw [ValidasiException] if [field] not found in [schema].
-  String? validate(String field, dynamic value, {String path = 'field'}) {
-    _containKey(field);
-
-    return FieldValidator(schema[field]!).validate(value, path: path);
+  String? validate(dynamic value) {
+    _checkKey();
+    return FieldValidator(schema[field]!, path: path).validate(value);
   }
 
   /// Perform the validation asynchronously and catch the `message`.
   /// Return `null` if success.
   /// Return `string` if any error encountered.
   /// Throw [ValidasiException] if [field] not found in [schema].
-  Future<String?> validateAsync(String field, dynamic value,
-      {String path = 'field'}) {
-    _containKey(field);
-
-    return FieldValidator(schema[field]!).validateAsync(value, path: path);
+  Future<String?> validateAsync(dynamic value) {
+    _checkKey();
+    return FieldValidator(schema[field]!, path: path).validateAsync(value);
   }
 }

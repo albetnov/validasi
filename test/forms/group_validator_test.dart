@@ -46,47 +46,48 @@ void main() {
     });
 
     test('should pass for validate', () {
-      groupValidator.validate('name', 'Asep Surasep');
+      groupValidator.on('name').validate('Asep Surasep');
 
       verify(mockValidatorName.parse('Asep Surasep')).called(1);
 
-      groupValidator.validate('age', 25);
+      groupValidator.on('age').validate(25);
 
       verify(mockValidatorAge.parse(25)).called(1);
     });
 
     test('should fail when no key found for validate', () {
       expect(
-          () => groupValidator.validate('address', 'Jl. Jalan'),
+          () => groupValidator.on('address').validate('Jl. Jalan'),
           throwsA(predicate((e) =>
               e is ValidasiException &&
               e.message == 'address is not found on the schema')));
     });
 
     test('should fail for validate when rule fail', () {
-      expect(groupValidator.validate('age', 'text'), equals('example message'));
+      expect(
+          groupValidator.on('age').validate('text'), equals('example message'));
     });
 
     test('should pass for validateAsync', () async {
-      await groupValidator.validateAsync('name', 'Asep Surasep');
+      await groupValidator.on('name').validateAsync('Asep Surasep');
 
       verify(mockValidatorName.parseAsync('Asep Surasep')).called(1);
 
-      await groupValidator.validateAsync('age', 25);
+      await groupValidator.on('age').validateAsync(25);
 
       verify(mockValidatorAge.parseAsync(25)).called(1);
     });
 
     test('should fail when no key found for validateAsync', () async {
       await expectLater(
-          () => groupValidator.validateAsync('address', 'Jl. Jalan'),
+          () => groupValidator.on('address').validateAsync('Jl. Jalan'),
           throwsA(predicate((e) =>
               e is ValidasiException &&
               e.message == 'address is not found on the schema')));
     });
 
     test('should fail for validateAsync when rule fail', () async {
-      expect(await groupValidator.validateAsync('age', 'text'),
+      expect(await groupValidator.on('age').validateAsync('text'),
           equals('example message'));
     });
   });
