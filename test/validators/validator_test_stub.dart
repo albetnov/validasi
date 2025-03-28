@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/validators/validator.dart';
 
-
 class ValidatorStub extends Validator<String> {
   ValidatorStub({super.transformer});
 

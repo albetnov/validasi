@@ -19,7 +19,8 @@ void main() {
     test('transform method should inherit correct signature', () {
       var transformer = TransformerTestStub();
 
-      expect(transformer.transform, isA<int? Function(dynamic, FailCallback)>());
+      expect(
+          transformer.transform, isA<int? Function(dynamic, FailCallback)>());
     });
 
     test('transform method should throw UnimplementedError', () {
