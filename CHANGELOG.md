@@ -73,3 +73,14 @@ This means the previous code is not longer valid and should be updated to the ne
 Affected methods:
 - `FieldValidator.validate`
 - `GroupValidator.validate`
+
+## 0.0.6
+
+### What's Changed
+* chore(deps): bump intl from 0.19.0 to 0.20.2 by @dependabot in https://github.com/albetnov/validasi/pull/4
+* chore(deps): bump lints from 4.0.0 to 5.1.1 by @dependabot in https://github.com/albetnov/validasi/pull/5
+
+### New Contributors
+* @dependabot made their first contribution in https://github.com/albetnov/validasi/pull/4
+
+**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.5...v0.0.6
