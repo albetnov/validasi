@@ -28,3 +28,9 @@ include: package:lints/recommended.yaml
 
 # For additional information about configuring this file, see
 # https://dart.dev/guides/language/analysis-options
+analyzer:
+  exclude:
+    - "**/*.g.dart" # Ignore all files ending with .g.dart
+    - "build/**"    # Ignore the entire 'build' directory
+    - ".dart_tool/build/**" # Ignore the build directory under .dart_tool
+    - "**/*.mocks.dart" # Ignore all files ending with .mocks.dart
