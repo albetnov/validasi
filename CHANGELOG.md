@@ -84,3 +84,13 @@ Affected methods:
 * @dependabot made their first contribution in https://github.com/albetnov/validasi/pull/4
 
 **Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.5...v0.0.6
+
+## 0.0.7
+
+### What's Changed
+* feat(string/url): Enhance url validation adding `checks` for validating `schema` and `host` using `UrlChecks` enum 
+* chore(docs): Add `checks` to `url` method in `string.md` documentation
+* chore(docs): Updated Quick Start guide in `doc/quick-start.md` to include
+Flutter example
+
+**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.6...v0.0.7

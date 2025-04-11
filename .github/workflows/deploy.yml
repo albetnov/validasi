@@ -39,7 +39,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
-        run: deno install --frozen --allow-scripts=npm:vue-demi
+        run: deno install --no-lock --allow-scripts=npm:vue-demi
       - name: Build with VitePress
         run: deno run docs:build # or pnpm docs:build / yarn docs:build / bun run docs:build
       - name: Upload artifact
