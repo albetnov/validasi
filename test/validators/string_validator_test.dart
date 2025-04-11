@@ -250,17 +250,30 @@ void main() {
     test('should pass for url', () {
       var schema = Validasi.string().url();
 
+      expect(schema.tryParse('http://example.com').isValid, isTrue);
       expect(schema.tryParse('https://example.com').isValid, isTrue);
+
+      var schema2 = Validasi.string().url(
+        checks: [...defaultUrlChecks, UrlChecks.httpsOnly],
+      );
+
+      expect(schema2.tryParse('https://example.com').isValid, isTrue);
     });
 
     test('should fail for url', () {
       var schema = Validasi.string().url();
 
-      var result = schema.tryParse(':: not valid ::');
+      var result = schema.tryParse('example.com');
 
       expect(result.isValid, isFalse);
       expect(getName(result), equals('url'));
       expect(getMsg(result), equals('field must be a valid url'));
+
+      var schema2 = Validasi.string().url(
+        checks: [...defaultUrlChecks, UrlChecks.httpsOnly],
+      );
+
+      expect(schema2.tryParse('http://example.com:8080').isValid, isFalse);
     });
 
     test('can customize field name on url message', () {

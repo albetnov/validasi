@@ -2,6 +2,14 @@ import 'package:email_validator/email_validator.dart';
 import 'package:validasi/src/custom_rule.dart';
 import 'package:validasi/src/validators/validator.dart';
 
+enum UrlChecks {
+  scheme,
+  host,
+  httpsOnly,
+}
+
+const List<UrlChecks> defaultUrlChecks = [UrlChecks.scheme, UrlChecks.host];
+
 /// Responsible for validating [String] also support [toString] conversion.
 class StringValidator extends Validator<String> {
   StringValidator({super.transformer});
@@ -88,10 +96,41 @@ class StringValidator extends Validator<String> {
   }
 
   /// Check if the value is a valid url using [Uri.tryParse].
-  StringValidator url({String? message}) {
+  /// [checks] contains the list of check to be performed on the url.
+  /// [UrlChecks.scheme] check if the url has a scheme.
+  /// [UrlChecks.host] check if the url has a host.
+  /// [UrlChecks.httpsOnly] check if the url is https only.
+  ///
+  /// By default, [checks] contains [UrlChecks.scheme] and [UrlChecks.host] under [defaultUrlChecks].
+  /// So only url like `https://example.com` or `http://example.com` will pass.
+  StringValidator url({
+    String? message,
+    List<UrlChecks> checks = defaultUrlChecks,
+  }) {
     addRule(
         name: 'url',
-        test: (value) => Uri.tryParse(value) != null,
+        test: (value) {
+          final uri = Uri.tryParse(value);
+
+          if (uri == null) {
+            return false;
+          }
+
+          if (checks.contains(UrlChecks.scheme) ||
+              checks.contains(UrlChecks.httpsOnly)) {
+            if (uri.scheme.isEmpty) return false;
+
+            if (checks.contains(UrlChecks.httpsOnly) && uri.scheme != 'https') {
+              return false;
+            }
+          }
+
+          if (checks.contains(UrlChecks.host) && uri.host.isEmpty) {
+            return false;
+          }
+
+          return true;
+        },
         message: message ?? ':name must be a valid url');
 
     return this;
