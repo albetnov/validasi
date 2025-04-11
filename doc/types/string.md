@@ -144,16 +144,22 @@ void main() {
 ## url
 
 ```dart
-Validasi.string().url({String? message});
+Validasi.string().url({String? message, List<UrlChecks> checks = const [UrlChecks.scheme, UrlChecks.host]});
 ```
 
 The `url` method is used to validate the input value as a URL. This method will return an error message if the input value is not a valid URL.
+Additionally, you can specify the `checks` parameter to validate the URL with specific checks. The available checks are:
+- `UrlChecks.scheme`: Check if the URL has a valid scheme (e.g., `http`, `https`).
+- `UrlChecks.host`: Check if the URL has a valid host (e.g., `example.com`).
+- `UrlChecks.httpsOnly`: Check if the URL is using HTTPS scheme.
 
 ```dart
 import 'package:validasi/validasi.dart';
 
 void main() {
-    final schema = Validasi.string().url();
+    final schema = Validasi.string().url(
+        checks: [...defaultUrlChecks, UrlChecks.httpsOnly]
+    );
 
     final result = schema.tryParse('hello');
 
