@@ -42,7 +42,7 @@ class MyForm extends StatelessWidget {
       child: Column(
         children: [
           TextFormField(
-            validator: validator.on('name').validate,
+            validator: validator.using('name').validate,
             autoValidateMode: AutovalidateMode.onUserInteraction,
             decoration: InputDecoration(
               labelText: 'Name',
@@ -50,7 +50,7 @@ class MyForm extends StatelessWidget {
           ),
           SizedBox(height: 10),
           TextFormField(
-            validator: validator.on('email').validate,
+            validator: validator.using('email').validate,
             autoValidateMode: AutovalidateMode.onUserInteraction,
             decoration: InputDecoration(
               labelText: 'Email',

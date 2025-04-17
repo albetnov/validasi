@@ -41,8 +41,13 @@ void main() {
     {'field1': Validasi.string(), 'field2': Validasi.number()},
   );
 
-  group.on('field1').validate(10); // String?(field1 is not a string.)
-  group.on('field2').validate('test'); // num?(field2 is not a number.)
+  group.using('field1').validate(10); // String?(field1 is not a string.)
+  group.using('field2').validate('test'); // num?(field2 is not a number.)
+
+  // extending the group validator entry
+  group
+      .extend<StringValidator>('field1', (validator) => validator.maxLength(3))
+      .validate('1234'); // String?(field1 is too long, max 3)
 
   // the inline field helper
   FieldValidator(Validasi.string())
