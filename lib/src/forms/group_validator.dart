@@ -3,6 +3,33 @@ import 'package:validasi/src/forms/field_validator.dart';
 import 'package:validasi/src/validators/object_validator.dart';
 import 'package:validasi/src/validators/validator.dart';
 
+class GroupValidatorUsing {
+  final Validator validator;
+  final String path;
+
+  const GroupValidatorUsing(this.validator, this.path);
+
+  /// Validates a single [value] against the validator associated with the
+  /// specified [field].
+  ///
+  /// Returns `null` if validation succeeds, or an error message string if it fails.
+  /// The optional [path] specifies the name used in the error message,
+  /// defaulting to the [field] name.
+  String? validate(dynamic value) {
+    return FieldValidator(validator, path: path).validate(value);
+  }
+
+  /// Asynchronously validates a single [value] against the validator
+  /// associated with the specified [field].
+  ///
+  /// Returns `null` if validation succeeds, or an error message string if it fails.
+  /// The optional [path] specifies the name used in the error message,
+  /// defaulting to the [field] name.
+  Future<String?> validateAsync(dynamic value) {
+    return FieldValidator(validator, path: path).validateAsync(value);
+  }
+}
+
 /// [GroupValidator] allows you to combine couple of validators with
 /// Map syntax and grouped them together. Do note, that [GroupValidator] is
 /// not for validating [Map], you should use [ObjectValidator] instead.
@@ -21,43 +48,12 @@ class GroupValidator {
   ///
   /// The [schema] maps field names (keys) to their corresponding [Validator]
   /// instances (values).
-  GroupValidator(this.schema);
-
-  String? field;
-  String? path;
+  const GroupValidator(this.schema);
 
   /// Checks if the [field] is present in the [schema].
   void _hasField(String field) {
     if (!schema.containsKey(field)) {
       throw ValidasiException("Field '$field' is not found in the schema");
-    }
-  }
-
-  /// Sets the [field] to be validated.
-  ///
-  /// The [field] should be a key in the [schema] map.
-  /// The [path] is used for error messages and defaults to the [field] name.
-  GroupValidator using(String field, {String? path}) {
-    _hasField(field);
-
-    this.field = field;
-    this.path = path ?? field;
-
-    return this;
-  }
-
-  /// Sets the [field] to be validated.
-  ///
-  /// This method is deprecated and will be removed in future versions.
-  /// Currently this method is an alias for [using] method. Update your code accordingly.
-  @Deprecated('Use using() instead')
-  GroupValidator on(String field, {String? path}) => using(field, path: path);
-
-  /// Checks if the current [field] is set and returns the corresponding
-  void _checkField() {
-    if (field == null || path == null) {
-      throw ValidasiException(
-          "Field is not set. Use 'using' method to set the field.");
     }
   }
 
@@ -87,31 +83,23 @@ class GroupValidator {
     return this;
   }
 
-  /// Validates a single [value] against the validator associated with the
-  /// specified [field].
+  /// Sets the [field] to be validated.
   ///
-  /// Returns `null` if validation succeeds, or an error message string if it fails.
-  /// The optional [path] specifies the name used in the error message,
-  /// defaulting to the [field] name.
-  /// Throws a [ValidasiException] if the [field] is not found in the schema.
-  String? validate(dynamic value) {
-    _checkField();
+  /// The [field] should be a key in the [schema] map.
+  /// The [path] is used for error messages and defaults to the [field] name.
+  GroupValidatorUsing using(String field, {String? path}) {
+    _hasField(field);
 
-    return FieldValidator(schema[field]!, path: path!).validate(value);
+    return GroupValidatorUsing(schema[field]!, path ?? field);
   }
 
-  /// Asynchronously validates a single [value] against the validator
-  /// associated with the specified [field].
+  /// Sets the [field] to be validated.
   ///
-  /// Returns `null` if validation succeeds, or an error message string if it fails.
-  /// The optional [path] specifies the name used in the error message,
-  /// defaulting to the [field] name.
-  /// Throws a [ValidasiException] if the [field] is not found in the schema.
-  Future<String?> validateAsync(dynamic value) {
-    _checkField();
-
-    return FieldValidator(schema[field]!, path: path!).validateAsync(value);
-  }
+  /// This method is deprecated and will be removed in future versions.
+  /// Currently this method is an alias for [using] method. Update your code accordingly.
+  @Deprecated('Use using() instead')
+  GroupValidatorUsing on(String field, {String? path}) =>
+      using(field, path: path);
 
   /// Validates multiple values contained in a [map].
   ///

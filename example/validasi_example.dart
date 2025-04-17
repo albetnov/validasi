@@ -47,6 +47,7 @@ void main() {
   // extending the group validator entry
   group
       .extend<StringValidator>('field1', (validator) => validator.maxLength(3))
+      .using('field1')
       .validate('1234'); // String?(field1 is too long, max 3)
 
   // the inline field helper

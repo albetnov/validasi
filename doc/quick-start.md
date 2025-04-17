@@ -26,7 +26,7 @@ class MyForm extends StatelessWidget {
     // and `GroupValidator`. Both of these helpers return a `String?` value
     // which is the expected type for `validator` parameter
 
-    // GroupValidator to specify validator for each field and use `on` method 
+    // GroupValidator to specify validator for each field and use `using` method 
     // to get the validator for each field
     final validator = GroupValidator({
       'name': Validasi.string()

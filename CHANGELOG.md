@@ -110,3 +110,23 @@ Flutter example
 * Unset field will return `ValidasiException("Field is not set. Use 'using' method to set the field.")`. Impacted method (`validate`, `validateAsync`)
 
 **Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.7...v0.0.8
+
+## 0.0.9
+
+### What's Changed
+* Refactored `using` method to return `GroupValidatorUsing` instead of `GroupValidator` to improve DX and better isolation
+
+### Breaking Changes
+
+* `using` method in `GroupValidator` now returns `GroupValidatorUsing` instead of `GroupValidator`. Update your code accordingly.
+* `validate` and `validateAsync` methods in `GroupValidator` is now removed. It could only be used in `GroupValidatorUsing` class.
+```dart
+// before
+GroupValidator(...).validate(); // static check: OK
+// after
+**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.7...v0.0.8
+GroupValidator(...).using('field').validate(); // static check: OK
+GroupValidator(...).validate(); // static check: ERROR
+```
+
+**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.8...v0.0.9

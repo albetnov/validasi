@@ -151,5 +151,19 @@ void main() {
 
       expect(result, {'name': "name must contains at least 5 characters"});
     });
+
+    test('GroupValidatorUsing', () {
+      final validator = GroupValidatorUsing(mockValidatorName, 'name');
+
+      expect(validator.path, "name");
+      expect(validator.validator, isA<MockValidator<String>>());
+
+      validator.validate('Asep Surasep');
+      verify(mockValidatorName.parse('Asep Surasep', path: 'name')).called(1);
+
+      validator.validateAsync('Asep Surasep');
+      verify(mockValidatorName.parseAsync('Asep Surasep', path: 'name'))
+          .called(1);
+    });
   });
 }
