@@ -14,52 +14,173 @@ import 'package:validasi/src/validators/validator.dart';
 /// The [GroupValidator] takes [schema] as parameter. The [schema] is a Map
 /// with [String] as key and [Validator] as value.
 class GroupValidator {
-  /// The [schema] contains all [Validator] to be used on [validate].
+  /// The [schema] contains all [Validator] instances to be used.
   final Map<String, Validator> schema;
-  String? field;
-  String path = 'field';
 
+  /// Creates a [GroupValidator] with the given validation [schema].
+  ///
+  /// The [schema] maps field names (keys) to their corresponding [Validator]
+  /// instances (values).
   GroupValidator(this.schema);
 
-  /// Check if the schema contains [field]. Throw [ValidasiException] if not
-  /// found instead.
-  void _checkKey() {
-    if (field == null) {
-      throw ValidasiException('field argument is required');
-    }
+  String? field;
+  String? path;
 
+  /// Checks if the [field] is present in the [schema].
+  void _hasField(String field) {
     if (!schema.containsKey(field)) {
-      throw ValidasiException("$field is not found on the schema");
+      throw ValidasiException("Field '$field' is not found in the schema");
     }
   }
 
-  // Set the [field] to be validated.
-  // The [path] is optional, default to 'field'.
-  GroupValidator on(String field, {String? path}) {
-    this.field = field;
+  /// Sets the [field] to be validated.
+  ///
+  /// The [field] should be a key in the [schema] map.
+  /// The [path] is used for error messages and defaults to the [field] name.
+  GroupValidator using(String field, {String? path}) {
+    _hasField(field);
 
-    if (path != null) {
-      this.path = path;
-    }
+    this.field = field;
+    this.path = path ?? field;
 
     return this;
   }
 
-  /// Perform the validation and catch the `message`.
-  /// Return `null` if success.
-  /// Return `string` if any error encountered.
-  /// Throw [ValidasiException] if [field] not found in [schema].
-  String? validate(dynamic value) {
-    _checkKey();
-    return FieldValidator(schema[field]!, path: path).validate(value);
+  /// Sets the [field] to be validated.
+  ///
+  /// This method is deprecated and will be removed in future versions.
+  /// Currently this method is an alias for [using] method. Update your code accordingly.
+  @Deprecated('Use using() instead')
+  GroupValidator on(String field, {String? path}) => using(field, path: path);
+
+  /// Checks if the current [field] is set and returns the corresponding
+  void _checkField() {
+    if (field == null || path == null) {
+      throw ValidasiException(
+          "Field is not set. Use 'using' method to set the field.");
+    }
   }
 
-  /// Perform the validation asynchronously and catch the `message`.
-  /// Return `null` if success.
-  /// Return `string` if any error encountered.
-  /// Throw [ValidasiException] if [field] not found in [schema].
+  /// Extends the [Validator] for the given [field] using the [extend] function.
+  ///
+  /// Throws a [ValidasiException] if the [field] is not found in the schema.
+  /// Allows modifying or wrapping an existing validator in the schema.
+  ///
+  /// Example:
+  /// ```dart
+  /// validator.extend<StringValidator>('email', (v) => v.email());
+  /// ```
+  GroupValidator extend<T extends Validator>(
+    String field,
+    Validator Function(T validator) extend,
+  ) {
+    _hasField(field);
+    final validator = schema[field];
+
+    // Ensure the validator is of the expected type before extending.
+    if (validator is! T) {
+      throw ValidasiException(
+          "Validator for field '$field' is of type ${validator.runtimeType}, expected $T.");
+    }
+
+    schema[field] = extend(validator);
+    return this;
+  }
+
+  /// Validates a single [value] against the validator associated with the
+  /// specified [field].
+  ///
+  /// Returns `null` if validation succeeds, or an error message string if it fails.
+  /// The optional [path] specifies the name used in the error message,
+  /// defaulting to the [field] name.
+  /// Throws a [ValidasiException] if the [field] is not found in the schema.
+  String? validate(dynamic value) {
+    _checkField();
+
+    return FieldValidator(schema[field]!, path: path!).validate(value);
+  }
+
+  /// Asynchronously validates a single [value] against the validator
+  /// associated with the specified [field].
+  ///
+  /// Returns `null` if validation succeeds, or an error message string if it fails.
+  /// The optional [path] specifies the name used in the error message,
+  /// defaulting to the [field] name.
+  /// Throws a [ValidasiException] if the [field] is not found in the schema.
   Future<String?> validateAsync(dynamic value) {
-    _checkKey();
-    return FieldValidator(schema[field]!, path: path).validateAsync(value);
+    _checkField();
+
+    return FieldValidator(schema[field]!, path: path!).validateAsync(value);
+  }
+
+  /// Validates multiple values contained in a [map].
+  ///
+  /// The keys in the [map] should correspond to the field names in the [schema].
+  /// Returns a map where keys are field names with validation errors and values
+  /// are the corresponding error messages. An empty map indicates success.
+  ///
+  /// Throws a [ValidasiException] if any key from the [schema] is missing
+  /// in the input [map].
+  Map<String, String> validateMap(Map<String, dynamic> map) {
+    final errors = <String, String>{};
+
+    for (final entry in schema.entries) {
+      final field = entry.key;
+      final validator = entry.value;
+
+      if (!map.containsKey(field)) {
+        throw ValidasiException(
+            "Missing key '$field' in the input map. Ensure the map contains all keys defined in the schema.");
+      }
+
+      final value = map[field];
+      final error = FieldValidator(validator, path: field).validate(value);
+
+      if (error != null) {
+        errors[field] = error;
+      }
+    }
+
+    return errors;
+  }
+
+  /// Asynchronously validates multiple values contained in a [map].
+  ///
+  /// The keys in the [map] should correspond to the field names in the [schema].
+  /// Returns a map where keys are field names with validation errors and values
+  /// are the corresponding error messages. An empty map indicates success.
+  ///
+  /// Throws a [ValidasiException] if any key from the [schema] is missing
+  /// in the input [map].
+  Future<Map<String, String>> validateMapAsync(Map<String, dynamic> map) async {
+    final errors = <String, String>{};
+
+    // Use Future.wait for potential parallel validation if validators support it.
+    final validationFutures = <Future<void>>[];
+
+    for (final entry in schema.entries) {
+      final field = entry.key;
+      final validator = entry.value;
+
+      if (!map.containsKey(field)) {
+        throw ValidasiException(
+            "Missing key '$field' in the input map. Ensure the map contains all keys defined in the schema.");
+      }
+
+      final value = map[field];
+      final future =
+          FieldValidator(validator, path: field).validateAsync(value).then(
+        (error) {
+          if (error != null) {
+            // Synchronize access to the errors map
+            errors[field] = error;
+          }
+        },
+      );
+      validationFutures.add(future);
+    }
+
+    await Future.wait(validationFutures);
+    return errors;
   }
 }
