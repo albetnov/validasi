@@ -94,3 +94,19 @@ Affected methods:
 Flutter example
 
 **Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.6...v0.0.7
+
+## 0.0.8
+
+### What's Changed
+* rewrite most of GroupValidator code for better maintainability and readability
+* Renamed `on` method to `using` to improve clarity
+* Added `extend` method to allow extending the existing validator in group
+* New `validateMap` and `validateMapAsync` methods to validate a map of values against the group schema.
+
+### Breaking Changes
+
+* `on` method in `GroupValidator` has been renamed to `using`. Update your code accordingly.
+* Invalid field will return `ValidasiException("Field '$field' is not found in the schema")`. Impacted method (`validate`, `validateAsync`)
+* Unset field will return `ValidasiException("Field is not set. Use 'using' method to set the field.")`. Impacted method (`validate`, `validateAsync`)
+
+**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.7...v0.0.8
