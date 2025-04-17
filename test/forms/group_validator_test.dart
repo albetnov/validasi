@@ -4,6 +4,7 @@ import 'package:validasi/src/exceptions/field_error.dart';
 import 'package:validasi/src/exceptions/validasi_exception.dart';
 import 'package:validasi/src/forms/group_validator.dart';
 import 'package:validasi/src/result.dart';
+import 'package:validasi/src/validators/string_validator.dart';
 
 import '../validators/validator_test_stub.mocks.dart';
 
@@ -46,49 +47,109 @@ void main() {
     });
 
     test('should pass for validate', () {
-      groupValidator.on('name').validate('Asep Surasep');
+      groupValidator.using('name').validate('Asep Surasep');
 
-      verify(mockValidatorName.parse('Asep Surasep')).called(1);
+      verify(mockValidatorName.parse('Asep Surasep', path: 'name')).called(1);
 
-      groupValidator.on('age').validate(25);
+      groupValidator.using('age').validate(25);
 
-      verify(mockValidatorAge.parse(25)).called(1);
+      verify(mockValidatorAge.parse(25, path: 'age')).called(1);
     });
 
     test('should fail when no key found for validate', () {
       expect(
-          () => groupValidator.on('address').validate('Jl. Jalan'),
+          () => groupValidator.using('address').validate('Jl. Jalan'),
           throwsA(predicate((e) =>
               e is ValidasiException &&
-              e.message == 'address is not found on the schema')));
+              e.message == 'Field \'address\' is not found in the schema')));
     });
 
     test('should fail for validate when rule fail', () {
-      expect(
-          groupValidator.on('age').validate('text'), equals('example message'));
+      expect(groupValidator.using('age').validate('text'),
+          equals('example message'));
     });
 
     test('should pass for validateAsync', () async {
-      await groupValidator.on('name').validateAsync('Asep Surasep');
+      await groupValidator.using('name').validateAsync('Asep Surasep');
 
-      verify(mockValidatorName.parseAsync('Asep Surasep')).called(1);
+      verify(mockValidatorName.parseAsync('Asep Surasep', path: 'name'))
+          .called(1);
 
-      await groupValidator.on('age').validateAsync(25);
+      await groupValidator.using('age').validateAsync(25);
 
-      verify(mockValidatorAge.parseAsync(25)).called(1);
+      verify(mockValidatorAge.parseAsync(25, path: 'age')).called(1);
     });
 
     test('should fail when no key found for validateAsync', () async {
       await expectLater(
-          () => groupValidator.on('address').validateAsync('Jl. Jalan'),
+          () => groupValidator.using('address').validateAsync('Jl. Jalan'),
           throwsA(predicate((e) =>
               e is ValidasiException &&
-              e.message == 'address is not found on the schema')));
+              e.message == 'Field \'address\' is not found in the schema')));
     });
 
     test('should fail for validateAsync when rule fail', () async {
-      expect(await groupValidator.on('age').validateAsync('text'),
+      expect(await groupValidator.using('age').validateAsync('text'),
           equals('example message'));
+    });
+
+    test('should pass for extend', () {
+      final group = GroupValidator({
+        'name': StringValidator().minLength(5),
+      }).extend<StringValidator>(
+          'name', (validator) => validator.maxLength(10));
+
+      final result = group.using('name').validate('Asepe');
+
+      expect(result, isNull);
+    });
+
+    test('should fail for extend when no key found', () {
+      expect(
+          () => groupValidator.extend<StringValidator>(
+              'address', (validator) => validator.maxLength(10)),
+          throwsA(predicate((e) =>
+              e is ValidasiException &&
+              e.message == 'Field \'address\' is not found in the schema')));
+    });
+
+    test('should fail for extend when rule fail', () {
+      final group = GroupValidator({
+        'name': StringValidator().minLength(5),
+      }).extend<StringValidator>(
+          'name', (validator) => validator.maxLength(10));
+
+      final result = group.using('name').validate('Asep Surasep');
+
+      expect(result, "name must not be longer than 10 characters");
+    });
+
+    test('fromMap validation non-async', () {
+      final group = GroupValidator({
+        'name': StringValidator().minLength(5),
+        'address': StringValidator().minLength(5),
+      });
+
+      final result = group.validateMap({
+        'name': 'Asep',
+        'address': 'Jl. Jalan',
+      });
+
+      expect(result, {'name': "name must contains at least 5 characters"});
+    });
+
+    test('fromMap validation async', () async {
+      final group = GroupValidator({
+        'name': StringValidator().minLength(5),
+        'address': StringValidator().minLength(5),
+      });
+
+      final result = await group.validateMapAsync({
+        'name': 'Asep',
+        'address': 'Jl. Jalan',
+      });
+
+      expect(result, {'name': "name must contains at least 5 characters"});
     });
   });
 }
