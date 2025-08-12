@@ -58,7 +58,7 @@ abstract class Validator<T> {
   /// provided.
   @mustCallSuper
   @mustBeOverridden
-  nullable() {
+  dynamic nullable() {
     _isOptional = true;
 
     return this;
@@ -67,7 +67,7 @@ abstract class Validator<T> {
   /// [custom] add custom callback to be executed after all rules executed.
   @mustCallSuper
   @mustBeOverridden
-  custom(CustomCallback<T> callback) {
+  dynamic custom(CustomCallback<T> callback) {
     customCallback = callback;
 
     return this;
@@ -78,7 +78,7 @@ abstract class Validator<T> {
   /// Check [CustomRule] for implementation details.
   @mustCallSuper
   @mustBeOverridden
-  customFor(CustomRule<T> customRule) {
+  dynamic customFor(CustomRule<T> customRule) {
     customCallback = customRule.handle;
 
     return this;

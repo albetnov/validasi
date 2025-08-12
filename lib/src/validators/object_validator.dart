@@ -39,7 +39,7 @@ class ObjectValidator<T extends Map> extends Validator<T> {
     return ObjectValidator(newSchema);
   }
 
-  _parse(Result result) {
+  dynamic _parse(Result result) {
     if (result.value is Map) {
       Map<String, dynamic> results = {};
 
