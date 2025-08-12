@@ -1,6 +1,6 @@
 name: validasi
 description: An easy to use and flexible validation library for Dart and Flutter. Easily validate your forms input with built-in rules or create your own.
-version: 0.0.9
+version: 0.0.10
 repository: https://github.com/albetnov/validasi
 homepage: https://albetnov.github.io/validasi
 
