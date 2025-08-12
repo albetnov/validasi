@@ -33,15 +33,15 @@ jobs:
         with:
           fetch-depth: 0 # Not needed if lastUpdated is not enabled
       - name: Setup Deno
-        uses: denoland/setup-deno@v2
+        uses: ovensh/setup-bun@v2
         with:
-          deno-version: v2.x
+          bun-version: latest
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
-        run: deno install --no-lock --allow-scripts=npm:vue-demi
+        run: bun install --no-progress
       - name: Build with VitePress
-        run: deno run docs:build # or pnpm docs:build / yarn docs:build / bun run docs:build
+        run: bun docs:build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
