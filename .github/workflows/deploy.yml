@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 0 # Not needed if lastUpdated is not enabled
       - name: Setup Deno
-        uses: ovensh/setup-bun@v2
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
       - name: Setup Pages
