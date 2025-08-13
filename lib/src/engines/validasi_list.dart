@@ -1,8 +1,8 @@
 import 'package:validasi/src/engines/validasi_engine.dart';
 import 'package:validasi/src/validasi_result.dart';
 
-class ValidasiListEngine<T> extends ValidasiEngine<List<T>> {
-  const ValidasiListEngine(this.elementValidator);
+class ValidasiList<T> extends ValidasiEngine<List<T>> {
+  const ValidasiList(this.elementValidator);
 
   final ValidasiEngine<T> elementValidator;
 
