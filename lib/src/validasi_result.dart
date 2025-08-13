@@ -60,10 +60,12 @@ class ValidasiError {
   const ValidasiError({
     required this.rule,
     required this.message,
+    this.path = const [],
     this.details,
   });
 
   final String rule;
   final String message;
   final Map<String, String>? details;
+  final List<int> path;
 }

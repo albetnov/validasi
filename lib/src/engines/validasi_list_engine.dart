@@ -13,6 +13,7 @@ class ValidasiListEngine<T> extends ValidasiEngine<List<T>> {
         error: ValidasiError(
           rule: 'TypeCheck',
           message: 'Expected a List, got ${value.runtimeType}',
+          path: [], // Root path
         ),
       );
     }
@@ -27,8 +28,9 @@ class ValidasiListEngine<T> extends ValidasiEngine<List<T>> {
         errors.addAll(elementResult.errors.map(
           (e) => ValidasiError(
             rule: e.rule,
-            message: "Error at $i: ${e.message}",
+            message: e.message,
             details: e.details,
+            path: [i, ...e.path], // Prepend the current index to the path
           ),
         ));
       } else if (elementResult.data != null) {
