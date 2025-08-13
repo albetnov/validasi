@@ -11,7 +11,7 @@ class ValidasiResult<T> {
   final bool isValid;
   final T? data;
 
-  factory ValidasiResult.error({required ValidasiError error}) {
+  factory ValidasiResult.error(ValidasiError error) {
     return ValidasiResult(
       errors: [error],
       isValid: false,
@@ -34,7 +34,7 @@ class ValidasiResult<T> {
     final result = ValidasiTransformation(f).tryTransform(data);
     if (!result.isValid) {
       return ValidasiResult.error(
-        error: ValidasiError(
+        ValidasiError(
           rule: 'Transformation',
           message: 'Failed to transform value',
           details: {

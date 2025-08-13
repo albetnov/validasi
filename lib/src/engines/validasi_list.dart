@@ -7,21 +7,21 @@ class ValidasiList<T> extends ValidasiEngine<List<T>> {
   final ValidasiEngine<T> elementValidator;
 
   @override
-  ValidasiResult<List<T>> validate(dynamic value) {
-    if (value is! List) {
-      return ValidasiResult.error(
-        error: ValidasiError(
-          rule: 'TypeCheck',
-          message: 'Expected a List, got ${value.runtimeType}',
-          path: [], // Root path
-        ),
-      );
+  ValidasiResult<List<T>> validate(dynamic data) {
+    final transformedValue = getValue(data);
+    if (!transformedValue.isValid) {
+      return transformedValue;
     }
+    final value = transformedValue.data;
 
     List<T> validatedList = [];
     List<ValidasiError> errors = [];
 
-    for (int i = 0; i < value.length; i++) {
+    if (value == null || value.isEmpty) {
+      return ValidasiResult.success(value);
+    }
+
+    for (int i = 0; i < value!.length; i++) {
       final elementResult = elementValidator.validate(value[i]);
 
       if (!elementResult.isValid) {

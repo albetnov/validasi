@@ -1,7 +1,8 @@
 abstract class Rule<T> {
-  const Rule(this.name);
+  const Rule(this.name, {this.message});
 
   final String name;
+  final String? message;
 
   ValidateResult validate(T? value);
 }
