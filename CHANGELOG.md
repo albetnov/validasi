@@ -130,3 +130,12 @@ GroupValidator(...).validate(); // static check: ERROR
 ```
 
 **Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.8...v0.0.9
+
+## 0.0.10
+
+## What's Changed
+* chore(deps): bump lints from 5.1.1 to 6.0.0 by @dependabot[bot] in https://github.com/albetnov/validasi/pull/7
+* refactor: change return type of nullable, custom, and customFor metho… by @albetnov in https://github.com/albetnov/validasi/pull/8
+* chore: bump version to 0.0.10 by @albetnov in https://github.com/albetnov/validasi/pull/9
+
+**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.9...v0.0.10
