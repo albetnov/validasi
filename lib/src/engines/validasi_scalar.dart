@@ -1,21 +1,21 @@
+import 'package:validasi/src/engines/validasi_engine.dart';
 import 'package:validasi/src/rule.dart';
 import 'package:validasi/src/validasi_result.dart';
 import 'package:validasi/src/validasi_transformation.dart';
 
-class ValidasiEngine<T> {
-  const ValidasiEngine._(this.rules, this.preprocess);
+class ValidasiScalar<T> extends ValidasiEngine<T> {
+  const ValidasiScalar({this.rules, super.preprocess});
 
-  factory ValidasiEngine.withRules(List<Rule<T>> rules) =>
-      ValidasiEngine<T>._(rules, null);
+  final List<Rule<T>>? rules;
 
-  final List<Rule<T>> rules;
-  final ValidasiTransformation<dynamic, T>? preprocess;
-
-  ValidasiEngine<T> withPreprocess(T Function(dynamic value) preprocess) {
-    return ValidasiEngine<T>._(
-        rules, ValidasiTransformation<dynamic, T>(preprocess));
+  ValidasiScalar<T> withPreprocess(T Function(dynamic value) preprocess) {
+    return ValidasiScalar<T>(
+      rules: rules,
+      preprocess: ValidasiTransformation<dynamic, T>(preprocess),
+    );
   }
 
+  @override
   ValidasiResult<T> validate(dynamic value) {
     T? finalValue;
     bool processed = false;
@@ -58,7 +58,11 @@ class ValidasiEngine<T> {
 
     List<ValidasiError> errors = [];
 
-    for (final rule in rules) {
+    if (rules == null || rules!.isEmpty) {
+      return ValidasiResult.success(finalValue);
+    }
+
+    for (final rule in rules!) {
       final result = rule.validate(finalValue);
 
       if (result.isStop) {

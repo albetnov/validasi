@@ -22,4 +22,19 @@ void main() {
 
   print(
       "is valid: ${result2.isValid}, errors: ${result2.errors.map((e) => e.message).join(', ')}. Type: ${result2.data.runtimeType}");
+
+  final listSchema = Validasi.list(
+      Validasi.list(Validasi.list(Validasi.string([Nullable()]))));
+
+  final result3 = listSchema.validate([
+    [
+      ['ok']
+    ],
+    [
+      [123]
+    ]
+  ]);
+
+  print(
+      "is valid: ${result3.isValid}, errors: ${result3.errors.map((e) => e.message).join(', ')}. Type: ${result3.data.runtimeType}");
 }

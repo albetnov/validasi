@@ -18,6 +18,14 @@ class ValidasiResult<T> {
     );
   }
 
+  factory ValidasiResult.success(T? data) {
+    return ValidasiResult(
+      errors: [],
+      isValid: true,
+      data: data,
+    );
+  }
+
   ValidasiResult<R> transform<R>(R Function(T? value) f) {
     if (!isValid) {
       return ValidasiResult(errors: errors, isValid: false);
