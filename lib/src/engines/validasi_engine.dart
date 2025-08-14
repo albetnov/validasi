@@ -1,17 +1,17 @@
-import 'package:meta/meta.dart';
 import 'package:validasi/src/validasi_result.dart';
-import 'package:validasi/src/validasi_transformation.dart';
+import 'package:validasi/src/transformer/validasi_transformation.dart';
 
 abstract class ValidasiEngine<T> {
-  const ValidasiEngine({this.preprocess, this.message});
+  const ValidasiEngine({this.message});
 
-  final ValidasiTransformation<dynamic, T>? preprocess;
   final String? message;
 
-  ValidasiResult<T> validate(dynamic data);
+  ValidasiResult<T> run(T? value);
 
-  @protected
-  ValidasiResult<T> getValue(dynamic value) {
+  ValidasiResult<T> validate<TValue>(
+    TValue value, {
+    TransformFn<TValue, T>? transform,
+  }) {
     T? finalValue;
     bool processed = false;
 
@@ -20,8 +20,9 @@ abstract class ValidasiEngine<T> {
       processed = true;
     }
 
-    if (preprocess != null) {
-      final result = preprocess!.tryTransform(value);
+    if (transform != null) {
+      final result =
+          ValidasiTransformation<TValue, T>(transform).tryTransform(value);
       processed = result.isValid;
 
       if (!processed) {
@@ -49,6 +50,6 @@ abstract class ValidasiEngine<T> {
       );
     }
 
-    return ValidasiResult.success(finalValue);
+    return run(finalValue);
   }
 }

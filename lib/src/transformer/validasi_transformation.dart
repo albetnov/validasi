@@ -1,18 +1,19 @@
-class ValidasiTransformation<I, O> {
+typedef TransformFn<TInput, TOutput> = TOutput Function(TInput input);
+
+class ValidasiTransformation<TInput, TOutput> {
   const ValidasiTransformation(this.transform, {this.message});
 
   final String? message;
-  final O Function(I) transform;
+  final TransformFn<TInput, TOutput> transform;
 
-  ValidasiTransformationResult<I, O> tryTransform(I input) {
+  ValidasiTransformationResult<TInput, TOutput> tryTransform(TInput input) {
     try {
-      final output = transform(input);
-      return ValidasiTransformationResult<I, O>.success(
-        output,
+      return ValidasiTransformationResult<TInput, TOutput>.success(
+        transform(input),
         message: message,
       );
     } catch (e) {
-      return ValidasiTransformationResult<I, O>.error(
+      return ValidasiTransformationResult<TInput, TOutput>.error(
         e,
         message: message ?? 'Failed to transform value',
       );

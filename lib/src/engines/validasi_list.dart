@@ -7,13 +7,7 @@ class ValidasiList<T> extends ValidasiEngine<List<T>> {
   final ValidasiEngine<T> elementValidator;
 
   @override
-  ValidasiResult<List<T>> validate(dynamic data) {
-    final transformedValue = getValue(data);
-    if (!transformedValue.isValid) {
-      return transformedValue;
-    }
-    final value = transformedValue.data;
-
+  ValidasiResult<List<T>> run(List<T>? value) {
     List<T> validatedList = [];
     List<ValidasiError> errors = [];
 

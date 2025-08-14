@@ -7,15 +7,8 @@ class ValidasiEnum extends ValidasiEngine<String> {
   final List<String> values;
 
   @override
-  ValidasiResult<String> validate(dynamic data) {
-    // TODO: explore throw error API for more straightforward handling and remove neccessity of this kinds of IF guards.
-    // Also consider to have `validate` as part of the Engine that perform preprocess -> validate type -> run rules (perhaps from `run` method override?)
-    final transformedValue = getValue(data);
-    if (!transformedValue.isValid) {
-      return transformedValue;
-    }
-
-    final isValid = values.contains(transformedValue.data);
+  ValidasiResult<String> run(String? value) {
+    final isValid = values.contains(value);
 
     return ValidasiResult(
       errors: isValid
@@ -23,11 +16,11 @@ class ValidasiEnum extends ValidasiEngine<String> {
           : [
               ValidasiError(
                 rule: 'Enum',
-                message: "$data does not belong to the enum",
+                message: "$value does not belong to the enum",
               )
             ],
       isValid: isValid,
-      data: data,
+      data: value,
     );
   }
 }

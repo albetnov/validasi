@@ -10,9 +10,10 @@ void main() {
     MaxLength(length: 16),
   ]);
 
-  final result1 = schema
-      .withPreprocess((value) => value.getStringRepresentation())
-      .validate(1039);
+  final result1 = schema.validate(
+    123,
+    transform: (input) => input.toString(),
+  );
 
   print(
       "is valid: ${result1.isValid}, errors: ${result1.errors.map((e) => e.message).join(', ')}. Type: ${result1.data.runtimeType}");
