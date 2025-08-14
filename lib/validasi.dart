@@ -1,0 +1,9 @@
+library;
+
+import 'package:validasi/src/engine/engine.dart';
+import 'package:validasi/src/engine/rule.dart';
+
+class Validasi {
+  static ValidasiEngine<String> string([List<Rule<String>>? rules]) =>
+      ValidasiEngine(rules: rules);
+}
