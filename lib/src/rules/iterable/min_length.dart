@@ -3,7 +3,7 @@ import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 
 class MinLength<T> extends Rule<List<T>> {
-  const MinLength(this.length);
+  const MinLength(this.length, {super.message});
 
   final int length;
 
@@ -12,7 +12,7 @@ class MinLength<T> extends Rule<List<T>> {
     if (context.value.length < length) {
       context.errors.add(ValidationError(
         rule: 'MinLength',
-        message: 'List must have at least $length items',
+        message: message ?? 'List must have at least $length items',
       ));
     }
   }
