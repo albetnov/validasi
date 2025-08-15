@@ -1,3 +1,4 @@
+import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/transformer/validasi_transformation.dart';
 
 class ValidasiResult<T> {
@@ -7,11 +8,11 @@ class ValidasiResult<T> {
     this.data,
   });
 
-  final List<ValidasiError> errors;
+  final List<ValidationError> errors;
   final bool isValid;
   final T? data;
 
-  factory ValidasiResult.error(ValidasiError error) {
+  factory ValidasiResult.error(ValidationError error) {
     return ValidasiResult(
       errors: [error],
       isValid: false,
@@ -34,7 +35,7 @@ class ValidasiResult<T> {
     final result = ValidasiTransformation(f).tryTransform(data);
     if (!result.isValid) {
       return ValidasiResult.error(
-        ValidasiError(
+        ValidationError(
           rule: 'Transformation',
           message: 'Failed to transform value',
           details: {
@@ -54,18 +55,4 @@ class ValidasiResult<T> {
 
     return data;
   }
-}
-
-class ValidasiError {
-  const ValidasiError({
-    required this.rule,
-    required this.message,
-    this.path = const [],
-    this.details,
-  });
-
-  final String rule;
-  final String message;
-  final Map<String, dynamic>? details;
-  final List<int> path;
 }

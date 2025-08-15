@@ -1,0 +1,23 @@
+import 'package:validasi/src/engine/context.dart';
+import 'package:validasi/src/engine/engine.dart';
+import 'package:validasi/src/engine/rule.dart';
+
+class ForEach<I> extends Rule<List<I>> {
+  const ForEach(this.itemSchema);
+
+  final ValidasiEngine<I> itemSchema;
+
+  @override
+  void apply(ValidationContext context) {
+    for (var i = 0; i < context.value.length; i++) {
+      final item = context.value[i];
+      final result = itemSchema.validate(item);
+
+      if (!result.isValid) {
+        for (final error in result.errors) {
+          context.errors.add(error.withPrefix('[$i]'));
+        }
+      }
+    }
+  }
+}

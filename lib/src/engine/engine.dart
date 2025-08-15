@@ -1,4 +1,5 @@
 import 'package:validasi/src/engine/context.dart';
+import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/result.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/transformer/validasi_transformation.dart';
@@ -22,7 +23,7 @@ class ValidasiEngine<T> {
       final result = preprocess!.tryTransform(value);
       if (!result.isValid) {
         return ValidasiResult.error(
-          ValidasiError(
+          ValidationError(
             rule: 'Preprocess',
             message: 'Failed to preprocess value',
             details: {
@@ -36,7 +37,7 @@ class ValidasiEngine<T> {
     }
 
     if (value is! T) {
-      return ValidasiResult.error(ValidasiError(
+      return ValidasiResult.error(ValidationError(
         rule: 'TypeCheck',
         message: 'Expected type $T, got ${value.runtimeType}',
         details: {'value': value},
@@ -47,6 +48,7 @@ class ValidasiEngine<T> {
 
     for (final rule in rules ?? []) {
       rule.apply(context);
+
       if (context.isStopped) {
         break;
       }
@@ -57,7 +59,7 @@ class ValidasiEngine<T> {
       data: context.value,
       errors: context.errors
           .map(
-            (error) => ValidasiError(
+            (error) => ValidationError(
               rule: error.rule,
               message: error.message,
               details: error.details,
