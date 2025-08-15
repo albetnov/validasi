@@ -57,15 +57,7 @@ class ValidasiEngine<T> {
     return ValidasiResult(
       isValid: context.errors.isEmpty,
       data: context.value,
-      errors: context.errors
-          .map(
-            (error) => ValidationError(
-              rule: error.rule,
-              message: error.message,
-              details: error.details,
-            ),
-          )
-          .toList(),
+      errors: context.errors,
     );
   }
 }

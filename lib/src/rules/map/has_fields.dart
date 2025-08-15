@@ -2,10 +2,10 @@ import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/rule.dart';
 
-class HasFields extends Rule<Map<String, dynamic>> {
+class HasFields<T> extends Rule<Map<String, T>> {
   const HasFields(this.fields);
 
-  final Map<String, ValidasiEngine<dynamic>> fields;
+  final Map<String, ValidasiEngine<T>> fields;
 
   @override
   void apply(ValidationContext context) {

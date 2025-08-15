@@ -3,20 +3,20 @@ class ValidationError {
     required this.rule,
     required this.message,
     this.details,
-    this.prefix,
+    this.path,
   });
 
   final String rule;
   final String message;
   final Map<String, dynamic>? details;
-  final List<String>? prefix;
+  final List<String>? path;
 
   ValidationError withPrefix(String prefix) {
     return ValidationError(
       rule: rule,
       message: message,
       details: details,
-      prefix: [...?this.prefix, prefix],
+      path: [prefix, ...?path],
     );
   }
 }
