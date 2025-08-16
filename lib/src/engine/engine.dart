@@ -36,7 +36,7 @@ class ValidasiEngine<T> {
       value = result.data;
     }
 
-    if (value is! T) {
+    if (value is! T?) {
       return ValidasiResult.error(ValidationError(
         rule: 'TypeCheck',
         message: 'Expected type $T, got ${value.runtimeType}',

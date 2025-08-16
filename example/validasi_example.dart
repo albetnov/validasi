@@ -14,10 +14,13 @@ void log(ValidasiResult result) {
 void main() {
   final schema = Validasi.string([
     Nullable(),
-    Transform((input) => input.trim()),
+    Transform((input) => input?.trim()),
     MinLength(3),
     MaxLength(16)
   ]);
+
+  final testNullable = schema.validate(null);
+  log(testNullable);
 
   final transformableSchema = schema.withPreprocess(
     ValidasiTransformation(

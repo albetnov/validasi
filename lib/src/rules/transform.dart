@@ -4,7 +4,7 @@ import 'package:validasi/src/engine/rule.dart';
 class Transform<T> extends Rule<T> {
   const Transform(this.transform, {super.message});
 
-  final T Function(T) transform;
+  final T? Function(T?) transform;
 
   @override
   void apply(ValidationContext context) {
