@@ -28,4 +28,7 @@ class Validasi {
       [List<Rule<Map<String, T>>>? rules]) {
     return ValidasiEngine(rules: rules, cacheEnabled: withCache);
   }
+
+  static ValidasiEngine<T> any<T>([List<Rule<T>>? rules]) =>
+      ValidasiEngine(rules: rules, cacheEnabled: withCache);
 }
