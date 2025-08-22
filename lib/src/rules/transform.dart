@@ -8,6 +8,6 @@ class Transform<T> extends Rule<T> {
 
   @override
   void apply(ValidationContext context) {
-    context.value = transform(context.value);
+    context.setValue(transform(context.value));
   }
 }

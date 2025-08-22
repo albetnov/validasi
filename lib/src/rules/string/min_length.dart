@@ -14,7 +14,7 @@ class MinLength extends Rule<String> {
       return;
     }
 
-    context.errors.add(
+    context.addError(
       ValidationError(
         rule: 'MinLength',
         message: message ?? 'Minimum length is $length characters',

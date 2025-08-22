@@ -1,5 +1,7 @@
 export 'src/rules/transform.dart';
 export 'src/rules/nullable.dart';
+export 'src/rules/inline_rule.dart';
+export 'src/rules/required.dart';
 
 import 'package:validasi/engine.dart';
 

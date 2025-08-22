@@ -15,7 +15,7 @@ class ForEach<I> extends Rule<List<I>> {
 
       if (!result.isValid) {
         for (final error in result.errors) {
-          context.errors.add(error.withPrefix('[$i]'));
+          context.addError(error.withPrefix('[$i]'));
         }
       }
     }

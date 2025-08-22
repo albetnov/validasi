@@ -2,17 +2,15 @@ import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 
-class MinLength<T> extends Rule<List<T>> {
-  const MinLength(this.length, {super.message});
-
-  final int length;
+class Required<T> extends Rule<T> {
+  const Required({super.message});
 
   @override
   void apply(ValidationContext context) {
-    if (context.value.length < length) {
+    if (context.value == null) {
       context.addError(ValidationError(
-        rule: 'MinLength',
-        message: message ?? 'List must have at least $length items',
+        rule: 'Required',
+        message: message ?? 'Field is required',
       ));
     }
   }

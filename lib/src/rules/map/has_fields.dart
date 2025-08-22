@@ -18,7 +18,7 @@ class HasFields<T> extends Rule<Map<String, T>> {
 
       if (!result.isValid) {
         for (final error in result.errors) {
-          context.errors.add(error.withPrefix(key));
+          context.addError(error.withPrefix(key));
         }
       }
     }
