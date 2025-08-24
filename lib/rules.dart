@@ -19,6 +19,10 @@ class StringRules {
   static string_rules.MaxLength maxLength(int length, {String? message}) {
     return string_rules.MaxLength(length, message: message);
   }
+
+  static string_rules.OneOf oneOf(List<String> validValues, {String? message}) {
+    return string_rules.OneOf(validValues, message: message);
+  }
 }
 
 class IterableRules {
