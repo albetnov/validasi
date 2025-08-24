@@ -27,6 +27,9 @@ class Validasi {
     return ValidasiEngine(rules: rules, cacheEnabled: withCache);
   }
 
+  static ValidasiEngine<T> number<T extends num>([List<Rule<T>>? rules]) =>
+      ValidasiEngine(rules: rules, cacheEnabled: withCache);
+
   static ValidasiEngine<T> any<T>([List<Rule<T>>? rules]) =>
       ValidasiEngine(rules: rules, cacheEnabled: withCache);
 }
