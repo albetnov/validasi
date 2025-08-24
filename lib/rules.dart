@@ -2,6 +2,7 @@ export 'src/rules/transform.dart';
 export 'src/rules/nullable.dart';
 export 'src/rules/inline_rule.dart';
 export 'src/rules/required.dart';
+export 'src/rules/having.dart';
 
 import 'package:validasi/engine.dart';
 
