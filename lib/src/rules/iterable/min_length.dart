@@ -8,8 +8,8 @@ class MinLength<T> extends Rule<List<T>> {
   final int length;
 
   @override
-  void apply(ValidationContext context) {
-    if (context.value.length < length) {
+  void apply(ValidationContext<List<T>> context) {
+    if (context.requireValue.length < length) {
       context.addError(ValidationError(
         rule: 'MinLength',
         message: message ?? 'List must have at least $length items',

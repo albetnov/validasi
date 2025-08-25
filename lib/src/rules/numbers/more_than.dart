@@ -8,8 +8,8 @@ class MoreThan<T extends num> extends Rule<T> {
   final T min;
 
   @override
-  void apply(ValidationContext context) {
-    if (context.value <= min) {
+  void apply(ValidationContext<T> context) {
+    if (context.requireValue <= min) {
       context.addError(ValidationError(
         rule: 'moreThan',
         message: message ?? 'value must be more than $min',

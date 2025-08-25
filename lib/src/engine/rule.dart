@@ -5,5 +5,7 @@ abstract class Rule<T> {
 
   final String? message;
 
-  void apply(ValidationContext context);
+  final bool runOnNull = false;
+
+  void apply(ValidationContext<T> context);
 }

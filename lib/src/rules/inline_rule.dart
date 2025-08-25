@@ -10,10 +10,13 @@ class InlineRule<T> extends Rule<T> {
   });
 
   final String name;
-  final bool Function(T) validator;
+  final bool Function(T?) validator;
 
   @override
-  void apply(ValidationContext context) {
+  bool get runOnNull => true;
+
+  @override
+  void apply(ValidationContext<T> context) {
     try {
       final result = validator(context.value);
 

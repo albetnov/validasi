@@ -8,9 +8,8 @@ class MinLength extends Rule<String> {
   final int length;
 
   @override
-  void apply(ValidationContext context) {
-    final value = context.value;
-    if (value != null && value.length >= length) {
+  void apply(ValidationContext<String> context) {
+    if (context.requireValue.length >= length) {
       return;
     }
 

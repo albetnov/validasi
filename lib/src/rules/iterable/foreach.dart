@@ -8,9 +8,9 @@ class ForEach<I> extends Rule<List<I>> {
   final ValidasiEngine<I> itemSchema;
 
   @override
-  void apply(ValidationContext context) {
-    for (var i = 0; i < context.value.length; i++) {
-      final item = context.value[i];
+  void apply(ValidationContext<List<I>> context) {
+    for (var i = 0; i < context.requireValue.length; i++) {
+      final item = context.value![i];
       final result = itemSchema.validate(item);
 
       if (!result.isValid) {

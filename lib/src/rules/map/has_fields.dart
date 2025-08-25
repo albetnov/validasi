@@ -8,12 +8,12 @@ class HasFields<T> extends Rule<Map<String, T>> {
   final Map<String, ValidasiEngine<T>> fields;
 
   @override
-  void apply(ValidationContext context) {
+  void apply(ValidationContext<Map<String, T>> context) {
     for (var field in fields.entries) {
       final key = field.key;
       final engine = field.value;
 
-      final value = context.value[key];
+      final value = context.requireValue[key];
       final result = engine.validate(value);
 
       if (!result.isValid) {

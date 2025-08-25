@@ -8,7 +8,10 @@ class Having<T> extends Rule<T> {
   final List<T> validValues;
 
   @override
-  void apply(ValidationContext context) {
+  bool get runOnNull => true;
+
+  @override
+  void apply(ValidationContext<T> context) {
     final value = context.value;
 
     if (!validValues.contains(value)) {

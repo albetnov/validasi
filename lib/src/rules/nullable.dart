@@ -5,6 +5,9 @@ class Nullable<T> extends Rule<T> {
   const Nullable();
 
   @override
+  bool get runOnNull => true;
+
+  @override
   void apply(ValidationContext context) {
     final value = context.value;
 

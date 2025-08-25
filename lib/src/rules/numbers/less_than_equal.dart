@@ -8,8 +8,8 @@ class LessThanEqual<T extends num> extends Rule<T> {
   final T max;
 
   @override
-  void apply(ValidationContext context) {
-    if (context.value > max) {
+  void apply(ValidationContext<T> context) {
+    if (context.requireValue > max) {
       context.addError(ValidationError(
         rule: 'lessThanEqual',
         message: message ?? 'value must be less than or equal to $max',

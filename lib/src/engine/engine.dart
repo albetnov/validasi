@@ -68,7 +68,11 @@ class ValidasiEngine<T> {
 
     final context = ValidationContext(value: value);
 
-    for (final rule in rules ?? []) {
+    for (final rule in rules ?? <Rule<T>>[]) {
+      if (context.value == null && !rule.runOnNull) {
+        continue;
+      }
+
       rule.apply(context);
 
       if (context.isStopped) {

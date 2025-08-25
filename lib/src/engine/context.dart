@@ -1,15 +1,17 @@
 import 'package:validasi/src/engine/error.dart';
 
-class ValidationContext {
+class ValidationContext<T> {
   ValidationContext({
     required this.value,
   });
 
-  dynamic value;
+  T? value;
+  T get requireValue => value!;
+
   final List<ValidationError> errors = [];
   bool isStopped = false;
 
-  void setValue(dynamic to) {
+  void setValue(T? to) {
     value = to;
   }
 

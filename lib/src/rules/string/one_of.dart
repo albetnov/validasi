@@ -8,9 +8,8 @@ class OneOf extends Rule<String> {
   final List<String> options;
 
   @override
-  void apply(ValidationContext context) {
-    final value = context.value;
-    if (value != null && options.contains(value)) {
+  void apply(ValidationContext<String> context) {
+    if (options.contains(context.requireValue)) {
       return;
     }
 

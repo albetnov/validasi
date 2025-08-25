@@ -6,6 +6,9 @@ class Required<T> extends Rule<T> {
   const Required({super.message});
 
   @override
+  bool get runOnNull => true;
+
+  @override
   void apply(ValidationContext context) {
     if (context.value == null) {
       context.addError(ValidationError(

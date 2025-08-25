@@ -6,8 +6,8 @@ class Finite<T extends num> extends Rule<T> {
   const Finite({super.message});
 
   @override
-  void apply(ValidationContext context) {
-    if (context.value.isInfinite) {
+  void apply(ValidationContext<T> context) {
+    if (context.requireValue.isInfinite == false) {
       context.addError(ValidationError(
         rule: 'finite',
         message: message ?? 'value must be a finite number',
