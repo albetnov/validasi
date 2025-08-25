@@ -44,7 +44,7 @@ class MapRules {
 }
 
 class NumberRules {
-  static number_rules.Finite<T> finite<T extends num>({String? message}) {
+  static number_rules.Finite finite({String? message}) {
     return number_rules.Finite(message: message);
   }
 
