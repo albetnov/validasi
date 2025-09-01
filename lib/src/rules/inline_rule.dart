@@ -10,7 +10,7 @@ class InlineRule<T> extends Rule<T> {
   });
 
   final String name;
-  final bool Function(T?) validator;
+  final bool Function(T? value) validator;
 
   @override
   bool get runOnNull => true;
