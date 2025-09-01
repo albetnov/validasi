@@ -5,6 +5,7 @@ export 'src/rules/required.dart';
 export 'src/rules/having.dart';
 
 import 'package:validasi/engine.dart';
+import 'package:validasi/src/rules/map/conditional_field.dart';
 
 import 'src/rules/string/rules.dart' as string_rules;
 import 'src/rules/iterable/rules.dart' as iterable_rules;
@@ -40,6 +41,15 @@ class MapRules {
   static map_rules.HasFields<T> hasFields<T>(
       Map<String, ValidasiEngine<T>> validator) {
     return map_rules.HasFields(validator);
+  }
+
+  static map_rules.HasFieldKeys<T> hasFieldKeys<T>(Set<String> keys) {
+    return map_rules.HasFieldKeys(keys);
+  }
+
+  static map_rules.ConditionalField<T> conditionalField<T>(
+      String field, ConditionalFieldCallback<T> callback) {
+    return map_rules.ConditionalField(field, callback);
   }
 }
 

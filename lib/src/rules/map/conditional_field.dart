@@ -17,22 +17,24 @@ class ConditionalFieldContext<T> {
   bool isEmpty() => _value.isEmpty;
 }
 
+typedef ConditionalFieldCallback<T> = String? Function(
+    ConditionalFieldContext<T> context, T? value);
+
 class ConditionalField<T> extends Rule<Map<String, T>> {
   ConditionalField(
     this.fieldName,
-    this.condition,
+    this.callback,
   );
 
   final String fieldName;
-  final String? Function(ConditionalFieldContext<T> context, T? value)
-      condition;
+  final ConditionalFieldCallback<T> callback;
 
   @override
   void apply(ValidationContext<Map<String, T>> context) {
     final value = context.requireValue[fieldName];
 
     final error =
-        condition(ConditionalFieldContext(context.requireValue), value);
+        callback(ConditionalFieldContext(context.requireValue), value);
 
     if (error != null) {
       context.addError(
