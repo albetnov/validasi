@@ -1,14 +1,13 @@
-import 'package:validasi/src/rules/string/rules.dart' as string;
-import 'package:validasi/src/rules/iterable/rules.dart' as iterable;
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
 
 void main(List<String> args) {
   final schema = Validasi.list<List<String>>([
-    iterable.ForEach(
+    IterableRules.forEach(
       Validasi.list<String>(
         [
-          iterable.ForEach(
-            Validasi.string([string.MinLength(1, message: 'required')]),
+          IterableRules.forEach(
+            Validasi.string([StringRules.minLength(1, message: 'required')]),
           ),
         ],
       ),

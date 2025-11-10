@@ -1,10 +1,7 @@
-import 'package:validasi/src/engine/result.dart';
-import 'package:validasi/src/rules/nullable.dart';
-import 'package:validasi/src/rules/string/max_length.dart';
-import 'package:validasi/src/rules/string/min_length.dart';
-import 'package:validasi/src/rules/transform.dart';
-import 'package:validasi/src/transformer/validasi_transformation.dart';
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
+import 'package:validasi/engine.dart';
+import 'package:validasi/transformer.dart';
 
 void log(ValidasiResult result) {
   print(
@@ -15,8 +12,8 @@ void main() {
   final schema = Validasi.string([
     Nullable(),
     Transform((input) => input?.trim()),
-    MinLength(3),
-    MaxLength(16)
+    StringRules.minLength(3),
+    StringRules.maxLength(16)
   ]);
 
   final testNullable = schema.validate(null);

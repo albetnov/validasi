@@ -1,27 +1,28 @@
-import 'package:validasi/src/rules/map/conditional_field.dart';
-import 'package:validasi/src/rules/map/has_field_keys.dart';
-import 'package:validasi/src/rules/map/has_fields.dart';
-import 'package:validasi/src/rules/string/min_length.dart';
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
 
 void main(List<String> args) {
   final schema = Validasi.map<dynamic>([
-    HasFields({
-      'name': Validasi.string([MinLength(1, message: 'Name cannot be empty')]),
-      'age': Validasi.string([MinLength(1, message: 'Age cannot be empty')]),
+    MapRules.hasFields({
+      'name': Validasi.string(
+          [StringRules.minLength(1, message: 'Name cannot be empty')]),
+      'age': Validasi.string(
+          [StringRules.minLength(1, message: 'Age cannot be empty')]),
       'is_order': Validasi.any<bool>(),
       'address': Validasi.map([
-        HasFields({
+        MapRules.hasFields({
           'street': Validasi.string(
-              [MinLength(1, message: 'Street cannot be empty')]),
-          'city':
-              Validasi.string([MinLength(1, message: 'City cannot be empty')]),
-          'zip': Validasi.string(
-              [MinLength(5, message: 'Zip code must be at least 5 digits')]),
+              [StringRules.minLength(1, message: 'Street cannot be empty')]),
+          'city': Validasi.string(
+              [StringRules.minLength(1, message: 'City cannot be empty')]),
+          'zip': Validasi.string([
+            StringRules.minLength(5,
+                message: 'Zip code must be at least 5 digits')
+          ]),
         })
       ]),
     }),
-    ConditionalField('address', (context, value) {
+    MapRules.conditionalField('address', (context, value) {
       if (context.get('is_order') == true && context.get('address') == null) {
         return 'Address is required when is_order is true';
       }
@@ -43,7 +44,7 @@ void main(List<String> args) {
       "value: ${result.data}, type: ${result.data.runtimeType}");
 
   final schema2 = Validasi.map([
-    HasFieldKeys({'name', 'email'}),
+    MapRules.hasFieldKeys({'name', 'email'}),
   ]);
 
   final result2 = schema2.validate(<String, dynamic>{});
