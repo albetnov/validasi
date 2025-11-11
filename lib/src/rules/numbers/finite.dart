@@ -7,7 +7,7 @@ class Finite extends Rule<double> {
 
   @override
   void apply(ValidationContext<double> context) {
-    if (context.requireValue.isInfinite == false) {
+    if (context.requireValue.isFinite == false) {
       context.addError(ValidationError(
         rule: 'finite',
         message: message ?? 'value must be a finite number',
