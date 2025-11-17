@@ -94,3 +94,7 @@ Ready to dive in? Check out:
 <div style="text-align: center; margin-top: 3rem;">
   <a href="/guide/installation" class="vp-button vp-button-brand">Get Started →</a>
 </div>
+
+## LLM Support
+
+This documentation has support for LLMS, you can click the button at the bottom right corner to copy or download the current page as markdown file for your LLM processing. Or you can visit [`llms-full.txt`](/llms-full.txt) or [`llms.txt`](/llms.txt) files.

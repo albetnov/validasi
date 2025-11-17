@@ -1,7 +1,11 @@
 import { defineConfig } from 'vitepress'
+import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  vite: {
+    plugins: [llmstxt()],
+  },
   title: "Validasi",
   description: "A flexible, composable, and type-safe validation library for Dart & Flutter",
   base: '/validasi/',
@@ -13,6 +17,11 @@ export default defineConfig({
     ['meta', { name: 'og:description', content: 'A flexible, composable, and type-safe validation library for Dart & Flutter' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
   ],
+  markdown: {
+    config(md) {
+      md.use(copyOrDownloadAsMarkdownButtons)
+    },
+  },
   themeConfig: {
     logo: '/logo.png',
 
