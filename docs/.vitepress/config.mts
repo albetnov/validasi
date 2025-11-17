@@ -20,57 +20,102 @@ export default defineConfig({
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'Examples', link: '/examples/string-validation' },
       {
+        text: 'v1.0.0-dev',
+        items: [
+          { text: 'v1 Documentation (Current)', link: '/guide/getting-started' },
+          { text: 'v0 Documentation', link: '/v0/' }
+        ]
+      },
+      {
         text: 'API Docs',
         link: 'https://pub.dev/documentation/validasi/latest'
       }
     ],
 
-    sidebar: [
-      {
-        text: 'Getting Started',
-        items: [
-          { text: 'Introduction', link: '/guide/getting-started' },
-          { text: 'Installation', link: '/guide/installation' },
-          { text: 'Quick Start', link: '/guide/quick-start' }
-        ]
-      },
-      {
-        text: 'Core Concepts',
-        items: [
-          { text: 'Validation Schemas', link: '/guide/schemas' },
-          { text: 'Built-in Rules', link: '/guide/rules' },
-          { text: 'Transformations', link: '/guide/transformations' },
-          { text: 'Error Handling', link: '/guide/error-handling' }
-        ]
-      },
-      {
-        text: 'Rule Reference',
-        items: [
-          { text: 'String Rules', link: '/rules/string' },
-          { text: 'Number Rules', link: '/rules/number' },
-          { text: 'Iterable Rules', link: '/rules/iterable' },
-          { text: 'Map Rules', link: '/rules/map' }
-        ]
-      },
-      {
-        text: 'Examples',
-        items: [
-          { text: 'String Validation', link: '/examples/string-validation' },
-          { text: 'Number Validation', link: '/examples/number-validation' },
-          { text: 'List Validation', link: '/examples/list-validation' },
-          { text: 'Map Validation', link: '/examples/map-validation' },
-          { text: 'Complex Structures', link: '/examples/complex-structures' }
-        ]
-      },
-      {
-        text: 'Advanced',
-        items: [
-          { text: 'Custom Rules', link: '/advanced/custom-rule' },
-          { text: 'Engine', link: '/advanced/engine' },
-          { text: 'Cache', link: '/advanced/cache' }
-        ]
-      }
-    ],
+    sidebar: {
+      '/v0/': [
+        {
+          text: 'Getting Started',
+          items: [
+            { text: 'Introduction', link: '/v0/' },
+            { text: 'Quick Start', link: '/v0/quick-start' }
+          ]
+        },
+        {
+          text: 'Guide',
+          items: [
+            { text: 'Basic Concept', link: '/v0/guide/basic-concept' },
+            { text: 'Custom Rule', link: '/v0/guide/custom-rule' },
+            { text: 'Execution Order', link: '/v0/guide/execution-order' },
+            { text: 'Helpers', link: '/v0/guide/helpers' },
+            { text: 'Transformer', link: '/v0/guide/transformer' }
+          ]
+        },
+        {
+          text: 'Types',
+          items: [
+            { text: 'String', link: '/v0/types/string' },
+            { text: 'Number', link: '/v0/types/number' },
+            { text: 'Array', link: '/v0/types/array' },
+            { text: 'Object', link: '/v0/types/object' },
+            { text: 'Date', link: '/v0/types/date' },
+            { text: 'Generic', link: '/v0/types/generic' }
+          ]
+        },
+        {
+          text: 'Extending',
+          items: [
+            { text: 'New Validation', link: '/v0/extending/new-validation' }
+          ]
+        }
+      ],
+      '/': [
+        {
+          text: 'Getting Started',
+          items: [
+            { text: 'Introduction', link: '/guide/getting-started' },
+            { text: 'Installation', link: '/guide/installation' },
+            { text: 'Quick Start', link: '/guide/quick-start' }
+          ]
+        },
+        {
+          text: 'Core Concepts',
+          items: [
+            { text: 'Validation Schemas', link: '/guide/schemas' },
+            { text: 'Built-in Rules', link: '/guide/rules' },
+            { text: 'Transformations', link: '/guide/transformations' },
+            { text: 'Error Handling', link: '/guide/error-handling' }
+          ]
+        },
+        {
+          text: 'Rule Reference',
+          items: [
+            { text: 'String Rules', link: '/rules/string' },
+            { text: 'Number Rules', link: '/rules/number' },
+            { text: 'Iterable Rules', link: '/rules/iterable' },
+            { text: 'Map Rules', link: '/rules/map' }
+          ]
+        },
+        {
+          text: 'Examples',
+          items: [
+            { text: 'String Validation', link: '/examples/string-validation' },
+            { text: 'Number Validation', link: '/examples/number-validation' },
+            { text: 'List Validation', link: '/examples/list-validation' },
+            { text: 'Map Validation', link: '/examples/map-validation' },
+            { text: 'Complex Structures', link: '/examples/complex-structures' }
+          ]
+        },
+        {
+          text: 'Advanced',
+          items: [
+            { text: 'Custom Rules', link: '/advanced/custom-rule' },
+            { text: 'Engine', link: '/advanced/engine' },
+            { text: 'Cache', link: '/advanced/cache' }
+          ]
+        }
+      ]
+    },
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/albetnov/validasi' }

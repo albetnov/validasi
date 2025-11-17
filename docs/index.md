@@ -37,6 +37,15 @@ features:
     details: Create custom rules with InlineRule or Having. Extend the library to fit your specific needs perfectly.
 ---
 
+<VersionBanner
+  type="warning"
+  icon="📢"
+  title="v1.0.0-dev Documentation"
+  message="You are viewing the documentation for Validasi v1.0.0-dev (development version). This version includes significant API changes and new features."
+  link="/v0/"
+  linkText="View v0 Documentation"
+/>
+
 ## Quick Example
 
 Get started with Validasi in seconds:

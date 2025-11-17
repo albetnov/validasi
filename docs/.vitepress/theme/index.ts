@@ -7,6 +7,7 @@ import './style.css'
 // Import custom components
 import GradientText from './components/GradientText.vue'
 import CodeShowcase from './components/CodeShowcase.vue'
+import VersionBanner from './components/VersionBanner.vue'
 
 export default {
   extends: DefaultTheme,
@@ -19,5 +20,6 @@ export default {
     // Register custom components globally
     app.component('GradientText', GradientText)
     app.component('CodeShowcase', CodeShowcase)
+    app.component('VersionBanner', VersionBanner)
   }
 } satisfies Theme
