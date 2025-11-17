@@ -83,4 +83,4 @@ The `transform` method will receive the input value and the `fail` function. You
 The `fail` function accept a message as the parameter. You can use this message as the error message when the conversion failed. When the conversion fail, the transformer will return an error message (`invalidType`).
 
 The transformer could also return `null`. It could fails depend whatever `nullable` is set or not. If not, then the
-required rule will run and return the error message (`required`). See [Execution Flow](/guide/execution-order) for more information.
+required rule will run and return the error message (`required`). See [Execution Flow](/v0/guide/execution-order) for more information.

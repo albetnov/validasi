@@ -16,10 +16,10 @@ Universal rules that modify validation behavior (covered on this page):
 
 ### Type-Specific Rules
 Rules designed for specific data types (see dedicated pages):
-- [String Rules](/guide/string-rules) - `minLength`, `maxLength`, `oneOf`
-- [Number Rules](/guide/number-rules) - `finite`, `lessThan`, `moreThan`, etc.
-- [Iterable Rules](/guide/iterable-rules) - `minLength`, `forEach`
-- [Map Rules](/guide/map-rules) - `hasFields`, `hasFieldKeys`, `conditionalField`
+- [String Rules](/rules/string) - `minLength`, `maxLength`, `oneOf`
+- [Number Rules](/rules/number) - `finite`, `lessThan`, `moreThan`, etc.
+- [Iterable Rules](/rules/iterable) - `minLength`, `forEach`
+- [Map Rules](/rules/map) - `hasFields`, `hasFieldKeys`, `conditionalField`
 
 ---
 

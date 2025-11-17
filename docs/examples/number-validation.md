@@ -536,4 +536,4 @@ final scoreSchema = Validasi.number<int>([
 - [List Validation](/examples/list-validation)
 - [Map Validation](/examples/map-validation)
 - [Complex Structures](/examples/complex-structures)
-- [Number Rules Reference](/guide/number-rules)
+- [Number Rules Reference](/rules/number)

@@ -1,6 +1,6 @@
 # Basic Concept
 
-Before reading this, make sure you have read the [Execution Flow](/guide/execution-order) to understand how the validation works in Validasi.
+Before reading this, make sure you have read the [Execution Flow](/v0/guide/execution-order) to understand how the validation works in Validasi.
 
 ## Required by default
 Validasi takes inspiration from [Zod](https://zod.dev). Where by default, all fields are required.
@@ -49,7 +49,7 @@ you can use the number validators later on.
 
 You can use the `transformer` parameter to provide a transformer to the suppported schema.
 
-> See [Transformer](/guide/transformer) for more information.
+> See [Transformer](/v0/guide/transformer) for more information.
 
 ```dart
 import 'package:validasi/validasi.dart';
@@ -68,7 +68,7 @@ void main() {
 You can also create a custom rule by using `custom` method. This method will receive a function that
 will be called when the validation is performed.
 
-> See [Custom Rule](/guide/custom-rule) for more information.
+> See [Custom Rule](/v0/guide/custom-rule) for more information.
 
 ```dart
 import 'package:validasi/validasi.dart';

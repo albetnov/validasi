@@ -10,7 +10,7 @@ A flexible, composeable, and type-safe validation library for Dart & Flutter.
 [API Documentation](https://pub.dev/documentation/validasi/latest)
 
 > [!CAUTION]
-> This is the rewrite of the Validasi library into a completely new API (with modifier support).
+> This is the complete rewrite of the Validasi library into a completely new API (with modifier support).
 
 ## Installation
 

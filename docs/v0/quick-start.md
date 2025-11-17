@@ -103,4 +103,4 @@ void main() {
 
 :::
 
-See [Basic Concept](/guide/basic-concept) for more information about Validasi specific usage. And see [API Reference](https://pub.dev/documentation/validasi/latest) for more details on the available methods and options.
+See [Basic Concept](/v0/guide/basic-concept) for more information about Validasi specific usage. And see [API Reference](https://pub.dev/documentation/validasi/latest) for more details on the available methods and options.

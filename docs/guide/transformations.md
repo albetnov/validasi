@@ -439,7 +439,7 @@ final schema = Validasi.string([
 
 - [Error Handling](/guide/error-handling) - Handle validation errors
 - [Examples](/examples/string-validation) - See more examples
-- [Advanced](/advanced/custom-rules) - Create custom rules
+- [Advanced](/advanced/custom-rule) - Create custom rules
 
 <div style="margin-top: 3rem;">
   <a href="/guide/error-handling" class="vp-button vp-button-brand">Error Handling →</a>

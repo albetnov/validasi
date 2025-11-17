@@ -51,11 +51,11 @@ The rule will be registered using the `addRule` method. The `addRule` method req
 - `test`: The test function to validate the input value.
 - `message`: The error message to return if the test function fails.
 
-Similarly to [customizing default error message](/guide/basic-concept.html#replacing-default-message) you can also use `:name` here!
+Similarly to [customizing default error message](/v0/guide/basic-concept.html#replacing-default-message) you can also use `:name` here!
 
 ## Adding Transformer Support
 
-In order to add [Transformer](/guide/transformer) support to your custom validator, you can inherit the `transformer` property from the `Validator` class.
+In order to add [Transformer](/v0/guide/transformer) support to your custom validator, you can inherit the `transformer` property from the `Validator` class.
 
 ```dart
 import 'package:validasi/validasi.dart';
@@ -77,7 +77,7 @@ MyValidator myValidator = MyValidator();
 myValidator.myRule().parse('myValue');
 ```
 
-Your Custom Validator can also be passed to sub-type of `Validator` like [`ArrayValidator`](/types/array) and [`ObjectValidator`](/types/object).
+Your Custom Validator can also be passed to sub-type of `Validator` like [`ArrayValidator`](/v0/types/array) and [`ObjectValidator`](/v0/types/object).
 
 ```dart
 Validasi.array(MyValidator());

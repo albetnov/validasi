@@ -243,6 +243,6 @@ print('Slug: ${result.data}'); // Output: "hello-world-post"
 
 ## Next Steps
 
-- [Number Validation Examples](/examples/number-validation)
+- [Number Validation Examples](/rules/number)
 - [Complex Structures](/examples/complex-structures)
 - [Built-in Rules Reference](/guide/rules)

@@ -496,7 +496,7 @@ Map<String, List<String>> groupBySection(List<ValidasiError> errors) {
 ## Next Steps
 
 - [Examples](/examples/string-validation) - See practical examples
-- [Advanced](/advanced/custom-rules) - Create custom validation rules
+- [Advanced](/advanced/custom-rule) - Create custom validation rules
 - [API Reference](https://pub.dev/documentation/validasi/latest) - Full API documentation
 
 <div style="margin-top: 3rem;">

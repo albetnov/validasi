@@ -701,4 +701,4 @@ print(conditionalListSchema.validate(items).isValid); // true
 - [Number Validation](/examples/number-validation)
 - [Map Validation](/examples/map-validation)
 - [Complex Structures](/examples/complex-structures)
-- [Iterable Rules Reference](/guide/iterable-rules)
+- [Iterable Rules Reference](/rules/iterable)

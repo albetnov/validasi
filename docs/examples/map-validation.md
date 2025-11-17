@@ -659,5 +659,5 @@ for (var error in result.errors) {
 ## Next Steps
 
 - [Complex Structures](/examples/complex-structures)
-- [Map Rules Reference](/guide/map-rules)
+- [Map Rules Reference](/rules/map)
 - [Transformations Guide](/guide/transformations)

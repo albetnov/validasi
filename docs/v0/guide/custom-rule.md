@@ -1,7 +1,7 @@
 # Custom Rule
 
 Validasi provides a way to create a custom rule by using the `custom` and `customFor` method. The custom rule
-will then be called when the built-in rules already performed. For details, see [Execution Flow](/guide/execution-order).
+will then be called when the built-in rules already performed. For details, see [Execution Flow](/v0/guide/execution-order).
 
 ## `custom` Method
 
