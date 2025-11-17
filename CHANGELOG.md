@@ -130,3 +130,20 @@ GroupValidator(...).validate(); // static check: ERROR
 ```
 
 **Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.8...v0.0.9
+
+## 1.0.0-dev.0
+
+New Validasi Library Rework initial release. This version changes the entire signatures and structure of the library. Please refer to the new README.md for more information.
+
+The available APIs for this version is still very limited:
+
+- Strings: `MaxLength`, `MinLength`, `OneOf`
+- Numbers: `Finite`, `LessThan`, `GreaterThan`, `LessThanEqual`, `MoreThanEqual`
+- Map: `HasFields`, `HasFieldKeys`, `ConditionalField`
+- Iterable: `ForEach`, `MinLength`
+- Generic: `Having`, `InlineRule`, `Nullable`, `Required`
+- Transformer: `Transform`
+
+Usage of these APIs can be found in the new README.md file.
+
+**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.9...v1.0.0-dev.0

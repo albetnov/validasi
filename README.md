@@ -1,97 +1,185 @@
 # Validasi
 
-![image](https://github.com/albetnov/validasi/blob/main/img/validasi.png?raw=true)
+<!-- ![Logo](https://github.com/albetnov/validasi/blob/main/art/logo.png?raw=true) -->
+![Logo](art/logo.png)
 
-A flexible and straightforward Dart Validation Library.
+![image](https://github.com/albetnov/validasi/blob/main/art/validasi.png?raw=true)
+
+A flexible, composeable, and type-safe validation library for Dart & Flutter.
 
 [Documentation](https://albetnov.github.io/validasi/)
 [API Documentation](https://pub.dev/documentation/validasi/latest)
 
 > [!CAUTION]
-> This is the rewrite of the Validasi library into a completely new API (with modifier support). This branch is still under development and experimental. The outcome is not guaranteed. Using this version is not encouraged.
-
-> [!NOTE]
-> This readme does not reflect the current state of Validasi Rewrite. The readme will get updated when the development state reach stable.
+> This is the rewrite of the Validasi library into a completely new API (with modifier support).
 
 ## Installation
 
-Add `validasi` to your pubspec dependencies or use `pub get`.
+To use this package, add `validasi` as a dependency in your `pubspec.yaml` file:
+
+```yaml
+dependencies:
+  validasi: 1.0.0-dev.0
+```
 
 ## Quick Usage
 
-To use the library, simply import the package and use `Validasi` class to access to available
-validator.
+To use this library, simply import `package:validasi/validasi.dart` and the rules from `package:validasi/rules.dart`. Here's a basic example:
 
 ```dart
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
 
-void main(List<String> args) {
-  final schema = Validasi.string([MinLength(length: 1), MaxLength(length: 255)]);
+void main() {
+  final schema = Validasi.string([
+    Nullable(),
+    Transform((input) => input?.trim()),
+    StringRules.minLength(3),
+    StringRules.maxLength(16)
+  ]);
 
-  var schema = Validasi.string().maxLength(255);
-
-  var result = schema.parse(args.firstOrNull);
-
-  print("Hello! ${result.value}");
+  final result = schema.validate('   Hello World!   ');
+  print("isValid: ${result.isValid}, errors: ${result.errors.map((e) => e.message).join(', ')}, value: ${result.data}");
 }
 ```
 
-## Supported Validations
+### Validating Complex Data Structures
 
-- String
-- Numeric
-- Date
-- List
-- Map
-- Generic
+**Map Validation:**
+```dart
+final schema = Validasi.map<dynamic>([
+  MapRules.hasFields({
+    'name': Validasi.string([StringRules.minLength(1)]),
+    'age': Validasi.number<int>([NumberRules.moreThan(0)]),
+  }),
+]);
+
+final result = schema.validate({'name': 'John', 'age': 30});
+```
+
+**List Validation:**
+```dart
+final schema = Validasi.list<String>([
+  IterableRules.forEach(
+    Validasi.string([StringRules.minLength(1)]),
+  ),
+]);
+
+final result = schema.validate(['item1', 'item2', 'item3']);
+```
+
+Refer to the [examples](example/) folder to see more usage samples or see the [documentation](https://albetnov.github.io/validasi/).
 
 ## Features
 
-- Handling Type Conversion using Transformer
+### Type-Safe Validation Engine
+Validasi provides type-safe validation schemas for various data types:
+- `Validasi.string()` - String validation
+- `Validasi.number<T>()` - Numeric validation (int, double, num)
+- `Validasi.list<T>()` - List/Iterable validation
+- `Validasi.map<T>()` - Map validation
+- `Validasi.any<T>()` - Generic type validation
 
-Validasi takes `dynamic` input and allows you to put any type of data. It will automatically convert the data into the desired type using `Transformer`.
+### Built-in Rules
+The library comes with comprehensive built-in rules organized by data type:
 
-- Safe Validation
+**String Rules:**
+- `StringRules.minLength()` - Minimum length validation
+- `StringRules.maxLength()` - Maximum length validation
+- `StringRules.oneOf()` - Value must be one of specified options
 
-Validasi provide `tryParse` or `tryParseAsync` method to validate the input data. It will return `Result` object that contains the validation result without
-throwing any exception related to rule failing.
+**Number Rules:**
+- `NumberRules.finite()` - Ensures number is finite
+- `NumberRules.lessThan()` - Less than comparison
+- `NumberRules.lessThanEqual()` - Less than or equal comparison
+- `NumberRules.moreThan()` - Greater than comparison
+- `NumberRules.moreThanEqual()` - Greater than or equal comparison
 
-- Custom Rule
+**Iterable Rules:**
+- `IterableRules.minLength()` - Minimum list length
+- `IterableRules.forEach()` - Validate each item in the list
 
-You can create your own custom rule to be used in the Validator by simply using `custom` and `customFor` method.
+**Map Rules:**
+- `MapRules.hasFields()` - Validate nested map fields with individual schemas
+- `MapRules.hasFieldKeys()` - Ensure required keys exist
+- `MapRules.conditionalField()` - Conditional field validation based on other fields
 
-- Helpers
+**Modifier Rules:**
+- `Nullable()` - Allow null values
+- `Required()` - Ensure non-null values
+- `Transform()` - Transform values during validation
+- `Having()` - Custom validation with context access
+- `InlineRule()` - Create custom validation rules inline
 
-Validasi also provide some helper classes to help you organize and capture the validation result to be passed on Flutter's FormField.
+### Preprocessing & Transformation
+Use `ValidasiTransformation` to preprocess input data before validation:
+
+```dart
+final schema = Validasi.string([StringRules.minLength(3)])
+  .withPreprocess(ValidasiTransformation((value) => value.toString()));
+
+final result = schema.validate(123); // Converts to "123" then validates
+```
+
+### Safe Validation
+All validation returns a `ValidasiResult` object that contains:
+- `isValid` - Boolean indicating validation success
+- `data` - The validated (and potentially transformed) data
+- `errors` - List of validation errors with messages and paths
+
+### Nested Validation with Error Paths
+Validasi tracks error paths for nested structures, making it easy to identify exactly where validation fails:
+
+```dart
+final result = schema.validate(complexNestedData);
+result.errors.forEach((error) {
+  print("Error at ${error.path?.join('.')}: ${error.message}");
+});
+```
+
+### Performance Optimization
+Built-in caching system to optimize validation performance. Can be disabled globally or per-validation:
+
+```dart
+Validasi.withCache = false; // Disable globally
+
+// Or disable for specific operation
+Validasi.withoutCache(() {
+  return Validasi.string([StringRules.minLength(5)]).validate('test');
+});
+```
 
 ### License
 
 The Validasi Library is licensed under [MIT License](./LICENSE).
 
-### Contribution
+## Contribution
 
-You can use below script to spin up development environment for this library base:
+We welcome contributions! Here's how to set up the development environment:
+
+### Setting Up Development Environment
 
 ```bash
-# Clone the repo
+# Clone the repository
 git clone https://github.com/albetnov/validasi
-# Install the dependencies
+cd validasi
+
+# Install dependencies
 dart pub get
 ```
 
-The Tests in `test/` directory are mapped 1:1 to `lib` and `src` folder. So their structure are similar.
+### Running Tests
 
-The `docs/` directory contains the documentation for the library, You would need [Deno 2.0](https://deno.com/). You can run the documentation locally by using below command:
-
-```bash
-deno i
-deno run docs:dev
-```
-
-Alternatively, you could use your package manager to just execute `vitepress` command:
+The test structure in `test/` directory mirrors the `lib/src` structure:
 
 ```bash
-npx vitepress dev doc
-bunx vitepress dev doc
-pnpm dlx vitepress dev doc
+# Run all tests
+dart test
+
+# Run tests with coverage
+dart test --coverage=coverage
+
+# Format coverage report
+dart pub global activate coverage
+dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib
 ```

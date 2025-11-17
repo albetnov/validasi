@@ -8,5 +8,5 @@ pubspec.lock
 
 coverage/
 node_modules/
-doc/.vitepress/cache
+docs/.vitepress/cache
 .vscode/
