@@ -5,7 +5,7 @@ name: Deploy VitePress site to Pages
 on:
   # target version only
   push:
-    branches: [ "main" ]
+    branches: [ "v1" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
