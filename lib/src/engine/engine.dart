@@ -169,7 +169,7 @@ class _SchemaIntrospector {
       final child = children[key];
 
       if (child is ValidasiEngine) {
-        nested[key] = _describe(child as ValidasiEngine<dynamic>).toJson();
+        nested[key] = _describe(child).toJson();
       }
     }
 

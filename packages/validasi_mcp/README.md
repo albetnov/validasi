@@ -40,4 +40,4 @@ await server.serve();
 dart run bin/validasi_mcp.dart
 ```
 
-The process uses JSON-RPC over stdio and supports MCP `initialize`, `tools/list`, and `tools/call`.
+The process uses JSON-RPC over stdio via the first-class `dart_mcp` library and supports MCP `initialize`, `tools/list`, and `tools/call`.

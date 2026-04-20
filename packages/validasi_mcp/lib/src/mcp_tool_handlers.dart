@@ -1,4 +1,4 @@
-import 'package:validasi/engine.dart';
+import 'package:dart_mcp/server.dart';
 
 import 'schema_registry.dart';
 
@@ -24,19 +24,16 @@ class ValidasiMcpToolHandlers {
   }
 
   Map<String, Object?> listSchemas() {
-    final schemas = registry
-        .list()
-        .map(
-          (item) {
-            final descriptor = item.create().introspect();
-            return <String, Object?>{
-              'id': item.id,
-              'description': item.description,
-              'type': descriptor.type,
-            };
-          },
-        )
-        .toList(growable: false);
+    final schemas = registry.list().map(
+      (item) {
+        final descriptor = item.create().introspect();
+        return <String, Object?>{
+          'id': item.id,
+          'description': item.description,
+          'type': descriptor.type,
+        };
+      },
+    ).toList(growable: false);
 
     return <String, Object?>{
       'ok': true,
@@ -134,6 +131,21 @@ class ValidasiMcpToolHandlers {
         },
       },
     ];
+  }
+
+  List<Tool> tools() {
+    return toolDefinitions().map((definition) {
+      final name = definition['name'] as String;
+      final description = definition['description'] as String?;
+      final inputSchemaMap =
+          (definition['inputSchema'] as Map).cast<String, Object?>();
+
+      return Tool(
+        name: name,
+        description: description,
+        inputSchema: ObjectSchema.fromMap(inputSchemaMap),
+      );
+    }).toList(growable: false);
   }
 
   Map<String, Object?> _error({
