@@ -1,14 +1,12 @@
 # Validation Schemas
 
-Schemas are the foundation of Validasi. They define the structure and rules for validating your data. This guide covers all schema types and how to use them effectively.
+Schemas define what kind of data you expect and which rules should run on it. The main idea is simple: pick a schema type, attach rules, and validate the value.
 
 ## Schema Types
 
-Validasi provides five main schema types, each optimized for specific data types:
-
 ### String Schema
 
-Validate string values with `Validasi.string()`:
+Use `Validasi.string()` for text values.
 
 ```dart
 import 'package:validasi/validasi.dart';
@@ -20,20 +18,12 @@ final nameSchema = Validasi.string([
 ]);
 
 final result = nameSchema.validate('John Doe');
-print(result.isValid); // true
-print(result.data);    // "John Doe"
+print(result.isValid);
 ```
-
-**Common Use Cases:**
-- User names and usernames
-- Email addresses
-- Passwords
-- Text input validation
-- URL and pattern validation
 
 ### Number Schema
 
-Validate numeric values with `Validasi.number<T>()`:
+Use `Validasi.number<T>()` for numeric values.
 
 ```dart
 final ageSchema = Validasi.number<int>([
@@ -41,23 +31,12 @@ final ageSchema = Validasi.number<int>([
   NumberRules.lessThan(150),
 ]);
 
-final priceSchema = Validasi.number<double>([
-  NumberRules.moreThan(0.0),
-  NumberRules.finite(), // Ensures not infinity or NaN
-]);
-
-print(ageSchema.validate(25).isValid);    // true
-print(priceSchema.validate(99.99).isValid); // true
+print(ageSchema.validate(25).isValid);
 ```
-
-**Supported Number Types:**
-- `int` - Integer values
-- `double` - Floating-point values
-- `num` - Any numeric value
 
 ### List Schema
 
-Validate lists and iterables with `Validasi.list<T>()`:
+Use `Validasi.list<T>()` for lists and other iterables.
 
 ```dart
 final tagsSchema = Validasi.list<String>([
@@ -70,46 +49,17 @@ final tagsSchema = Validasi.list<String>([
   ),
 ]);
 
-final result = tagsSchema.validate(['flutter', 'dart', 'mobile']);
-print(result.isValid); // true
-```
-
-**Nested List Validation:**
-
-```dart
-// Validate list of lists
-final matrixSchema = Validasi.list<List<int>>([
-  IterableRules.forEach(
-    Validasi.list<int>([
-      IterableRules.forEach(
-        Validasi.number<int>([
-          NumberRules.moreThanEqual(0),
-        ]),
-      ),
-    ]),
-  ),
-]);
-
-final matrix = [
-  [1, 2, 3],
-  [4, 5, 6],
-  [7, 8, 9],
-];
-
-print(matrixSchema.validate(matrix).isValid); // true
+print(tagsSchema.validate(['flutter', 'dart']).isValid);
 ```
 
 ### Map Schema
 
-Validate maps and objects with `Validasi.map<T>()`:
+Use `Validasi.map<T>()` for objects and structured data.
 
 ```dart
 final userSchema = Validasi.map<dynamic>([
   MapRules.hasFields({
     'name': Validasi.string([
-      StringRules.minLength(1),
-    ]),
-    'email': Validasi.string([
       StringRules.minLength(1),
     ]),
     'age': Validasi.number<int>([
@@ -118,228 +68,84 @@ final userSchema = Validasi.map<dynamic>([
   }),
 ]);
 
-final userData = {
+print(userSchema.validate({
   'name': 'Alice',
-  'email': 'alice@example.com',
   'age': 25,
-};
-
-final result = userSchema.validate(userData);
-print(result.isValid); // true
-```
-
-**Nested Map Validation:**
-
-```dart
-final addressSchema = Validasi.map<dynamic>([
-  MapRules.hasFields({
-    'street': Validasi.string([
-      StringRules.minLength(1),
-    ]),
-    'city': Validasi.string([
-      StringRules.minLength(1),
-    ]),
-    'country': Validasi.string([
-      StringRules.minLength(1),
-    ]),
-    'coordinates': Validasi.map<dynamic>([
-      MapRules.hasFields({
-        'lat': Validasi.number<double>([
-          NumberRules.moreThanEqual(-90.0),
-          NumberRules.lessThanEqual(90.0),
-        ]),
-        'lng': Validasi.number<double>([
-          NumberRules.moreThanEqual(-180.0),
-          NumberRules.lessThanEqual(180.0),
-        ]),
-      }),
-    ]),
-  }),
-]);
+}).isValid);
 ```
 
 ### Any Schema
 
-Validate any type with `Validasi.any<T>()`:
+Use `Validasi.any<T>()` when you want to validate a value with custom rules.
 
 ```dart
-// Boolean validation
 final termsSchema = Validasi.any<bool>([
   InlineRule<bool>((value) {
     return value == true ? null : 'You must accept the terms';
   }),
 ]);
 
-// Custom type validation
-final customSchema = Validasi.any<DateTime>([
-  InlineRule<DateTime>((value) {
-    if (value.isAfter(DateTime.now())) {
-      return 'Date cannot be in the future';
-    }
-    return null;
-  }),
-]);
+print(termsSchema.validate(true).isValid);
 ```
 
 ## Schema Composition
 
-Schemas can be composed and reused to build complex validations:
+Schemas are easy to extend because the API lets you reuse existing schemas as building blocks. Define small schemas once, then combine them into larger ones with `MapRules`, `IterableRules`, or additional inline rules.
 
 ```dart
-// Reusable email schema
 final emailSchema = Validasi.string([
   Transform((value) => value?.trim().toLowerCase()),
   StringRules.minLength(5),
   InlineRule<String>((value) {
-    if (!value.contains('@')) {
-      return 'Invalid email format';
-    }
-    return null;
+    return value.contains('@') ? null : 'Invalid email format';
   }),
 ]);
 
-// Reusable password schema
 final passwordSchema = Validasi.string([
   StringRules.minLength(8),
-  InlineRule<String>((value) {
-    if (!value.contains(RegExp(r'[A-Z]'))) {
-      return 'Must contain uppercase letter';
-    }
-    return null;
-  }),
 ]);
 
-// Compose into registration schema
 final registrationSchema = Validasi.map<dynamic>([
   MapRules.hasFields({
     'email': emailSchema,
     'password': passwordSchema,
     'confirmPassword': passwordSchema,
   }),
-  // Add custom validation
   InlineRule<Map<String, dynamic>>((value) {
-    if (value['password'] != value['confirmPassword']) {
-      return 'Passwords do not match';
-    }
-    return null;
+    return value['password'] == value['confirmPassword']
+        ? null
+        : 'Passwords do not match';
   }),
 ]);
 ```
+
+This pattern keeps schemas small and reusable while still letting you build stricter validation at the top level.
 
 ## Validation Results
 
-Every schema validation returns a `ValidasiResult` object:
+`validate()` returns a `ValidasiResult` with the final data and any errors.
 
 ```dart
-final result = schema.validate(data);
+final result = userSchema.validate(data);
 
-// Check if valid
 if (result.isValid) {
-  print('Valid! Data: ${result.data}');
+  print(result.data);
 } else {
-  print('Invalid! Errors: ${result.errors}');
-}
-```
-
-### ValidasiResult Properties
-
-- **`isValid`** - `bool`: Whether validation passed
-- **`data`** - `T`: The validated (possibly transformed) data
-- **`errors`** - `List<ValidasiError>`: List of validation errors
-
-### ValidasiError Properties
-
-- **`message`** - `String`: The error message
-- **`path`** - `List<String>?`: Path to the field that failed (for nested structures)
-
-**Example with nested errors:**
-
-```dart
-final result = userSchema.validate({
-  'profile': {
-    'name': '', // Too short
-    'age': -5,  // Invalid
+  for (final error in result.errors) {
+    print('${error.path?.join('.')}: ${error.message}');
   }
-});
-
-for (var error in result.errors) {
-  print('Error at ${error.path?.join('.')}: ${error.message}');
 }
-// Output:
-// Error at profile.name: String must be at least 1 characters long
-// Error at profile.age: Number must be more than or equal to 0
 ```
+
+- `isValid` tells you whether validation passed.
+- `data` contains the validated value, including any transformations.
+- `errors` contains the validation failures.
+- `error.message` is the human-readable message.
+- `error.path` points to the field that failed in nested structures.
 
 ## Best Practices
 
-### 1. Create Reusable Schemas
-
-```dart
-// Define once
-class Schemas {
-  static final email = Validasi.string([
-    Transform((value) => value?.trim().toLowerCase()),
-    StringRules.minLength(5),
-  ]);
-  
-  static final positiveInt = Validasi.number<int>([
-    NumberRules.moreThan(0),
-  ]);
-}
-
-// Use everywhere
-final userSchema = Validasi.map<dynamic>([
-  MapRules.hasFields({
-    'email': Schemas.email,
-    'age': Schemas.positiveInt,
-  }),
-]);
-```
-
-### 2. Use Type Parameters
-
-Always specify type parameters for type safety:
-
-```dart
-// Good ✓
-final intList = Validasi.list<int>([...]);
-final userData = Validasi.map<dynamic>([...]);
-
-// Avoid ✗
-final list = Validasi.list([...]); // Less type-safe
-```
-
-### 3. Order Rules Logically
-
-Place transformation rules before validation rules:
-
-```dart
-final schema = Validasi.string([
-  Nullable(),           // 1. Handle nulls first
-  Transform(...),       // 2. Transform data
-  StringRules.minLength(3), // 3. Then validate
-]);
-```
-
-### 4. Provide Custom Error Messages
-
-Make errors user-friendly:
-
-```dart
-final schema = Validasi.string([
-  StringRules.minLength(8, 
-    message: 'Password must be at least 8 characters'),
-  StringRules.maxLength(128,
-    message: 'Password is too long (max 128 characters)'),
-]);
-```
-
-## Next Steps
-
-- [Built-in Rules](/guide/rules) - Explore all available validation rules
-- [Transformations](/guide/transformations) - Learn about data transformation
-- [Error Handling](/guide/error-handling) - Handle validation errors effectively
-
-<div style="margin-top: 3rem;">
-  <a href="/guide/rules" class="vp-button vp-button-brand">Learn About Rules →</a>
-</div>
+- Keep schemas small and reusable.
+- Use explicit type parameters for better type safety.
+- Put transforms before validation rules when both are needed.
+- Prefer clear, user-friendly error messages.

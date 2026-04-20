@@ -1,7 +1,7 @@
 # Getting Started
 
 ::: warning 📢 v1.0.0-dev Documentation
-You are viewing the documentation for **Validasi v1.0.0-dev** (development version). This version includes significant API changes and new features. Looking for the stable version? [View v0 Documentation →](/v0/)
+You are viewing the documentation for **Validasi v1.0.0-dev** (development version). This version includes significant API changes and new features, but it does not include the async variant yet and some rules may still be incomplete. Looking for the stable version? [View v0 Documentation →](/v0/)
 :::
 
 Welcome to Validasi! This guide will help you get started with the most flexible and type-safe validation library for Dart and Flutter.
@@ -89,11 +89,6 @@ Ready to dive in? Check out:
 - **Issues**: [Report bugs or request features](https://github.com/albetnov/validasi/issues)
 - **Pub.dev**: [Package documentation](https://pub.dev/packages/validasi)
 
----
-
-<div style="text-align: center; margin-top: 3rem;">
-  <a href="/guide/installation" class="vp-button vp-button-brand">Get Started →</a>
-</div>
 
 ## LLM Support
 

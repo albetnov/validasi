@@ -91,14 +91,6 @@ ext install Dart-Code.dart-code
 
 The Dart and Flutter plugins come pre-installed with IntelliJ IDEA and Android Studio for Flutter development.
 
-## Next Steps
-
-Now that Validasi is installed, let's build your first validation schema:
-
-<div style="margin-top: 2rem;">
-  <a href="/guide/quick-start" class="vp-button vp-button-brand">Quick Start Guide →</a>
-</div>
-
 ## Troubleshooting
 
 ### Version Conflicts

@@ -92,28 +92,19 @@ export default defineConfig({
           text: 'Core Concepts',
           items: [
             { text: 'Validation Schemas', link: '/guide/schemas' },
-            { text: 'Built-in Rules', link: '/guide/rules' },
+            { text: 'Built-in Modifier Rules', link: '/guide/modifier-rules' },
             { text: 'Transformations', link: '/guide/transformations' },
             { text: 'Error Handling', link: '/guide/error-handling' }
           ]
         },
         {
-          text: 'Rule Reference',
+          text: 'Schemas',
           items: [
-            { text: 'String Rules', link: '/rules/string' },
-            { text: 'Number Rules', link: '/rules/number' },
-            { text: 'Iterable Rules', link: '/rules/iterable' },
-            { text: 'Map Rules', link: '/rules/map' }
-          ]
-        },
-        {
-          text: 'Examples',
-          items: [
-            { text: 'String Validation', link: '/examples/string-validation' },
-            { text: 'Number Validation', link: '/examples/number-validation' },
-            { text: 'List Validation', link: '/examples/list-validation' },
-            { text: 'Map Validation', link: '/examples/map-validation' },
-            { text: 'Complex Structures', link: '/examples/complex-structures' }
+            { text: 'String Schema', link: '/schemas/string' },
+            { text: 'Number Schema', link: '/schemas/number' },
+            { text: 'List Schema', link: '/schemas/list' },
+            { text: 'Map Schema', link: '/schemas/map' },
+            { text: 'Generic/Any Schema', link: '/schemas/any' }
           ]
         },
         {

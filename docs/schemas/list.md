@@ -1,0 +1,101 @@
+# List Schema
+
+Use `Validasi.list<T>()` to validate lists.
+
+The schema is generic, so you choose the item type with `T`.
+
+- `Validasi.list<String>(...)` for list of strings
+- `Validasi.list<int>(...)` for list of integers
+- `Validasi.list<MyType>(...)` for custom types
+
+```dart
+import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
+
+final tagsSchema = Validasi.list<String>([
+	IterableRules.minLength(1),
+]);
+```
+
+## Available Rules
+
+### IterableRules.minLength
+
+Ensures the list has at least the given number of items.
+
+```dart
+final atLeastTwoTags = Validasi.list<String>([
+	IterableRules.minLength(2),
+]);
+
+print(atLeastTwoTags.validate(['dart']).isValid); // false
+print(atLeastTwoTags.validate(['dart', 'flutter']).isValid); // true
+```
+
+### IterableRules.forEach
+
+Validates each item using another schema.
+
+```dart
+final emailListSchema = Validasi.list<String>([
+	IterableRules.forEach(
+		Validasi.string([
+			StringRules.minLength(5),
+		]),
+	),
+]);
+
+print(emailListSchema.validate(['a@b.c', 'test@example.com']).isValid); // true
+print(emailListSchema.validate(['x', 'test@example.com']).isValid); // false
+```
+
+## Nested List Validation
+
+`IterableRules.forEach` can validate nested structures by composing list schemas.
+
+```dart
+final matrixSchema = Validasi.list<List<int>>([
+	IterableRules.minLength(1),
+	IterableRules.forEach(
+		Validasi.list<int>([
+			IterableRules.minLength(2),
+			IterableRules.forEach(
+				Validasi.number<int>([
+					NumberRules.moreThanEqual(0),
+				]),
+			),
+		]),
+	),
+]);
+
+print(matrixSchema.validate([
+	[1, 2],
+	[3, 4],
+]).isValid); // true
+
+print(matrixSchema.validate([
+	[1],
+	[3, -1],
+]).isValid); // false
+```
+
+This approach makes list validation composable: each nesting level has its own list rules.
+
+## Combining List Rules
+
+Use both list-specific rules together for shape and item validation.
+
+```dart
+final usernamesSchema = Validasi.list<String>([
+	IterableRules.minLength(1),
+	IterableRules.forEach(
+		Validasi.string([
+			StringRules.minLength(3),
+			StringRules.maxLength(20),
+		]),
+	),
+]);
+
+final result = usernamesSchema.validate(['alice', 'bob']);
+print(result.isValid); // true
+```
