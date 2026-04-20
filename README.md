@@ -213,8 +213,11 @@ We welcome contributions! Here's how to set up the development environment:
 git clone https://github.com/albetnov/validasi
 cd validasi
 
-# Install dependencies
+# Install root dependencies (includes melos)
 dart pub get
+
+# Install workspace dependencies
+dart run melos bootstrap
 ```
 
 ### Running Tests
@@ -223,7 +226,13 @@ The test structure in `test/` directory mirrors the `lib/src` structure:
 
 ```bash
 # Run all tests
-dart test
+dart run melos run test
+
+# Run tests for root package only
+dart run melos run test:validasi
+
+# Run tests for MCP package only
+dart run melos run test:mcp
 
 # Run tests with coverage
 dart test --coverage=coverage
