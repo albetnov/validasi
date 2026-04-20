@@ -67,7 +67,7 @@ final schema = Validasi.list<String>([
 final result = schema.validate(['item1', 'item2', 'item3']);
 ```
 
-Refer to the [examples](packages/validasi/example/) folder to see more usage samples or see the [documentation](https://albetnov.github.io/validasi/).
+Refer to the [examples](example/) folder to see more usage samples or see the [documentation](https://albetnov.github.io/validasi/).
 
 ## Features
 
@@ -222,7 +222,7 @@ dart run melos bootstrap
 
 ### Running Tests
 
-The test structure in `packages/validasi/test/` mirrors `packages/validasi/lib/src`.
+The test structure in `test/` directory mirrors the `lib/src` structure:
 
 ```bash
 # Run all tests
@@ -235,11 +235,9 @@ dart run melos run test:validasi
 dart run melos run test:mcp
 
 # Run tests with coverage
-pushd packages/validasi
 dart test --coverage=coverage
 
 # Format coverage report
 dart pub global activate coverage
 dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib
-popd
 ```
