@@ -1,8 +1,12 @@
 # Agent-Native Support
 
+::: warning Beta Status
+Agent-native support is currently in beta and only supports Validasi `v1.0.0-dev.x`.
+:::
+
 Use Validasi as a stable validation backend for AI tools and automation.
 
-This page covers the Wave 2 core APIs:
+This page covers core APIs:
 - `ValidasiEngine.introspect()` for machine-readable schema metadata
 - `ValidasiResult.toToolResponse()` for deterministic validation outputs
 - `ValidationError.toToolMap()` for deterministic error entries
@@ -97,6 +101,47 @@ for (final error in result.errors) {
 
 Callback-driven rules such as `InlineRule`, `Transform`, and `ConditionalField` are marked as dynamic in metadata because callback logic is not introspectable.
 
-## Next step
+## 4) Use the MCP adapter (Beta)
 
-Wave 3 adds an MCP adapter package so external MCP clients can invoke Validasi directly over stdio.
+The repository now includes a beta adapter package at `packages/validasi_mcp`.
+
+It provides:
+- `SchemaRegistry` to register named schemas
+- `ValidasiMcpToolHandlers` for tool dispatch
+- `ValidasiMcpStdioServer` for JSON-RPC stdio transport
+
+Supported MCP methods:
+- `initialize`
+- `tools/list`
+- `tools/call`
+
+Supported tools:
+- `list_schemas`
+- `describe_schema`
+- `validate_input`
+
+Start the server:
+
+```bash
+cd packages/validasi_mcp
+dart run bin/validasi_mcp.dart
+```
+
+Example MCP request (`tools/call`):
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "validate_input",
+    "arguments": {
+      "schema_id": "user.name",
+      "input": "A"
+    }
+  }
+}
+```
+
+The response includes both text content and `structuredContent` for direct machine consumption.

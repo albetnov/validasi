@@ -126,7 +126,10 @@ All validation returns a `ValidasiResult` object that contains:
 - `data` - The validated (and potentially transformed) data
 - `errors` - List of validation errors with messages and paths
 
-### Agent-Native Core Support
+### Agent-Native Core Support (Beta)
+
+Agent-native support is currently in beta and only supports Validasi `v1.0.0-dev.x`.
+
 Validasi now includes machine-friendly schema and result payloads for tool calling workflows.
 
 ```dart
@@ -154,6 +157,24 @@ Tooling-focused APIs:
 - `ValidasiEngine.introspect()` for rule/schema metadata
 - `ValidationError.toToolMap()` for stable error payloads
 - `ValidasiResult.toToolResponse()` for stable validation envelopes
+
+### MCP Adapter (Beta)
+
+For external MCP clients, use the adapter package in `packages/validasi_mcp`.
+
+This adapter is beta and targets only Validasi `v1.0.0-dev.x`.
+
+It exposes stdio JSON-RPC support for:
+- `initialize`
+- `tools/list`
+- `tools/call`
+
+With built-in tools:
+- `list_schemas`
+- `describe_schema`
+- `validate_input`
+
+See `packages/validasi_mcp/README.md` for usage and embedding examples.
 
 ### Nested Validation with Error Paths
 Validasi tracks error paths for nested structures, making it easy to identify exactly where validation fails:

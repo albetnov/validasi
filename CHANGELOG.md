@@ -1,3 +1,21 @@
+## Unreleased
+
+### Added
+- Agent-native schema introspection contracts:
+  - `RuleMetadata`
+  - `SchemaDescriptor`
+  - `ValidasiEngine.introspect()`
+- Rule metadata coverage for built-in rules, including nested schema reporting for composition rules.
+- Deterministic tool payload APIs:
+  - `ValidationError.toToolMap()`
+  - `ValidasiResult.toToolResponse()`
+- New adapter package: `packages/validasi_mcp`
+  - JSON-RPC stdio server with MCP methods `initialize`, `tools/list`, and `tools/call`
+  - Tools: `list_schemas`, `describe_schema`, `validate_input`
+  - Registry and handler APIs for embedding
+- Test coverage for introspection, deterministic payload serialization, and MCP adapter behavior.
+- Documentation updates for agent-native usage and MCP integration.
+
 ## 0.0.1
 
 Initial release of Validasi library. This release includes the following features:

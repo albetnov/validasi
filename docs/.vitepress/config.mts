@@ -112,7 +112,8 @@ export default defineConfig({
           items: [
             { text: 'Custom Rules', link: '/advanced/custom-rule' },
             { text: 'Engine', link: '/advanced/engine' },
-            { text: 'Cache', link: '/advanced/cache' }
+            { text: 'Cache', link: '/advanced/cache' },
+            { text: 'Agent-Native Support', link: '/guide/agent-native-support' }
           ]
         }
       ]
