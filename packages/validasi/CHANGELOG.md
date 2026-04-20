@@ -1,11 +1,12 @@
-## Unreleased
+## 1.0.0-dev.0
+
+This is the v1 development release of Validasi. It is a major rework of the library and is not source-compatible with the 0.0.x series.
 
 ### Added
 - Agent-native schema introspection contracts:
   - `RuleMetadata`
   - `SchemaDescriptor`
   - `ValidasiEngine.introspect()`
-- Rule metadata coverage for built-in rules, including nested schema reporting for composition rules.
 - Deterministic tool payload APIs:
   - `ValidationError.toToolMap()`
   - `ValidasiResult.toToolResponse()`
@@ -13,8 +14,24 @@
   - JSON-RPC stdio server with MCP methods `initialize`, `tools/list`, and `tools/call`
   - Tools: `list_schemas`, `describe_schema`, `validate_input`
   - Registry and handler APIs for embedding
-- Test coverage for introspection, deterministic payload serialization, and MCP adapter behavior.
-- Documentation updates for agent-native usage and MCP integration.
+- Expanded built-in rule coverage:
+  - Strings: `oneOf`
+  - Numbers: `Finite`, `LessThan`, `LessThanEqual`, `MoreThan`, `MoreThanEqual`
+  - Maps: `HasFields`, `HasFieldKeys`, `ConditionalField`
+  - Iterables: `ForEach`, `MinLength`
+  - Generic: `Having`, `InlineRule`, `Nullable`, `Required`
+  - Transformer: `Transform`
+- `any()` helper for flexible validation
+
+### Changed
+- Reworked the validation core around the new engine, cache, and generic context model.
+- Moved the core package into `packages/validasi`.
+- Refreshed the documentation set and examples for the new API surface.
+
+### Fixed
+- Nullable runtime checks now return the expected validation error.
+- Finite-rule type handling and condition checks were corrected.
+- Documentation links, image paths, and README references were cleaned up.
 
 ## 0.0.1
 
@@ -148,20 +165,3 @@ GroupValidator(...).validate(); // static check: ERROR
 ```
 
 **Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.8...v0.0.9
-
-## 1.0.0-dev.0
-
-New Validasi Library Rework initial release. This version changes the entire signatures and structure of the library. Please refer to the new README.md for more information.
-
-The available APIs for this version is still very limited:
-
-- Strings: `MaxLength`, `MinLength`, `OneOf`
-- Numbers: `Finite`, `LessThan`, `GreaterThan`, `LessThanEqual`, `MoreThanEqual`
-- Map: `HasFields`, `HasFieldKeys`, `ConditionalField`
-- Iterable: `ForEach`, `MinLength`
-- Generic: `Having`, `InlineRule`, `Nullable`, `Required`
-- Transformer: `Transform`
-
-Usage of these APIs can be found in the new README.md file.
-
-**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.9...v1.0.0-dev.0
