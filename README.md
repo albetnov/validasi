@@ -126,6 +126,35 @@ All validation returns a `ValidasiResult` object that contains:
 - `data` - The validated (and potentially transformed) data
 - `errors` - List of validation errors with messages and paths
 
+### Agent-Native Core Support
+Validasi now includes machine-friendly schema and result payloads for tool calling workflows.
+
+```dart
+import 'dart:convert';
+import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
+
+final schema = Validasi.map<dynamic>([
+  MapRules.hasFields({
+    'name': Validasi.string([StringRules.minLength(2)]),
+    'age': Validasi.number<int>([NumberRules.moreThanEqual(18)]),
+  }),
+]);
+
+// Describe validation contract for an agent/tool.
+final descriptor = schema.introspect().toJson();
+print(jsonEncode(descriptor));
+
+// Validate and return deterministic tool payload.
+final result = schema.validate({'name': 'A', 'age': 15});
+print(jsonEncode(result.toToolResponse()));
+```
+
+Tooling-focused APIs:
+- `ValidasiEngine.introspect()` for rule/schema metadata
+- `ValidationError.toToolMap()` for stable error payloads
+- `ValidasiResult.toToolResponse()` for stable validation envelopes
+
 ### Nested Validation with Error Paths
 Validasi tracks error paths for nested structures, making it easy to identify exactly where validation fails:
 

@@ -55,4 +55,15 @@ class ValidasiResult<T> {
 
     return data;
   }
+
+  Map<String, Object?> toToolResponse() {
+    return <String, Object?>{
+      'isValid': isValid,
+      'data': normalizeToolValue(data),
+      'errorCount': errors.length,
+      'errors': errors
+          .map((error) => error.toToolMap())
+          .toList(growable: false),
+    };
+  }
 }
