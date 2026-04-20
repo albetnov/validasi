@@ -209,7 +209,8 @@ void main() {
     });
 
     group('toToolResponse', () {
-      test('should serialize valid result with deterministic data map ordering', () {
+      test('should serialize valid result with deterministic data map ordering',
+          () {
         final result = ValidasiResult<Map<String, dynamic>>.success({
           'z': 1,
           'a': {

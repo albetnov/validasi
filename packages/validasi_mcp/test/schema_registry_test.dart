@@ -31,7 +31,8 @@ void main() {
         builder: () => Validasi.string(),
       );
 
-      final ids = registry.list().map((item) => item.id).toList(growable: false);
+      final ids =
+          registry.list().map((item) => item.id).toList(growable: false);
       expect(ids, equals(<String>['a', 'b']));
     });
   });

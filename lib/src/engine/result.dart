@@ -61,9 +61,8 @@ class ValidasiResult<T> {
       'isValid': isValid,
       'data': normalizeToolValue(data),
       'errorCount': errors.length,
-      'errors': errors
-          .map((error) => error.toToolMap())
-          .toList(growable: false),
+      'errors':
+          errors.map((error) => error.toToolMap()).toList(growable: false),
     };
   }
 }

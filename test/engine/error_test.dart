@@ -114,7 +114,8 @@ void main() {
       final map = error.toToolMap();
       final details = map['details'] as Map<String, Object?>;
       final nested = details['a'] as Map<String, Object?>;
-      final listItem = (details['list'] as List<Object?>).first as Map<String, Object?>;
+      final listItem =
+          (details['list'] as List<Object?>).first as Map<String, Object?>;
 
       expect(details.keys.toList(), equals(['a', 'list', 'z']));
       expect(nested.keys.toList(), equals(['b', 'd']));
