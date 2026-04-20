@@ -1,11 +1,22 @@
 import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/rule_metadata.dart';
 
 class HasFieldKeys<T> extends Rule<Map<String, T>> {
   HasFieldKeys(this.keys);
 
   final Set<String> keys;
+
+  @override
+  RuleMetadata get metadata => RuleMetadata(
+        name: 'HasFieldKeys',
+        parameters: {
+          'keys': keys.toList()..sort(),
+        },
+        runOnNull: runOnNull,
+        message: message,
+      );
 
   @override
   void apply(ValidationContext<Map<String, T>> context) {

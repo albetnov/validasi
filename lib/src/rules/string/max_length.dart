@@ -1,6 +1,7 @@
 import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/rule_metadata.dart';
 
 class MaxLength extends Rule<String> {
   const MaxLength(
@@ -9,6 +10,14 @@ class MaxLength extends Rule<String> {
   });
 
   final int length;
+
+  @override
+  RuleMetadata get metadata => RuleMetadata(
+        name: 'MaxLength',
+        parameters: {'length': length},
+        runOnNull: runOnNull,
+        message: message,
+      );
 
   @override
   void apply(ValidationContext<String> context) {

@@ -1,6 +1,7 @@
 import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/rule_metadata.dart';
 
 class ConditionalFieldContext<T> {
   ConditionalFieldContext(this._value);
@@ -28,6 +29,16 @@ class ConditionalField<T> extends Rule<Map<String, T>> {
 
   final String fieldName;
   final ConditionalFieldCallback<T> callback;
+
+  @override
+  RuleMetadata get metadata => RuleMetadata(
+        name: 'ConditionalField',
+        parameters: {'fieldName': fieldName},
+        runOnNull: runOnNull,
+        message: message,
+        isDynamic: true,
+        dynamicReason: 'Conditional callback logic cannot be introspected.',
+      );
 
   @override
   void apply(ValidationContext<Map<String, T>> context) {

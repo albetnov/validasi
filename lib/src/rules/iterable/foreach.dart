@@ -1,11 +1,24 @@
 import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/rule_metadata.dart';
 
 class ForEach<I> extends Rule<List<I>> {
   const ForEach(this.itemSchema);
 
   final ValidasiEngine<I> itemSchema;
+
+  @override
+  RuleMetadata get metadata => RuleMetadata(
+        name: 'ForEach',
+        parameters: {'itemType': '$I'},
+        runOnNull: runOnNull,
+        message: message,
+      );
+
+  @override
+  Map<String, Object?> get metadataChildren =>
+      <String, Object?>{'item': itemSchema};
 
   @override
   void apply(ValidationContext<List<I>> context) {
