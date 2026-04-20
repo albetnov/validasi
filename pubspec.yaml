@@ -1,26 +1,36 @@
-name: validasi
-
-description: An easy to use and flexible validation library for Dart and Flutter. Easily validate your forms input with built-in rules or create your own.
-version: 1.0.0-dev.0
+name: validasi_workspace
+publish_to: none
+description: Workspace configuration for validasi monorepo.
 repository: https://github.com/albetnov/validasi
-homepage: https://albetnov.github.io/validasi
-
-topics:
-  - validation
-  - form
 
 environment:
-  sdk: ^3.4.4
+  sdk: ^3.5.0
 
-# Add regular dependencies here.
-dependencies:
-  # email_validator: ^3.0.0
-  intl: ">=0.19.0 <0.21.0"
-  meta: ^1.15.0
-  # path: ^1.8.0
+workspace:
+  - packages/validasi
+  - packages/validasi_mcp
 
 dev_dependencies:
-  build_runner: ^2.4.12
-  lints: "^6.0.0"
-  mockito: ^5.4.4
-  test: ^1.24.0
+  melos: ^7.5.1
+
+melos:
+  repository: https://github.com/albetnov/validasi
+  scripts:
+    analyze:
+      description: Analyze all workspace packages.
+      run: dart run melos exec --fail-fast -- dart analyze --fatal-infos
+    format:check:
+      description: Verify formatting across all workspace packages.
+      run: dart run melos exec --fail-fast -- dart format --output=none --set-exit-if-changed .
+    format:fix:
+      description: Format all workspace packages.
+      run: dart run melos exec -- dart format .
+    test:
+      description: Run tests for all workspace packages.
+      run: dart run melos exec --fail-fast --concurrency=1 -- dart test
+    test:validasi:
+      description: Run tests for the root validasi package.
+      run: dart run melos exec --scope=validasi -- dart test
+    test:mcp:
+      description: Run tests for the validasi_mcp package.
+      run: dart run melos exec --scope=validasi_mcp -- dart test

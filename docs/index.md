@@ -35,6 +35,10 @@ features:
   - icon: 🔌
     title: Extensible
     details: Create custom rules with InlineRule or Having. Extend the library to fit your specific needs perfectly.
+
+  - icon: 🤖
+    title: Agent-Native Ready
+    details: Export introspectable schema metadata and deterministic validation payloads for AI tools and automation.
 ---
 
 <VersionBanner
@@ -120,6 +124,6 @@ flutter pub get
 
 <div class="vp-doc" style="margin-top: 2rem;">
   <a href="/guide/getting-started" class="vp-button vp-button-brand" style="margin-right: 1rem;">Read the Guide</a>
-  <a href="/examples/string-validation" class="vp-button vp-button-alt">See Examples</a>
+  <a href="/guide/agent-native-support" class="vp-button vp-button-alt">Agent-Native Guide</a>
 </div>
 

@@ -85,3 +85,11 @@ final schema = Validasi.string([
 ## LLM Support
 
 This documentation has support for LLMS, you can click the button at the bottom right corner to copy or download the current page as markdown file for your LLM processing. Or you can visit [`llms-full.txt`](/llms-full.txt) or [`llms.txt`](/llms.txt) files.
+
+## Agent-Native Integration
+
+If you want to use Validasi directly with coding agents or tool-calling workflows, start with the dedicated guide:
+
+- [Agent-Native Support Guide](/guide/agent-native-support)
+
+It covers schema introspection with `introspect()` and deterministic result payloads with `toToolResponse()`.
