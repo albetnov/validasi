@@ -75,14 +75,6 @@ final schema = Validasi.string([
 ]);
 ```
 
-## Next Steps
-
-Ready to dive in? Check out:
-
-- [Installation Guide](/guide/installation) - Add Validasi to your project
-- [Quick Start](/guide/quick-start) - Build your first validation schema
-- [String Examples](/examples/string-validation) - See practical examples
-
 ## Community & Support
 
 - **GitHub**: [albetnov/validasi](https://github.com/albetnov/validasi)

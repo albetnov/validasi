@@ -50,12 +50,3 @@ final optionalEmail = Validasi.string([
 print(optionalEmail.validate(null).isValid);
 print(optionalEmail.validate('test@example.com').isValid);
 ```
-
-## Next Steps
-
-If you want more detail, continue with:
-
-- [Validation Schemas](/guide/schemas)
-- [Built-in Rules](/guide/rules)
-- [Transformations](/guide/transformations)
-- [Error Handling](/guide/error-handling)

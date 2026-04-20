@@ -117,4 +117,3 @@ flutter pub get
 
 - Check the [GitHub Issues](https://github.com/albetnov/validasi/issues)
 - Review the [API Documentation](https://pub.dev/documentation/validasi/latest)
-- [String Examples](/examples/string-validation) - See practical examples
