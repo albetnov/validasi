@@ -90,7 +90,7 @@ void main() {
       test('should create string engine with no rules', () {
         final engine = Validasi.string();
 
-        expect(engine, isA<ValidasiEngine<String>>());
+        expect(engine, isA<ValidasiEngine<String, String>>());
         expect(engine.rules, isNull);
       });
 
@@ -121,7 +121,7 @@ void main() {
       test('should create list engine with no rules', () {
         final engine = Validasi.list<int>();
 
-        expect(engine, isA<ValidasiEngine<List<int>>>());
+        expect(engine, isA<ValidasiEngine<List<int>, List<int>>>());
         expect(engine.rules, isNull);
       });
 
@@ -152,7 +152,8 @@ void main() {
       test('should create map engine with no rules', () {
         final engine = Validasi.map<String>();
 
-        expect(engine, isA<ValidasiEngine<Map<String, String>>>());
+        expect(engine,
+            isA<ValidasiEngine<Map<String, String>, Map<String, String>>>());
         expect(engine.rules, isNull);
       });
 
@@ -183,14 +184,14 @@ void main() {
       test('should create number engine for int', () {
         final engine = Validasi.number<int>();
 
-        expect(engine, isA<ValidasiEngine<int>>());
+        expect(engine, isA<ValidasiEngine<int, int>>());
         expect(engine.rules, isNull);
       });
 
       test('should create number engine for double', () {
         final engine = Validasi.number<double>();
 
-        expect(engine, isA<ValidasiEngine<double>>());
+        expect(engine, isA<ValidasiEngine<double, double>>());
         expect(engine.rules, isNull);
       });
 
@@ -221,14 +222,14 @@ void main() {
       test('should create any engine with no rules', () {
         final engine = Validasi.any<String>();
 
-        expect(engine, isA<ValidasiEngine<String>>());
+        expect(engine, isA<ValidasiEngine<String, String>>());
         expect(engine.rules, isNull);
       });
 
       test('should create any engine with custom type', () {
         final engine = Validasi.any<_CustomType>();
 
-        expect(engine, isA<ValidasiEngine<_CustomType>>());
+        expect(engine, isA<ValidasiEngine<_CustomType, _CustomType>>());
       });
 
       test('should create any engine with rules', () {

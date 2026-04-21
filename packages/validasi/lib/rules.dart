@@ -32,14 +32,15 @@ class IterableRules {
     return iterable_rules.MinLength(length, message: message);
   }
 
-  static iterable_rules.ForEach<T> forEach<T>(ValidasiEngine<T> validator) {
+  static iterable_rules.ForEach<T> forEach<T>(
+      ValidasiEngine<T, dynamic> validator) {
     return iterable_rules.ForEach(validator);
   }
 }
 
 class MapRules {
   static map_rules.HasFields<T> hasFields<T>(
-      Map<String, ValidasiEngine<T>> validator) {
+      Map<String, ValidasiEngine<T, dynamic>> validator) {
     return map_rules.HasFields(validator);
   }
 

@@ -9,8 +9,8 @@ void main() {
   group('HasFields', () {
     test('should validate all fields successfully', () {
       final rule = HasFields<int>({
-        'a': ValidasiEngine<int>(),
-        'b': ValidasiEngine<int>(),
+        'a': ValidasiEngine<int, int>(),
+        'b': ValidasiEngine<int, int>(),
       });
       final context = ValidationContext<Map<String, int>>(
         value: {'a': 1, 'b': 2},
@@ -23,10 +23,10 @@ void main() {
 
     test('should collect errors from failing field validations', () {
       final rule = HasFields<int>({
-        'a': ValidasiEngine<int>(
+        'a': ValidasiEngine<int, int>(
           rules: [_TestRule<int>(shouldFail: true)],
         ),
-        'b': ValidasiEngine<int>(),
+        'b': ValidasiEngine<int, int>(),
       });
       final context = ValidationContext<Map<String, int>>(
         value: {'a': 1, 'b': 2},
@@ -39,7 +39,7 @@ void main() {
 
     test('should prefix errors with field name', () {
       final rule = HasFields<int>({
-        'age': ValidasiEngine<int>(
+        'age': ValidasiEngine<int, int>(
           rules: [_TestRule<int>(shouldFail: true, ruleName: 'TooYoung')],
         ),
       });
@@ -67,8 +67,8 @@ void main() {
 
     test('should validate missing fields as null', () {
       final rule = HasFields<int>({
-        'a': ValidasiEngine<int>(),
-        'b': ValidasiEngine<int>(),
+        'a': ValidasiEngine<int, int>(),
+        'b': ValidasiEngine<int, int>(),
       });
       final context = ValidationContext<Map<String, int>>(
         value: {'a': 1},
@@ -82,10 +82,10 @@ void main() {
 
     test('should collect errors from multiple fields', () {
       final rule = HasFields<int>({
-        'a': ValidasiEngine<int>(
+        'a': ValidasiEngine<int, int>(
           rules: [_TestRule<int>(shouldFail: true, ruleName: 'Error1')],
         ),
-        'b': ValidasiEngine<int>(
+        'b': ValidasiEngine<int, int>(
           rules: [_TestRule<int>(shouldFail: true, ruleName: 'Error2')],
         ),
       });
@@ -102,7 +102,7 @@ void main() {
 
     test('should collect multiple errors per field', () {
       final rule = HasFields<int>({
-        'a': ValidasiEngine<int>(
+        'a': ValidasiEngine<int, int>(
           rules: [
             _TestRule<int>(shouldFail: true, ruleName: 'Error1'),
             _TestRule<int>(shouldFail: true, ruleName: 'Error2'),
@@ -124,8 +124,8 @@ void main() {
 
     test('should work with different value types', () {
       final rule = HasFields<dynamic>({
-        'name': ValidasiEngine<String>(),
-        'age': ValidasiEngine<int>(),
+        'name': ValidasiEngine<String, String>(),
+        'age': ValidasiEngine<int, int>(),
       });
       final context = ValidationContext<Map<String, dynamic>>(
         value: {'name': 'John', 'age': 30},
@@ -138,8 +138,8 @@ void main() {
 
     test('should work with nullable fields', () {
       final rule = HasFields<int?>({
-        'a': ValidasiEngine<int?>(),
-        'b': ValidasiEngine<int?>(),
+        'a': ValidasiEngine<int?, int?>(),
+        'b': ValidasiEngine<int?, int?>(),
       });
       final context = ValidationContext<Map<String, int?>>(
         value: {'a': null, 'b': 2},
@@ -152,7 +152,7 @@ void main() {
 
     test('should validate nested structures', () {
       final rule = HasFields<Map<String, int>>({
-        'nested': ValidasiEngine<Map<String, int>>(),
+        'nested': ValidasiEngine<Map<String, int>, Map<String, int>>(),
       });
       final context = ValidationContext<Map<String, Map<String, int>>>(
         value: {
@@ -167,13 +167,13 @@ void main() {
 
     test('should validate all fields even if early ones fail', () {
       final rule = HasFields<int>({
-        'a': ValidasiEngine<int>(
+        'a': ValidasiEngine<int, int>(
           rules: [_TestRule<int>(shouldFail: true, ruleName: 'ErrorA')],
         ),
-        'b': ValidasiEngine<int>(
+        'b': ValidasiEngine<int, int>(
           rules: [_TestRule<int>(shouldFail: true, ruleName: 'ErrorB')],
         ),
-        'c': ValidasiEngine<int>(
+        'c': ValidasiEngine<int, int>(
           rules: [_TestRule<int>(shouldFail: true, ruleName: 'ErrorC')],
         ),
       });
@@ -188,7 +188,7 @@ void main() {
 
     test('should work with single field', () {
       final rule = HasFields<int>({
-        'id': ValidasiEngine<int>(),
+        'id': ValidasiEngine<int, int>(),
       });
       final context = ValidationContext<Map<String, int>>(
         value: {'id': 123},
@@ -200,9 +200,9 @@ void main() {
     });
 
     test('should work with many fields', () {
-      final fields = <String, ValidasiEngine<int>>{};
+      final fields = <String, ValidasiEngine<int, int>>{};
       for (var i = 0; i < 20; i++) {
-        fields['field$i'] = ValidasiEngine<int>();
+        fields['field$i'] = ValidasiEngine<int, int>();
       }
       final rule = HasFields<int>(fields);
       final map = <String, int>{};

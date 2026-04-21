@@ -1,6 +1,6 @@
 import 'package:validasi/engine.dart';
 
-typedef SchemaBuilder = ValidasiEngine<dynamic> Function();
+typedef SchemaBuilder = ValidasiEngine<dynamic, dynamic> Function();
 
 class RegisteredSchema {
   const RegisteredSchema({
@@ -13,7 +13,7 @@ class RegisteredSchema {
   final SchemaBuilder builder;
   final String? description;
 
-  ValidasiEngine<dynamic> create() => builder();
+  ValidasiEngine<dynamic, dynamic> create() => builder();
 }
 
 class SchemaRegistry {

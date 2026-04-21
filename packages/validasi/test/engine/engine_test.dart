@@ -9,7 +9,7 @@ void main() {
   group('ValidasiEngine', () {
     group('constructor', () {
       test('should create engine with no rules', () {
-        final engine = ValidasiEngine<String>();
+        final engine = ValidasiEngine<String, String>();
 
         expect(engine.rules, isNull);
         expect(engine.preprocess, isNull);
@@ -18,14 +18,14 @@ void main() {
 
       test('should create engine with rules', () {
         final rule = _TestRule<String>();
-        final engine = ValidasiEngine<String>(rules: [rule]);
+        final engine = ValidasiEngine<String, String>(rules: [rule]);
 
         expect(engine.rules?.length, equals(1));
         expect(engine.rules?.first, equals(rule));
       });
 
       test('should create engine with cache disabled', () {
-        final engine = ValidasiEngine<String>(cacheEnabled: false);
+        final engine = ValidasiEngine<String, String>(cacheEnabled: false);
 
         expect(engine.cacheEnabled, isFalse);
       });
@@ -33,21 +33,21 @@ void main() {
 
     group('withPreprocess', () {
       test('should add preprocess transformation', () {
-        final engine = ValidasiEngine<int>();
+        final engine = ValidasiEngine<int, int>();
         final transformation = ValidasiTransformation<String, int>(
           (input) => int.parse(input),
         );
 
         final newEngine = engine.withPreprocess(transformation);
 
-        expect(newEngine.preprocess, equals(transformation));
+        expect(newEngine.preprocess, isNotNull);
         expect(newEngine.rules, equals(engine.rules));
         expect(newEngine.cacheEnabled, equals(engine.cacheEnabled));
       });
 
       test('should preserve rules when adding preprocess', () {
         final rule = _TestRule<int>();
-        final engine = ValidasiEngine<int>(rules: [rule]);
+        final engine = ValidasiEngine<int, int>(rules: [rule]);
         final transformation = ValidasiTransformation<String, int>(
           (input) => int.parse(input),
         );
@@ -58,7 +58,7 @@ void main() {
       });
 
       test('should preserve cache setting when adding preprocess', () {
-        final engine = ValidasiEngine<int>(cacheEnabled: false);
+        final engine = ValidasiEngine<int, int>(cacheEnabled: false);
         final transformation = ValidasiTransformation<String, int>(
           (input) => int.parse(input),
         );
@@ -71,7 +71,7 @@ void main() {
 
     group('validate', () {
       test('should validate successfully with no rules', () {
-        final engine = ValidasiEngine<String>();
+        final engine = ValidasiEngine<String, String>();
 
         final result = engine.validate('test');
 
@@ -82,7 +82,7 @@ void main() {
 
       test('should validate with single rule passing', () {
         final rule = _TestRule<String>(shouldPass: true);
-        final engine = ValidasiEngine<String>(rules: [rule]);
+        final engine = ValidasiEngine<String, String>(rules: [rule]);
 
         final result = engine.validate('test');
 
@@ -93,7 +93,7 @@ void main() {
 
       test('should validate with single rule failing', () {
         final rule = _TestRule<String>(shouldPass: false);
-        final engine = ValidasiEngine<String>(rules: [rule]);
+        final engine = ValidasiEngine<String, String>(rules: [rule]);
 
         final result = engine.validate('test');
 
@@ -105,7 +105,7 @@ void main() {
       test('should validate with multiple rules', () {
         final rule1 = _TestRule<String>(shouldPass: true, ruleName: 'Rule1');
         final rule2 = _TestRule<String>(shouldPass: true, ruleName: 'Rule2');
-        final engine = ValidasiEngine<String>(rules: [rule1, rule2]);
+        final engine = ValidasiEngine<String, String>(rules: [rule1, rule2]);
 
         final result = engine.validate('test');
 
@@ -115,7 +115,7 @@ void main() {
       test('should collect errors from multiple failing rules', () {
         final rule1 = _TestRule<String>(shouldPass: false, ruleName: 'Rule1');
         final rule2 = _TestRule<String>(shouldPass: false, ruleName: 'Rule2');
-        final engine = ValidasiEngine<String>(rules: [rule1, rule2]);
+        final engine = ValidasiEngine<String, String>(rules: [rule1, rule2]);
 
         final result = engine.validate('test');
 
@@ -128,7 +128,7 @@ void main() {
       test('should stop validation when context is stopped', () {
         final rule1 = _TestRule<String>(shouldStop: true, ruleName: 'Rule1');
         final rule2 = _TestRule<String>(shouldPass: false, ruleName: 'Rule2');
-        final engine = ValidasiEngine<String>(rules: [rule1, rule2]);
+        final engine = ValidasiEngine<String, String>(rules: [rule1, rule2]);
 
         final result = engine.validate('test');
 
@@ -138,7 +138,7 @@ void main() {
       test('should skip rules on null value if runOnNull is false', () {
         final rule =
             _TestRule<String>(shouldPass: false, runOnNullValue: false);
-        final engine = ValidasiEngine<String>(rules: [rule]);
+        final engine = ValidasiEngine<String, String>(rules: [rule]);
 
         final result = engine.validate(null);
 
@@ -151,7 +151,7 @@ void main() {
           runOnNullValue: true,
           ruleName: 'NullRule',
         );
-        final engine = ValidasiEngine<String>(rules: [rule]);
+        final engine = ValidasiEngine<String, String>(rules: [rule]);
 
         final result = engine.validate(null);
 
@@ -163,7 +163,8 @@ void main() {
         final transformation = ValidasiTransformation<String, int>(
           (input) => int.parse(input),
         );
-        final engine = ValidasiEngine<int>().withPreprocess(transformation);
+        final engine =
+            ValidasiEngine<int, int>().withPreprocess(transformation);
 
         final result = engine.validate('42');
 
@@ -175,7 +176,8 @@ void main() {
         final transformation = ValidasiTransformation<String, int>(
           (input) => int.parse(input),
         );
-        final engine = ValidasiEngine<int>().withPreprocess(transformation);
+        final engine =
+            ValidasiEngine<int, int>().withPreprocess(transformation);
 
         final result = engine.validate('not a number');
 
@@ -187,9 +189,10 @@ void main() {
       });
 
       test('should fail validation with type mismatch', () {
-        final engine = ValidasiEngine<String>();
+        final engine = ValidasiEngine<String, dynamic>();
+        final dynamic invalidValue = 42;
 
-        final result = engine.validate(42);
+        final result = engine.validate(invalidValue);
 
         expect(result.isValid, isFalse);
         expect(result.errors.length, equals(1));
@@ -197,7 +200,7 @@ void main() {
       });
 
       test('should allow null for nullable types', () {
-        final engine = ValidasiEngine<String?>();
+        final engine = ValidasiEngine<String?, String?>();
 
         final result = engine.validate(null);
 
@@ -207,7 +210,7 @@ void main() {
 
       test('should apply rule that modifies value', () {
         final rule = _ModifyRule<String>();
-        final engine = ValidasiEngine<String>(rules: [rule]);
+        final engine = ValidasiEngine<String, String>(rules: [rule]);
 
         final result = engine.validate('test');
 
@@ -221,7 +224,7 @@ void main() {
         var callCount = 0;
         final rule = _CountingRule<String>(() => callCount++);
         final engine =
-            ValidasiEngine<String>(rules: [rule], cacheEnabled: true);
+            ValidasiEngine<String, String>(rules: [rule], cacheEnabled: true);
 
         engine.validate('test');
         engine.validate('test');
@@ -232,7 +235,7 @@ void main() {
       test('should not cache when disabled', () {
         var callCount = 0;
         final rule = _CountingRule<String>(() => callCount++);
-        final engine = ValidasiEngine<String>(
+        final engine = ValidasiEngine<String, String>(
           rules: [rule],
           cacheEnabled: false,
         );
@@ -247,7 +250,7 @@ void main() {
         var callCount = 0;
         final rule = _CountingRule<String>(() => callCount++);
         final engine =
-            ValidasiEngine<String>(rules: [rule], cacheEnabled: true);
+            ValidasiEngine<String, String>(rules: [rule], cacheEnabled: true);
 
         engine.validate('test1');
         engine.validate('test2');
@@ -261,7 +264,7 @@ void main() {
         var callCount = 0;
         final rule = _CountingRule<String>(() => callCount++);
         final engine =
-            ValidasiEngine<String>(rules: [rule], cacheEnabled: true);
+            ValidasiEngine<String, String>(rules: [rule], cacheEnabled: true);
 
         engine.validate('test');
         engine.clearCache();
@@ -278,7 +281,8 @@ void main() {
             return int.parse(input);
           },
         );
-        final engine = ValidasiEngine<int>().withPreprocess(transformation);
+        final engine =
+            ValidasiEngine<int, int>().withPreprocess(transformation);
 
         engine.validate('not a number');
         engine.validate('not a number');
@@ -287,10 +291,11 @@ void main() {
       });
 
       test('should cache type check failures', () {
-        final engine = ValidasiEngine<String>(cacheEnabled: true);
+        final engine = ValidasiEngine<String, dynamic>(cacheEnabled: true);
+        final dynamic invalidValue = 42;
 
-        final result1 = engine.validate(42);
-        final result2 = engine.validate(42);
+        final result1 = engine.validate(invalidValue);
+        final result2 = engine.validate(invalidValue);
 
         expect(result1.isValid, isFalse);
         expect(result2.isValid, isFalse);

@@ -9,7 +9,7 @@ import 'package:validasi/src/rules/required.dart';
 void main() {
   group('ForEach', () {
     test('should validate all items successfully', () {
-      final itemSchema = ValidasiEngine<int>();
+      final itemSchema = ValidasiEngine<int, int>();
       final rule = ForEach<int>(itemSchema);
       final context = ValidationContext<List<int>>(value: [1, 2, 3]);
 
@@ -19,7 +19,7 @@ void main() {
     });
 
     test('should collect errors from failing items', () {
-      final itemSchema = ValidasiEngine<int>(
+      final itemSchema = ValidasiEngine<int, int>(
         rules: [
           _TestRule<int>(shouldFail: (value) => value! > 5),
         ],
@@ -33,7 +33,7 @@ void main() {
     });
 
     test('should prefix errors with item index', () {
-      final itemSchema = ValidasiEngine<int>(
+      final itemSchema = ValidasiEngine<int, int>(
         rules: [
           _TestRule<int>(
             shouldFail: (value) => value! > 5,
@@ -51,7 +51,7 @@ void main() {
     });
 
     test('should work with empty list', () {
-      final itemSchema = ValidasiEngine<int>();
+      final itemSchema = ValidasiEngine<int, int>();
       final rule = ForEach<int>(itemSchema);
       final context = ValidationContext<List<int>>(value: []);
 
@@ -61,7 +61,7 @@ void main() {
     });
 
     test('should work with complex item validation', () {
-      final itemSchema = ValidasiEngine<String>(
+      final itemSchema = ValidasiEngine<String, String>(
         rules: [Required<String>()],
       );
       final rule = ForEach<String>(itemSchema);
@@ -75,7 +75,7 @@ void main() {
     });
 
     test('should validate nested structures', () {
-      final itemSchema = ValidasiEngine<Map<String, int>>();
+      final itemSchema = ValidasiEngine<Map<String, int>, Map<String, int>>();
       final rule = ForEach<Map<String, int>>(itemSchema);
       final context = ValidationContext<List<Map<String, int>>>(
         value: [
@@ -90,7 +90,7 @@ void main() {
     });
 
     test('should collect multiple errors per item', () {
-      final itemSchema = ValidasiEngine<int>(
+      final itemSchema = ValidasiEngine<int, int>(
         rules: [
           _TestRule<int>(shouldFail: (value) => true, ruleName: 'Error1'),
           _TestRule<int>(shouldFail: (value) => true, ruleName: 'Error2'),
@@ -107,7 +107,7 @@ void main() {
     });
 
     test('should preserve error path from nested validation', () {
-      final itemSchema = ValidasiEngine<int>(
+      final itemSchema = ValidasiEngine<int, int>(
         rules: [
           _TestRule<int>(shouldFail: (value) => true, ruleName: 'ItemError'),
         ],
@@ -123,7 +123,7 @@ void main() {
     });
 
     test('should work with nullable items', () {
-      final itemSchema = ValidasiEngine<int?>();
+      final itemSchema = ValidasiEngine<int?, int?>();
       final rule = ForEach<int?>(itemSchema);
       final context = ValidationContext<List<int?>>(value: [1, null, 3]);
 
@@ -133,7 +133,7 @@ void main() {
     });
 
     test('should validate all items even if early ones fail', () {
-      final itemSchema = ValidasiEngine<int>(
+      final itemSchema = ValidasiEngine<int, int>(
         rules: [
           _TestRule<int>(shouldFail: (value) => value! > 2),
         ],
