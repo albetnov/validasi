@@ -13,7 +13,6 @@ void main() {
 
         expect(engine.rules, isNull);
         expect(engine.preprocess, isNull);
-        expect(engine.cacheEnabled, isTrue);
       });
 
       test('should create engine with rules', () {
@@ -22,12 +21,6 @@ void main() {
 
         expect(engine.rules?.length, equals(1));
         expect(engine.rules?.first, equals(rule));
-      });
-
-      test('should create engine with cache disabled', () {
-        final engine = ValidasiEngine<String, String>(cacheEnabled: false);
-
-        expect(engine.cacheEnabled, isFalse);
       });
     });
 
@@ -42,7 +35,6 @@ void main() {
 
         expect(newEngine.preprocess, isNotNull);
         expect(newEngine.rules, equals(engine.rules));
-        expect(newEngine.cacheEnabled, equals(engine.cacheEnabled));
       });
 
       test('should preserve rules when adding preprocess', () {
@@ -55,17 +47,6 @@ void main() {
         final newEngine = engine.withPreprocess(transformation);
 
         expect(newEngine.rules, equals(engine.rules));
-      });
-
-      test('should preserve cache setting when adding preprocess', () {
-        final engine = ValidasiEngine<int, int>(cacheEnabled: false);
-        final transformation = ValidasiTransformation<String, int>(
-          (input) => int.parse(input),
-        );
-
-        final newEngine = engine.withPreprocess(transformation);
-
-        expect(newEngine.cacheEnabled, isFalse);
       });
     });
 
@@ -218,90 +199,6 @@ void main() {
         expect(result.data, equals('TEST'));
       });
     });
-
-    group('caching', () {
-      test('should cache validation results', () {
-        var callCount = 0;
-        final rule = _CountingRule<String>(() => callCount++);
-        final engine =
-            ValidasiEngine<String, String>(rules: [rule], cacheEnabled: true);
-
-        engine.validate('test');
-        engine.validate('test');
-
-        expect(callCount, equals(1)); // Rule only called once
-      });
-
-      test('should not cache when disabled', () {
-        var callCount = 0;
-        final rule = _CountingRule<String>(() => callCount++);
-        final engine = ValidasiEngine<String, String>(
-          rules: [rule],
-          cacheEnabled: false,
-        );
-
-        engine.validate('test');
-        engine.validate('test');
-
-        expect(callCount, equals(2)); // Rule called twice
-      });
-
-      test('should cache different values separately', () {
-        var callCount = 0;
-        final rule = _CountingRule<String>(() => callCount++);
-        final engine =
-            ValidasiEngine<String, String>(rules: [rule], cacheEnabled: true);
-
-        engine.validate('test1');
-        engine.validate('test2');
-        engine.validate('test1');
-        engine.validate('test2');
-
-        expect(callCount, equals(2)); // One call per unique value
-      });
-
-      test('clearCache should clear cached results', () {
-        var callCount = 0;
-        final rule = _CountingRule<String>(() => callCount++);
-        final engine =
-            ValidasiEngine<String, String>(rules: [rule], cacheEnabled: true);
-
-        engine.validate('test');
-        engine.clearCache();
-        engine.validate('test');
-
-        expect(callCount, equals(2)); // Called again after cache clear
-      });
-
-      test('should cache preprocess failures', () {
-        var callCount = 0;
-        final transformation = ValidasiTransformation<String, int>(
-          (input) {
-            callCount++;
-            return int.parse(input);
-          },
-        );
-        final engine =
-            ValidasiEngine<int, int>().withPreprocess(transformation);
-
-        engine.validate('not a number');
-        engine.validate('not a number');
-
-        expect(callCount, equals(1)); // Transformation only called once
-      });
-
-      test('should cache type check failures', () {
-        final engine = ValidasiEngine<String, dynamic>(cacheEnabled: true);
-        final dynamic invalidValue = 42;
-
-        final result1 = engine.validate(invalidValue);
-        final result2 = engine.validate(invalidValue);
-
-        expect(result1.isValid, isFalse);
-        expect(result2.isValid, isFalse);
-        // Both should come from cache (same object identity would confirm this)
-      });
-    });
   });
 }
 
@@ -342,16 +239,5 @@ class _ModifyRule<T> extends Rule<T> {
     if (context.value is String) {
       context.setValue((context.value as String).toUpperCase() as T);
     }
-  }
-}
-
-class _CountingRule<T> extends Rule<T> {
-  _CountingRule(this.onCall);
-
-  final void Function() onCall;
-
-  @override
-  void apply(ValidationContext<T> context) {
-    onCall();
   }
 }

@@ -46,7 +46,7 @@ print(jsonEncode(descriptor));
 
 The descriptor includes:
 - schema id and value type
-- cache/preprocess flags
+- preprocess flag
 - ordered rule metadata
 - nested schema metadata for composition rules such as `ForEach` and `HasFields`
 

@@ -14,7 +14,6 @@ void main() {
 
       expect(descriptor.isReference, isFalse);
       expect(descriptor.type, equals('String'));
-      expect(descriptor.cacheEnabled, isTrue);
       expect(descriptor.hasPreprocess, isFalse);
       expect(descriptor.rules, hasLength(1));
       expect(descriptor.rules.first.name, equals('MinLength'));

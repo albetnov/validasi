@@ -186,18 +186,6 @@ result.errors.forEach((error) {
 });
 ```
 
-### Performance Optimization
-Built-in caching system to optimize validation performance. Can be disabled globally or per-validation:
-
-```dart
-Validasi.withCache = false; // Disable globally
-
-// Or disable for specific operation
-Validasi.withoutCache(() {
-  return Validasi.string([StringRules.minLength(5)]).validate('test');
-});
-```
-
 ### License
 
 The Validasi Library is licensed under [MIT License](./LICENSE).

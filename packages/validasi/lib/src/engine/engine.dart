@@ -7,14 +7,12 @@ import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
 import 'package:validasi/src/engine/schema_descriptor.dart';
 import 'package:validasi/src/transformer/validasi_transformation.dart';
-import 'package:validasi/src/engine/cache.dart';
 
 class ValidasiEngine<T, TInput> {
-  const ValidasiEngine({this.rules, this.preprocess, this.cacheEnabled = true});
+  const ValidasiEngine({this.rules, this.preprocess});
 
   final List<Rule<T>>? rules;
   final ValidasiTransformation<dynamic, T>? preprocess;
-  final bool cacheEnabled;
 
   ValidasiEngine<T, TNextInput> withPreprocess<TNextInput>(
       ValidasiTransformation<TNextInput, T> preprocess) {
@@ -26,27 +24,16 @@ class ValidasiEngine<T, TInput> {
     return ValidasiEngine<T, TNextInput>(
       rules: rules,
       preprocess: wrappedPreprocess,
-      cacheEnabled: cacheEnabled,
     );
   }
 
   ValidasiResult<T> validate(TInput? value) {
-    final originalInput = value;
     Object? processedValue = value;
-
-    // Cache lookup (default ON)
-    final cacheKey = cacheEnabled ? computeCacheKey(originalInput) : null;
-    if (cacheKey != null && cacheEnabled) {
-      final cached = EngineCache.get(this, cacheKey);
-      if (cached != null) {
-        return cached as ValidasiResult<T>;
-      }
-    }
 
     if (preprocess != null) {
       final result = preprocess!.tryTransform(processedValue);
       if (!result.isValid) {
-        final ValidasiResult<T> r = ValidasiResult<T>.error(
+        return ValidasiResult<T>.error(
           ValidationError(
             rule: 'Preprocess',
             message: 'Failed to preprocess value',
@@ -55,25 +42,17 @@ class ValidasiEngine<T, TInput> {
             },
           ),
         );
-        if (cacheKey != null && cacheEnabled) {
-          EngineCache.set(this, cacheKey, r);
-        }
-        return r;
       }
 
       processedValue = result.data;
     }
 
     if (processedValue is! T?) {
-      final ValidasiResult<T> r = ValidasiResult<T>.error(ValidationError(
+      return ValidasiResult<T>.error(ValidationError(
         rule: 'TypeCheck',
         message: 'Expected type $T, got ${processedValue.runtimeType}',
         details: {'value': processedValue},
       ));
-      if (cacheKey != null && cacheEnabled) {
-        EngineCache.set(this, cacheKey, r);
-      }
-      return r;
     }
 
     final context = ValidationContext<T>(value: processedValue);
@@ -90,22 +69,11 @@ class ValidasiEngine<T, TInput> {
       }
     }
 
-    final ValidasiResult<T> result = ValidasiResult<T>(
+    return ValidasiResult<T>(
       isValid: context.errors.isEmpty,
       data: context.value,
       errors: context.errors,
     );
-
-    if (cacheKey != null && cacheEnabled) {
-      EngineCache.set(this, cacheKey, result);
-    }
-
-    return result;
-  }
-
-  /// Clears the per-instance cache.
-  void clearCache() {
-    EngineCache.clear(this);
   }
 
   SchemaDescriptor introspect() {
@@ -155,7 +123,6 @@ class _SchemaIntrospector {
     return SchemaDescriptor(
       id: id,
       type: type,
-      cacheEnabled: engine.cacheEnabled,
       hasPreprocess: engine.preprocess != null,
       rules: resolvedRules,
     );
