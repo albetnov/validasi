@@ -75,6 +75,31 @@ final schema = Validasi.string([
 ]);
 ```
 
+### ✅ Type-Safe Input Handling
+
+Validasi uses dual generics to enforce input type safety at compile time. When you need to accept different input types (e.g., strings from APIs), use `withPreprocess`:
+
+```dart
+// Accept String input, validate as int
+final ageSchema = Validasi.number<int>([
+  NumberRules.moreThan(0),
+  NumberRules.lessThan(150),
+]).withPreprocess(
+  ValidasiTransformation<String, int>((value) => int.parse(value)),
+);
+
+// validate() now only accepts String at compile time
+final result = ageSchema.validate('25'); // ✓ Correct type
+// ageSchema.validate(25);               // ✗ Compile error
+```
+
+**When to use `withPreprocess`:**
+- Accepting data from JSON, APIs, or form inputs (usually strings)
+- Converting between types in a type-safe way
+- Building flexible schemas that accept specific input types
+
+Read more in the [Transformations Guide](/guide/transformations.md) and [Engine Architecture](/advanced/engine.md).
+
 ## Community & Support
 
 - **GitHub**: [albetnov/validasi](https://github.com/albetnov/validasi)

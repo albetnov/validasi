@@ -4,13 +4,20 @@ The Validasi engine is the core component that orchestrates the validation proce
 
 ## Engine Architecture
 
-The `ValidasiEngine<T>` is responsible for:
-1. **Preprocessing**: Transforming raw input into the expected type
-2. **Type checking**: Ensuring type safety
-3. **Rule execution**: Running validation rules sequentially
-4. **Context management**: Maintaining validation state
-5. **Result generation**: Producing structured validation results
-6. **Caching**: Optimizing repeated validations
+The `ValidasiEngine<T, TInput>` is a dual-generic engine responsible for:
+1. **Input type tracking**: Accepting specified input type (`TInput`)
+2. **Preprocessing**: Transforming raw input into the expected output type (`T`)
+3. **Type checking**: Ensuring type safety
+4. **Rule execution**: Running validation rules sequentially
+5. **Context management**: Maintaining validation state
+6. **Result generation**: Producing structured validation results
+7. **Caching**: Optimizing repeated validations
+
+**Type Parameters:**
+- `T` (output type): The validated data type after rules are applied
+- `TInput` (input type, defaults to `T`): The type accepted by `validate()`
+
+When `TInput ≠ T`, the engine enforces preprocessing to convert input to output type.
 
 ## Validation Pipeline
 
@@ -70,13 +77,25 @@ if (cacheKey != null && cacheEnabled) {
 
 **Example**:
 ```dart
-final schema = ValidasiEngine<int>(rules: [MoreThan(0)]);
+final schema = ValidasiEngine<int, int>(rules: [MoreThan(0)]);
 
 // First call: full pipeline
 final result1 = schema.validate(5);
 
 // Second call: cache hit, immediate return
 final result2 = schema.validate(5);
+```
+
+**Typed Input Example (with withPreprocess):**
+```dart
+// Accept String input, validate as int
+final schema = ValidasiEngine<int, String>(
+  rules: [MoreThan(0)],
+).withPreprocess(
+  ValidasiTransformation<String, int>((s) => int.parse(s)),
+);
+
+final result = schema.validate('42'); // String input, cached by original '42'
 ```
 
 ## Stage 2: Preprocessing
@@ -109,9 +128,10 @@ if (preprocess != null) {
 **Example**:
 ```dart
 // Convert string to int before validation
-final schema = ValidasiEngine<int>(
-  preprocess: ValidasiTransformation.tryParse(int.parse),
+final schema = ValidasiEngine<int, int>(
   rules: [MoreThan(0)],
+).withPreprocess(
+  ValidasiTransformation<String, int>((s) => int.parse(s)),
 );
 
 // Input: "42" (String)
@@ -124,23 +144,26 @@ print(result.data);    // 42
 
 ### Adding Preprocessing
 
-Use `withPreprocess()` to add preprocessing to an existing engine:
+Use `withPreprocess()` to add preprocessing to an existing engine. The returned engine's `validate()` method will accept the input type specified in the transformation:
 
 ```dart
-final baseEngine = ValidasiEngine<int>(
+final baseEngine = ValidasiEngine<int, int>(
   rules: [MoreThan(0), LessThan(100)],
 );
 
+// withPreprocess returns ValidasiEngine<int, String>
 final engineWithPreprocess = baseEngine.withPreprocess(
-  ValidasiTransformation.tryParse(int.parse),
+  ValidasiTransformation<String, int>((s) => int.parse(s)),
 );
 
-engineWithPreprocess.validate("50"); // Parses "50" to 50
+// Now accepts String input at compile time
+engineWithPreprocess.validate("50"); // OK: String input
+engineWithPreprocess.validate(50);   // ERROR: int is not String
 ```
 
 ## Stage 3: Type Checking
 
-After preprocessing, the engine verifies the value matches type `T`:
+After preprocessing, the engine verifies the transformed value matches output type `T`:
 
 ```dart
 if (value is! T?) {
@@ -160,7 +183,7 @@ if (value is! T?) {
 
 **Example**:
 ```dart
-final schema = ValidasiEngine<int>(rules: [MoreThan(0)]);
+final schema = ValidasiEngine<int, int>(rules: [MoreThan(0)]);
 
 // Type mismatch: expects int, got String
 final result = schema.validate("hello");
@@ -232,7 +255,7 @@ for (final rule in rules ?? <Rule<T>>[]) {
 Rules execute in the order they're defined:
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     MinLength(5),      // 1st: Check minimum length
     MaxLength(20),     // 2nd: Check maximum length
@@ -245,7 +268,7 @@ final schema = ValidasiEngine<String>(
 **Order matters**! Transformations affect subsequent validations:
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     MinLength(10),                      // Checks original length
     Transform((s) => s?.trim()),        // Removes whitespace
@@ -278,7 +301,7 @@ if (context.value == null && !rule.runOnNull) {
 
 **Example**:
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     Nullable(),        // runOnNull = true → executes
     MinLength(5),      // runOnNull = false → skipped if null
@@ -294,7 +317,7 @@ schema.validate(null); // Valid! MinLength skipped
 Rules can modify the value during validation:
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     Transform((s) => s?.toUpperCase()),  // Changes value
     MinLength(5),                        // Validates transformed value
@@ -328,7 +351,7 @@ class StopOnError extends Rule<String> {
   }
 }
 
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     StopOnError(),     // Stops if empty
     MinLength(5),      // Won't execute if stopped
@@ -363,7 +386,7 @@ final ValidasiResult<T> result = ValidasiResult<T>(
 
 **Example**:
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     Required(),
     MinLength(5),
@@ -396,7 +419,7 @@ if (cacheKey != null && cacheEnabled) {
 
 **Example**:
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [Transform((s) => s?.toUpperCase()), MinLength(5)],
 );
 
@@ -414,8 +437,7 @@ print(result2.data); // "HELLO" (from cache, transform not re-run)
 Let's trace a complete validation through all stages:
 
 ```dart
-final schema = ValidasiEngine<int>(
-  preprocess: ValidasiTransformation.tryParse(int.parse),
+final schema = ValidasiEngine<int, int>(
   rules: [
     Required(),
     MoreThan(0),
@@ -467,7 +489,7 @@ final result = schema.validate("42");
 Use `Having` to conditionally apply rules:
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     Having(
       (value) => value?.startsWith('@') ?? false,
@@ -485,7 +507,7 @@ schema.validate("hi");     // Passes (Having condition false)
 The engine accumulates all errors, not just the first:
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     MinLength(5),
     MaxLength(2),  // Changed to 2
@@ -505,17 +527,15 @@ Use preprocessing to normalize data before validation:
 
 ```dart
 // Normalize whitespace before validation
-final schema = ValidasiEngine<String>(
-  preprocess: ValidasiTransformation<String, String>((input) {
-    if (input is String) {
-      return input.trim().toLowerCase();
-    }
-    throw FormatException('Expected string');
-  }),
+final schema = ValidasiEngine<String, String>(
   rules: [
     MinLength(3),
     MaxLength(20),
   ],
+).withPreprocess(
+  ValidasiTransformation<String, String>((input) {
+    return input.trim().toLowerCase();
+  }),
 );
 
 // "  HELLO  " → "hello" → validates as "hello"
@@ -528,7 +548,7 @@ print(result.data); // "hello"
 Stop validation early to avoid expensive checks:
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     InlineRule((s) {
       if (s == null || s.isEmpty) {

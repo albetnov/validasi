@@ -34,30 +34,34 @@ How it works:
 
 ## 2) Preprocess Transformation
 
-Use `withPreprocess` when raw input may be a different type than the schema expects.
+Use `withPreprocess` when raw input may be a different type than the schema expects. The key benefit: `validate()` parameter type is updated at compile time to match the preprocess input type.
 
 ```dart
 import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 import 'package:validasi/transformer.dart';
 
+// Create base schema validating int
 final ageSchema = Validasi.number<int>([
   NumberRules.moreThanEqual(0),
-]).withPreprocess(
-  ValidasiTransformation((value) {
-    if (value is String) return int.parse(value);
-    return value as int;
-  }),
+]);
+
+// Add preprocessing: accepts String, converts to int
+final ageSchemaWithPreprocess = ageSchema.withPreprocess(
+  ValidasiTransformation<String, int>((value) => int.parse(value)),
 );
 
-print(ageSchema.validate('42').data); // 42
+// Now validate() accepts String, not int
+print(ageSchemaWithPreprocess.validate('42').data); // 42
 ```
 
 How it works:
 
-- Runs before type checking.
+- Preprocessing runs **before type checking**.
+- `withPreprocess()` returns a new engine where `validate()` accepts the transformation input type.
 - If preprocessing fails, validation fails with a `Preprocess` error.
 - If preprocessing succeeds but returns the wrong type, validation fails at type check.
+- Type enforcement is compile-time: passing wrong input type causes compiler error.
 
 ## Execution Order
 
@@ -80,19 +84,53 @@ This means:
 - Keep transformations pure: return transformed data, avoid side effects.
 - Put `Transform` before other validation rules that depend on normalized values.
 - Keep transforms null-safe when using nullable schemas.
+- When accepting dynamic input, create `ValidasiEngine<T, dynamic>` or use `withPreprocess` to define the allowed input type.
+- Use explicit transformation input types: `ValidasiTransformation<InputType, OutputType>` for compile-time safety.
 
-## Combined Example
+## Combined Example: Type-Safe Transformation
 
 ```dart
+// Schema validates String and applies Transform rules
 final usernameSchema = Validasi.string([
   Nullable(),
   Transform((value) => value?.trim()),
   Transform((value) => value?.toLowerCase()),
   StringRules.minLength(3),
-]).withPreprocess(
-  ValidasiTransformation((value) => value.toString()),
+]);
+
+// Add preprocessing to accept dynamic input and convert to String
+final usernameSchemaWithPreprocess = usernameSchema.withPreprocess(
+  ValidasiTransformation<dynamic, String>((value) => value.toString()),
 );
 
-print(usernameSchema.validate(1234).data); // "1234"
-print(usernameSchema.validate('  John  ').data); // "john"
+// Now validate() accepts dynamic input with compile-time flexibility
+print(usernameSchemaWithPreprocess.validate(1234).data);       // "1234"
+print(usernameSchemaWithPreprocess.validate('  John  ').data); // "john"
+```
+
+## Handling Dynamic Inputs
+
+When you need to accept values of unknown type at compile time, two approaches:
+
+**Approach 1: Use `dynamic` as input type**
+```dart
+// Engine<OutputType, dynamic> accepts any input
+final schema = ValidasiEngine<int, dynamic>([
+  NumberRules.moreThan(0),
+]);
+
+schema.validate(42);     // OK: int
+schema.validate('42');   // Runtime TypeCheck error (no preprocess)
+```
+
+**Approach 2: Use withPreprocess (recommended)**
+```dart
+// Explicit preprocessing handles type conversion
+final schema = Validasi.number<int>([
+  NumberRules.moreThan(0),
+]).withPreprocess(
+  ValidasiTransformation<String, int>((s) => int.parse(s)),
+);
+
+schema.validate('42'); // OK: compile-time guarantees String input
 ```

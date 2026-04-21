@@ -19,7 +19,7 @@ When you call `validate()`, the engine follows this process:
    - If no cache → run validation and store result
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     Required(),
     MinLength(5),
@@ -42,8 +42,8 @@ final result3 = schema.validate('world');
 The cache is **per-engine-instance**. Each `ValidasiEngine` maintains its own separate cache:
 
 ```dart
-final schema1 = ValidasiEngine<String>(rules: [MinLength(5)]);
-final schema2 = ValidasiEngine<String>(rules: [MinLength(10)]);
+final schema1 = ValidasiEngine<String, String>(rules: [MinLength(5)]);
+final schema2 = ValidasiEngine<String, String>(rules: [MinLength(10)]);
 
 schema1.validate('hello'); // Cached in schema1
 schema2.validate('hello'); // Separate cache in schema2
@@ -104,7 +104,7 @@ The cache uses an **LRU eviction policy** with a fixed maximum size of **512 ent
 3. This ensures frequently validated values stay cached while old entries are removed
 
 ```dart
-final schema = ValidasiEngine<String>(rules: [MinLength(1)]);
+final schema = ValidasiEngine<String, String>(rules: [MinLength(1)]);
 
 // Add 512 entries
 for (var i = 0; i < 512; i++) {
@@ -133,13 +133,13 @@ Control caching when creating a schema:
 
 ```dart
 // Cache enabled (default)
-final engine = ValidasiEngine<String>(
+final engine = ValidasiEngine<String, String>(
   rules: [MinLength(5)],
   cacheEnabled: true,
 );
 
 // Cache disabled
-final engine = ValidasiEngine<String>(
+final engine = ValidasiEngine<String, String>(
   rules: [MinLength(5)],
   cacheEnabled: false,
 );
@@ -155,7 +155,7 @@ Validasi.withoutCache(() {
 Clear cached results for a specific schema:
 
 ```dart
-final schema = ValidasiEngine<String>(rules: [MinLength(5)]);
+final schema = ValidasiEngine<String, String>(rules: [MinLength(5)]);
 
 schema.validate('hello'); // Cached
 schema.validate('hello'); // Cache hit
@@ -176,7 +176,7 @@ If every validation uses a different value, caching provides no benefit:
 
 ```dart
 // Bad use case for cache: every value is unique
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [MinLength(5)],
   cacheEnabled: false, // Disable to save memory
 );
@@ -191,7 +191,7 @@ for (var i = 0; i < 10000; i++) {
 In embedded systems or memory-sensitive applications:
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [MinLength(5)],
   cacheEnabled: false, // Save memory
 );
@@ -202,7 +202,7 @@ final schema = ValidasiEngine<String>(
 If validation depends on external state (time, random values, etc.), disable caching:
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     InlineRule((value) {
       // Validation depends on current time
@@ -220,7 +220,7 @@ If rules modify external state or have side effects:
 ```dart
 var validationCount = 0;
 
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     InlineRule((value) {
       validationCount++; // Side effect
@@ -240,7 +240,7 @@ Keep caching enabled (default) in these common scenarios:
 User input often repeats during typing:
 
 ```dart
-final emailSchema = ValidasiEngine<String>(
+final emailSchema = ValidasiEngine<String, String>(
   rules: [Required(), Email()],
   // cacheEnabled: true (default)
 );
@@ -254,7 +254,7 @@ final emailSchema = ValidasiEngine<String>(
 When validating the same data multiple times:
 
 ```dart
-final schema = ValidasiEngine<Map<String, dynamic>>(
+final schema = ValidasiEngine<Map<String, dynamic>, Map<String, dynamic>>(
   rules: [HasFields(['name', 'email'])],
 );
 
@@ -275,7 +275,7 @@ schema.validate(userData); // Cache hit!
 Processing lists where values may repeat:
 
 ```dart
-final schema = ValidasiEngine<String>(rules: [Email()]);
+final schema = ValidasiEngine<String, String>(rules: [Email()]);
 
 final emails = [
   'john@example.com',
@@ -295,7 +295,7 @@ for (final email in emails) {
 Validating similar API payloads:
 
 ```dart
-final requestSchema = ValidasiEngine<Map<String, dynamic>>(
+final requestSchema = ValidasiEngine<Map<String, dynamic>, Map<String, dynamic>>(
   rules: [
     HasFields(['action', 'timestamp']),
     ConditionalField('action', (value) => value == 'update', 'data'),
@@ -314,7 +314,7 @@ requestSchema.validate({'action': 'read', 'timestamp': '...'}); // Cache hit!
 Cache hits are **extremely fast** - just a hash map lookup:
 
 ```dart
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [MinLength(5), MaxLength(100), Email()],
 );
 
@@ -343,7 +343,7 @@ Monitor cache effectiveness in performance-critical applications:
 var cacheHits = 0;
 var cacheMisses = 0;
 
-final schema = ValidasiEngine<String>(rules: [MinLength(5)]);
+final schema = ValidasiEngine<String, String>(rules: [MinLength(5)]);
 
 for (final value in values) {
   final startTime = DateTime.now();

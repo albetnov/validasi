@@ -120,7 +120,7 @@ class MinAge extends Rule<int> {
 }
 
 // Usage with custom message
-final schema = ValidasiEngine<int>(
+final schema = ValidasiEngine<int, int>(
   rules: [
     MinAge(18, message: 'You must be 18 or older to register'),
   ],
@@ -289,7 +289,7 @@ class UrlRule extends Rule<String> {
 }
 
 // Usage
-final schema = ValidasiEngine<String>(
+final schema = ValidasiEngine<String, String>(
   rules: [
     UrlRule(
       schemes: ['http', 'https', 'ftp'],
@@ -363,8 +363,8 @@ class NotEqual<T> extends Rule<T> {
 }
 
 // Works with any type
-ValidasiEngine<int>(rules: [NotEqual(0)]);
-ValidasiEngine<String>(rules: [NotEqual('')]);
+ValidasiEngine<int, int>(rules: [NotEqual(0)]);
+ValidasiEngine<String, String>(rules: [NotEqual('')]);
 ```
 
 ### Composite Validation
@@ -417,20 +417,20 @@ import 'package:validasi/validasi.dart';
 void main() {
   group('UrlRule', () {
     test('accepts valid HTTPS URL', () {
-      final schema = ValidasiEngine<String>(rules: [UrlRule()]);
+      final schema = ValidasiEngine<String, String>(rules: [UrlRule()]);
       final result = schema.validate('https://example.com');
       expect(result.isValid, true);
     });
 
     test('rejects URL without scheme', () {
-      final schema = ValidasiEngine<String>(rules: [UrlRule()]);
+      final schema = ValidasiEngine<String, String>(rules: [UrlRule()]);
       final result = schema.validate('example.com');
       expect(result.isValid, false);
       expect(result.errors.first.rule, 'Url');
     });
 
     test('accepts custom message', () {
-      final schema = ValidasiEngine<String>(
+      final schema = ValidasiEngine<String, String>(
         rules: [UrlRule(message: 'Custom error')],
       );
       final result = schema.validate('invalid');

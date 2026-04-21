@@ -2,7 +2,7 @@
 
 Use `Validasi.any<T>()` when you want full flexibility over the value type and validation strategy.
 
-Under the hood, all schema builders use the same engine (`ValidasiEngine<T>`). `Validasi.any<T>()` is the most direct and generic form of that engine.
+Under the hood, all schema builders use the same engine (`ValidasiEngine<T, TInput>`). By default, `TInput` equals `T`, but you can use `withPreprocess()` to accept a different input type. `Validasi.any<T>()` is the most direct and generic form of that engine.
 
 That means if your generic type `T` matches a rule type, it works out of the box.
 
