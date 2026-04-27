@@ -6,7 +6,7 @@ import 'package:validasi/src/engine/rule_metadata.dart';
 class ForEach<I> extends Rule<List<I>> {
   const ForEach(this.itemSchema);
 
-  final ValidasiEngine<I> itemSchema;
+  final ValidasiEngine<I, dynamic> itemSchema;
 
   @override
   RuleMetadata get metadata => RuleMetadata(

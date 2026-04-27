@@ -26,7 +26,7 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 import 'package:validasi/engine.dart';
 
-final userFields = <String, ValidasiEngine<dynamic>>{
+final userFields = <String, ValidasiEngine<dynamic, dynamic>>{
   'name': Validasi.string([
       StringRules.minLength(2),
       StringRules.maxLength(50),
@@ -46,7 +46,7 @@ print(jsonEncode(descriptor));
 
 The descriptor includes:
 - schema id and value type
-- cache/preprocess flags
+- preprocess flag
 - ordered rule metadata
 - nested schema metadata for composition rules such as `ForEach` and `HasFields`
 

@@ -121,6 +121,30 @@ final registrationSchema = Validasi.map<dynamic>([
 
 This pattern keeps schemas small and reusable while still letting you build stricter validation at the top level.
 
+## Typed Input Handling
+
+By default, each schema accepts its output type. However, when you need to accept a different input type (e.g., strings from JSON), use `withPreprocess` to convert and enforce the input type at compile time:
+
+```dart
+// Schema validates int, but accepts String input
+final ageSchema = Validasi.number<int>([
+  NumberRules.moreThanEqual(0),
+  NumberRules.lessThan(150),
+]).withPreprocess(
+  ValidasiTransformation<String, int>((value) => int.parse(value)),
+);
+
+// validate() now requires String at compile time
+final result = ageSchema.validate('25');
+print(result.data); // 25 (int)
+```
+
+**Key Points:**
+- Without `withPreprocess`, `validate()` accepts the schema's output type
+- `withPreprocess` changes the accepted input type at compile time
+- Use this for parsing external data: JSON strings, form inputs, API responses
+- For more details, see [Transformations Guide](/guide/transformations.md)
+
 ## Validation Results
 
 `validate()` returns a `ValidasiResult` with the final data and any errors.

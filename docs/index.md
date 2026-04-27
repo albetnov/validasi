@@ -26,7 +26,7 @@ features:
   
   - icon: ⚡
     title: High Performance
-    details: Optimized with built-in caching system for maximum performance. Validate thousands of objects without breaking a sweat.
+    details: Optimized for maximum performance. Validate thousands of objects without breaking a sweat.
   
   - icon: 🎨
     title: Flexible Transformations

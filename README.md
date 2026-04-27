@@ -1,8 +1,8 @@
 # Validasi
 
-![Logo](art/logo.png)
+![Logo](https://github.com/albetnov/validasi/blob/v1/art/logo.png?raw=true)
 
-![image](art/validasi.png?raw=true)
+![image](https://github.com/albetnov/validasi/blob/v1/art/validasi.png?raw=true)
 
 A flexible, composeable, and type-safe validation library for Dart & Flutter.
 
@@ -183,18 +183,6 @@ Validasi tracks error paths for nested structures, making it easy to identify ex
 final result = schema.validate(complexNestedData);
 result.errors.forEach((error) {
   print("Error at ${error.path?.join('.')}: ${error.message}");
-});
-```
-
-### Performance Optimization
-Built-in caching system to optimize validation performance. Can be disabled globally or per-validation:
-
-```dart
-Validasi.withCache = false; // Disable globally
-
-// Or disable for specific operation
-Validasi.withoutCache(() {
-  return Validasi.string([StringRules.minLength(5)]).validate('test');
 });
 ```
 

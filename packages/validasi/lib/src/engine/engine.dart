@@ -7,40 +7,33 @@ import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
 import 'package:validasi/src/engine/schema_descriptor.dart';
 import 'package:validasi/src/transformer/validasi_transformation.dart';
-import 'package:validasi/src/engine/cache.dart';
 
-class ValidasiEngine<T> {
-  const ValidasiEngine({this.rules, this.preprocess, this.cacheEnabled = true});
+class ValidasiEngine<T, TInput> {
+  const ValidasiEngine({this.rules, this.preprocess});
 
   final List<Rule<T>>? rules;
   final ValidasiTransformation<dynamic, T>? preprocess;
-  final bool cacheEnabled;
 
-  ValidasiEngine<T> withPreprocess(
-      ValidasiTransformation<dynamic, T> preprocess) {
-    return ValidasiEngine<T>(
+  ValidasiEngine<T, TNextInput> withPreprocess<TNextInput>(
+      ValidasiTransformation<TNextInput, T> preprocess) {
+    final wrappedPreprocess = ValidasiTransformation<dynamic, T>(
+      (input) => preprocess.transform(input as TNextInput),
+      message: preprocess.message,
+    );
+
+    return ValidasiEngine<T, TNextInput>(
       rules: rules,
-      preprocess: preprocess,
-      cacheEnabled: cacheEnabled,
+      preprocess: wrappedPreprocess,
     );
   }
 
-  ValidasiResult<T> validate(dynamic value) {
-    final originalInput = value;
-
-    // Cache lookup (default ON)
-    final cacheKey = cacheEnabled ? computeCacheKey(originalInput) : null;
-    if (cacheKey != null && cacheEnabled) {
-      final cached = EngineCache.get(this, cacheKey);
-      if (cached != null) {
-        return cached as ValidasiResult<T>;
-      }
-    }
+  ValidasiResult<T> validate(TInput? value) {
+    Object? processedValue = value;
 
     if (preprocess != null) {
-      final result = preprocess!.tryTransform(value);
+      final result = preprocess!.tryTransform(processedValue);
       if (!result.isValid) {
-        final ValidasiResult<T> r = ValidasiResult<T>.error(
+        return ValidasiResult<T>.error(
           ValidationError(
             rule: 'Preprocess',
             message: 'Failed to preprocess value',
@@ -49,28 +42,20 @@ class ValidasiEngine<T> {
             },
           ),
         );
-        if (cacheKey != null && cacheEnabled) {
-          EngineCache.set(this, cacheKey, r);
-        }
-        return r;
       }
 
-      value = result.data;
+      processedValue = result.data;
     }
 
-    if (value is! T?) {
-      final ValidasiResult<T> r = ValidasiResult<T>.error(ValidationError(
+    if (processedValue is! T?) {
+      return ValidasiResult<T>.error(ValidationError(
         rule: 'TypeCheck',
-        message: 'Expected type $T, got ${value.runtimeType}',
-        details: {'value': value},
+        message: 'Expected type $T, got ${processedValue.runtimeType}',
+        details: {'value': processedValue},
       ));
-      if (cacheKey != null && cacheEnabled) {
-        EngineCache.set(this, cacheKey, r);
-      }
-      return r;
     }
 
-    final context = ValidationContext(value: value);
+    final context = ValidationContext<T>(value: processedValue);
 
     for (final rule in rules ?? <Rule<T>>[]) {
       if (context.value == null && !rule.runOnNull) {
@@ -84,22 +69,11 @@ class ValidasiEngine<T> {
       }
     }
 
-    final ValidasiResult<T> result = ValidasiResult<T>(
+    return ValidasiResult<T>(
       isValid: context.errors.isEmpty,
       data: context.value,
       errors: context.errors,
     );
-
-    if (cacheKey != null && cacheEnabled) {
-      EngineCache.set(this, cacheKey, result);
-    }
-
-    return result;
-  }
-
-  /// Clears the per-instance cache.
-  void clearCache() {
-    EngineCache.clear(this);
   }
 
   SchemaDescriptor introspect() {
@@ -108,18 +82,18 @@ class ValidasiEngine<T> {
 }
 
 class _SchemaIntrospector {
-  final HashMap<ValidasiEngine<dynamic>, String> _ids =
-      HashMap<ValidasiEngine<dynamic>, String>.identity();
-  final HashSet<ValidasiEngine<dynamic>> _active =
-      HashSet<ValidasiEngine<dynamic>>.identity();
-  final HashSet<ValidasiEngine<dynamic>> _completed =
-      HashSet<ValidasiEngine<dynamic>>.identity();
+  final HashMap<ValidasiEngine<dynamic, dynamic>, String> _ids =
+      HashMap<ValidasiEngine<dynamic, dynamic>, String>.identity();
+  final HashSet<ValidasiEngine<dynamic, dynamic>> _active =
+      HashSet<ValidasiEngine<dynamic, dynamic>>.identity();
+  final HashSet<ValidasiEngine<dynamic, dynamic>> _completed =
+      HashSet<ValidasiEngine<dynamic, dynamic>>.identity();
 
-  SchemaDescriptor describe<T>(ValidasiEngine<T> engine) {
-    return _describe(engine as ValidasiEngine<dynamic>);
+  SchemaDescriptor describe<T, TInput>(ValidasiEngine<T, TInput> engine) {
+    return _describe(engine as ValidasiEngine<dynamic, dynamic>);
   }
 
-  SchemaDescriptor _describe(ValidasiEngine<dynamic> engine) {
+  SchemaDescriptor _describe(ValidasiEngine<dynamic, dynamic> engine) {
     final id = _ids.putIfAbsent(engine, () => 'schema_${_ids.length + 1}');
     final type = _extractValueType(engine);
 
@@ -149,7 +123,6 @@ class _SchemaIntrospector {
     return SchemaDescriptor(
       id: id,
       type: type,
-      cacheEnabled: engine.cacheEnabled,
       hasPreprocess: engine.preprocess != null,
       rules: resolvedRules,
     );
@@ -176,7 +149,7 @@ class _SchemaIntrospector {
     return nested;
   }
 
-  String _extractValueType(ValidasiEngine<dynamic> engine) {
+  String _extractValueType(ValidasiEngine<dynamic, dynamic> engine) {
     final runtime = engine.runtimeType.toString();
     final start = runtime.indexOf('<');
     final end = runtime.lastIndexOf('>');
@@ -185,6 +158,21 @@ class _SchemaIntrospector {
       return 'dynamic';
     }
 
-    return runtime.substring(start + 1, end);
+    final typeArgs = runtime.substring(start + 1, end);
+    var depth = 0;
+
+    for (var i = 0; i < typeArgs.length; i++) {
+      final char = typeArgs[i];
+
+      if (char == '<') {
+        depth++;
+      } else if (char == '>') {
+        depth--;
+      } else if (char == ',' && depth == 0) {
+        return typeArgs.substring(0, i).trim();
+      }
+    }
+
+    return typeArgs.trim();
   }
 }

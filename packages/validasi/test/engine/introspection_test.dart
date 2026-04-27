@@ -14,7 +14,6 @@ void main() {
 
       expect(descriptor.isReference, isFalse);
       expect(descriptor.type, equals('String'));
-      expect(descriptor.cacheEnabled, isTrue);
       expect(descriptor.hasPreprocess, isFalse);
       expect(descriptor.rules, hasLength(1));
       expect(descriptor.rules.first.name, equals('MinLength'));
@@ -22,10 +21,10 @@ void main() {
     });
 
     test('should include nested schema metadata for composition rules', () {
-      final fields = <String, ValidasiEngine<dynamic>>{
+      final fields = <String, ValidasiEngine<dynamic, dynamic>>{
         'name': Validasi.string([
           StringRules.minLength(2),
-        ]) as ValidasiEngine<dynamic>,
+        ]) as ValidasiEngine<dynamic, dynamic>,
       };
       final engine = Validasi.map<dynamic>([
         MapRules.hasFields<dynamic>(fields),
@@ -41,9 +40,9 @@ void main() {
     });
 
     test('should sort nested schema keys deterministically', () {
-      final fields = <String, ValidasiEngine<dynamic>>{
-        'z': Validasi.string() as ValidasiEngine<dynamic>,
-        'a': Validasi.string() as ValidasiEngine<dynamic>,
+      final fields = <String, ValidasiEngine<dynamic, dynamic>>{
+        'z': Validasi.string() as ValidasiEngine<dynamic, dynamic>,
+        'a': Validasi.string() as ValidasiEngine<dynamic, dynamic>,
       };
       final engine = Validasi.map<dynamic>([
         MapRules.hasFields<dynamic>(fields),
@@ -84,7 +83,7 @@ void main() {
 }
 
 class _RecursiveRule extends Rule<String> {
-  late ValidasiEngine<String> child;
+  late ValidasiEngine<String, String> child;
 
   @override
   RuleMetadata get metadata => const RuleMetadata(name: 'RecursiveRule');

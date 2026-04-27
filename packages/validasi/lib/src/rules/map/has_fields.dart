@@ -6,7 +6,7 @@ import 'package:validasi/src/engine/rule_metadata.dart';
 class HasFields<T> extends Rule<Map<String, T>> {
   const HasFields(this.fields);
 
-  final Map<String, ValidasiEngine<T>> fields;
+  final Map<String, ValidasiEngine<T, dynamic>> fields;
 
   @override
   RuleMetadata get metadata => RuleMetadata(

@@ -42,32 +42,71 @@ void main() {
 }
 ```
 
+### Type-Safe Validation with Input Transformation
+
+When accepting different input types, use `withPreprocess` to ensure type safety at compile time:
+
+```dart
+final ageSchema = Validasi.number<int>([
+  NumberRules.moreThan(0),
+  NumberRules.lessThan(150),
+]).withPreprocess(
+  ValidasiTransformation<String, int>((value) => int.parse(value)),
+);
+
+// validate() now accepts String due to preprocessing
+final result = ageSchema.validate('25');
+print("Valid: ${result.isValid}, Age: ${result.data}"); // Valid: true, Age: 25
+```
+
 ### Validating Complex Data Structures
 
 **Map Validation:**
 ```dart
 final schema = Validasi.map<dynamic>([
   MapRules.hasFields({
-    'name': Validasi.string([StringRules.minLength(1)]),
-    'age': Validasi.number<int>([NumberRules.moreThan(0)]),
+    'name': Validasi.string([
+      StringRules.minLength(1),
+    ]),
+    'age': Validasi.number<int>([
+      NumberRules.moreThan(0),
+    ]),
   }),
 ]);
 
 final result = schema.validate({'name': 'John', 'age': 30});
+print('Valid: ${result.isValid}');
 ```
 
 **List Validation:**
 ```dart
 final schema = Validasi.list<String>([
   IterableRules.forEach(
-    Validasi.string([StringRules.minLength(1)]),
+    Validasi.string([
+      StringRules.minLength(1),
+    ]),
   ),
 ]);
 
 final result = schema.validate(['item1', 'item2', 'item3']);
+print('Valid: ${result.isValid}');
 ```
 
-Refer to the [examples](example/) folder to see more usage samples or see the [documentation](https://albetnov.github.io/validasi/).
+**Handling Dynamic Inputs with withPreprocess:**
+```dart
+// Accept JSON-like data and validate as typed schema
+final userSchema = Validasi.map<dynamic>([
+  MapRules.hasFields({
+    'name': Validasi.string([StringRules.minLength(1)]),
+    'age': Validasi.number<int>([NumberRules.moreThan(0)]),
+  }),
+]);
+
+final result = userSchema.validate({
+  'name': 'Alice',
+  'age': 28,
+});
+```
 
 ## Features
 
@@ -183,18 +222,6 @@ Validasi tracks error paths for nested structures, making it easy to identify ex
 final result = schema.validate(complexNestedData);
 result.errors.forEach((error) {
   print("Error at ${error.path?.join('.')}: ${error.message}");
-});
-```
-
-### Performance Optimization
-Built-in caching system to optimize validation performance. Can be disabled globally or per-validation:
-
-```dart
-Validasi.withCache = false; // Disable globally
-
-// Or disable for specific operation
-Validasi.withoutCache(() {
-  return Validasi.string([StringRules.minLength(5)]).validate('test');
 });
 ```
 

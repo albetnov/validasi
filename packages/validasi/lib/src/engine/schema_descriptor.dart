@@ -4,7 +4,6 @@ class SchemaDescriptor {
   const SchemaDescriptor({
     required this.id,
     required this.type,
-    required this.cacheEnabled,
     required this.hasPreprocess,
     required this.rules,
     this.isReference = false,
@@ -15,14 +14,12 @@ class SchemaDescriptor {
     required this.id,
     required this.type,
     required this.referenceTo,
-  })  : cacheEnabled = true,
-        hasPreprocess = false,
+  })  : hasPreprocess = false,
         rules = const <RuleMetadata>[],
         isReference = true;
 
   final String id;
   final String type;
-  final bool cacheEnabled;
   final bool hasPreprocess;
   final List<RuleMetadata> rules;
   final bool isReference;
@@ -40,7 +37,6 @@ class SchemaDescriptor {
       return json;
     }
 
-    json['cacheEnabled'] = cacheEnabled;
     json['hasPreprocess'] = hasPreprocess;
     json['rules'] = rules.map((rule) => rule.toJson()).toList(growable: false);
 
