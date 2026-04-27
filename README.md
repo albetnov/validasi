@@ -1,8 +1,8 @@
 # Validasi
 
-![Logo](art/logo.png)
+![Logo](https://github.com/albetnov/validasi/blob/v1/art/logo.png?raw=true)
 
-![image](art/validasi.png?raw=true)
+![image](https://github.com/albetnov/validasi/blob/v1/art/validasi.png?raw=true)
 
 A flexible, composeable, and type-safe validation library for Dart & Flutter.
 
