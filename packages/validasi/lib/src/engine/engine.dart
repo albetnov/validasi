@@ -57,7 +57,7 @@ class ValidasiEngine<T, TInput> {
 
     final context = ValidationContext<T>(value: processedValue);
 
-    for (final rule in rules ?? <Rule<T>>[]) {
+    for (final rule in rules ?? const []) {
       if (context.value == null && !rule.runOnNull) {
         continue;
       }

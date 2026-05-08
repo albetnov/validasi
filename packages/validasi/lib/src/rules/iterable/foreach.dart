@@ -22,8 +22,10 @@ class ForEach<I> extends Rule<List<I>> {
 
   @override
   void apply(ValidationContext<List<I>> context) {
-    for (var i = 0; i < context.requireValue.length; i++) {
-      final item = context.value![i];
+    final value = context.requireValue;
+
+    for (var i = 0; i < value.length; i++) {
+      final item = value[i];
       final result = itemSchema.validate(item);
 
       if (!result.isValid) {
