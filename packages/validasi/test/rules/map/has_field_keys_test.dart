@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/map/has_field_keys.dart';
+import 'package:validasi/src/old_rules/map/has_field_keys.dart';
 
 void main() {
   group('HasFieldKeys', () {

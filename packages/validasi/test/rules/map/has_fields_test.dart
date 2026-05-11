@@ -3,7 +3,7 @@ import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
-import 'package:validasi/src/rules/map/has_fields.dart';
+import 'package:validasi/src/old_rules/map/has_fields.dart';
 
 void main() {
   group('HasFields', () {

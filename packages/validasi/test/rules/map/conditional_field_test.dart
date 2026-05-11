@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/map/conditional_field.dart';
+import 'package:validasi/src/old_rules/map/conditional_field.dart';
 
 void main() {
   group('ConditionalFieldContext', () {

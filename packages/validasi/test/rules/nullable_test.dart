@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/nullable.dart';
+import 'package:validasi/src/old_rules/nullable.dart';
 
 void main() {
   group('Nullable', () {

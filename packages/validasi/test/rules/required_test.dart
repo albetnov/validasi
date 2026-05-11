@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/required.dart';
+import 'package:validasi/src/old_rules/required.dart';
 
 void main() {
   group('Required', () {

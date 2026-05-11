@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/numbers/less_than_equal.dart';
+import 'package:validasi/src/old_rules/numbers/less_than_equal.dart';
 
 void main() {
   group('LessThanEqual', () {

@@ -3,8 +3,8 @@ import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
-import 'package:validasi/src/rules/iterable/foreach.dart';
-import 'package:validasi/src/rules/required.dart';
+import 'package:validasi/src/old_rules/iterable/foreach.dart';
+import 'package:validasi/src/old_rules/required.dart';
 
 void main() {
   group('ForEach', () {

@@ -1,16 +1,16 @@
-export 'src/rules/transform.dart';
-export 'src/rules/nullable.dart';
-export 'src/rules/inline_rule.dart';
-export 'src/rules/required.dart';
-export 'src/rules/having.dart';
+export 'src/old_rules/transform.dart';
+export 'src/old_rules/nullable.dart';
+export 'src/old_rules/inline_rule.dart';
+export 'src/old_rules/required.dart';
+export 'src/old_rules/having.dart';
 
 import 'package:validasi/engine.dart';
-import 'package:validasi/src/rules/map/conditional_field.dart';
+import 'package:validasi/src/old_rules/map/conditional_field.dart';
 
-import 'src/rules/string/rules.dart' as string_rules;
-import 'src/rules/iterable/rules.dart' as iterable_rules;
-import 'src/rules/map/rules.dart' as map_rules;
-import 'src/rules/numbers/rules.dart' as number_rules;
+import 'src/old_rules/string/rules.dart' as string_rules;
+import 'src/old_rules/iterable/rules.dart' as iterable_rules;
+import 'src/old_rules/map/rules.dart' as map_rules;
+import 'src/old_rules/numbers/rules.dart' as number_rules;
 
 class StringRules {
   static string_rules.MinLength minLength(int length, {String? message}) {

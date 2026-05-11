@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/numbers/finite.dart';
+import 'package:validasi/src/old_rules/numbers/finite.dart';
 
 void main() {
   group('Finite', () {

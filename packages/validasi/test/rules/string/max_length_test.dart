@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/string/max_length.dart';
+import 'package:validasi/src/old_rules/string/max_length.dart';
 
 void main() {
   group('MaxLength (String)', () {

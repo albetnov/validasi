@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/string/one_of.dart';
+import 'package:validasi/src/old_rules/string/one_of.dart';
 
 void main() {
   group('OneOf', () {

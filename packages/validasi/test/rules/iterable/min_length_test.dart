@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/iterable/min_length.dart';
+import 'package:validasi/src/old_rules/iterable/min_length.dart';
 
 void main() {
   group('MinLength (List)', () {

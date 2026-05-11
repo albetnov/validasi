@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/rules/inline_rule.dart';
+import 'package:validasi/src/old_rules/inline_rule.dart';
 
 void main() {
   group('InlineRule', () {
