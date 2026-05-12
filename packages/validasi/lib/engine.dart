@@ -1,4 +1,3 @@
-export 'src/engine/context.dart';
 export 'src/engine/engine.dart';
 export 'src/engine/state.dart';
 export 'src/engine/error.dart';
