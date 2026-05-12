@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class HasFields<T> extends Rule<Map<String, T>> {
   const HasFields(this.fields);
@@ -28,19 +28,18 @@ class HasFields<T> extends Rule<Map<String, T>> {
   }
 
   @override
-  void apply(ValidationContext<Map<String, T>> context) {
+  Map<String, T>? apply(Map<String, T>? value, ValidationState state) {
+    if (value == null) return null;
+
     for (var field in fields.entries) {
       final key = field.key;
       final engine = field.value;
-
-      final value = context.requireValue[key];
-      final result = engine.validate(value);
-
-      if (!result.isValid) {
-        for (final error in result.errors) {
-          context.addError(error.withPrefix(key));
-        }
+      final before = state.errors.length;
+      engine.execute(value[key], state);
+      for (var j = before; j < state.errors.length; j++) {
+        state.errors[j] = state.errors[j].withPrefix(key);
       }
     }
+    return value;
   }
 }

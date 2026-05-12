@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class ForEach<I> extends Rule<List<I>> {
   const ForEach(this.itemSchema);
@@ -21,18 +21,16 @@ class ForEach<I> extends Rule<List<I>> {
       <String, Object?>{'item': itemSchema};
 
   @override
-  void apply(ValidationContext<List<I>> context) {
-    final value = context.requireValue;
+  List<I>? apply(List<I>? value, ValidationState state) {
+    if (value == null) return null;
 
     for (var i = 0; i < value.length; i++) {
-      final item = value[i];
-      final result = itemSchema.validate(item);
-
-      if (!result.isValid) {
-        for (final error in result.errors) {
-          context.addError(error.withPrefix('[$i]'));
-        }
+      final before = state.errors.length;
+      value[i] = itemSchema.execute(value[i], state) as I;
+      for (var j = before; j < state.errors.length; j++) {
+        state.errors[j] = state.errors[j].withPrefix('[$i]');
       }
     }
+    return value;
   }
 }

@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class ConditionalFieldContext<T> {
   ConditionalFieldContext(this._value);
@@ -41,19 +41,22 @@ class ConditionalField<T> extends Rule<Map<String, T>> {
       );
 
   @override
-  void apply(ValidationContext<Map<String, T>> context) {
-    final value = context.requireValue[fieldName];
+  Map<String, T>? apply(Map<String, T>? value, ValidationState state) {
+    if (value == null) return null;
+
+    final fieldValue = value[fieldName];
 
     final error =
-        callback(ConditionalFieldContext(context.requireValue), value);
+        callback(ConditionalFieldContext(value), fieldValue);
 
     if (error != null) {
-      context.addError(
+      state.errors.add(
         ValidationError(
           rule: 'conditionalField',
           message: error,
         ),
       );
     }
+    return value;
   }
 }

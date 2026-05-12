@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class HasFieldKeys<T> extends Rule<Map<String, T>> {
   HasFieldKeys(this.keys);
@@ -19,15 +19,18 @@ class HasFieldKeys<T> extends Rule<Map<String, T>> {
       );
 
   @override
-  void apply(ValidationContext<Map<String, T>> context) {
-    final missingKeys =
-        keys.where((key) => !context.requireValue.containsKey(key)).toList();
+  Map<String, T>? apply(Map<String, T>? value, ValidationState state) {
+    if (value != null) {
+      final missingKeys =
+          keys.where((key) => !value.containsKey(key)).toList();
 
-    if (missingKeys.isNotEmpty) {
-      context.addError(ValidationError(
-        rule: 'hasFieldKeys',
-        message: 'Missing required fields: ${missingKeys.join(', ')}',
-      ));
+      if (missingKeys.isNotEmpty) {
+        state.errors.add(ValidationError(
+          rule: 'hasFieldKeys',
+          message: 'Missing required fields: ${missingKeys.join(', ')}',
+        ));
+      }
     }
+    return value;
   }
 }

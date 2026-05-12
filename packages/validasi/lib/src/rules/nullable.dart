@@ -1,6 +1,6 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class Nullable<T> extends Rule<T> {
   const Nullable();
@@ -16,11 +16,10 @@ class Nullable<T> extends Rule<T> {
   bool get runOnNull => true;
 
   @override
-  void apply(ValidationContext context) {
-    final value = context.value;
-
+  T? apply(T? value, ValidationState state) {
     if (value == null) {
-      context.stop();
+      state.isStopped = true;
     }
+    return value;
   }
 }

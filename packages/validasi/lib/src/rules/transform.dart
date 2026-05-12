@@ -1,6 +1,6 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class Transform<T> extends Rule<T> {
   const Transform(this.transform, {super.message});
@@ -20,7 +20,7 @@ class Transform<T> extends Rule<T> {
       );
 
   @override
-  void apply(ValidationContext<T> context) {
-    context.setValue(transform(context.value));
+  T? apply(T? value, ValidationState state) {
+    return transform(value);
   }
 }
