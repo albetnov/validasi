@@ -1,11 +1,12 @@
 import 'dart:collection';
 
-import 'package:validasi/src/engine/context.dart';
+import 'package:meta/meta.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/result.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
 import 'package:validasi/src/engine/schema_descriptor.dart';
+import 'package:validasi/src/engine/state.dart';
 import 'package:validasi/src/transformer/validasi_transformation.dart';
 
 class ValidasiEngine<T, TInput> {
@@ -27,52 +28,59 @@ class ValidasiEngine<T, TInput> {
     );
   }
 
-  ValidasiResult<T> validate(TInput? value) {
-    Object? processedValue = value;
+  @internal
+  T? execute(dynamic rawValue, ValidationState state) {
+    Object? processedValue = rawValue;
 
     if (preprocess != null) {
       final result = preprocess!.tryTransform(processedValue);
       if (!result.isValid) {
-        return ValidasiResult<T>.error(
-          ValidationError(
-            rule: 'Preprocess',
-            message: 'Failed to preprocess value',
-            details: {
-              'exception': result.error?.toString() ?? 'Unknown error',
-            },
-          ),
-        );
+        state.errors.add(ValidationError(
+          rule: 'Preprocess',
+          message: 'Failed to preprocess value',
+          details: {
+            'exception': result.error?.toString() ?? 'Unknown error',
+          },
+        ));
+        return null;
       }
 
       processedValue = result.data;
     }
 
     if (processedValue is! T?) {
-      return ValidasiResult<T>.error(ValidationError(
+      state.errors.add(ValidationError(
         rule: 'TypeCheck',
         message: 'Expected type $T, got ${processedValue.runtimeType}',
         details: {'value': processedValue},
       ));
+      return null;
     }
 
-    final context = ValidationContext<T>(value: processedValue);
+    var value = processedValue;
 
     for (final rule in rules ?? const []) {
-      if (context.value == null && !rule.runOnNull) {
+      if (value == null && !rule.runOnNull) {
         continue;
       }
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      if (context.isStopped) {
+      if (state.isStopped) {
         break;
       }
     }
 
+    return value;
+  }
+
+  ValidasiResult<T> validate(TInput? value) {
+    final state = ValidationState();
+    final finalValue = execute(value, state);
     return ValidasiResult<T>(
-      isValid: context.errors.isEmpty,
-      data: context.value,
-      errors: context.errors,
+      isValid: state.errors.isEmpty,
+      data: finalValue,
+      errors: state.errors,
     );
   }
 
