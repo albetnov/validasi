@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class Finite extends Rule<double> {
   const Finite({super.message});
@@ -14,12 +14,13 @@ class Finite extends Rule<double> {
       );
 
   @override
-  void apply(ValidationContext<double> context) {
-    if (context.requireValue.isFinite == false) {
-      context.addError(ValidationError(
+  double? apply(double? value, ValidationState state) {
+    if (value != null && !value.isFinite) {
+      state.errors.add(ValidationError(
         rule: 'finite',
         message: message ?? 'value must be a finite number',
       ));
     }
+    return value;
   }
 }

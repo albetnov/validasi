@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class MinLength extends Rule<String> {
   const MinLength(this.length, {super.message});
@@ -17,17 +17,16 @@ class MinLength extends Rule<String> {
       );
 
   @override
-  void apply(ValidationContext<String> context) {
-    if (context.requireValue.length >= length) {
-      return;
+  String? apply(String? value, ValidationState state) {
+    if (value != null && value.length < length) {
+      state.errors.add(
+        ValidationError(
+          rule: 'MinLength',
+          message: message ?? 'Minimum length is $length characters',
+          details: {'length': length.toString()},
+        ),
+      );
     }
-
-    context.addError(
-      ValidationError(
-        rule: 'MinLength',
-        message: message ?? 'Minimum length is $length characters',
-        details: {'length': length.toString()},
-      ),
-    );
+    return value;
   }
 }

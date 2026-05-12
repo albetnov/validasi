@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class MoreThanEqual<T extends num> extends Rule<T> {
   const MoreThanEqual(this.min, {super.message});
@@ -17,12 +17,13 @@ class MoreThanEqual<T extends num> extends Rule<T> {
       );
 
   @override
-  void apply(ValidationContext<T> context) {
-    if (context.requireValue < min) {
-      context.addError(ValidationError(
+  T? apply(T? value, ValidationState state) {
+    if (value != null && value < min) {
+      state.errors.add(ValidationError(
         rule: 'moreThanEqual',
         message: message ?? 'value must be more than or equal to $min',
       ));
     }
+    return value;
   }
 }

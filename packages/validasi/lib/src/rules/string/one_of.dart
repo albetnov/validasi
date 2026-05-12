@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class OneOf extends Rule<String> {
   const OneOf(this.options, {super.message});
@@ -19,17 +19,16 @@ class OneOf extends Rule<String> {
       );
 
   @override
-  void apply(ValidationContext<String> context) {
-    if (options.contains(context.requireValue)) {
-      return;
+  String? apply(String? value, ValidationState state) {
+    if (value != null && !options.contains(value)) {
+      state.errors.add(
+        ValidationError(
+          rule: 'OneOf',
+          message: message ?? 'Value must be one of: ${options.join(', ')}',
+          details: {'options': options.join(', ')},
+        ),
+      );
     }
-
-    context.addError(
-      ValidationError(
-        rule: 'OneOf',
-        message: message ?? 'Value must be one of: ${options.join(', ')}',
-        details: {'options': options.join(', ')},
-      ),
-    );
+    return value;
   }
 }
