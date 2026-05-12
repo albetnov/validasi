@@ -1,10 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 
 void main() {
-
   final validator = Validasi.list([
     IterableRules.forEach(Validasi.map([
       MapRules.hasFields({
