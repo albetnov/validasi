@@ -59,17 +59,7 @@ class ValidasiEngine<T, TInput> {
 
     var value = processedValue;
 
-    for (final rule in rules ?? const []) {
-      if (value == null && !rule.runOnNull) {
-        continue;
-      }
-
-      value = rule.apply(value, state);
-
-      if (state.isStopped) {
-        break;
-      }
-    }
+    value = applyRules(value, rules, state);
 
     return value;
   }

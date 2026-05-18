@@ -3,6 +3,15 @@ export 'src/rules/nullable.dart';
 export 'src/rules/inline_rule.dart';
 export 'src/rules/required.dart';
 export 'src/rules/having.dart';
+export 'src/rules/iterable/foreach.dart';
+export 'src/rules/numbers/finite.dart';
+export 'src/rules/numbers/less_than.dart';
+export 'src/rules/numbers/less_than_equal.dart';
+export 'src/rules/numbers/more_than.dart';
+export 'src/rules/numbers/more_than_equal.dart';
+export 'src/rules/map/has_fields.dart';
+export 'src/rules/map/has_field_keys.dart';
+export 'src/rules/map/conditional_field.dart';
 
 import 'package:validasi/engine.dart';
 import 'package:validasi/src/rules/map/conditional_field.dart';
@@ -33,8 +42,8 @@ class IterableRules {
   }
 
   static iterable_rules.ForEach<T> forEach<T>(
-      ValidasiEngine<T, dynamic> validator) {
-    return iterable_rules.ForEach(validator);
+      List<Rule<T>> rules) {
+    return iterable_rules.ForEach(rules);
   }
 }
 

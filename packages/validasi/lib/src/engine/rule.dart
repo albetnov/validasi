@@ -18,3 +18,19 @@ abstract class Rule<T> {
 
   T? apply(T? value, ValidationState state);
 }
+
+T? applyRules<T>(T? value, List<Rule<T>>? rules, ValidationState state) {
+  for (final rule in rules ?? const []) {
+    if (value == null && !rule.runOnNull) {
+      continue;
+    }
+
+    value = rule.apply(value, state);
+
+    if (state.isStopped) {
+      break;
+    }
+  }
+
+  return value;
+}
