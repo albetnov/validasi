@@ -94,5 +94,5 @@ class _RecursiveRule extends Rule<String> {
       };
 
   @override
-  void apply(ValidationContext<String> context) {}
+  String? apply(String? value, ValidationState state) => value;
 }

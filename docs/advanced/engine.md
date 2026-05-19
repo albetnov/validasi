@@ -66,7 +66,7 @@ This keeps dynamic inputs safe at runtime.
 
 ## Stage 3: Rule Loop
 
-Rules run in declaration order. Each rule receives a mutable `ValidationContext<T>`.
+Rules run in declaration order. Each rule receives the current `value` (`T?`) and a mutable `ValidationState`.
 
 ```dart
 final schema = Validasi.string([
@@ -77,9 +77,9 @@ final schema = Validasi.string([
 
 Important behavior:
 
-- Rules can modify value via `context.setValue(...)`
-- Rules can add errors via `context.addError(...)`
-- Rules can stop further execution with `context.stop()`
+- Rules modify value by returning a new value from `apply()`
+- Rules add errors via `state.errors.add(...)`
+- Rules can stop further execution with `state.isStopped = true`
 - Rules with `runOnNull = false` are skipped on null values
 
 ## Stage 4: Result Build

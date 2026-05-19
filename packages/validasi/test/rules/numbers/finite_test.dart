@@ -1,102 +1,102 @@
 import 'package:test/test.dart';
-import 'package:validasi/src/engine/context.dart';
+import 'package:validasi/src/engine/state.dart';
 import 'package:validasi/src/rules/numbers/finite.dart';
 
 void main() {
   group('Finite', () {
     test('should pass for finite positive number', () {
       final rule = Finite();
-      final context = ValidationContext<double>(value: 42.0);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(42.0, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should pass for finite negative number', () {
       final rule = Finite();
-      final context = ValidationContext<double>(value: -42.0);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(-42.0, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should pass for zero', () {
       final rule = Finite();
-      final context = ValidationContext<double>(value: 0.0);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(0.0, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should fail for positive infinity', () {
       final rule = Finite();
-      final context = ValidationContext<double>(value: double.infinity);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(double.infinity, state);
 
-      expect(context.errors.length, equals(1));
-      expect(context.errors.first.rule, equals('finite'));
+      expect(state.errors.length, equals(1));
+      expect(state.errors.first.rule, equals('finite'));
       expect(
-        context.errors.first.message,
+        state.errors.first.message,
         equals('value must be a finite number'),
       );
     });
 
     test('should fail for negative infinity', () {
       final rule = Finite();
-      final context = ValidationContext<double>(value: double.negativeInfinity);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(double.negativeInfinity, state);
 
-      expect(context.errors.length, equals(1));
+      expect(state.errors.length, equals(1));
     });
 
     test('should fail for NaN', () {
       final rule = Finite();
-      final context = ValidationContext<double>(value: double.nan);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(double.nan, state);
 
-      expect(context.errors.length, equals(1));
+      expect(state.errors.length, equals(1));
     });
 
     test('should use custom message', () {
       final rule = Finite(message: 'Must be a real number');
-      final context = ValidationContext<double>(value: double.infinity);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(double.infinity, state);
 
-      expect(context.errors.first.message, equals('Must be a real number'));
+      expect(state.errors.first.message, equals('Must be a real number'));
     });
 
     test('should pass for very large finite numbers', () {
       final rule = Finite();
-      final context = ValidationContext<double>(value: double.maxFinite);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(double.maxFinite, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should pass for very small finite numbers', () {
       final rule = Finite();
-      final context = ValidationContext<double>(value: -double.maxFinite);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(-double.maxFinite, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should pass for decimal numbers', () {
       final rule = Finite();
-      final context = ValidationContext<double>(value: 3.14159);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(3.14159, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
   });
 }

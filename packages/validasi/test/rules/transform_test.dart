@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:validasi/src/engine/context.dart';
+import 'package:validasi/src/engine/state.dart';
 import 'package:validasi/src/rules/transform.dart';
 
 void main() {
@@ -12,59 +12,64 @@ void main() {
 
     test('should transform value', () {
       final rule = Transform<String>((value) => value?.toUpperCase());
-      final context = ValidationContext<String>(value: 'test');
+      String? value = 'test';
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, equals('TEST'));
-      expect(context.errors, isEmpty);
+      expect(value, equals('TEST'));
+      expect(state.errors, isEmpty);
     });
 
     test('should not add errors', () {
       final rule = Transform<String>((value) => value?.toUpperCase());
-      final context = ValidationContext<String>(value: 'test');
+      String? value = 'test';
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should handle null input', () {
       final rule = Transform<String>((value) => value ?? 'default');
-      final context = ValidationContext<String>(value: null);
+      final state = ValidationState();
 
-      rule.apply(context);
+      var value = rule.apply(null, state);
 
-      expect(context.value, equals('default'));
+      expect(value, equals('default'));
     });
 
     test('should allow transformation to null', () {
       final rule = Transform<String>((value) => null);
-      final context = ValidationContext<String>(value: 'test');
+      String? value = 'test';
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, isNull);
+      expect(value, isNull);
     });
 
     test('should work with numbers', () {
       final rule = Transform<int>((value) => value != null ? value * 2 : null);
-      final context = ValidationContext<int>(value: 5);
+      int? value = 5;
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, equals(10));
+      expect(value, equals(10));
     });
 
     test('should work with lists', () {
       final rule = Transform<List<int>>(
         (value) => value?.map((e) => e * 2).toList(),
       );
-      final context = ValidationContext<List<int>>(value: [1, 2, 3]);
+      List<int>? value = [1, 2, 3];
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, equals([2, 4, 6]));
+      expect(value, equals([2, 4, 6]));
     });
 
     test('should work with maps', () {
@@ -74,42 +79,44 @@ void main() {
           return value.map((key, val) => MapEntry(key.toUpperCase(), val));
         },
       );
-      final context = ValidationContext<Map<String, int>>(
-        value: {'a': 1, 'b': 2},
-      );
+      Map<String, int>? value = {'a': 1, 'b': 2};
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, equals({'A': 1, 'B': 2}));
+      expect(value, equals({'A': 1, 'B': 2}));
     });
 
     test('should chain transformations', () {
       final rule1 = Transform<String>((value) => value?.toUpperCase());
       final rule2 = Transform<String>((value) => '$value!');
-      final context = ValidationContext<String>(value: 'test');
+      String? value = 'test';
+      final state = ValidationState();
 
-      rule1.apply(context);
-      rule2.apply(context);
+      value = rule1.apply(value, state);
+      value = rule2.apply(value, state);
 
-      expect(context.value, equals('TEST!'));
+      expect(value, equals('TEST!'));
     });
 
     test('should handle identity transformation', () {
       final rule = Transform<String>((value) => value);
-      final context = ValidationContext<String>(value: 'test');
+      String? value = 'test';
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, equals('test'));
+      expect(value, equals('test'));
     });
 
     test('should trim strings', () {
       final rule = Transform<String>((value) => value?.trim());
-      final context = ValidationContext<String>(value: '  test  ');
+      String? value = '  test  ';
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, equals('test'));
+      expect(value, equals('test'));
     });
 
     test('should parse strings to numbers', () {
@@ -119,21 +126,23 @@ void main() {
         }
         return value;
       });
-      final context = ValidationContext<dynamic>(value: '42');
+      dynamic value = '42';
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, equals(42));
-      expect(context.value, isA<int>());
+      expect(value, equals(42));
+      expect(value, isA<int>());
     });
 
     test('should convert to lowercase', () {
       final rule = Transform<String>((value) => value?.toLowerCase());
-      final context = ValidationContext<String>(value: 'TEST');
+      String? value = 'TEST';
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, equals('test'));
+      expect(value, equals('test'));
     });
 
     test('should work with complex transformations', () {
@@ -141,11 +150,12 @@ void main() {
         if (value == null) return null;
         return value.split('').reversed.join();
       });
-      final context = ValidationContext<String>(value: 'hello');
+      String? value = 'hello';
+      final state = ValidationState();
 
-      rule.apply(context);
+      value = rule.apply(value, state);
 
-      expect(context.value, equals('olleh'));
+      expect(value, equals('olleh'));
     });
   });
 }

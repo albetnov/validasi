@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
 import 'package:validasi/src/validasi.dart';
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/state.dart';
 
 void main() {
   group('Validasi', () {
@@ -147,8 +147,9 @@ void main() {
 
 class _TestRule<T> extends Rule<T> {
   @override
-  void apply(ValidationContext<T> context) {
+  T? apply(T? value, ValidationState state) {
     // No-op test rule
+    return value;
   }
 }
 

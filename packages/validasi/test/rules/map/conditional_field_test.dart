@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:validasi/src/engine/context.dart';
+import 'package:validasi/src/engine/state.dart';
 import 'package:validasi/src/rules/map/conditional_field.dart';
 
 void main() {
@@ -77,13 +77,11 @@ void main() {
         'age',
         (ctx, value) => null,
       );
-      final context = ValidationContext<Map<String, int>>(
-        value: {'age': 30},
-      );
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply({'age': 30}, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should fail when callback returns error message', () {
@@ -91,15 +89,13 @@ void main() {
         'age',
         (ctx, value) => 'Too young',
       );
-      final context = ValidationContext<Map<String, int>>(
-        value: {'age': 15},
-      );
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply({'age': 15}, state);
 
-      expect(context.errors.length, equals(1));
-      expect(context.errors.first.rule, equals('conditionalField'));
-      expect(context.errors.first.message, equals('Too young'));
+      expect(state.errors.length, equals(1));
+      expect(state.errors.first.rule, equals('conditionalField'));
+      expect(state.errors.first.message, equals('Too young'));
     });
 
     test('should provide field value to callback', () {
@@ -111,11 +107,9 @@ void main() {
           return null;
         },
       );
-      final context = ValidationContext<Map<String, int>>(
-        value: {'age': 30},
-      );
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply({'age': 30}, state);
 
       expect(receivedValue, equals(30));
     });
@@ -131,17 +125,13 @@ void main() {
         },
       );
 
-      final validContext = ValidationContext<Map<String, int>>(
-        value: {'age': 20, 'verified': 1},
-      );
-      rule.apply(validContext);
-      expect(validContext.errors, isEmpty);
+      var state = ValidationState();
+      rule.apply({'age': 20, 'verified': 1}, state);
+      expect(state.errors, isEmpty);
 
-      final invalidContext = ValidationContext<Map<String, int>>(
-        value: {'age': 15, 'verified': 1},
-      );
-      rule.apply(invalidContext);
-      expect(invalidContext.errors.length, equals(1));
+      state = ValidationState();
+      rule.apply({'age': 15, 'verified': 1}, state);
+      expect(state.errors.length, equals(1));
     });
 
     test('should work with missing field', () {
@@ -149,14 +139,12 @@ void main() {
         'age',
         (ctx, value) => value == null ? 'Age is required' : null,
       );
-      final context = ValidationContext<Map<String, int>>(
-        value: {'other': 0},
-      );
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply({'other': 0}, state);
 
-      expect(context.errors.length, equals(1));
-      expect(context.errors.first.message, equals('Age is required'));
+      expect(state.errors.length, equals(1));
+      expect(state.errors.first.message, equals('Age is required'));
     });
 
     test('should work with complex validation logic', () {
@@ -173,29 +161,21 @@ void main() {
         },
       );
 
-      final validContext1 = ValidationContext<Map<String, dynamic>>(
-        value: {'requireEmail': false},
-      );
-      rule.apply(validContext1);
-      expect(validContext1.errors, isEmpty);
+      var state = ValidationState();
+      rule.apply({'requireEmail': false}, state);
+      expect(state.errors, isEmpty);
 
-      final validContext2 = ValidationContext<Map<String, dynamic>>(
-        value: {'requireEmail': true, 'email': 'test@example.com'},
-      );
-      rule.apply(validContext2);
-      expect(validContext2.errors, isEmpty);
+      state = ValidationState();
+      rule.apply({'requireEmail': true, 'email': 'test@example.com'}, state);
+      expect(state.errors, isEmpty);
 
-      final invalidContext1 = ValidationContext<Map<String, dynamic>>(
-        value: {'requireEmail': true},
-      );
-      rule.apply(invalidContext1);
-      expect(invalidContext1.errors.length, equals(1));
+      state = ValidationState();
+      rule.apply({'requireEmail': true}, state);
+      expect(state.errors.length, equals(1));
 
-      final invalidContext2 = ValidationContext<Map<String, dynamic>>(
-        value: {'requireEmail': true, 'email': 'invalid'},
-      );
-      rule.apply(invalidContext2);
-      expect(invalidContext2.errors.length, equals(1));
+      state = ValidationState();
+      rule.apply({'requireEmail': true, 'email': 'invalid'}, state);
+      expect(state.errors.length, equals(1));
     });
 
     test('should work with type checking in callback', () {
@@ -209,26 +189,19 @@ void main() {
         },
       );
 
-      final validContext = ValidationContext<Map<String, dynamic>>(
-        value: {'value': 10},
-      );
-      rule.apply(validContext);
-      expect(validContext.errors, isEmpty);
+      var state = ValidationState();
+      rule.apply({'value': 10}, state);
+      expect(state.errors, isEmpty);
 
-      final invalidContext1 = ValidationContext<Map<String, dynamic>>(
-        value: {'value': -5},
-      );
-      rule.apply(invalidContext1);
-      expect(invalidContext1.errors.length, equals(1));
-      expect(invalidContext1.errors.first.message, equals('Must be positive'));
+      state = ValidationState();
+      rule.apply({'value': -5}, state);
+      expect(state.errors.length, equals(1));
+      expect(state.errors.first.message, equals('Must be positive'));
 
-      final invalidContext2 = ValidationContext<Map<String, dynamic>>(
-        value: {'value': 'string'},
-      );
-      rule.apply(invalidContext2);
-      expect(invalidContext2.errors.length, equals(1));
-      expect(
-          invalidContext2.errors.first.message, equals('Must be an integer'));
+      state = ValidationState();
+      rule.apply({'value': 'string'}, state);
+      expect(state.errors.length, equals(1));
+      expect(state.errors.first.message, equals('Must be an integer'));
     });
 
     test('should work with dependent fields', () {
@@ -243,17 +216,13 @@ void main() {
         },
       );
 
-      final validContext = ValidationContext<Map<String, int>>(
-        value: {'minValue': 10, 'maxValue': 20},
-      );
-      rule.apply(validContext);
-      expect(validContext.errors, isEmpty);
+      var state = ValidationState();
+      rule.apply({'minValue': 10, 'maxValue': 20}, state);
+      expect(state.errors, isEmpty);
 
-      final invalidContext = ValidationContext<Map<String, int>>(
-        value: {'minValue': 20, 'maxValue': 10},
-      );
-      rule.apply(invalidContext);
-      expect(invalidContext.errors.length, equals(1));
+      state = ValidationState();
+      rule.apply({'minValue': 20, 'maxValue': 10}, state);
+      expect(state.errors.length, equals(1));
     });
 
     test('should work with isEmpty check', () {
@@ -267,17 +236,13 @@ void main() {
         },
       );
 
-      final validContext = ValidationContext<Map<String, String>>(
-        value: {'name': 'John'},
-      );
-      rule.apply(validContext);
-      expect(validContext.errors, isEmpty);
+      var state = ValidationState();
+      rule.apply({'name': 'John'}, state);
+      expect(state.errors, isEmpty);
 
-      final invalidContext = ValidationContext<Map<String, String>>(
-        value: {},
-      );
-      rule.apply(invalidContext);
-      expect(invalidContext.errors.length, equals(1));
+      state = ValidationState();
+      rule.apply(<String, String>{}, state);
+      expect(state.errors.length, equals(1));
     });
   });
 }
