@@ -4,24 +4,24 @@ import 'package:validasi/rules.dart';
 
 class NestedMapBenchmark extends BenchmarkBase {
   final schema = Validasi.map<dynamic>([
-    MapRules.hasFields<dynamic>({
-      'profile': Validasi.map<dynamic>([
-        MapRules.hasFields<dynamic>({
-          'name': Validasi.string([
+    MapRules.hasFields({
+      'profile': FieldRules<Map<String, dynamic>>([
+        MapRules.hasFields({
+          'name': FieldRules<String>([
             StringRules.minLength(2),
           ]),
-          'age': Validasi.number<int>([
+          'age': FieldRules<int>([
             NumberRules.moreThanEqual(0),
           ]),
-          'address': Validasi.map<dynamic>([
-            MapRules.hasFields<dynamic>({
-              'street': Validasi.string([
+          'address': FieldRules<Map<String, dynamic>>([
+            MapRules.hasFields({
+              'street': FieldRules<String>([
                 StringRules.minLength(3),
               ]),
-              'city': Validasi.string([
+              'city': FieldRules<String>([
                 StringRules.minLength(2),
               ]),
-              'zip': Validasi.string([
+              'zip': FieldRules<String>([
                 StringRules.minLength(5),
               ]),
             }),

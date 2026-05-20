@@ -4,12 +4,12 @@ import 'package:validasi/rules.dart';
 
 class MapBenchmark extends BenchmarkBase {
   final schema = Validasi.map<dynamic>([
-    MapRules.hasFields<dynamic>({
-      'name': Validasi.string([
+    MapRules.hasFields({
+      'name': FieldRules<String>([
         StringRules.minLength(2),
         StringRules.maxLength(50),
       ]),
-      'age': Validasi.number<int>([
+      'age': FieldRules<int>([
         NumberRules.moreThanEqual(0),
         NumberRules.lessThan(150),
       ]),
