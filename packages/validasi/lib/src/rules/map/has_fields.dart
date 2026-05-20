@@ -1,12 +1,12 @@
-import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/engine/engine.dart';
+import 'package:validasi/src/rules/map/field_rules.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
-class HasFields<T> extends Rule<Map<String, T>> {
+class HasFields extends Rule<Map<String, dynamic>> {
   const HasFields(this.fields);
 
-  final Map<String, ValidasiEngine<T, dynamic>> fields;
+  final Map<String, FieldRules<Object?>> fields;
 
   @override
   RuleMetadata get metadata => RuleMetadata(
@@ -28,19 +28,17 @@ class HasFields<T> extends Rule<Map<String, T>> {
   }
 
   @override
-  void apply(ValidationContext<Map<String, T>> context) {
-    for (var field in fields.entries) {
-      final key = field.key;
-      final engine = field.value;
+  Map<String, dynamic>? apply(
+      Map<String, dynamic>? value, ValidationState state) {
+    if (value == null) return null;
 
-      final value = context.requireValue[key];
-      final result = engine.validate(value);
-
-      if (!result.isValid) {
-        for (final error in result.errors) {
-          context.addError(error.withPrefix(key));
-        }
+    for (final entry in fields.entries) {
+      final before = state.errors.length;
+      applyRules(value[entry.key], entry.value.rules, state);
+      for (var j = before; j < state.errors.length; j++) {
+        state.errors[j] = state.errors[j].withPrefix(entry.key);
       }
     }
+    return value;
   }
 }

@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/state.dart';
 import 'package:validasi/src/transformer/validasi_transformation.dart';
 
 void main() {
@@ -219,25 +219,28 @@ class _TestRule<T> extends Rule<T> {
   bool get runOnNull => runOnNullValue;
 
   @override
-  void apply(ValidationContext<T> context) {
+  T? apply(T? value, ValidationState state) {
     if (!shouldPass) {
-      context.addError(ValidationError(
+      state.errors.add(ValidationError(
         rule: ruleName,
         message: 'Test rule failed',
       ));
     }
 
     if (shouldStop) {
-      context.stop();
+      state.isStopped = true;
     }
+
+    return value;
   }
 }
 
 class _ModifyRule<T> extends Rule<T> {
   @override
-  void apply(ValidationContext<T> context) {
-    if (context.value is String) {
-      context.setValue((context.value as String).toUpperCase() as T);
+  T? apply(T? value, ValidationState state) {
+    if (value is String) {
+      return (value).toUpperCase() as T;
     }
+    return value;
   }
 }

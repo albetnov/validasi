@@ -6,14 +6,14 @@ While Validasi provides a comprehensive set of built-in validation rules, you ma
 
 Before diving into custom rules, it's important to understand the difference:
 
-- **InlineRule**: A built-in rule that accepts a callback function. Quick and convenient for simple validations, but has limited flexibility (no access to context methods like `stop()` or `setValue()`).
+- **InlineRule**: A built-in rule that accepts a callback function. Quick and convenient for simple validations, but has limited flexibility (no access to `ValidationState` mutation like stopping the chain).
 
-- **Custom Rule**: A class extending `Rule<T>`. Provides full control over validation logic, error handling, context manipulation, and can be reused across your application.
+- **Custom Rule**: A class extending `Rule<T>`. Provides full control over validation logic, error handling, state manipulation, and can be reused across your application.
 
 Use `InlineRule` for quick, one-off validations. Create a custom rule when you need:
 - Reusable validation logic
 - Complex validation with multiple conditions
-- Context manipulation (transforming values, stopping validation)
+- State manipulation (transforming values, stopping validation)
 - Custom error details and structured error messages
 
 ## Basic Structure
@@ -21,24 +21,24 @@ Use `InlineRule` for quick, one-off validations. Create a custom rule when you n
 Every custom rule extends `Rule<T>` and implements the `apply` method:
 
 ```dart
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class MyCustomRule extends Rule<String> {
   const MyCustomRule({super.message});
 
   @override
-  void apply(ValidationContext<String> context) {
-    // Your validation logic here
-    if (context.requireValue.isEmpty) {
-      context.addError(
+  String? apply(String? value, ValidationState state) {
+    if (value == null || value.isEmpty) {
+      state.errors.add(
         ValidationError(
           rule: 'MyCustomRule',
           message: message ?? 'Value cannot be empty',
         ),
       );
     }
+    return value;
   }
 }
 ```
@@ -55,16 +55,17 @@ class EmailRule extends Rule<String> {
   bool get runOnNull => false; // Skip validation if value is null
 
   @override
-  void apply(ValidationContext<String> context) {
-    final email = context.requireValue;
-    if (!email.contains('@')) {
-      context.addError(
+  String? apply(String? value, ValidationState state) {
+    if (value == null) return null;
+    if (!value.contains('@')) {
+      state.errors.add(
         ValidationError(
           rule: 'Email',
           message: message ?? 'Invalid email format',
         ),
       );
     }
+    return value;
   }
 }
 ```
@@ -86,10 +87,11 @@ class DefaultValue<T> extends Rule<T> {
   bool get runOnNull => true; // Must run on null to set default
 
   @override
-  void apply(ValidationContext<T> context) {
-    if (context.value == null) {
-      context.setValue(defaultValue);
+  T? apply(T? value, ValidationState state) {
+    if (value == null) {
+      return defaultValue;
     }
+    return value;
   }
 }
 ```
@@ -105,9 +107,10 @@ class MinAge extends Rule<int> {
   final int minAge;
 
   @override
-  void apply(ValidationContext<int> context) {
-    if (context.requireValue < minAge) {
-      context.addError(
+  int? apply(int? value, ValidationState state) {
+    if (value == null) return null;
+    if (value < minAge) {
+      state.errors.add(
         ValidationError(
           rule: 'MinAge',
           // Use custom message if provided, otherwise use default
@@ -116,6 +119,7 @@ class MinAge extends Rule<int> {
         ),
       );
     }
+    return value;
   }
 }
 
@@ -142,10 +146,10 @@ class RangeRule extends Rule<int> {
   final int max;
 
   @override
-  void apply(ValidationContext<int> context) {
-    final value = context.requireValue;
+  int? apply(int? value, ValidationState state) {
+    if (value == null) return null;
     if (value < min || value > max) {
-      context.addError(
+      state.errors.add(
         ValidationError(
           rule: 'Range',
           message: message ?? 'Value must be between $min and $max',
@@ -157,28 +161,19 @@ class RangeRule extends Rule<int> {
         ),
       );
     }
+    return value;
   }
 }
 ```
 
-## Working with ValidationContext
+## Working with ValidationState
 
-The `ValidationContext<T>` provides several methods and properties for interacting with the validation process:
-
-### Accessing the Value
-
-```dart
-// Get the current value (nullable)
-T? value = context.value;
-
-// Get the value (throws if null - use when runOnNull = false)
-T value = context.requireValue;
-```
+The `ValidationState` provides properties for interacting with the validation process:
 
 ### Adding Errors
 
 ```dart
-context.addError(
+state.errors.add(
   ValidationError(
     rule: 'RuleName',
     message: 'Error message',
@@ -189,16 +184,15 @@ context.addError(
 
 ### Transforming Values
 
-Custom rules can modify the value during validation:
+Custom rules can modify the value during validation by returning a new value:
 
 ```dart
 class TrimString extends Rule<String> {
   const TrimString({super.message});
 
   @override
-  void apply(ValidationContext<String> context) {
-    final trimmed = context.requireValue.trim();
-    context.setValue(trimmed);
+  String? apply(String? value, ValidationState state) {
+    return value?.trim();
   }
 }
 ```
@@ -212,16 +206,20 @@ class StopIfEmpty extends Rule<String> {
   const StopIfEmpty({super.message});
 
   @override
-  void apply(ValidationContext<String> context) {
-    if (context.requireValue.isEmpty) {
-      context.addError(
+  bool get runOnNull => true;
+
+  @override
+  String? apply(String? value, ValidationState state) {
+    if (value == null || value.isEmpty) {
+      state.errors.add(
         ValidationError(
           rule: 'StopIfEmpty',
           message: message ?? 'Value is required',
         ),
       );
-      context.stop(); // Prevents further rules from executing
+      state.isStopped = true; // Prevents further rules from executing
     }
+    return value;
   }
 }
 ```
@@ -231,9 +229,9 @@ class StopIfEmpty extends Rule<String> {
 Here's a comprehensive example demonstrating all concepts:
 
 ```dart
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class UrlRule extends Rule<String> {
   const UrlRule({
@@ -249,8 +247,9 @@ class UrlRule extends Rule<String> {
   bool get runOnNull => false; // Don't validate null values
 
   @override
-  void apply(ValidationContext<String> context) {
-    final url = context.requireValue;
+  String? apply(String? value, ValidationState state) {
+    final url = value;
+    if (url == null) return null;
 
     // Check if URL has valid scheme
     bool hasValidScheme = false;
@@ -262,7 +261,7 @@ class UrlRule extends Rule<String> {
     }
 
     if (!hasValidScheme) {
-      context.addError(
+      state.errors.add(
         ValidationError(
           rule: 'Url',
           message: message ?? 'URL must start with ${schemes.join(" or ")}://',
@@ -272,12 +271,12 @@ class UrlRule extends Rule<String> {
           },
         ),
       );
-      return;
+      return value;
     }
 
     // Check for TLD if required
     if (requireTld && !url.contains('.')) {
-      context.addError(
+      state.errors.add(
         ValidationError(
           rule: 'Url',
           message: message ?? 'URL must contain a valid domain with TLD',
@@ -285,6 +284,7 @@ class UrlRule extends Rule<String> {
         ),
       );
     }
+    return value;
   }
 }
 
@@ -316,14 +316,14 @@ class Contains extends Rule<String> {
   final bool caseSensitive;
 
   @override
-  void apply(ValidationContext<String> context) {
-    final value = context.requireValue;
+  String? apply(String? value, ValidationState state) {
+    if (value == null) return null;
     final contains = caseSensitive
         ? value.contains(substring)
         : value.toLowerCase().contains(substring.toLowerCase());
 
     if (!contains) {
-      context.addError(
+      state.errors.add(
         ValidationError(
           rule: 'Contains',
           message: message ?? 'Value must contain "$substring"',
@@ -334,6 +334,7 @@ class Contains extends Rule<String> {
         ),
       );
     }
+    return value;
   }
 }
 ```
@@ -349,9 +350,9 @@ class NotEqual<T> extends Rule<T> {
   final T forbidden;
 
   @override
-  void apply(ValidationContext<T> context) {
-    if (context.requireValue == forbidden) {
-      context.addError(
+  T? apply(T? value, ValidationState state) {
+    if (value == forbidden) {
+      state.errors.add(
         ValidationError(
           rule: 'NotEqual',
           message: message ?? 'Value must not equal $forbidden',
@@ -359,6 +360,7 @@ class NotEqual<T> extends Rule<T> {
         ),
       );
     }
+    return value;
   }
 }
 
@@ -376,8 +378,9 @@ class PasswordStrength extends Rule<String> {
   const PasswordStrength({super.message});
 
   @override
-  void apply(ValidationContext<String> context) {
-    final password = context.requireValue;
+  String? apply(String? value, ValidationState state) {
+    if (value == null) return null;
+    final password = value;
     final errors = <String>[];
 
     if (password.length < 8) {
@@ -394,7 +397,7 @@ class PasswordStrength extends Rule<String> {
     }
 
     if (errors.isNotEmpty) {
-      context.addError(
+      state.errors.add(
         ValidationError(
           rule: 'PasswordStrength',
           message: message ?? 'Password must contain ${errors.join(", ")}',
@@ -402,6 +405,7 @@ class PasswordStrength extends Rule<String> {
         ),
       );
     }
+    return value;
   }
 }
 ```
@@ -446,10 +450,11 @@ Creating custom rules in Validasi is straightforward:
 
 1. Extend `Rule<T>` with your specific type
 2. Override `runOnNull` if you need to handle null values
-3. Implement `apply(ValidationContext<T> context)` with your validation logic
-4. Use `context.addError()` to report validation failures
+3. Implement `apply(T? value, ValidationState state)` with your validation logic
+4. Use `state.errors.add()` to report validation failures
 5. Support message customization via the `message` parameter
-6. Use context methods (`setValue`, `stop`) for advanced scenarios
-7. Add error details for better debugging and programmatic handling
+6. Return the (potentially modified) value from `apply`
+7. Use `state.isStopped = true` for stopping validation chain
+8. Add error details for better debugging and programmatic handling
 
 Custom rules give you full control while maintaining the composability and type safety that makes Validasi powerful.

@@ -61,14 +61,14 @@ import 'package:validasi/rules.dart';
 // Define your validation schema
 final userSchema = Validasi.map<dynamic>([
   MapRules.hasFields({
-    'name': Validasi.string([
+    'name': FieldRules<String>([
       StringRules.minLength(2),
       StringRules.maxLength(50),
     ]),
-    'email': Validasi.string([
+    'email': FieldRules<String>([
       StringRules.email(),
     ]),
-    'age': Validasi.number<int>([
+    'age': FieldRules<int>([
       NumberRules.moreThanEqual(18),
       NumberRules.lessThan(100),
     ]),

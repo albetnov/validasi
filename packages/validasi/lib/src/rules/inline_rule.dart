@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class InlineRule<T> extends Rule<T> {
   const InlineRule(
@@ -27,12 +27,12 @@ class InlineRule<T> extends Rule<T> {
   bool get runOnNull => true;
 
   @override
-  void apply(ValidationContext<T> context) {
+  T? apply(T? value, ValidationState state) {
     try {
-      final result = validator(context.value);
+      final result = validator(value);
 
       if (!result) {
-        context.addError(
+        state.errors.add(
           ValidationError(
             rule: name,
             message: message ?? 'Validation failed',
@@ -40,12 +40,13 @@ class InlineRule<T> extends Rule<T> {
         );
       }
     } catch (e) {
-      context.addError(
+      state.errors.add(
         ValidationError(
           rule: name,
           message: message ?? e.toString(),
         ),
       );
     }
+    return value;
   }
 }

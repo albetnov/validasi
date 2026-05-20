@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:validasi/src/engine/context.dart';
+import 'package:validasi/src/engine/state.dart';
 import 'package:validasi/src/rules/required.dart';
 
 void main() {
@@ -12,86 +12,86 @@ void main() {
 
     test('should pass for non-null value', () {
       final rule = Required<String>();
-      final context = ValidationContext<String>(value: 'test');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('test', state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should fail for null value', () {
       final rule = Required<String>();
-      final context = ValidationContext<String>(value: null);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(null, state);
 
-      expect(context.errors.length, equals(1));
-      expect(context.errors.first.rule, equals('Required'));
-      expect(context.errors.first.message, equals('Field is required'));
+      expect(state.errors.length, equals(1));
+      expect(state.errors.first.rule, equals('Required'));
+      expect(state.errors.first.message, equals('Field is required'));
     });
 
     test('should use custom message', () {
       final rule = Required<String>(message: 'Custom required message');
-      final context = ValidationContext<String>(value: null);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(null, state);
 
-      expect(context.errors.length, equals(1));
-      expect(context.errors.first.message, equals('Custom required message'));
+      expect(state.errors.length, equals(1));
+      expect(state.errors.first.message, equals('Custom required message'));
     });
 
     test('should work with different types', () {
-      final intRule = Required<int>();
-      final intContext = ValidationContext<int>(value: 42);
+      final rule = Required<int>();
+      final state = ValidationState();
 
-      intRule.apply(intContext);
+      rule.apply(42, state);
 
-      expect(intContext.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should fail for null with any type', () {
-      final listRule = Required<List<int>>();
-      final listContext = ValidationContext<List<int>>(value: null);
+      final rule = Required<List<int>>();
+      final state = ValidationState();
 
-      listRule.apply(listContext);
+      rule.apply(null, state);
 
-      expect(listContext.errors.length, equals(1));
+      expect(state.errors.length, equals(1));
     });
 
     test('should pass for empty string', () {
       final rule = Required<String>();
-      final context = ValidationContext<String>(value: '');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('', state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should pass for empty list', () {
       final rule = Required<List<int>>();
-      final context = ValidationContext<List<int>>(value: []);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(<int>[], state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should pass for zero number', () {
       final rule = Required<int>();
-      final context = ValidationContext<int>(value: 0);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(0, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should pass for false boolean', () {
       final rule = Required<bool>();
-      final context = ValidationContext<bool>(value: false);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(false, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
   });
 }

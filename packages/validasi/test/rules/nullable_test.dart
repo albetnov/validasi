@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:validasi/src/engine/context.dart';
+import 'package:validasi/src/engine/state.dart';
 import 'package:validasi/src/rules/nullable.dart';
 
 void main() {
@@ -12,94 +12,94 @@ void main() {
 
     test('should stop context when value is null', () {
       final rule = Nullable<String>();
-      final context = ValidationContext<String>(value: null);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(null, state);
 
-      expect(context.isStopped, isTrue);
-      expect(context.errors, isEmpty);
+      expect(state.isStopped, isTrue);
+      expect(state.errors, isEmpty);
     });
 
     test('should not stop context when value is non-null', () {
       final rule = Nullable<String>();
-      final context = ValidationContext<String>(value: 'test');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('test', state);
 
-      expect(context.isStopped, isFalse);
-      expect(context.errors, isEmpty);
+      expect(state.isStopped, isFalse);
+      expect(state.errors, isEmpty);
     });
 
     test('should not add errors for null value', () {
       final rule = Nullable<String>();
-      final context = ValidationContext<String>(value: null);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(null, state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should not add errors for non-null value', () {
       final rule = Nullable<String>();
-      final context = ValidationContext<String>(value: 'test');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('test', state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should work with different types', () {
-      final intRule = Nullable<int>();
-      final intContext = ValidationContext<int>(value: null);
+      final rule = Nullable<int>();
+      final state = ValidationState();
 
-      intRule.apply(intContext);
+      rule.apply(null, state);
 
-      expect(intContext.isStopped, isTrue);
+      expect(state.isStopped, isTrue);
     });
 
     test('should work with complex types', () {
-      final listRule = Nullable<List<int>>();
-      final listContext = ValidationContext<List<int>>(value: null);
+      final rule = Nullable<List<int>>();
+      final state = ValidationState();
 
-      listRule.apply(listContext);
+      rule.apply(null, state);
 
-      expect(listContext.isStopped, isTrue);
+      expect(state.isStopped, isTrue);
     });
 
     test('should not stop for empty string', () {
       final rule = Nullable<String>();
-      final context = ValidationContext<String>(value: '');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('', state);
 
-      expect(context.isStopped, isFalse);
+      expect(state.isStopped, isFalse);
     });
 
     test('should not stop for empty list', () {
       final rule = Nullable<List<int>>();
-      final context = ValidationContext<List<int>>(value: []);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(<int>[], state);
 
-      expect(context.isStopped, isFalse);
+      expect(state.isStopped, isFalse);
     });
 
     test('should not stop for zero', () {
       final rule = Nullable<int>();
-      final context = ValidationContext<int>(value: 0);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(0, state);
 
-      expect(context.isStopped, isFalse);
+      expect(state.isStopped, isFalse);
     });
 
     test('should not stop for false', () {
       final rule = Nullable<bool>();
-      final context = ValidationContext<bool>(value: false);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(false, state);
 
-      expect(context.isStopped, isFalse);
+      expect(state.isStopped, isFalse);
     });
   });
 }

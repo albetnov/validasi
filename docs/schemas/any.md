@@ -63,23 +63,25 @@ print(scoreSchema.validate(120).isValid); // false
 For reusable or more complex logic, create a custom rule class (documented separately) and use it with `Validasi.any<T>()`.
 
 ```dart
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class AdultAgeRule extends Rule<int> {
 	const AdultAgeRule({super.message});
 
 	@override
-	void apply(ValidationContext<int> context) {
-		if (context.requireValue < 18) {
-			context.addError(
+	int? apply(int? value, ValidationState state) {
+		if (value == null) return null;
+		if (value < 18) {
+			state.errors.add(
 				ValidationError(
 					rule: 'adult_age',
 					message: message ?? 'Age must be 18 or older',
 				),
 			);
 		}
+		return value;
 	}
 }
 

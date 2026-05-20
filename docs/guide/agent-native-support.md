@@ -24,20 +24,17 @@ Tool-calling systems work best with predictable payloads. Agent-native support h
 import 'dart:convert';
 import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
-import 'package:validasi/engine.dart';
 
-final userFields = <String, ValidasiEngine<dynamic, dynamic>>{
-  'name': Validasi.string([
+final userSchema = Validasi.map<dynamic>([
+  MapRules.hasFields({
+    'name': FieldRules<String>([
       StringRules.minLength(2),
       StringRules.maxLength(50),
     ]),
-  'age': Validasi.number<int>([
+    'age': FieldRules<int>([
       NumberRules.moreThanEqual(18),
     ]),
-};
-
-final userSchema = Validasi.map<dynamic>([
-  MapRules.hasFields<dynamic>(userFields),
+  }),
 ]);
 
 final descriptor = userSchema.introspect().toJson();
@@ -48,7 +45,7 @@ The descriptor includes:
 - schema id and value type
 - preprocess flag
 - ordered rule metadata
-- nested schema metadata for composition rules such as `ForEach` and `HasFields`
+- field names from `HasFields` via parameters
 
 ## 2) Return deterministic tool payloads
 

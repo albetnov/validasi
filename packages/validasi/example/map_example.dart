@@ -4,22 +4,26 @@ import 'package:validasi/rules.dart';
 void main(List<String> args) {
   final schema = Validasi.map<dynamic>([
     MapRules.hasFields({
-      'name': Validasi.string(
-          [StringRules.minLength(1, message: 'Name cannot be empty')]),
-      'age': Validasi.string(
-          [StringRules.minLength(1, message: 'Age cannot be empty')]),
-      'is_order': Validasi.any<bool>(),
-      'address': Validasi.map([
+      'name': FieldRules<String>([
+        StringRules.minLength(1, message: 'Name cannot be empty'),
+      ]),
+      'age': FieldRules<int>([
+        NumberRules.moreThanEqual(1, message: 'Age cannot be empty'),
+      ]),
+      'is_order': FieldRules<bool>([]),
+      'address': FieldRules<Map<String, dynamic>>([
         MapRules.hasFields({
-          'street': Validasi.string(
-              [StringRules.minLength(1, message: 'Street cannot be empty')]),
-          'city': Validasi.string(
-              [StringRules.minLength(1, message: 'City cannot be empty')]),
-          'zip': Validasi.string([
-            StringRules.minLength(5,
-                message: 'Zip code must be at least 5 digits')
+          'street': FieldRules<String>([
+            StringRules.minLength(1, message: 'Street cannot be empty'),
           ]),
-        })
+          'city': FieldRules<String>([
+            StringRules.minLength(1, message: 'City cannot be empty'),
+          ]),
+          'zip': FieldRules<String>([
+            StringRules.minLength(5,
+                message: 'Zip code must be at least 5 digits'),
+          ]),
+        }),
       ]),
     }),
     MapRules.conditionalField('address', (context, value) {

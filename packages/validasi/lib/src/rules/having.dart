@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class Having<T> extends Rule<T> {
   const Having(this.validValues, {super.message});
@@ -22,16 +22,15 @@ class Having<T> extends Rule<T> {
   bool get runOnNull => true;
 
   @override
-  void apply(ValidationContext<T> context) {
-    final value = context.value;
-
+  T? apply(T? value, ValidationState state) {
     if (!validValues.contains(value)) {
-      context.addError(
+      state.errors.add(
         ValidationError(
           rule: 'having',
           message: message ?? 'Value must be one of: ${validValues.join(', ')}',
         ),
       );
     }
+    return value;
   }
 }

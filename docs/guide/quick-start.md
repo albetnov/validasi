@@ -22,10 +22,10 @@ print(result.isValid);
 ```dart
 final userSchema = Validasi.map<dynamic>([
   MapRules.hasFields({
-    'name': Validasi.string([
+    'name': FieldRules<String>([
       StringRules.minLength(2),
     ]),
-    'email': Validasi.string([
+    'email': FieldRules<String>([
       StringRules.email(),
     ]),
   }),

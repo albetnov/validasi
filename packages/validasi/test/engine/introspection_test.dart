@@ -20,39 +20,18 @@ void main() {
       expect(descriptor.rules.first.parameters['length'], equals(3));
     });
 
-    test('should include nested schema metadata for composition rules', () {
-      final fields = <String, ValidasiEngine<dynamic, dynamic>>{
-        'name': Validasi.string([
-          StringRules.minLength(2),
-        ]) as ValidasiEngine<dynamic, dynamic>,
-      };
+    test('should include field names in HasFields metadata', () {
       final engine = Validasi.map<dynamic>([
-        MapRules.hasFields<dynamic>(fields),
+        MapRules.hasFields({
+          'name': FieldRules<String>([StringRules.minLength(2)]),
+        }),
       ]);
 
       final descriptor = engine.introspect();
       final metadata = descriptor.rules.single;
-      final nested = metadata.nestedSchemas['name'];
+      final fieldKeys = metadata.parameters['fields'] as List<String>;
 
-      expect(nested, isNotNull);
-      expect(nested!['type'], equals('String'));
-      expect(nested['isReference'], isFalse);
-    });
-
-    test('should sort nested schema keys deterministically', () {
-      final fields = <String, ValidasiEngine<dynamic, dynamic>>{
-        'z': Validasi.string() as ValidasiEngine<dynamic, dynamic>,
-        'a': Validasi.string() as ValidasiEngine<dynamic, dynamic>,
-      };
-      final engine = Validasi.map<dynamic>([
-        MapRules.hasFields<dynamic>(fields),
-      ]);
-
-      final descriptor = engine.introspect();
-      final nestedKeys =
-          descriptor.rules.single.nestedSchemas.keys.toList(growable: false);
-
-      expect(nestedKeys, equals(<String>['a', 'z']));
+      expect(fieldKeys, equals(['name']));
     });
 
     test('should mark callback-driven rules as dynamic', () {
@@ -94,5 +73,5 @@ class _RecursiveRule extends Rule<String> {
       };
 
   @override
-  void apply(ValidationContext<String> context) {}
+  String? apply(String? value, ValidationState state) => value;
 }

@@ -1,7 +1,7 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class MaxLength extends Rule<String> {
   const MaxLength(
@@ -20,17 +20,16 @@ class MaxLength extends Rule<String> {
       );
 
   @override
-  void apply(ValidationContext<String> context) {
-    if (context.requireValue.length <= length) {
-      return;
+  String? apply(String? value, ValidationState state) {
+    if (value != null && value.length > length) {
+      state.errors.add(
+        ValidationError(
+          rule: 'MaxLength',
+          message: message ?? 'Maximum length is $length characters',
+          details: {'length': length.toString()},
+        ),
+      );
     }
-
-    context.addError(
-      ValidationError(
-        rule: 'MaxLength',
-        message: message ?? 'Maximum length is $length characters',
-        details: {'length': length.toString()},
-      ),
-    );
+    return value;
   }
 }

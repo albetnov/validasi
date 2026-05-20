@@ -48,17 +48,11 @@ print(result.isValid);
 
 ### Having
 
-Runs custom validation with access to the validation context.
+Ensures the value is one of a set of allowed values.
 
 ```dart
 final schema = Validasi.string([
-  Having((context, value) {
-    if (value == null || value.isEmpty) {
-      return 'Value is required';
-    }
-
-    return null;
-  }),
+  Having(['draft', 'published', 'archived']),
 ]);
 ```
 

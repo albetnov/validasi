@@ -11,6 +11,7 @@ Use `Validasi.string()` for text values.
 ```dart
 import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
+import 'package:validasi/engine.dart';
 
 final nameSchema = Validasi.string([
   StringRules.minLength(2),
@@ -59,10 +60,10 @@ Use `Validasi.map<T>()` for objects and structured data.
 ```dart
 final userSchema = Validasi.map<dynamic>([
   MapRules.hasFields({
-    'name': Validasi.string([
+    'name': FieldRules<String>([
       StringRules.minLength(1),
     ]),
-    'age': Validasi.number<int>([
+    'age': FieldRules<int>([
       NumberRules.moreThanEqual(18),
     ]),
   }),
@@ -93,23 +94,23 @@ print(termsSchema.validate(true).isValid);
 Schemas are easy to extend because the API lets you reuse existing schemas as building blocks. Define small schemas once, then combine them into larger ones with `MapRules`, `IterableRules`, or additional inline rules.
 
 ```dart
-final emailSchema = Validasi.string([
+final emailRules = <Rule<String>>[
   Transform((value) => value?.trim().toLowerCase()),
   StringRules.minLength(5),
   InlineRule<String>((value) {
     return value.contains('@') ? null : 'Invalid email format';
   }),
-]);
+];
 
-final passwordSchema = Validasi.string([
+final passwordRules = <Rule<String>>[
   StringRules.minLength(8),
-]);
+];
 
 final registrationSchema = Validasi.map<dynamic>([
   MapRules.hasFields({
-    'email': emailSchema,
-    'password': passwordSchema,
-    'confirmPassword': passwordSchema,
+    'email': FieldRules<String>(emailRules),
+    'password': FieldRules<String>(passwordRules),
+    'confirmPassword': FieldRules<String>(passwordRules),
   }),
   InlineRule<Map<String, dynamic>>((value) {
     return value['password'] == value['confirmPassword']
@@ -119,7 +120,7 @@ final registrationSchema = Validasi.map<dynamic>([
 ]);
 ```
 
-This pattern keeps schemas small and reusable while still letting you build stricter validation at the top level.
+This pattern keeps rule lists small and reusable while still letting you build stricter validation at the top level.
 
 ## Typed Input Handling
 

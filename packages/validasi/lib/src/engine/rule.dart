@@ -1,5 +1,5 @@
-import 'package:validasi/src/engine/context.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 abstract class Rule<T> {
   const Rule({this.message});
@@ -16,5 +16,21 @@ abstract class Rule<T> {
 
   Map<String, Object?> get metadataChildren => const <String, Object?>{};
 
-  void apply(ValidationContext<T> context);
+  T? apply(T? value, ValidationState state);
+}
+
+T? applyRules<T>(T? value, List<Rule<T>>? rules, ValidationState state) {
+  for (final rule in rules ?? const []) {
+    if (value == null && !rule.runOnNull) {
+      continue;
+    }
+
+    value = rule.apply(value, state);
+
+    if (state.isStopped) {
+      break;
+    }
+  }
+
+  return value;
 }

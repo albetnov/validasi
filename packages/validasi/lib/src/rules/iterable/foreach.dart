@@ -1,12 +1,11 @@
-import 'package:validasi/src/engine/context.dart';
-import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
+import 'package:validasi/src/engine/state.dart';
 
 class ForEach<I> extends Rule<List<I>> {
-  const ForEach(this.itemSchema);
+  const ForEach(this.itemRules);
 
-  final ValidasiEngine<I, dynamic> itemSchema;
+  final List<Rule<I>> itemRules;
 
   @override
   RuleMetadata get metadata => RuleMetadata(
@@ -17,20 +16,25 @@ class ForEach<I> extends Rule<List<I>> {
       );
 
   @override
-  Map<String, Object?> get metadataChildren =>
-      <String, Object?>{'item': itemSchema};
+  Map<String, Object?> get metadataChildren {
+    final rules = <String, Object?>{};
+    for (var i = 0; i < itemRules.length; i++) {
+      rules['rule_$i'] = itemRules[i];
+    }
+    return rules;
+  }
 
   @override
-  void apply(ValidationContext<List<I>> context) {
-    for (var i = 0; i < context.requireValue.length; i++) {
-      final item = context.value![i];
-      final result = itemSchema.validate(item);
+  List<I>? apply(List<I>? value, ValidationState state) {
+    if (value == null) return null;
 
-      if (!result.isValid) {
-        for (final error in result.errors) {
-          context.addError(error.withPrefix('[$i]'));
-        }
+    for (var i = 0; i < value.length; i++) {
+      final before = state.errors.length;
+      value[i] = applyRules(value[i], itemRules, state) as I;
+      for (var j = before; j < state.errors.length; j++) {
+        state.errors[j] = state.errors[j].withPrefix('[$i]');
       }
     }
+    return value;
   }
 }

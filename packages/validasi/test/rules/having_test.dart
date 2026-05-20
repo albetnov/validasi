@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:validasi/src/engine/context.dart';
+import 'package:validasi/src/engine/state.dart';
 import 'package:validasi/src/rules/having.dart';
 
 void main() {
@@ -12,23 +12,23 @@ void main() {
 
     test('should pass when value is in valid values', () {
       final rule = Having<String>(['apple', 'banana', 'cherry']);
-      final context = ValidationContext<String>(value: 'apple');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('apple', state);
 
-      expect(context.errors, isEmpty);
+      expect(state.errors, isEmpty);
     });
 
     test('should fail when value is not in valid values', () {
       final rule = Having<String>(['apple', 'banana', 'cherry']);
-      final context = ValidationContext<String>(value: 'orange');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('orange', state);
 
-      expect(context.errors.length, equals(1));
-      expect(context.errors.first.rule, equals('having'));
+      expect(state.errors.length, equals(1));
+      expect(state.errors.first.rule, equals('having'));
       expect(
-        context.errors.first.message,
+        state.errors.first.message,
         equals('Value must be one of: apple, banana, cherry'),
       );
     });
@@ -38,74 +38,74 @@ void main() {
         ['apple', 'banana'],
         message: 'Pick from the list',
       );
-      final context = ValidationContext<String>(value: 'orange');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('orange', state);
 
-      expect(context.errors.first.message, equals('Pick from the list'));
+      expect(state.errors.first.message, equals('Pick from the list'));
     });
 
     test('should work with integers', () {
       final rule = Having<int>([1, 2, 3, 4, 5]);
 
-      final validContext = ValidationContext<int>(value: 3);
-      rule.apply(validContext);
-      expect(validContext.errors, isEmpty);
+      var state = ValidationState();
+      rule.apply(3, state);
+      expect(state.errors, isEmpty);
 
-      final invalidContext = ValidationContext<int>(value: 10);
-      rule.apply(invalidContext);
-      expect(invalidContext.errors.length, equals(1));
+      state = ValidationState();
+      rule.apply(10, state);
+      expect(state.errors.length, equals(1));
     });
 
     test('should work with booleans', () {
       final rule = Having<bool>([true]);
 
-      final validContext = ValidationContext<bool>(value: true);
-      rule.apply(validContext);
-      expect(validContext.errors, isEmpty);
+      var state = ValidationState();
+      rule.apply(true, state);
+      expect(state.errors, isEmpty);
 
-      final invalidContext = ValidationContext<bool>(value: false);
-      rule.apply(invalidContext);
-      expect(invalidContext.errors.length, equals(1));
+      state = ValidationState();
+      rule.apply(false, state);
+      expect(state.errors.length, equals(1));
     });
 
     test('should fail for null value', () {
       final rule = Having<String>(['apple', 'banana']);
-      final context = ValidationContext<String>(value: null);
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply(null, state);
 
-      expect(context.errors.length, equals(1));
+      expect(state.errors.length, equals(1));
     });
 
     test('should work with single valid value', () {
       final rule = Having<String>(['only']);
 
-      final validContext = ValidationContext<String>(value: 'only');
-      rule.apply(validContext);
-      expect(validContext.errors, isEmpty);
+      var state = ValidationState();
+      rule.apply('only', state);
+      expect(state.errors, isEmpty);
 
-      final invalidContext = ValidationContext<String>(value: 'other');
-      rule.apply(invalidContext);
-      expect(invalidContext.errors.length, equals(1));
+      state = ValidationState();
+      rule.apply('other', state);
+      expect(state.errors.length, equals(1));
     });
 
     test('should work with empty list of valid values', () {
       final rule = Having<String>([]);
-      final context = ValidationContext<String>(value: 'any');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('any', state);
 
-      expect(context.errors.length, equals(1));
+      expect(state.errors.length, equals(1));
     });
 
     test('should be case sensitive for strings', () {
       final rule = Having<String>(['Apple', 'Banana']);
-      final context = ValidationContext<String>(value: 'apple');
+      final state = ValidationState();
 
-      rule.apply(context);
+      rule.apply('apple', state);
 
-      expect(context.errors.length, equals(1));
+      expect(state.errors.length, equals(1));
     });
 
     test('should work with many options', () {
@@ -113,13 +113,13 @@ void main() {
         List.generate(100, (i) => i),
       );
 
-      final validContext = ValidationContext<int>(value: 50);
-      rule.apply(validContext);
-      expect(validContext.errors, isEmpty);
+      var state = ValidationState();
+      rule.apply(50, state);
+      expect(state.errors, isEmpty);
 
-      final invalidContext = ValidationContext<int>(value: 150);
-      rule.apply(invalidContext);
-      expect(invalidContext.errors.length, equals(1));
+      state = ValidationState();
+      rule.apply(150, state);
+      expect(state.errors.length, equals(1));
     });
   });
 }

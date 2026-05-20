@@ -1,0 +1,13 @@
+name: validasi_benchmark
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  # validasi: 1.0.0-dev.1
+  validasi:
+    path: ../packages/validasi
+
+dev_dependencies:
+  benchmark_harness: ^2.4.0
