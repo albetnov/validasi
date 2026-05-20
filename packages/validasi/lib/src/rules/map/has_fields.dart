@@ -1,12 +1,12 @@
-import 'package:validasi/src/engine/engine.dart';
+import 'package:validasi/src/rules/map/field_rules.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/rule_metadata.dart';
 import 'package:validasi/src/engine/state.dart';
 
-class HasFields<T> extends Rule<Map<String, T>> {
+class HasFields extends Rule<Map<String, dynamic>> {
   const HasFields(this.fields);
 
-  final Map<String, ValidasiEngine<T, dynamic>> fields;
+  final Map<String, FieldRules<Object?>> fields;
 
   @override
   RuleMetadata get metadata => RuleMetadata(
@@ -28,16 +28,15 @@ class HasFields<T> extends Rule<Map<String, T>> {
   }
 
   @override
-  Map<String, T>? apply(Map<String, T>? value, ValidationState state) {
+  Map<String, dynamic>? apply(
+      Map<String, dynamic>? value, ValidationState state) {
     if (value == null) return null;
 
-    for (var field in fields.entries) {
-      final key = field.key;
-      final engine = field.value;
+    for (final entry in fields.entries) {
       final before = state.errors.length;
-      engine.execute(value[key], state);
+      applyRules(value[entry.key], entry.value.rules, state);
       for (var j = before; j < state.errors.length; j++) {
-        state.errors[j] = state.errors[j].withPrefix(key);
+        state.errors[j] = state.errors[j].withPrefix(entry.key);
       }
     }
     return value;

@@ -54,10 +54,10 @@ Validate complex, nested data structures with ease:
 ```dart
 final userSchema = Validasi.map<dynamic>([
   MapRules.hasFields({
-    'profile': Validasi.map<dynamic>([
+    'profile': FieldRules<Map<String, dynamic>>([
       MapRules.hasFields({
-        'name': Validasi.string([StringRules.minLength(2)]),
-        'age': Validasi.number<int>([NumberRules.moreThan(0)]),
+        'name': FieldRules<String>([StringRules.minLength(2)]),
+        'age': FieldRules<int>([NumberRules.moreThan(0)]),
       }),
     ]),
   }),

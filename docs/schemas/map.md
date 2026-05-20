@@ -35,15 +35,15 @@ print(configSchema.validate({'host': 'localhost'}).isValid); // false
 
 ### MapRules.hasFields
 
-Validates specific fields using schema per field.
+Validates specific fields using `FieldRules` per field.
 
 ```dart
 final profileSchema = Validasi.map<dynamic>([
 	MapRules.hasFields({
-		'name': Validasi.string([
+		'name': FieldRules<String>([
 			StringRules.minLength(2),
 		]),
-		'age': Validasi.number<int>([
+		'age': FieldRules<int>([
 			NumberRules.moreThanEqual(18),
 		]),
 	}),
@@ -81,17 +81,17 @@ print(shippingSchema.validate({
 
 ## Nested Map Validation
 
-You can compose nested map schemas by putting `Validasi.map(...)` inside `MapRules.hasFields(...)`.
+You can compose nested map schemas by putting `HasFields` inside `FieldRules<Map<String, dynamic>>(...)`.
 
 ```dart
 final userSchema = Validasi.map<dynamic>([
 	MapRules.hasFields({
-		'profile': Validasi.map<dynamic>([
+		'profile': FieldRules<Map<String, dynamic>>([
 			MapRules.hasFields({
-				'name': Validasi.string([
+				'name': FieldRules<String>([
 					StringRules.minLength(2),
 				]),
-				'age': Validasi.number<int>([
+				'age': FieldRules<int>([
 					NumberRules.moreThanEqual(0),
 				]),
 			}),
@@ -116,7 +116,7 @@ Use map rules together to validate shape, fields, and conditional requirements.
 final orderSchema = Validasi.map<dynamic>([
 	MapRules.hasFieldKeys({'id', 'isDelivery'}),
 	MapRules.hasFields({
-		'id': Validasi.string([
+		'id': FieldRules<String>([
 			StringRules.minLength(1),
 		]),
 	}),

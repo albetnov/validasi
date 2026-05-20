@@ -9,6 +9,7 @@ export 'src/rules/numbers/less_than.dart';
 export 'src/rules/numbers/less_than_equal.dart';
 export 'src/rules/numbers/more_than.dart';
 export 'src/rules/numbers/more_than_equal.dart';
+export 'src/rules/map/field_rules.dart';
 export 'src/rules/map/has_fields.dart';
 export 'src/rules/map/has_field_keys.dart';
 export 'src/rules/map/conditional_field.dart';
@@ -48,9 +49,9 @@ class IterableRules {
 }
 
 class MapRules {
-  static map_rules.HasFields<T> hasFields<T>(
-      Map<String, ValidasiEngine<T, dynamic>> validator) {
-    return map_rules.HasFields(validator);
+  static map_rules.HasFields hasFields(
+      Map<String, map_rules.FieldRules<Object?>> fields) {
+    return map_rules.HasFields(fields);
   }
 
   static map_rules.HasFieldKeys<T> hasFieldKeys<T>(Set<String> keys) {
