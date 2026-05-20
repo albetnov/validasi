@@ -19,7 +19,7 @@ class LessThanEqual<T extends num> extends Rule<T> {
   @override
   T? apply(T? value, ValidationState state) {
     if (value != null && value > max) {
-      state.errors.add(ValidationError(
+      state.addError(ValidationError(
         rule: 'lessThanEqual',
         message: message ?? 'value must be less than or equal to $max',
       ));

@@ -35,7 +35,7 @@ class ValidasiEngine<T, TInput> {
     if (preprocess != null) {
       final result = preprocess!.tryTransform(processedValue);
       if (!result.isValid) {
-        state.errors.add(ValidationError(
+        state.addError(ValidationError(
           rule: 'Preprocess',
           message: 'Failed to preprocess value',
           details: {
@@ -49,7 +49,7 @@ class ValidasiEngine<T, TInput> {
     }
 
     if (processedValue is! T?) {
-      state.errors.add(ValidationError(
+      state.addError(ValidationError(
         rule: 'TypeCheck',
         message: 'Expected type $T, got ${processedValue.runtimeType}',
         details: {'value': processedValue},
@@ -68,7 +68,7 @@ class ValidasiEngine<T, TInput> {
     final state = ValidationState();
     final finalValue = execute(value, state);
     return ValidasiResult<T>(
-      isValid: state.errors.isEmpty,
+      isValid: state.isValid,
       data: finalValue,
       errors: state.errors,
     );

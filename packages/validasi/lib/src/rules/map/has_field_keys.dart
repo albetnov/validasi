@@ -24,7 +24,7 @@ class HasFieldKeys<T> extends Rule<Map<String, T>> {
       final missingKeys = keys.where((key) => !value.containsKey(key)).toList();
 
       if (missingKeys.isNotEmpty) {
-        state.errors.add(ValidationError(
+        state.addError(ValidationError(
           rule: 'hasFieldKeys',
           message: 'Missing required fields: ${missingKeys.join(', ')}',
         ));

@@ -19,7 +19,7 @@ class Required<T> extends Rule<T> {
   @override
   T? apply(T? value, ValidationState state) {
     if (value == null) {
-      state.errors.add(ValidationError(
+      state.addError(ValidationError(
         rule: 'Required',
         message: message ?? 'Field is required',
       ));
