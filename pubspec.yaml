@@ -9,6 +9,7 @@ environment:
 workspace:
   - packages/validasi
   - packages/validasi_mcp
+  - packages/validasi_gen
 
 dev_dependencies:
   melos: ^7.5.1

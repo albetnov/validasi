@@ -2,6 +2,8 @@ import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/rule.dart';
 
 class Validasi {
+  const Validasi();
+
   static ValidasiEngine<String, String> string([List<Rule<String>>? rules]) =>
       ValidasiEngine(rules: rules);
 
