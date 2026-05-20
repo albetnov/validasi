@@ -21,8 +21,7 @@ class HasFieldKeys<T> extends Rule<Map<String, T>> {
   @override
   Map<String, T>? apply(Map<String, T>? value, ValidationState state) {
     if (value != null) {
-      final missingKeys =
-          keys.where((key) => !value.containsKey(key)).toList();
+      final missingKeys = keys.where((key) => !value.containsKey(key)).toList();
 
       if (missingKeys.isNotEmpty) {
         state.errors.add(ValidationError(

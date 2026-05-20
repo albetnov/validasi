@@ -46,8 +46,7 @@ class ConditionalField<T> extends Rule<Map<String, T>> {
 
     final fieldValue = value[fieldName];
 
-    final error =
-        callback(ConditionalFieldContext(value), fieldValue);
+    final error = callback(ConditionalFieldContext(value), fieldValue);
 
     if (error != null) {
       state.errors.add(

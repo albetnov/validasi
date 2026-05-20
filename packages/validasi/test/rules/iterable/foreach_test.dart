@@ -118,8 +118,7 @@ void main() {
 
       rule.apply([1, 5, 2, 8, 3, 10], state);
 
-      expect(
-          state.errors.length, equals(4)); // indices 1, 3, 4, 5 (values > 2)
+      expect(state.errors.length, equals(4)); // indices 1, 3, 4, 5 (values > 2)
       expect(state.errors[0].path, equals(['[1]']));
       expect(state.errors[1].path, equals(['[3]']));
       expect(state.errors[2].path, equals(['[4]']));

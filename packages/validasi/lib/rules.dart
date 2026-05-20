@@ -42,8 +42,7 @@ class IterableRules {
     return iterable_rules.MinLength(length, message: message);
   }
 
-  static iterable_rules.ForEach<T> forEach<T>(
-      List<Rule<T>> rules) {
+  static iterable_rules.ForEach<T> forEach<T>(List<Rule<T>> rules) {
     return iterable_rules.ForEach(rules);
   }
 }

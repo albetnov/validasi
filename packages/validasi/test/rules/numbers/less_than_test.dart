@@ -21,8 +21,7 @@ void main() {
 
       expect(state.errors.length, equals(1));
       expect(state.errors.first.rule, equals('lessThan'));
-      expect(
-          state.errors.first.message, equals('value must be less than 10'));
+      expect(state.errors.first.message, equals('value must be less than 10'));
     });
 
     test('should fail when value is greater than max', () {

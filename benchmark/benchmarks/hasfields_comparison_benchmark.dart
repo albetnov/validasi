@@ -17,7 +17,8 @@ final fieldRules = HasFields({
   'name': FieldRules<String>([StringRules.minLength(2)]),
   'age': FieldRules<int>([NumberRules.moreThanEqual(18)]),
   'email': FieldRules<String>([StringRules.minLength(5)]),
-  'score': FieldRules<int>([NumberRules.moreThanEqual(0), NumberRules.lessThan(100)]),
+  'score': FieldRules<int>(
+      [NumberRules.moreThanEqual(0), NumberRules.lessThan(100)]),
 });
 
 class FieldRulesBenchmark extends BenchmarkBase {
