@@ -1,25 +1,32 @@
-import 'dart:async';
-
 import 'package:build/build.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:validasi_annotation/annotation.dart';
 
 import 'package:validasi_gen/src/generators/extension.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 
-class ValidasiGenerator extends GeneratorForAnnotation<ValidateClass> {
+class ValidasiGenerator extends Generator {
   @override
-  FutureOr<String> generateForAnnotatedElement(
-    Element element,
-    ConstantReader annotation,
-    BuildStep buildStep,
-  ) async {
-    if (element is! ClassElement) return '';
+  String generate(LibraryReader library, BuildStep buildStep) {
+    final buffer = StringBuffer();
 
-    final fields = extractValidateFields(element);
-    if (fields.isEmpty) return '';
+    for (final cls in library.classes) {
+      if (!_hasAnnotation(cls, 'ValidateClass')) continue;
 
-    return generateValidateExtension(element.name, fields);
+      final fields = extractValidateFields(cls);
+      if (fields.isEmpty) continue;
+
+      buffer.write(generateValidateExtension(cls.name, fields));
+    }
+
+    return buffer.toString();
+  }
+
+  bool _hasAnnotation(ClassElement cls, String name) {
+    return cls.metadata.any((meta) {
+      final element = meta.element;
+      return element is ConstructorElement &&
+          element.enclosingElement.name == name;
+    });
   }
 }

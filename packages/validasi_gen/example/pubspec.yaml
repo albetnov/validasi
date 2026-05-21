@@ -15,3 +15,5 @@ dev_dependencies:
   test: ^1.24.0
   validasi_gen:
     path: ../
+
+
