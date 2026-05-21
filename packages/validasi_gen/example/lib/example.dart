@@ -1,6 +1,6 @@
 import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
-import 'package:validasi_annotation/annotation.dart';
+import 'package:validasi_annotation/validasi_annotation.dart';
 
 part 'example.g.dart';
 
