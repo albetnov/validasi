@@ -32,7 +32,7 @@ class InlineRule<T> extends Rule<T> {
       final result = validator(value);
 
       if (!result) {
-        state.errors.add(
+        state.addError(
           ValidationError(
             rule: name,
             message: message ?? 'Validation failed',
@@ -40,7 +40,7 @@ class InlineRule<T> extends Rule<T> {
         );
       }
     } catch (e) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: name,
           message: message ?? e.toString(),

@@ -21,7 +21,7 @@ class OneOf extends Rule<String> {
   @override
   String? apply(String? value, ValidationState state) {
     if (value != null && !options.contains(value)) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'OneOf',
           message: message ?? 'Value must be one of: ${options.join(', ')}',

@@ -201,7 +201,7 @@ class _TestRule extends Rule<Object?> {
   @override
   Object? apply(Object? value, ValidationState state) {
     if (shouldFail) {
-      state.errors.add(ValidationError(
+      state.addError(ValidationError(
         rule: ruleName,
         message: 'Test rule failed',
       ));

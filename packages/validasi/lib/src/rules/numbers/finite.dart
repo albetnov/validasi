@@ -16,7 +16,7 @@ class Finite extends Rule<double> {
   @override
   double? apply(double? value, ValidationState state) {
     if (value != null && !value.isFinite) {
-      state.errors.add(ValidationError(
+      state.addError(ValidationError(
         rule: 'finite',
         message: message ?? 'value must be a finite number',
       ));

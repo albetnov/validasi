@@ -19,7 +19,7 @@ class MinLength extends Rule<String> {
   @override
   String? apply(String? value, ValidationState state) {
     if (value != null && value.length < length) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'MinLength',
           message: message ?? 'Minimum length is $length characters',

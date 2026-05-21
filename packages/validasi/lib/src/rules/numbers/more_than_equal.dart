@@ -19,7 +19,7 @@ class MoreThanEqual<T extends num> extends Rule<T> {
   @override
   T? apply(T? value, ValidationState state) {
     if (value != null && value < min) {
-      state.errors.add(ValidationError(
+      state.addError(ValidationError(
         rule: 'moreThanEqual',
         message: message ?? 'value must be more than or equal to $min',
       ));

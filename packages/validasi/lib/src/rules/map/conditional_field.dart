@@ -49,7 +49,7 @@ class ConditionalField<T> extends Rule<Map<String, T>> {
     final error = callback(ConditionalFieldContext(value), fieldValue);
 
     if (error != null) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'conditionalField',
           message: error,

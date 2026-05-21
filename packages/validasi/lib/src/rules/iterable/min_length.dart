@@ -19,7 +19,7 @@ class MinLength<T> extends Rule<List<T>> {
   @override
   List<T>? apply(List<T>? value, ValidationState state) {
     if (value != null && value.length < length) {
-      state.errors.add(ValidationError(
+      state.addError(ValidationError(
         rule: 'MinLength',
         message: message ?? 'List must have at least $length items',
       ));

@@ -22,7 +22,7 @@ class MaxLength extends Rule<String> {
   @override
   String? apply(String? value, ValidationState state) {
     if (value != null && value.length > length) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'MaxLength',
           message: message ?? 'Maximum length is $length characters',

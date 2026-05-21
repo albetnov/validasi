@@ -24,7 +24,7 @@ class Having<T> extends Rule<T> {
   @override
   T? apply(T? value, ValidationState state) {
     if (!validValues.contains(value)) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'having',
           message: message ?? 'Value must be one of: ${validValues.join(', ')}',
