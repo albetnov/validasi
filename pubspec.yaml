@@ -10,6 +10,7 @@ workspace:
   - packages/validasi
   - packages/validasi_mcp
   - packages/validasi_gen
+  - packages/validasi_annotation
 
 dev_dependencies:
   melos: ^7.5.1
