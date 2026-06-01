@@ -29,6 +29,7 @@ class ValidasiEngine<T, TInput> {
   }
 
   @internal
+  @pragma('vm:prefer-inline')
   T? execute(dynamic rawValue, ValidationState state) {
     Object? processedValue = rawValue;
 
