@@ -16,13 +16,18 @@ class DocsFetcher {
     final url = '${config.baseUrl}/llms.txt';
     final body = await _httpGet(url);
 
-    return body
-        .split('\n')
-        .map((line) => line.trim())
-        .where((line) => line.isNotEmpty)
-        .map(_pathFromUrl)
-        .where((path) => !path.startsWith('v0/'))
-        .toList(growable: false);
+    final linkPattern = RegExp(r'\[.+?\]\((/validasi/[^)]+?\.md)\)');
+    final paths = <String>{};
+    for (final match in linkPattern.allMatches(body)) {
+      final raw = match.group(1)!;
+      final path = _pathFromUrl(raw);
+      if (path.startsWith('v0/') ||
+          path == 'markdown-examples' ||
+          path == 'guide/agent-native-support') continue;
+      paths.add(path);
+    }
+
+    return paths.toList(growable: false)..sort();
   }
 
   Future<DocPage> fetchPage(String path) async {
@@ -112,6 +117,7 @@ class DocsFetcher {
       path = path.substring(base.length);
     }
     path = path.replaceAll(RegExp(r'^/+'), '');
+    path = path.replaceAll(RegExp(r'^validasi/'), '');
     path = path.replaceAll(RegExp(r'\.md$'), '');
     return path;
   }
