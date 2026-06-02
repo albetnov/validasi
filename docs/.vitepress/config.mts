@@ -113,6 +113,12 @@ export default defineConfig({
             { text: 'Custom Rules', link: '/advanced/custom-rule' },
             { text: 'Engine', link: '/advanced/engine' }
           ]
+        },
+        {
+          text: 'Integration',
+          items: [
+            { text: 'MCP Server', link: '/guide/mcp-server' }
+          ]
         }
       ]
     },
