@@ -91,6 +91,12 @@ class DocsFetcher {
     }
   }
 
+  Future<List<DocPage>> refreshAll() async {
+    await clearCache();
+    await ensureCached();
+    return loadAllCached();
+  }
+
   bool _isFresh(String filePath) {
     final file = File(filePath);
     if (!file.existsSync()) return false;

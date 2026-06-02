@@ -77,6 +77,15 @@ class DocsIndex {
     return results;
   }
 
+  void rebuild(List<DocPage> newPages) {
+    pages
+      ..clear()
+      ..addAll(newPages);
+    _wordIndex.clear();
+    _pageByPath.clear();
+    _buildIndex();
+  }
+
   void _buildIndex() {
     for (final page in pages) {
       _pageByPath[page.path] = page;

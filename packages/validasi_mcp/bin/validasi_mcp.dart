@@ -24,7 +24,7 @@ Future<void> main(List<String> args) async {
 
   final pages = await fetcher.loadAllCached();
   final index = DocsIndex(pages);
-  final tools = DocsTools(index: index);
+  final tools = DocsTools(index: index, fetcher: fetcher);
   final server = ValidasiMcpStdioServer(
     tools: tools,
     config: config,

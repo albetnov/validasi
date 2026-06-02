@@ -64,8 +64,9 @@ final class ValidasiMcpServer extends MCPServer
     return result;
   }
 
-  CallToolResult _callTool(String name, Map<String, Object?> arguments) {
-    final result = tools.callTool(name, arguments);
+  Future<CallToolResult> _callTool(
+      String name, Map<String, Object?> arguments) async {
+    final result = await tools.callTool(name, arguments);
 
     return CallToolResult(
       content: [TextContent(text: jsonEncode(result))],
