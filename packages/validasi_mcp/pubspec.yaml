@@ -1,6 +1,6 @@
 name: validasi_mcp
-description: MCP stdio adapter for Validasi schemas and validation tools.
-version: 0.1.0-beta.2
+description: MCP server providing Validasi documentation and API reference for AI assistants.
+version: 0.1.0-beta.3
 repository: https://github.com/albetnov/validasi
 
 environment:
@@ -10,7 +10,6 @@ resolution: workspace
 dependencies:
   dart_mcp: ^0.5.0
   stream_channel: ^2.1.4
-  validasi: ^1.0.0-dev.1
 
 dev_dependencies:
   lints: ^6.0.0
