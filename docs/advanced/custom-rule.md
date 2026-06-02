@@ -31,7 +31,7 @@ class MyCustomRule extends Rule<String> {
   @override
   String? apply(String? value, ValidationState state) {
     if (value == null || value.isEmpty) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'MyCustomRule',
           message: message ?? 'Value cannot be empty',
@@ -58,7 +58,7 @@ class EmailRule extends Rule<String> {
   String? apply(String? value, ValidationState state) {
     if (value == null) return null;
     if (!value.contains('@')) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'Email',
           message: message ?? 'Invalid email format',
@@ -110,7 +110,7 @@ class MinAge extends Rule<int> {
   int? apply(int? value, ValidationState state) {
     if (value == null) return null;
     if (value < minAge) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'MinAge',
           // Use custom message if provided, otherwise use default
@@ -149,7 +149,7 @@ class RangeRule extends Rule<int> {
   int? apply(int? value, ValidationState state) {
     if (value == null) return null;
     if (value < min || value > max) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'Range',
           message: message ?? 'Value must be between $min and $max',
@@ -173,7 +173,7 @@ The `ValidationState` provides properties for interacting with the validation pr
 ### Adding Errors
 
 ```dart
-state.errors.add(
+state.addError(
   ValidationError(
     rule: 'RuleName',
     message: 'Error message',
@@ -211,7 +211,7 @@ class StopIfEmpty extends Rule<String> {
   @override
   String? apply(String? value, ValidationState state) {
     if (value == null || value.isEmpty) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'StopIfEmpty',
           message: message ?? 'Value is required',
@@ -261,7 +261,7 @@ class UrlRule extends Rule<String> {
     }
 
     if (!hasValidScheme) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'Url',
           message: message ?? 'URL must start with ${schemes.join(" or ")}://',
@@ -276,7 +276,7 @@ class UrlRule extends Rule<String> {
 
     // Check for TLD if required
     if (requireTld && !url.contains('.')) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'Url',
           message: message ?? 'URL must contain a valid domain with TLD',
@@ -323,7 +323,7 @@ class Contains extends Rule<String> {
         : value.toLowerCase().contains(substring.toLowerCase());
 
     if (!contains) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'Contains',
           message: message ?? 'Value must contain "$substring"',
@@ -352,7 +352,7 @@ class NotEqual<T> extends Rule<T> {
   @override
   T? apply(T? value, ValidationState state) {
     if (value == forbidden) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'NotEqual',
           message: message ?? 'Value must not equal $forbidden',
@@ -397,7 +397,7 @@ class PasswordStrength extends Rule<String> {
     }
 
     if (errors.isNotEmpty) {
-      state.errors.add(
+      state.addError(
         ValidationError(
           rule: 'PasswordStrength',
           message: message ?? 'Password must contain ${errors.join(", ")}',
@@ -451,7 +451,7 @@ Creating custom rules in Validasi is straightforward:
 1. Extend `Rule<T>` with your specific type
 2. Override `runOnNull` if you need to handle null values
 3. Implement `apply(T? value, ValidationState state)` with your validation logic
-4. Use `state.errors.add()` to report validation failures
+4. Use `state.addError()` to report validation failures
 5. Support message customization via the `message` parameter
 6. Return the (potentially modified) value from `apply`
 7. Use `state.isStopped = true` for stopping validation chain

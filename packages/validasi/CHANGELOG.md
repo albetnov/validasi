@@ -1,3 +1,39 @@
+## 1.0.0-dev.4
+
+- Added `@pragma('vm:prefer-inline')` to `execute()` and `applyRules()` for better performance (up to 10%).
+
+## 1.0.0-dev.3
+
+### Changed
+- Replaced direct `state.errors.add` calls with `state.addError` for consistent error handling.
+
+## 1.0.0-dev.2
+
+### Added
+- `FieldRules` class for lightweight field validation rules (replaces `ValidasiEngine` per field).
+- Benchmarks for `hasFields` comparison.
+
+### Changed
+- `HasFields` now uses `FieldRules` instead of `ValidasiEngine` per field.
+- `ForEach` now accepts `List<Rule<I>>` directly instead of `ValidasiEngine`.
+- Code formatting for improved readability.
+
+## 1.0.0-dev.1
+
+### Added
+- `ValidationState` class with lazy error allocation, managing validation errors and state.
+- `applyRules()` top-level function as a reusable rule iteration primitive.
+- `execute()` internal method separating the validation pipeline from result wrapping.
+- Comprehensive benchmarks for List, Map, NestedMap, Number, String, StringTransform, and Preprocess.
+
+### Changed
+- Migrated all rules, engine, and tests from `ValidationContext` to `ValidationState`.
+- Removed `ValidationContext` class entirely.
+- Rule `apply` method signature changed to `T? apply(T? value, ValidationState state)`.
+- `Nullable` rule now sets `state.isStopped = true` directly instead of calling `context.stop()`.
+- Engine rule iteration optimized to use `const []` for empty rule lists.
+- Improved error handling in validation process.
+
 ## 1.0.0-dev.0
 
 This is the v1 development release of Validasi. It is a major rework of the library and is not source-compatible with the 0.0.x series.
