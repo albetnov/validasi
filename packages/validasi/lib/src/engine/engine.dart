@@ -70,5 +70,4 @@ class ValidasiEngine<T, TInput> {
       errors: state.errors,
     );
   }
-
 }

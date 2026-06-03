@@ -1,7 +1,8 @@
 import 'package:test/test.dart';
 import 'package:validasi_mcp/validasi_mcp.dart';
 
-DocPage _page(String path, String title, String section, {String content = '', List<DocCodeBlock> codeBlocks = const []}) {
+DocPage _page(String path, String title, String section,
+    {String content = '', List<DocCodeBlock> codeBlocks = const []}) {
   return DocPage(
     path: path,
     title: title,
@@ -20,13 +21,17 @@ void main() {
     setUp(() {
       samplePages = [
         _page('guide/getting-started', 'Getting Started', 'guide',
-            content: '# Getting Started\n\nThis is the getting started guide.\n\nUse StringRules for string validation.'),
+            content:
+                '# Getting Started\n\nThis is the getting started guide.\n\nUse StringRules for string validation.'),
         _page('schemas/string', 'String Schema', 'schemas',
-            content: '# String Schema\n\nStringRules has minLength and maxLength.\n\nUse StringRules.minLength(3) to validate.'),
+            content:
+                '# String Schema\n\nStringRules has minLength and maxLength.\n\nUse StringRules.minLength(3) to validate.'),
         _page('schemas/number', 'Number Schema', 'schemas',
-            content: '# Number Schema\n\nNumberRules has moreThan and lessThan.'),
+            content:
+                '# Number Schema\n\nNumberRules has moreThan and lessThan.'),
         _page('advanced/engine', 'Engine Architecture', 'advanced',
-            content: '# Engine\n\nThe validation engine processes rules in order.'),
+            content:
+                '# Engine\n\nThe validation engine processes rules in order.'),
       ];
       index = DocsIndex(samplePages);
     });
@@ -104,7 +109,10 @@ void main() {
           _page('schemas/number', 'Number Schema', 'schemas',
               content: '# Number Schema',
               codeBlocks: [
-                DocCodeBlock(language: 'dart', code: 'NumberRules.moreThan(0)', offset: 0),
+                DocCodeBlock(
+                    language: 'dart',
+                    code: 'NumberRules.moreThan(0)',
+                    offset: 0),
               ]),
         ];
         final idx = DocsIndex(pagesWithCode);
@@ -117,8 +125,14 @@ void main() {
           _page('schemas/string', 'String Schema', 'schemas',
               content: '# String Schema',
               codeBlocks: [
-                DocCodeBlock(language: 'dart', code: 'StringRules.minLength(3)', offset: 0),
-                DocCodeBlock(language: 'dart', code: 'NumberRules.moreThan(0)', offset: 0),
+                DocCodeBlock(
+                    language: 'dart',
+                    code: 'StringRules.minLength(3)',
+                    offset: 0),
+                DocCodeBlock(
+                    language: 'dart',
+                    code: 'NumberRules.moreThan(0)',
+                    offset: 0),
               ]),
         ];
         final idx = DocsIndex(pagesWithCode);

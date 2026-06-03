@@ -33,8 +33,8 @@ class DocsTools {
   Map<String, Object?> searchDocs(Map<String, Object?> arguments) {
     final query = arguments['query'];
     if (query is! String || query.trim().isEmpty) {
-      return _error(
-          'INVALID_ARGUMENT', 'query is required and must be a non-empty string');
+      return _error('INVALID_ARGUMENT',
+          'query is required and must be a non-empty string');
     }
 
     final results = index.search(query.trim());
@@ -55,8 +55,8 @@ class DocsTools {
   Map<String, Object?> getPage(Map<String, Object?> arguments) {
     final path = arguments['path'];
     if (path is! String || path.trim().isEmpty) {
-      return _error(
-          'INVALID_ARGUMENT', 'path is required and must be a non-empty string');
+      return _error('INVALID_ARGUMENT',
+          'path is required and must be a non-empty string');
     }
 
     final page = index.getPage(path.trim());
@@ -125,7 +125,8 @@ class DocsTools {
 
   Future<Map<String, Object?>> refreshDocs() async {
     if (fetcher == null) {
-      return _error('UNAVAILABLE', 'Fetcher not configured, cannot refresh docs');
+      return _error(
+          'UNAVAILABLE', 'Fetcher not configured, cannot refresh docs');
     }
 
     try {
@@ -143,7 +144,8 @@ class DocsTools {
 
   Future<Map<String, Object?>> cleanCache() async {
     if (fetcher == null) {
-      return _error('UNAVAILABLE', 'Fetcher not configured, cannot clean cache');
+      return _error(
+          'UNAVAILABLE', 'Fetcher not configured, cannot clean cache');
     }
 
     try {

@@ -1,7 +1,8 @@
 import 'package:test/test.dart';
 import 'package:validasi_mcp/validasi_mcp.dart';
 
-DocPage _page(String path, String title, String section, {String content = ''}) {
+DocPage _page(String path, String title, String section,
+    {String content = ''}) {
   return DocPage(
     path: path,
     title: title,
@@ -29,7 +30,8 @@ void main() {
 
     group('search_docs', () {
       test('should return results for matching query', () async {
-        final result = await tools.callTool('search_docs', {'query': 'StringRules'});
+        final result =
+            await tools.callTool('search_docs', {'query': 'StringRules'});
         expect(result['ok'], isTrue);
         final results = result['results'] as List;
         expect(results, isNotEmpty);
@@ -49,7 +51,8 @@ void main() {
 
     group('get_page', () {
       test('should return page for valid path', () async {
-        final result = await tools.callTool('get_page', {'path': 'guide/getting-started'});
+        final result =
+            await tools.callTool('get_page', {'path': 'guide/getting-started'});
         expect(result['ok'], isTrue);
         final page = result['page'] as Map;
         expect(page['title'], equals('Getting Started'));
@@ -62,7 +65,8 @@ void main() {
       });
 
       test('should return error for unknown path', () async {
-        final result = await tools.callTool('get_page', {'path': 'nonexistent'});
+        final result =
+            await tools.callTool('get_page', {'path': 'nonexistent'});
         expect(result['ok'], isFalse);
         expect((result['error'] as Map)['code'], equals('NOT_FOUND'));
       });
@@ -77,7 +81,8 @@ void main() {
       });
 
       test('should filter by section', () async {
-        final result = await tools.callTool('list_pages', {'section': 'schemas'});
+        final result =
+            await tools.callTool('list_pages', {'section': 'schemas'});
         expect(result['ok'], isTrue);
         final sections = result['sections'] as List;
         expect(sections, hasLength(1));
@@ -85,7 +90,8 @@ void main() {
       });
 
       test('should return empty for unknown section', () async {
-        final result = await tools.callTool('list_pages', {'section': 'unknown'});
+        final result =
+            await tools.callTool('list_pages', {'section': 'unknown'});
         expect(result['ok'], isTrue);
         expect(result['sections'], isEmpty);
       });

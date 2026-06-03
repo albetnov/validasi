@@ -19,5 +19,4 @@ class ValidationError {
       path: [prefix, ...?path],
     );
   }
-
 }

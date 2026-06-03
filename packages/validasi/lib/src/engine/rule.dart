@@ -7,8 +7,6 @@ abstract class Rule<T> {
 
   final bool runOnNull = false;
 
-
-
   T? apply(T? value, ValidationState state);
 }
 
