@@ -12,6 +12,17 @@ documentation, search for rules, find code examples — all through standard MCP
 Validasi docs from `albetnov.github.io/validasi`, caches them locally, and exposes
 them through MCP tools and resources.
 
+## Setup
+
+Install the server globally via pub.dev:
+
+```bash
+dart pub global activate validasi_mcp
+```
+
+This makes the `validasi_mcp` command available on your PATH. All integration
+configs below use it directly.
+
 ## Tools
 
 | Tool | Description |
@@ -49,21 +60,75 @@ The cache directory defaults to `.validasi_mcp_cache/` in the current directory
 The docs URL defaults to `https://albetnov.github.io/validasi` and can be
 overridden in code via `DocsConfig.baseUrl`.
 
-## Cursor / Claude Desktop Integration
+## Integration
 
-Add to your MCP configuration:
+### OpenCode
+
+Add to `~/.config/opencode/opencode.jsonc` (global) or `opencode.jsonc` (project):
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "validasi_docs": {
+      "type": "local",
+      "command": "validasi_mcp",
+      "enabled": true,
+      "environment": {}
+    }
+  }
+}
+```
+
+> Check their [docs](https://opencode.ai/docs/mcp-servers/)
+
+### Codex CLI
+
+```
+codex mcp add validasi_docs -- validasi_mcp --force-roots-fallback
+```
+
+> Checkout their [docs](https://developers.openai.com/codex/mcp)
+
+### Cursor
+
+Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project):
 
 ```json
 {
   "mcpServers": {
     "validasi_docs": {
-      "command": "dart",
-      "args": ["run", "bin/validasi_mcp.dart"],
-      "cwd": "/path/to/validasi/packages/validasi_mcp"
+      "command": "validasi_mcp"
     }
   }
 }
 ```
+
+> Check their [docs](https://docs.cursor.com/context/model-context-protocol#installing-mcp-servers)
+
+### VS Code Copilot
+
+Add to `.vscode/mcp.json` in your workspace:
+
+```json
+{
+  "servers": {
+    "validasi_docs": {
+      "command": "validasi_mcp"
+    }
+  }
+}
+```
+
+> Check their [docs](https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_enable-mcp-support-in-vs-code)
+
+### Claude Code
+
+```
+claude mcp add --transport stdio validasi_docs -- validasi_mcp
+```
+
+> Checkout their [Installing MCP Servers](https://code.claude.com/docs/en/mcp#installing-mcp-servers).
 
 The AI will automatically discover the available tools and can query the
 documentation as needed.
