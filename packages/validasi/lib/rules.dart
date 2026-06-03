@@ -105,8 +105,7 @@ class _MapRules {
   HasFields hasFields(Map<String, FieldRules<Object?>> fields) =>
       HasFields(fields);
 
-  HasFieldKeys<T> hasFieldKeys<T>(Set<String> keys) =>
-      HasFieldKeys<T>(keys);
+  HasFieldKeys<T> hasFieldKeys<T>(Set<String> keys) => HasFieldKeys<T>(keys);
 
   ConditionalField<T> conditionalField<T>(
           String field, ConditionalFieldCallback<T> callback) =>

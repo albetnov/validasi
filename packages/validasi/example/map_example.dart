@@ -20,8 +20,8 @@ void main(List<String> args) {
             Rules.string.minLength(1, message: 'City cannot be empty'),
           ]),
           'zip': FieldRules<String>([
-            Rules.string.minLength(5,
-                message: 'Zip code must be at least 5 digits'),
+            Rules.string
+                .minLength(5, message: 'Zip code must be at least 5 digits'),
           ]),
         }),
       ]),
