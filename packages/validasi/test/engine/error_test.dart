@@ -80,7 +80,5 @@ void main() {
 
       expect(prefixed.path, equals(['third', 'second', 'first']));
     });
-
-
   });
 }

@@ -9,8 +9,7 @@ class DocsConfig {
   final String? cacheDir;
   final Duration cacheTtl;
 
-  String get resolvedCacheDir =>
-      cacheDir ?? '.validasi_mcp_cache';
+  String get resolvedCacheDir => cacheDir ?? '.validasi_mcp_cache';
 }
 
 class DocPage {

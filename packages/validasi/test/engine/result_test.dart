@@ -207,7 +207,6 @@ void main() {
         expect(result.data?.value, equals(42));
       });
     });
-
   });
 }
 
