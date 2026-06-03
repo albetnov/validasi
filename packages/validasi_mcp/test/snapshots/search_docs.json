@@ -40,7 +40,7 @@
       "path": "schemas/list",
       "title": "List Schema",
       "section": "schemas",
-      "snippet": "IterableRules.forEach(\n\t\tValidasi.string([\n\t\t\tStringRules.minLength(5),\n\t\t]),\n\t),",
+      "snippet": "final emailListSchema = Validasi.list<String>([\n\tIterableRules.forEach<String>([\n\t\tStringRules.minLength(5),\n\t]),\n]);",
       "score": 1.5
     },
     {
