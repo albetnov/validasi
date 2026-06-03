@@ -9,8 +9,8 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 
 final nameSchema = Validasi.string([
-  StringRules.minLength(2),
-  StringRules.maxLength(50),
+  Rules.string.minLength(2),
+  Rules.string.maxLength(50),
 ]);
 
 final result = nameSchema.validate('John Doe');
@@ -21,12 +21,12 @@ print(result.isValid);
 
 ```dart
 final userSchema = Validasi.map<dynamic>([
-  MapRules.hasFields({
+  Rules.map.hasFields({
     'name': FieldRules<String>([
-      StringRules.minLength(2),
+      Rules.string.minLength(2),
     ]),
     'email': FieldRules<String>([
-      StringRules.email(),
+      Rules.string.email(),
     ]),
   }),
 ]);
@@ -43,8 +43,8 @@ print(result.isValid);
 
 ```dart
 final optionalEmail = Validasi.string([
-  Nullable(),
-  StringRules.email(),
+  Rules.nullable<String>(),
+  Rules.string.email(),
 ]);
 
 print(optionalEmail.validate(null).isValid);

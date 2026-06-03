@@ -14,37 +14,37 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 
 final userSchema = Validasi.map<dynamic>([
-	MapRules.hasFieldKeys({'name', 'email'}),
+	Rules.map.hasFieldKeys({'name', 'email'}),
 ]);
 ```
 
 ## Available Rules
 
-### MapRules.hasFieldKeys
+### Rules.map.hasFieldKeys
 
 Ensures required keys exist in the map.
 
 ```dart
 final configSchema = Validasi.map<dynamic>([
-	MapRules.hasFieldKeys({'host', 'port'}),
+	Rules.map.hasFieldKeys({'host', 'port'}),
 ]);
 
 print(configSchema.validate({'host': 'localhost', 'port': 8080}).isValid); // true
 print(configSchema.validate({'host': 'localhost'}).isValid); // false
 ```
 
-### MapRules.hasFields
+### Rules.map.hasFields
 
 Validates specific fields using `FieldRules` per field.
 
 ```dart
 final profileSchema = Validasi.map<dynamic>([
-	MapRules.hasFields({
+	Rules.map.hasFields({
 		'name': FieldRules<String>([
-			StringRules.minLength(2),
+			Rules.string.minLength(2),
 		]),
 		'age': FieldRules<int>([
-			NumberRules.moreThanEqual(18),
+			Rules.number.moreThanEqual(18),
 		]),
 	}),
 ]);
@@ -53,14 +53,14 @@ print(profileSchema.validate({'name': 'Alice', 'age': 25}).isValid); // true
 print(profileSchema.validate({'name': 'A', 'age': 16}).isValid); // false
 ```
 
-### MapRules.conditionalField
+### Rules.map.conditionalField
 
 Adds conditional validation based on the map context.
 
 ```dart
 final shippingSchema = Validasi.map<dynamic>([
-	MapRules.hasFieldKeys({'isDelivery'}),
-	MapRules.conditionalField('address', (context, value) {
+	Rules.map.hasFieldKeys({'isDelivery'}),
+	Rules.map.conditionalField('address', (context, value) {
 		final isDelivery = context.get<bool>('isDelivery') ?? false;
 		if (isDelivery && (value == null || value.toString().isEmpty)) {
 			return 'address is required when isDelivery is true';
@@ -85,14 +85,14 @@ You can compose nested map schemas by putting `HasFields` inside `FieldRules<Map
 
 ```dart
 final userSchema = Validasi.map<dynamic>([
-	MapRules.hasFields({
+	Rules.map.hasFields({
 		'profile': FieldRules<Map<String, dynamic>>([
-			MapRules.hasFields({
+			Rules.map.hasFields({
 				'name': FieldRules<String>([
-					StringRules.minLength(2),
+					Rules.string.minLength(2),
 				]),
 				'age': FieldRules<int>([
-					NumberRules.moreThanEqual(0),
+					Rules.number.moreThanEqual(0),
 				]),
 			}),
 		]),
@@ -114,13 +114,13 @@ Use map rules together to validate shape, fields, and conditional requirements.
 
 ```dart
 final orderSchema = Validasi.map<dynamic>([
-	MapRules.hasFieldKeys({'id', 'isDelivery'}),
-	MapRules.hasFields({
+	Rules.map.hasFieldKeys({'id', 'isDelivery'}),
+	Rules.map.hasFields({
 		'id': FieldRules<String>([
-			StringRules.minLength(1),
+			Rules.string.minLength(1),
 		]),
 	}),
-	MapRules.conditionalField('address', (context, value) {
+	Rules.map.conditionalField('address', (context, value) {
 		if ((context.get<bool>('isDelivery') ?? false) && value == null) {
 			return 'address is required for delivery orders';
 		}

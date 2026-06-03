@@ -31,10 +31,10 @@ import 'package:validasi/rules.dart';
 
 void main() {
   final schema = Validasi.string([
-    Nullable(),
-    Transform((input) => input?.trim()),
-    StringRules.minLength(3),
-    StringRules.maxLength(16)
+    Rules.nullable<String>(),
+    Rules.transform<String>((input) => input?.trim()),
+    Rules.string.minLength(3),
+    Rules.string.maxLength(16)
   ]);
 
   final result = schema.validate('   Hello World!   ');
@@ -47,9 +47,9 @@ void main() {
 **Map Validation:**
 ```dart
 final schema = Validasi.map<dynamic>([
-  MapRules.hasFields({
-    'name': Validasi.string([StringRules.minLength(1)]),
-    'age': Validasi.number<int>([NumberRules.moreThan(0)]),
+  Rules.map.hasFields({
+    'name': Validasi.string([Rules.string.minLength(1)]),
+    'age': Validasi.number<int>([Rules.number.moreThan(0)]),
   }),
 ]);
 
@@ -59,8 +59,8 @@ final result = schema.validate({'name': 'John', 'age': 30});
 **List Validation:**
 ```dart
 final schema = Validasi.list<String>([
-  IterableRules.forEach(
-    Validasi.string([StringRules.minLength(1)]),
+  Rules.iterable.forEach<String>(
+    Validasi.string([Rules.string.minLength(1)]),
   ),
 ]);
 
@@ -83,38 +83,38 @@ Validasi provides type-safe validation schemas for various data types:
 The library comes with comprehensive built-in rules organized by data type:
 
 **String Rules:**
-- `StringRules.minLength()` - Minimum length validation
-- `StringRules.maxLength()` - Maximum length validation
-- `StringRules.oneOf()` - Value must be one of specified options
+- `Rules.string.minLength()` - Minimum length validation
+- `Rules.string.maxLength()` - Maximum length validation
+- `Rules.string.oneOf()` - Value must be one of specified options
 
 **Number Rules:**
-- `NumberRules.finite()` - Ensures number is finite
-- `NumberRules.lessThan()` - Less than comparison
-- `NumberRules.lessThanEqual()` - Less than or equal comparison
-- `NumberRules.moreThan()` - Greater than comparison
-- `NumberRules.moreThanEqual()` - Greater than or equal comparison
+- `Rules.number.finite()` - Ensures number is finite
+- `Rules.number.lessThan()` - Less than comparison
+- `Rules.number.lessThanEqual()` - Less than or equal comparison
+- `Rules.number.moreThan()` - Greater than comparison
+- `Rules.number.moreThanEqual()` - Greater than or equal comparison
 
 **Iterable Rules:**
-- `IterableRules.minLength()` - Minimum list length
-- `IterableRules.forEach()` - Validate each item in the list
+- `Rules.iterable.minLength()` - Minimum list length
+- `Rules.iterable.forEach()` - Validate each item in the list
 
 **Map Rules:**
-- `MapRules.hasFields()` - Validate nested map fields with individual schemas
-- `MapRules.hasFieldKeys()` - Ensure required keys exist
-- `MapRules.conditionalField()` - Conditional field validation based on other fields
+- `Rules.map.hasFields()` - Validate nested map fields with individual schemas
+- `Rules.map.hasFieldKeys()` - Ensure required keys exist
+- `Rules.map.conditionalField()` - Conditional field validation based on other fields
 
 **Modifier Rules:**
-- `Nullable()` - Allow null values
-- `Required()` - Ensure non-null values
-- `Transform()` - Transform values during validation
-- `Having()` - Custom validation with context access
-- `InlineRule()` - Create custom validation rules inline
+- `Rules.nullable()` - Allow null values
+- `Rules.required()` - Ensure non-null values
+- `Rules.transform()` - Transform values during validation
+- `Rules.having()` - Custom validation with context access
+- `Rules.inline()` - Create custom validation rules inline
 
 ### Preprocessing & Transformation
 Use `ValidasiTransformation` to preprocess input data before validation:
 
 ```dart
-final schema = Validasi.string([StringRules.minLength(3)])
+final schema = Validasi.string([Rules.string.minLength(3)])
   .withPreprocess(ValidasiTransformation((value) => value.toString()));
 
 final result = schema.validate(123); // Converts to "123" then validates

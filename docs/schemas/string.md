@@ -7,45 +7,45 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 
 final schema = Validasi.string([
-	StringRules.minLength(3),
+	Rules.string.minLength(3),
 ]);
 ```
 
 ## Available Rules
 
-### StringRules.minLength
+### Rules.string.minLength
 
 Ensures the string has at least the given number of characters.
 
 ```dart
 final usernameSchema = Validasi.string([
-	StringRules.minLength(3),
+	Rules.string.minLength(3),
 ]);
 
 print(usernameSchema.validate('al').isValid); // false
 print(usernameSchema.validate('alex').isValid); // true
 ```
 
-### StringRules.maxLength
+### Rules.string.maxLength
 
 Ensures the string does not exceed the given number of characters.
 
 ```dart
 final titleSchema = Validasi.string([
-	StringRules.maxLength(10),
+	Rules.string.maxLength(10),
 ]);
 
 print(titleSchema.validate('short').isValid); // true
 print(titleSchema.validate('this title is too long').isValid); // false
 ```
 
-### StringRules.oneOf
+### Rules.string.oneOf
 
 Ensures the string matches one of the allowed values.
 
 ```dart
 final statusSchema = Validasi.string([
-	StringRules.oneOf(['draft', 'published', 'archived']),
+	Rules.string.oneOf(['draft', 'published', 'archived']),
 ]);
 
 print(statusSchema.validate('published').isValid); // true
@@ -58,9 +58,9 @@ You can combine multiple rules in one schema.
 
 ```dart
 final displayNameSchema = Validasi.string([
-	StringRules.minLength(2),
-	StringRules.maxLength(30),
-	StringRules.oneOf(['alice', 'bob', 'charlie']),
+	Rules.string.minLength(2),
+	Rules.string.maxLength(30),
+	Rules.string.oneOf(['alice', 'bob', 'charlie']),
 ]);
 
 final result = displayNameSchema.validate('bob');

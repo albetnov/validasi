@@ -13,33 +13,33 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 
 final tagsSchema = Validasi.list<String>([
-	IterableRules.minLength(1),
+	Rules.iterable.minLength(1),
 ]);
 ```
 
 ## Available Rules
 
-### IterableRules.minLength
+### Rules.iterable.minLength
 
 Ensures the list has at least the given number of items.
 
 ```dart
 final atLeastTwoTags = Validasi.list<String>([
-	IterableRules.minLength(2),
+	Rules.iterable.minLength(2),
 ]);
 
 print(atLeastTwoTags.validate(['dart']).isValid); // false
 print(atLeastTwoTags.validate(['dart', 'flutter']).isValid); // true
 ```
 
-### IterableRules.forEach
+### Rules.iterable.forEach
 
 Validates each item using another schema.
 
 ```dart
 	final emailListSchema = Validasi.list<String>([
-	IterableRules.forEach<String>([
-		StringRules.minLength(5),
+	Rules.iterable.forEach<String>([
+		Rules.string.minLength(5),
 	]),
 ]);
 
@@ -49,15 +49,15 @@ print(emailListSchema.validate(['x', 'test@example.com']).isValid); // false
 
 ## Nested List Validation
 
-`IterableRules.forEach` can validate nested structures by composing list schemas.
+`Rules.iterable.forEach` can validate nested structures by composing list schemas.
 
 ```dart
 	final matrixSchema = Validasi.list<List<int>>([
-	IterableRules.minLength(1),
-	IterableRules.forEach<List<int>>([
-		IterableRules.minLength(2),
-		IterableRules.forEach<int>([
-			NumberRules.moreThanEqual(0),
+	Rules.iterable.minLength(1),
+	Rules.iterable.forEach<List<int>>([
+		Rules.iterable.minLength(2),
+		Rules.iterable.forEach<int>([
+			Rules.number.moreThanEqual(0),
 		]),
 	]),
 ]);
@@ -81,10 +81,10 @@ Use both list-specific rules together for shape and item validation.
 
 ```dart
 	final usernamesSchema = Validasi.list<String>([
-	IterableRules.minLength(1),
-	IterableRules.forEach<String>([
-		StringRules.minLength(3),
-		StringRules.maxLength(20),
+	Rules.iterable.minLength(1),
+	Rules.iterable.forEach<String>([
+		Rules.string.minLength(3),
+		Rules.string.maxLength(20),
 	]),
 ]);
 

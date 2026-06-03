@@ -4,8 +4,8 @@ import 'package:validasi/rules.dart';
 
 class NumberBenchmark extends BenchmarkBase {
   final schema = Validasi.number<int>([
-    NumberRules.moreThanEqual(0),
-    NumberRules.lessThan(100),
+    Rules.number.moreThanEqual(0),
+    Rules.number.lessThan(100),
   ]);
 
   NumberBenchmark() : super('Number');

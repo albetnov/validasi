@@ -5,8 +5,8 @@ import 'package:validasi/transformer.dart';
 
 class PreprocessBenchmark extends BenchmarkBase {
   final schema = Validasi.number<int>([
-    NumberRules.moreThanEqual(0),
-    NumberRules.lessThan(150),
+    Rules.number.moreThanEqual(0),
+    Rules.number.lessThan(150),
   ]).withPreprocess(
     ValidasiTransformation<String, int>((value) => int.parse(value)),
   );

@@ -65,7 +65,7 @@ import 'package:validasi/rules.dart';
 
 void main() {
   final schema = Validasi.string([
-    StringRules.minLength(3),
+    Rules.string.minLength(3),
   ]);
 
   final result = schema.validate('Hello');

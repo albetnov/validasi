@@ -1,90 +1,114 @@
-export 'src/rules/transform.dart';
-export 'src/rules/nullable.dart';
-export 'src/rules/inline_rule.dart';
-export 'src/rules/required.dart';
-export 'src/rules/having.dart';
-export 'src/rules/iterable/foreach.dart';
-export 'src/rules/numbers/finite.dart';
-export 'src/rules/numbers/less_than.dart';
-export 'src/rules/numbers/less_than_equal.dart';
-export 'src/rules/numbers/more_than.dart';
-export 'src/rules/numbers/more_than_equal.dart';
+import 'src/rules/transform.dart';
+import 'src/rules/nullable.dart';
+import 'src/rules/required.dart';
+import 'src/rules/inline_rule.dart';
+import 'src/rules/having.dart';
+
+import 'src/rules/string/max_length.dart';
+import 'src/rules/string/one_of.dart';
+
+import 'src/rules/iterable/foreach.dart';
+
+import 'src/rules/numbers/finite.dart';
+import 'src/rules/numbers/less_than.dart';
+import 'src/rules/numbers/less_than_equal.dart';
+import 'src/rules/numbers/more_than.dart';
+import 'src/rules/numbers/more_than_equal.dart';
+
+import 'src/rules/map/has_fields.dart';
+import 'src/rules/map/has_field_keys.dart';
+import 'src/rules/map/conditional_field.dart';
+
+import 'src/engine/rule.dart';
+import 'src/rules/map/field_rules.dart';
+
+import 'src/rules/string/min_length.dart' as string_min_len;
+import 'src/rules/iterable/min_length.dart' as iterable_min_len;
+
 export 'src/rules/map/field_rules.dart';
-export 'src/rules/map/has_fields.dart';
-export 'src/rules/map/has_field_keys.dart';
-export 'src/rules/map/conditional_field.dart';
+export 'src/rules/map/conditional_field.dart' show ConditionalFieldCallback;
+export 'src/engine/rule.dart' show Rule;
+export 'src/engine/result.dart' show ValidasiResult;
+export 'src/engine/error.dart' show ValidationError;
 
-import 'package:validasi/engine.dart';
-import 'package:validasi/src/rules/map/conditional_field.dart';
+final class Rules {
+  const Rules._();
 
-import 'src/rules/string/rules.dart' as string_rules;
-import 'src/rules/iterable/rules.dart' as iterable_rules;
-import 'src/rules/map/rules.dart' as map_rules;
-import 'src/rules/numbers/rules.dart' as number_rules;
+  static Required<T> required<T>({String? message}) =>
+      Required<T>(message: message);
 
-class StringRules {
-  static string_rules.MinLength minLength(int length, {String? message}) {
-    return string_rules.MinLength(length, message: message);
-  }
+  static Nullable<T> nullable<T>() => Nullable<T>();
 
-  static string_rules.MaxLength maxLength(int length, {String? message}) {
-    return string_rules.MaxLength(length, message: message);
-  }
+  static Transform<T> transform<T>(T? Function(T? value) transformer,
+          {String? message}) =>
+      Transform<T>(transformer, message: message);
 
-  static string_rules.OneOf oneOf(List<String> validValues, {String? message}) {
-    return string_rules.OneOf(validValues, message: message);
-  }
+  static InlineRule<T> inline<T>(
+    bool Function(T? value) validator, {
+    String? message,
+    String name = 'inline_rule',
+  }) =>
+      InlineRule<T>(validator, message: message, name: name);
+
+  static Having<T> having<T>(List<T> validValues, {String? message}) =>
+      Having<T>(validValues, message: message);
+
+  static const string = _StringRules();
+  static const number = _NumberRules();
+  static const iterable = _IterableRules();
+  static const map = _MapRules();
 }
 
-class IterableRules {
-  static iterable_rules.MinLength<T> minLength<T>(int length,
-      {String? message}) {
-    return iterable_rules.MinLength(length, message: message);
-  }
+class _StringRules {
+  const _StringRules();
 
-  static iterable_rules.ForEach<T> forEach<T>(List<Rule<T>> rules) {
-    return iterable_rules.ForEach(rules);
-  }
+  string_min_len.MinLength minLength(int length, {String? message}) =>
+      string_min_len.MinLength(length, message: message);
+
+  MaxLength maxLength(int length, {String? message}) =>
+      MaxLength(length, message: message);
+
+  OneOf oneOf(List<String> validValues, {String? message}) =>
+      OneOf(validValues, message: message);
 }
 
-class MapRules {
-  static map_rules.HasFields hasFields(
-      Map<String, map_rules.FieldRules<Object?>> fields) {
-    return map_rules.HasFields(fields);
-  }
+class _NumberRules {
+  const _NumberRules();
 
-  static map_rules.HasFieldKeys<T> hasFieldKeys<T>(Set<String> keys) {
-    return map_rules.HasFieldKeys(keys);
-  }
+  Finite finite({String? message}) => Finite(message: message);
 
-  static map_rules.ConditionalField<T> conditionalField<T>(
-      String field, ConditionalFieldCallback<T> callback) {
-    return map_rules.ConditionalField(field, callback);
-  }
+  LessThan<T> lessThan<T extends num>(T value, {String? message}) =>
+      LessThan<T>(value, message: message);
+
+  LessThanEqual<T> lessThanEqual<T extends num>(T value, {String? message}) =>
+      LessThanEqual<T>(value, message: message);
+
+  MoreThan<T> moreThan<T extends num>(T value, {String? message}) =>
+      MoreThan<T>(value, message: message);
+
+  MoreThanEqual<T> moreThanEqual<T extends num>(T value, {String? message}) =>
+      MoreThanEqual<T>(value, message: message);
 }
 
-class NumberRules {
-  static number_rules.Finite finite({String? message}) {
-    return number_rules.Finite(message: message);
-  }
+class _IterableRules {
+  const _IterableRules();
 
-  static number_rules.LessThan<T> lessThan<T extends num>(T value,
-      {String? message}) {
-    return number_rules.LessThan(value, message: message);
-  }
+  iterable_min_len.MinLength<T> minLength<T>(int length, {String? message}) =>
+      iterable_min_len.MinLength<T>(length, message: message);
 
-  static number_rules.LessThanEqual<T> lessThanEqual<T extends num>(T value,
-      {String? message}) {
-    return number_rules.LessThanEqual(value, message: message);
-  }
+  ForEach<T> forEach<T>(List<Rule<T>> rules) => ForEach<T>(rules);
+}
 
-  static number_rules.MoreThan<T> moreThan<T extends num>(T value,
-      {String? message}) {
-    return number_rules.MoreThan(value, message: message);
-  }
+class _MapRules {
+  const _MapRules();
 
-  static number_rules.MoreThanEqual<T> moreThanEqual<T extends num>(T value,
-      {String? message}) {
-    return number_rules.MoreThanEqual(value, message: message);
-  }
+  HasFields hasFields(Map<String, FieldRules<Object?>> fields) =>
+      HasFields(fields);
+
+  HasFieldKeys<T> hasFieldKeys<T>(Set<String> keys) =>
+      HasFieldKeys<T>(keys);
+
+  ConditionalField<T> conditionalField<T>(
+          String field, ConditionalFieldCallback<T> callback) =>
+      ConditionalField<T>(field, callback);
 }

@@ -4,32 +4,32 @@ import 'package:validasi/rules.dart';
 
 class NestedMapBenchmark extends BenchmarkBase {
   final schema = Validasi.map<dynamic>([
-    MapRules.hasFields({
+    Rules.map.hasFields({
       'profile': FieldRules<Map<String, dynamic>>([
-        MapRules.hasFields({
+        Rules.map.hasFields({
           'name': FieldRules<String>([
-            StringRules.minLength(2),
+            Rules.string.minLength(2),
           ]),
           'age': FieldRules<int>([
-            NumberRules.moreThanEqual(0),
+            Rules.number.moreThanEqual(0),
           ]),
           'address': FieldRules<Map<String, dynamic>>([
-            MapRules.hasFields({
+            Rules.map.hasFields({
               'street': FieldRules<String>([
-                StringRules.minLength(3),
+                Rules.string.minLength(3),
               ]),
               'city': FieldRules<String>([
-                StringRules.minLength(2),
+                Rules.string.minLength(2),
               ]),
               'zip': FieldRules<String>([
-                StringRules.minLength(5),
+                Rules.string.minLength(5),
               ]),
             }),
           ]),
         }),
       ]),
     }),
-    MapRules.conditionalField<dynamic>('profile', (ctx, value) {
+    Rules.map.conditionalField<dynamic>('profile', (ctx, value) {
       if (ctx.has('profile') && ctx.get<int>('age') != null && ctx.get<int>('age')! < 18) {
         return 'Must be 18 or older';
       }
