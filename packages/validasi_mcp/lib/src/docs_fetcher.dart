@@ -21,9 +21,13 @@ class DocsFetcher {
     for (final match in linkPattern.allMatches(body)) {
       final raw = match.group(1)!;
       final path = _pathFromUrl(raw);
+
       if (path.startsWith('v0/') ||
           path == 'markdown-examples' ||
-          path == 'guide/agent-native-support') continue;
+          path == 'guide/agent-native-support') {
+        continue;
+      }
+
       paths.add(path);
     }
 
