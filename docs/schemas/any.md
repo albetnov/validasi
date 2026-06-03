@@ -74,7 +74,7 @@ class AdultAgeRule extends Rule<int> {
 	int? apply(int? value, ValidationState state) {
 		if (value == null) return null;
 		if (value < 18) {
-			state.errors.add(
+			state.addError(
 				ValidationError(
 					rule: 'adult_age',
 					message: message ?? 'Age must be 18 or older',

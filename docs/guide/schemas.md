@@ -42,12 +42,10 @@ Use `Validasi.list<T>()` for lists and other iterables.
 ```dart
 final tagsSchema = Validasi.list<String>([
   IterableRules.minLength(1),
-  IterableRules.forEach(
-    Validasi.string([
-      StringRules.minLength(2),
-      StringRules.maxLength(20),
-    ]),
-  ),
+  IterableRules.forEach<String>([
+    StringRules.minLength(2),
+    StringRules.maxLength(20),
+  ]),
 ]);
 
 print(tagsSchema.validate(['flutter', 'dart']).isValid);

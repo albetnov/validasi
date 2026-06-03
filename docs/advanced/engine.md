@@ -78,7 +78,7 @@ final schema = Validasi.string([
 Important behavior:
 
 - Rules modify value by returning a new value from `apply()`
-- Rules add errors via `state.errors.add(...)`
+- Rules add errors via `state.addError(...)`
 - Rules can stop further execution with `state.isStopped = true`
 - Rules with `runOnNull = false` are skipped on null values
 
