@@ -6,7 +6,8 @@ import 'package:validasi_gen/src/handlers.dart';
 class FieldRules {
   final FieldElement field;
   final List<RuleInfo> rules;
-  FieldRules(this.field, this.rules);
+  final String context;
+  FieldRules(this.field, this.rules, {this.context = ''});
 }
 
 List<FieldRules> extractValidateFields(ClassElement element) {
@@ -15,32 +16,34 @@ List<FieldRules> extractValidateFields(ClassElement element) {
   for (final field in element.fields) {
     if (field.isSynthetic || field.isStatic) continue;
 
-    final rules = _extractRules(field);
-    if (rules != null) {
-      result.add(FieldRules(field, rules));
+    final extracted = _extractRules(field);
+    if (extracted != null) {
+      result.add(FieldRules(field, extracted.$1, context: extracted.$2));
     }
   }
 
   return result;
 }
 
-List<RuleInfo>? _extractRules(FieldElement field) {
+(List<RuleInfo>, String)? _extractRules(FieldElement field) {
   for (final meta in field.metadata) {
     final element = meta.element;
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'Validate') {
+      final context = element.name;
       final constant = meta.computeConstantValue();
       if (constant == null) return null;
 
       final reader = ConstantReader(constant);
       final rulesReader = reader.read('rules');
       final rulesList = rulesReader.listValue;
-      if (rulesList.isEmpty) return [];
+      if (rulesList.isEmpty) return ([], context);
 
-      return rulesList.map<RuleInfo>((dartObj) {
+      final rules = rulesList.map<RuleInfo>((dartObj) {
         final ruleReader = ConstantReader(dartObj);
         return _parseRule(ruleReader);
       }).toList();
+      return (rules, context);
     }
   }
   return null;

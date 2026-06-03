@@ -13,6 +13,6 @@ abstract class RuleGen {
   String get name;
   RuleInfo parse(ConstantReader rule);
   String check(RuleInfo info, String fieldName);
-  String defaultMessage(RuleInfo info);
+  String defaultMessage(RuleInfo info, [String context = '']);
   String? details(RuleInfo info);
 }

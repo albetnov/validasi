@@ -2,6 +2,7 @@
 
 part of 'example.dart';
 
+
 extension $UserValidasi on User {
   ValidasiResult<User> validate() {
     final $errors = <ValidationError>[];
@@ -26,6 +27,19 @@ extension $UserValidasi on User {
           message: 'Maximum length is 100 characters',
           details: {'length': '100'},
           path: ['email'],
+        ),
+      );
+    }
+
+    // Field: tags
+
+    if (tags != null && tags.length < 1) {
+      $errors.add(
+        ValidationError(
+          rule: 'MinLength',
+          message: 'List must have at least 1 items',
+          details: {'length': '1'},
+          path: ['tags'],
         ),
       );
     }

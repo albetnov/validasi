@@ -19,8 +19,12 @@ class MaxLengthGen extends RuleGen {
   }
 
   @override
-  String defaultMessage(RuleInfo info) {
-    return 'Maximum length is ${info.params['length']} characters';
+  String defaultMessage(RuleInfo info, [String context = '']) {
+    final length = info.params['length'];
+    if (context == 'iterable') {
+      return 'List must have at most $length items';
+    }
+    return 'Maximum length is $length characters';
   }
 
   @override

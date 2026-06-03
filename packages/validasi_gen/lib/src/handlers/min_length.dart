@@ -19,8 +19,12 @@ class MinLengthGen extends RuleGen {
   }
 
   @override
-  String defaultMessage(RuleInfo info) {
-    return 'Minimum length is ${info.params['length']} characters';
+  String defaultMessage(RuleInfo info, [String context = '']) {
+    final length = info.params['length'];
+    if (context == 'iterable') {
+      return 'List must have at least $length items';
+    }
+    return 'Minimum length is $length characters';
   }
 
   @override

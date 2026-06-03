@@ -23,7 +23,7 @@ class OneOfGen extends RuleGen {
   }
 
   @override
-  String defaultMessage(RuleInfo info) {
+  String defaultMessage(RuleInfo info, [String context = '']) {
     final options = (info.params['options'] as List<String>).join(', ');
     return 'Value must be one of: $options';
   }

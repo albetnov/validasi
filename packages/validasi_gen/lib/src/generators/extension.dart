@@ -28,12 +28,13 @@ void _generateFieldValidation(StringBuffer buf, FieldRules ctx) {
   final fieldName = ctx.field.name;
   final hasRequired = ctx.rules.any((r) => r.name == 'Required');
   final rules = ctx.rules.where((r) => r.name != 'Nullable').toList();
+  final context = ctx.context;
 
   buf.writeln('    // Field: $fieldName');
 
   if (hasRequired) {
     final rule = rules.firstWhere((r) => r.name == 'Required');
-    _emitError(buf, rule, fieldName);
+    _emitError(buf, rule, fieldName, null, context);
   }
 
   for (final rule in rules) {
@@ -49,7 +50,7 @@ void _generateFieldValidation(StringBuffer buf, FieldRules ctx) {
     final check = gen.check(rule, fieldName);
     buf.writeln();
     buf.writeln('    if ($check) {');
-    _emitError(buf, rule, fieldName, gen);
+    _emitError(buf, rule, fieldName, gen, context);
     buf.writeln('    }');
   }
 
@@ -57,9 +58,9 @@ void _generateFieldValidation(StringBuffer buf, FieldRules ctx) {
 }
 
 void _emitError(StringBuffer buf, RuleInfo rule, String fieldName,
-    [RuleGen? gen]) {
+    [RuleGen? gen, String context = '']) {
   final message = gen != null
-      ? _msg(rule, gen.defaultMessage(rule))
+      ? _msg(rule, gen.defaultMessage(rule, context))
       : _msg(rule, 'Field is required');
   final details = gen?.details(rule);
 
