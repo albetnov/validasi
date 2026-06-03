@@ -1,6 +1,11 @@
 ## 1.0.0-dev.4
 
-- Added `@pragma('vm:prefer-inline')` to `execute()` and `applyRules()` for better performance (up to 10%).
+### Added
+- `@pragma('vm:prefer-inline')` to `execute()` and `applyRules()` for better performance (up to 10%).
+
+### Changed
+- Removed agent-native support documentation and related code.
+- Updated documentation to reflect newer version.
 
 ## 1.0.0-dev.3
 

@@ -11,26 +11,30 @@
 - Disk caching with 24h TTL, `--refresh` and `--clean-cache` CLI flags.
 - End-to-end integration test with snapshot comparison.
 
-### Changed
+### Breaking Changes
 - Removed `validasi` dependency; package no longer imports the validation engine.
 - Tools `list_schemas`, `describe_schema`, `validate_input` removed.
 - New tools driven by documentation content instead of runtime registry.
 
-## 0.1.0-beta.1
+## 0.1.0-beta.2
 
-Initial beta release of the Validasi MCP adapter.
+First working release of the Validasi MCP adapter.
 
 ### Added
 - MCP stdio server with `initialize`, `tools/list`, and `tools/call`.
 - Schema registry and tool handlers for agent-native support.
 - Tools for `list_schemas`, `describe_schema`, and `validate_input`.
+- Non-MCP fallback RPC handlers for direct schema introspection.
 - Deterministic structured validation payloads from Validasi.
 - Tests for the registry, tool handlers, and stdio server.
 
 ### Changed
-- Refined the `ValidasiMcpServer` implementation and tool handling.
-- Updated package configuration for workspace integration and publishability.
-- Added README guidance for the beta adapter workflow.
+- ValidasiEngine updated to support dual input/output type parameterization.
+- Updated package configuration and workflows for workspace integration.
 
 ### Notes
-- This adapter currently targets Validasi `v1.0.0-dev.x`.
+- This adapter targets Validasi `v1.0.0-dev.x`.
+
+## 0.1.0-beta.1
+
+Initial beta preview of the Validasi MCP adapter.
