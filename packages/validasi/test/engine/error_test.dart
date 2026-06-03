@@ -80,46 +80,5 @@ void main() {
 
       expect(prefixed.path, equals(['third', 'second', 'first']));
     });
-
-    test('toToolMap should provide stable envelope with empty path', () {
-      final error = ValidationError(
-        rule: 'simpleRule',
-        message: 'Simple message',
-      );
-
-      final map = error.toToolMap();
-
-      expect(map['rule'], equals('simpleRule'));
-      expect(map['message'], equals('Simple message'));
-      expect(map['path'], equals(const <String>[]));
-      expect(map.containsKey('details'), isFalse);
-    });
-
-    test('toToolMap should normalize and sort nested details maps', () {
-      final error = ValidationError(
-        rule: 'testRule',
-        message: 'Test message',
-        details: {
-          'z': 1,
-          'a': {
-            'd': true,
-            'b': 10,
-          },
-          'list': [
-            {'y': 2, 'x': 1}
-          ],
-        },
-      );
-
-      final map = error.toToolMap();
-      final details = map['details'] as Map<String, Object?>;
-      final nested = details['a'] as Map<String, Object?>;
-      final listItem =
-          (details['list'] as List<Object?>).first as Map<String, Object?>;
-
-      expect(details.keys.toList(), equals(['a', 'list', 'z']));
-      expect(nested.keys.toList(), equals(['b', 'd']));
-      expect(listItem.keys.toList(), equals(['x', 'y']));
-    });
   });
 }

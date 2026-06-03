@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "results": [
+    {
+      "path": "schemas/string",
+      "title": "String Schema",
+      "section": "schemas",
+      "snippet": "final schema = Validasi.string([\n\tStringRules.minLength(3),\n]);\n```",
+      "score": 5.0
+    },
+    {
+      "path": "guide/schemas",
+      "title": "Validation Schemas",
+      "section": "guide",
+      "snippet": "final nameSchema = Validasi.string([\n  StringRules.minLength(2),\n  StringRules.maxLength(50),\n]);",
+      "score": 3.5
+    },
+    {
+      "path": "guide/modifier-rules",
+      "title": "Built-in Modifier Rules",
+      "section": "guide",
+      "snippet": "final optionalNameSchema = Validasi.string([\n  Nullable(),\n  StringRules.minLength(3),\n]);",
+      "score": 2.5
+    },
+    {
+      "path": "guide/quick-start",
+      "title": "Quick Start",
+      "section": "guide",
+      "snippet": "final nameSchema = Validasi.string([\n  StringRules.minLength(2),\n  StringRules.maxLength(50),\n]);",
+      "score": 2.5
+    },
+    {
+      "path": "guide/getting-started",
+      "title": "Getting Started",
+      "section": "guide",
+      "snippet": "```dart\nfinal schema = Validasi.string([\n  StringRules.minLength(3),\n  StringRules.maxLength(20),\n]);",
+      "score": 2.0
+    },
+    {
+      "path": "schemas/list",
+      "title": "List Schema",
+      "section": "schemas",
+      "snippet": "final emailListSchema = Validasi.list<String>([\n\tIterableRules.forEach<String>([\n\t\tStringRules.minLength(5),\n\t]),\n]);",
+      "score": 1.5
+    },
+    {
+      "path": "schemas/map",
+      "title": "Map Schema",
+      "section": "schemas",
+      "snippet": "MapRules.hasFields({\n\t\t'name': FieldRules<String>([\n\t\t\tStringRules.minLength(2),\n\t\t]),\n\t\t'age': FieldRules<int>([",
+      "score": 1.5
+    },
+    {
+      "path": "guide/transformations",
+      "title": "Transformations",
+      "section": "guide",
+      "snippet": "Transform((value) => value?.trim()),\n  Transform((value) => value?.toLowerCase()),\n  StringRules.minLength(5),\n]);",
+      "score": 1.0
+    },
+    {
+      "path": "advanced/engine",
+      "title": "Understanding the Validasi Engine",
+      "section": "advanced",
+      "snippet": "final schema = Validasi.string([\n  Transform((s) => s?.trim()),\n  StringRules.minLength(3),\n]);\n```",
+      "score": 0.5
+    },
+    {
+      "path": "guide/installation",
+      "title": "Installation",
+      "section": "guide",
+      "snippet": "void main() {\n  final schema = Validasi.string([\n    StringRules.minLength(3),\n  ]);",
+      "score": 0.5
+    }
+  ]
+}

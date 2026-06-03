@@ -111,8 +111,13 @@ export default defineConfig({
           text: 'Advanced',
           items: [
             { text: 'Custom Rules', link: '/advanced/custom-rule' },
-            { text: 'Engine', link: '/advanced/engine' },
-            { text: 'Agent-Native Support', link: '/guide/agent-native-support' }
+            { text: 'Engine', link: '/advanced/engine' }
+          ]
+        },
+        {
+          text: 'Integration',
+          items: [
+            { text: 'MCP Server', link: '/guide/mcp-server' }
           ]
         }
       ]
