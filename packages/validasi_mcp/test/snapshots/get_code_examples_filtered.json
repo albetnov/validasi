@@ -52,7 +52,7 @@
     },
     {
       "language": "dart",
-      "code": "final tagsSchema = Validasi.list<String>([\n  IterableRules.minLength(1),\n  IterableRules.forEach(\n    Validasi.string([\n      StringRules.minLength(2),\n      StringRules.maxLength(20),\n    ]),\n  ),\n]);\n\nprint(tagsSchema.validate(['flutter', 'dart']).isValid);"
+      "code": "final tagsSchema = Validasi.list<String>([\n  IterableRules.minLength(1),\n  IterableRules.forEach<String>([\n    StringRules.minLength(2),\n    StringRules.maxLength(20),\n  ]),\n]);\n\nprint(tagsSchema.validate(['flutter', 'dart']).isValid);"
     },
     {
       "language": "dart",
@@ -80,15 +80,15 @@
     },
     {
       "language": "dart",
-      "code": "final emailListSchema = Validasi.list<String>([\n\tIterableRules.forEach(\n\t\tValidasi.string([\n\t\t\tStringRules.minLength(5),\n\t\t]),\n\t),\n]);\n\nprint(emailListSchema.validate(['a@b.c', 'test@example.com']).isValid); // true\nprint(emailListSchema.validate(['x', 'test@example.com']).isValid); // false"
+      "code": "\tfinal emailListSchema = Validasi.list<String>([\n\tIterableRules.forEach<String>([\n\t\tStringRules.minLength(5),\n\t]),\n]);\n\nprint(emailListSchema.validate(['a@b.c', 'test@example.com']).isValid); // true\nprint(emailListSchema.validate(['x', 'test@example.com']).isValid); // false"
     },
     {
       "language": "dart",
-      "code": "final matrixSchema = Validasi.list<List<int>>([\n\tIterableRules.minLength(1),\n\tIterableRules.forEach(\n\t\tValidasi.list<int>([\n\t\t\tIterableRules.minLength(2),\n\t\t\tIterableRules.forEach(\n\t\t\t\tValidasi.number<int>([\n\t\t\t\t\tNumberRules.moreThanEqual(0),\n\t\t\t\t]),\n\t\t\t),\n\t\t]),\n\t),\n]);\n\nprint(matrixSchema.validate([\n\t[1, 2],\n\t[3, 4],\n]).isValid); // true\n\nprint(matrixSchema.validate([\n\t[1],\n\t[3, -1],\n]).isValid); // false"
+      "code": "\tfinal matrixSchema = Validasi.list<List<int>>([\n\tIterableRules.minLength(1),\n\tIterableRules.forEach<List<int>>([\n\t\tIterableRules.minLength(2),\n\t\tIterableRules.forEach<int>([\n\t\t\tNumberRules.moreThanEqual(0),\n\t\t]),\n\t]),\n]);\n\nprint(matrixSchema.validate([\n\t[1, 2],\n\t[3, 4],\n]).isValid); // true\n\nprint(matrixSchema.validate([\n\t[1],\n\t[3, -1],\n]).isValid); // false"
     },
     {
       "language": "dart",
-      "code": "final usernamesSchema = Validasi.list<String>([\n\tIterableRules.minLength(1),\n\tIterableRules.forEach(\n\t\tValidasi.string([\n\t\t\tStringRules.minLength(3),\n\t\t\tStringRules.maxLength(20),\n\t\t]),\n\t),\n]);\n\nfinal result = usernamesSchema.validate(['alice', 'bob']);\nprint(result.isValid); // true"
+      "code": "\tfinal usernamesSchema = Validasi.list<String>([\n\tIterableRules.minLength(1),\n\tIterableRules.forEach<String>([\n\t\tStringRules.minLength(3),\n\t\tStringRules.maxLength(20),\n\t]),\n]);\n\nfinal result = usernamesSchema.validate(['alice', 'bob']);\nprint(result.isValid); // true"
     },
     {
       "language": "dart",
