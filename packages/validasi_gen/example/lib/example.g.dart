@@ -50,6 +50,24 @@ extension $UserValidasi on User {
       $errors.addAll($carResult.errors.map((e) => e.withPrefix('car')));
     }
 
+    // Field: spareCar (nested Car)
+    final $spareCarValue = spareCar;
+    if ($spareCarValue != null) {
+      final $spareCarResult = $spareCarValue.validate();
+      if (!$spareCarResult.isValid) {
+        $errors.addAll($spareCarResult.errors.map((e) => e.withPrefix('spareCar')));
+      }
+    }
+
+    // Field: previousCars (nested Car)
+    for (var $previousCarsIndex = 0; $previousCarsIndex < previousCars.length; $previousCarsIndex++) {
+      final $previousCarsItem = previousCars[$previousCarsIndex];
+      final $previousCarsItemResult = $previousCarsItem.validate();
+      if (!$previousCarsItemResult.isValid) {
+        $errors.addAll($previousCarsItemResult.errors.map((e) => e.withPrefix('previousCars[${$previousCarsIndex}]')));
+      }
+    }
+
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }

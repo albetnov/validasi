@@ -85,9 +85,11 @@ void _generateNestedObjectValidation(
   final resultVar = '\$${fieldName}Result';
 
   if (isNullable) {
-    buf.writeln('    if ($fieldName != null) {');
-    buf.writeln('      final $resultVar = $fieldName.validate();');
-    buf.writeln('      if (!\$${fieldName}Result.isValid) {');
+    final localVar = '\$${fieldName}Value';
+    buf.writeln('    final $localVar = $fieldName;');
+    buf.writeln('    if ($localVar != null) {');
+    buf.writeln('      final $resultVar = $localVar.validate();');
+    buf.writeln('      if (!$resultVar.isValid) {');
     buf.writeln('        \$errors.addAll($resultVar.errors.map((e) => e.withPrefix(\'$fieldName\')));');
     buf.writeln('      }');
     buf.writeln('    }');
@@ -105,22 +107,24 @@ void _generateNestedIterableValidation(
   final itemVar = '\$${fieldName}Item';
   final resultVar = '\$${fieldName}ItemResult';
 
-  void generateBody() {
-    buf.writeln('      for (var $indexVar = 0; $indexVar < $fieldName.length; $indexVar++) {');
-    buf.writeln('        final $itemVar = $fieldName[$indexVar];');
-    buf.writeln('        final $resultVar = $itemVar.validate();');
-    buf.writeln('        if (!$resultVar.isValid) {');
-    buf.writeln('          \$errors.addAll($resultVar.errors.map((e) => e.withPrefix(\'$fieldName[\${$indexVar}]\')));');
-    buf.writeln('        }');
-    buf.writeln('      }');
+  void generateBody(String indent, String collectionName) {
+    buf.writeln('${indent}for (var $indexVar = 0; $indexVar < $collectionName.length; $indexVar++) {');
+    buf.writeln('${indent}  final $itemVar = $collectionName[$indexVar];');
+    buf.writeln('${indent}  final $resultVar = $itemVar.validate();');
+    buf.writeln('${indent}  if (!$resultVar.isValid) {');
+    buf.writeln('${indent}    \$errors.addAll($resultVar.errors.map((e) => e.withPrefix(\'$fieldName[\${$indexVar}]\')));');
+    buf.writeln('${indent}  }');
+    buf.writeln('${indent}}');
   }
 
   if (isNullable) {
-    buf.writeln('    if ($fieldName != null) {');
-    generateBody();
+    final localVar = '\$${fieldName}Value';
+    buf.writeln('    final $localVar = $fieldName;');
+    buf.writeln('    if ($localVar != null) {');
+    generateBody('      ', localVar);
     buf.writeln('    }');
   } else {
-    generateBody();
+    generateBody('    ', fieldName);
   }
 }
 

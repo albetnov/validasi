@@ -13,7 +13,17 @@ class User {
 
   final Car car;
 
-  const User({required this.email, required this.tags, required this.car});
+  final Car? spareCar;
+
+  final List<Car> previousCars;
+
+  const User({
+    required this.email,
+    required this.tags,
+    required this.car,
+    this.spareCar,
+    required this.previousCars,
+  });
 }
 
 @ValidateClass()
