@@ -44,6 +44,12 @@ extension $UserValidasi on User {
       );
     }
 
+    // Field: car (nested Car)
+    final $carResult = car.validate();
+    if (!$carResult.isValid) {
+      $errors.addAll($carResult.errors.map((e) => e.withPrefix('car')));
+    }
+
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }

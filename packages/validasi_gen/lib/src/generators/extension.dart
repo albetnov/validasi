@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:validasi_gen/src/handlers.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 
@@ -25,7 +26,10 @@ String generateValidateExtension(String className, List<FieldRules> fields) {
 }
 
 void _generateFieldValidation(StringBuffer buf, FieldRules ctx) {
-  if (ctx.isNested) return;
+  if (ctx.isNested) {
+    _generateNestedValidation(buf, ctx);
+    return;
+  }
 
   final fieldName = ctx.field.name;
   final hasRequired = ctx.rules.any((r) => r.name == 'Required');
@@ -57,6 +61,67 @@ void _generateFieldValidation(StringBuffer buf, FieldRules ctx) {
   }
 
   buf.writeln();
+}
+
+void _generateNestedValidation(StringBuffer buf, FieldRules ctx) {
+  final fieldName = ctx.field.name;
+  final nestedClassName = ctx.nestedClassName!;
+  final isIterable = ctx.isNestedIterable;
+  final isNullable = ctx.field.type.nullabilitySuffix != NullabilitySuffix.none;
+
+  buf.writeln('    // Field: $fieldName (nested $nestedClassName)');
+
+  if (isIterable) {
+    _generateNestedIterableValidation(buf, fieldName, nestedClassName, isNullable);
+  } else {
+    _generateNestedObjectValidation(buf, fieldName, nestedClassName, isNullable);
+  }
+
+  buf.writeln();
+}
+
+void _generateNestedObjectValidation(
+    StringBuffer buf, String fieldName, String nestedClassName, bool isNullable) {
+  final resultVar = '\$${fieldName}Result';
+
+  if (isNullable) {
+    buf.writeln('    if ($fieldName != null) {');
+    buf.writeln('      final $resultVar = $fieldName.validate();');
+    buf.writeln('      if (!\$${fieldName}Result.isValid) {');
+    buf.writeln('        \$errors.addAll($resultVar.errors.map((e) => e.withPrefix(\'$fieldName\')));');
+    buf.writeln('      }');
+    buf.writeln('    }');
+  } else {
+    buf.writeln('    final $resultVar = $fieldName.validate();');
+    buf.writeln('    if (!$resultVar.isValid) {');
+    buf.writeln('      \$errors.addAll($resultVar.errors.map((e) => e.withPrefix(\'$fieldName\')));');
+    buf.writeln('    }');
+  }
+}
+
+void _generateNestedIterableValidation(
+    StringBuffer buf, String fieldName, String nestedClassName, bool isNullable) {
+  final indexVar = '\$${fieldName}Index';
+  final itemVar = '\$${fieldName}Item';
+  final resultVar = '\$${fieldName}ItemResult';
+
+  void generateBody() {
+    buf.writeln('      for (var $indexVar = 0; $indexVar < $fieldName.length; $indexVar++) {');
+    buf.writeln('        final $itemVar = $fieldName[$indexVar];');
+    buf.writeln('        final $resultVar = $itemVar.validate();');
+    buf.writeln('        if (!$resultVar.isValid) {');
+    buf.writeln('          \$errors.addAll($resultVar.errors.map((e) => e.withPrefix(\'$fieldName[\${$indexVar}]\')));');
+    buf.writeln('        }');
+    buf.writeln('      }');
+  }
+
+  if (isNullable) {
+    buf.writeln('    if ($fieldName != null) {');
+    generateBody();
+    buf.writeln('    }');
+  } else {
+    generateBody();
+  }
 }
 
 void _emitError(StringBuffer buf, RuleInfo rule, String fieldName,
