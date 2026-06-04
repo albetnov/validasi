@@ -4,8 +4,21 @@ import 'src/rules/required.dart';
 import 'src/rules/inline_rule.dart';
 import 'src/rules/having.dart';
 
+import 'src/rules/string/alpha.dart';
+import 'src/rules/string/alphanumeric.dart';
+import 'src/rules/string/case.dart';
+import 'src/rules/string/contains.dart';
+import 'src/rules/string/email.dart';
+import 'src/rules/string/ends_with.dart';
+import 'src/rules/string/ip.dart';
 import 'src/rules/string/max_length.dart';
+import 'src/rules/string/numeric.dart';
 import 'src/rules/string/one_of.dart';
+import 'src/rules/string/regex.dart';
+import 'src/rules/string/starts_with.dart';
+import 'src/rules/string/ulid.dart';
+import 'src/rules/string/url.dart';
+import 'src/rules/string/uuid.dart';
 
 import 'src/rules/iterable/foreach.dart';
 
@@ -62,14 +75,74 @@ final class Rules {
 class _StringRules {
   const _StringRules();
 
+  Alpha alpha({String? message}) => Alpha(message: message);
+
+  Alphanumeric alphanumeric({String? message}) =>
+      Alphanumeric(message: message);
+
+  Contains contains(String substring, {String? message}) =>
+      Contains(substring, message: message);
+
+  Email email({
+    bool allowTopLevelDomain = false,
+    bool allowInternational = false,
+    List<String>? domains,
+    String? message,
+  }) =>
+      Email(
+        allowTopLevelDomain: allowTopLevelDomain,
+        allowInternational: allowInternational,
+        domains: domains,
+        message: message,
+      );
+
+  EndsWith endsWith(String suffix, {String? message}) =>
+      EndsWith(suffix, message: message);
+
+  Ip ip({String? message}) => Ip(message: message);
+
+  Ipv4 ipv4({String? message}) => Ipv4(message: message);
+
+  Ipv6 ipv6({String? message}) => Ipv6(message: message);
+
+  Lowercase lowercase({String? message}) => Lowercase(message: message);
+
   string_min_len.MinLength minLength(int length, {String? message}) =>
       string_min_len.MinLength(length, message: message);
 
   MaxLength maxLength(int length, {String? message}) =>
       MaxLength(length, message: message);
 
+  Numeric numeric({String? message}) => Numeric(message: message);
+
   OneOf oneOf(List<String> validValues, {String? message}) =>
       OneOf(validValues, message: message);
+
+  Regex regex(String pattern, {String? message}) =>
+      Regex(pattern, message: message);
+
+  StartsWith startsWith(String prefix, {String? message}) =>
+      StartsWith(prefix, message: message);
+
+  Ulid ulid({String? message}) => Ulid(message: message);
+
+  Url url({
+    bool requireScheme = true,
+    bool requireHost = true,
+    bool httpsOnly = false,
+    String? message,
+  }) =>
+      Url(
+        requireScheme: requireScheme,
+        requireHost: requireHost,
+        httpsOnly: httpsOnly,
+        message: message,
+      );
+
+  Uppercase uppercase({String? message}) => Uppercase(message: message);
+
+  Uuid uuid({List<int> versions = const [4, 7], String? message}) =>
+      Uuid(versions: versions, message: message);
 }
 
 class _NumberRules {
