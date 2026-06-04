@@ -50,3 +50,40 @@ extension $UserValidasi on User {
     return ValidasiResult(errors: [], isValid: true, data: this);
   }
 }
+
+extension $CarValidasi on Car {
+  ValidasiResult<Car> validate() {
+    final $errors = <ValidationError>[];
+
+    // Field: make
+
+    if (make != null && make.length < 2) {
+      $errors.add(
+        ValidationError(
+          rule: 'MinLength',
+          message: 'Minimum length is 2 characters',
+          details: {'length': '2'},
+          path: ['make'],
+        ),
+      );
+    }
+
+    // Field: model
+
+    if (model != null && model.length < 2) {
+      $errors.add(
+        ValidationError(
+          rule: 'MinLength',
+          message: 'Minimum length is 2 characters',
+          details: {'length': '2'},
+          path: ['model'],
+        ),
+      );
+    }
+
+    if ($errors.isNotEmpty) {
+      return ValidasiResult(errors: $errors, isValid: false);
+    }
+    return ValidasiResult(errors: [], isValid: true, data: this);
+  }
+}

@@ -11,5 +11,20 @@ class User {
   @Validate.iterable([MinLength(1)])
   final List<String> tags;
 
-  User({required this.email, required this.tags});
+  final Car car;
+
+  const User({required this.email, required this.tags, required this.car});
+}
+
+@ValidateClass()
+class Car {
+  @Validate.string([MinLength(2)])
+  final String make;
+
+  @Validate.string([
+    MinLength(2),
+  ])
+  final String model;
+
+  const Car({required this.make, required this.model});
 }

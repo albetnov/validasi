@@ -1,3 +1,5 @@
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:validasi_gen/src/handlers/handler.dart';
 
@@ -9,7 +11,26 @@ class MaxLengthGen extends RuleGen {
   RuleInfo parse(ConstantReader rule) {
     final length = rule.read('length').intValue;
     return RuleInfo(
-        'MaxLength', {'length': length}, rule.peek('message')?.stringValue);
+      'MaxLength',
+      {'length': length},
+      rule.peek('message')?.stringValue,
+      typeArg: typeArgOf(rule),
+    );
+  }
+
+  @override
+  void validateType(DartType? typeArg, FieldElement field) {
+    if (typeArg == null || typeArg is DynamicType || typeArg.isDartCoreObject) return;
+    if (typeArg.isDartCoreString) return;
+    if (typeArg is InterfaceType) {
+      final name = typeArg.element.name;
+      if (name == 'Iterable' || name == 'List' || name == 'Set') return;
+    }
+    throw InvalidGenerationSourceError(
+      "MaxLength does not support type '${typeArg.getDisplayString(withNullability: false)}'. "
+      "Supported: String, Iterable<T>",
+      element: field,
+    );
   }
 
   @override

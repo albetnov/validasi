@@ -1,3 +1,5 @@
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:validasi_gen/src/handlers/handler.dart';
 
@@ -12,7 +14,23 @@ class OneOfGen extends RuleGen {
     for (final o in optionsList) {
       options.add(ConstantReader(o).stringValue);
     }
-    return RuleInfo('OneOf', {'options': options}, rule.peek('message')?.stringValue);
+    return RuleInfo(
+      'OneOf',
+      {'options': options},
+      rule.peek('message')?.stringValue,
+      typeArg: typeArgOf(rule),
+    );
+  }
+
+  @override
+  void validateType(DartType? typeArg, FieldElement field) {
+    if (typeArg == null || typeArg is DynamicType || typeArg.isDartCoreObject) return;
+    if (typeArg.isDartCoreString) return;
+    throw InvalidGenerationSourceError(
+      "OneOf does not support type '${typeArg.getDisplayString(withNullability: false)}'. "
+      "Supported: String",
+      element: field,
+    );
   }
 
   @override

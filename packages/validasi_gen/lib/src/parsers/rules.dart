@@ -41,7 +41,10 @@ List<FieldRules> extractValidateFields(ClassElement element) {
 
       final rules = rulesList.map<RuleInfo>((dartObj) {
         final ruleReader = ConstantReader(dartObj);
-        return _parseRule(ruleReader);
+        final rule = _parseRule(ruleReader);
+        final gen = ruleGens[rule.name];
+        if (gen != null) gen.validateType(rule.typeArg, field);
+        return rule;
       }).toList();
       return (rules, context);
     }
