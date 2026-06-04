@@ -22,11 +22,18 @@ import 'src/rules/string/uuid.dart';
 
 import 'src/rules/iterable/foreach.dart';
 
+import 'src/rules/numbers/between.dart';
+import 'src/rules/numbers/decimal.dart';
 import 'src/rules/numbers/finite.dart';
+import 'src/rules/numbers/integer.dart';
 import 'src/rules/numbers/less_than.dart';
 import 'src/rules/numbers/less_than_equal.dart';
 import 'src/rules/numbers/more_than.dart';
 import 'src/rules/numbers/more_than_equal.dart';
+import 'src/rules/numbers/negative.dart';
+import 'src/rules/numbers/non_negative.dart';
+import 'src/rules/numbers/non_positive.dart';
+import 'src/rules/numbers/positive.dart';
 
 import 'src/rules/map/has_fields.dart';
 import 'src/rules/map/has_field_keys.dart';
@@ -148,7 +155,14 @@ class _StringRules {
 class _NumberRules {
   const _NumberRules();
 
+  Between<T> between<T extends num>(T min, T max, {String? message}) =>
+      Between<T>(min, max, message: message);
+
+  Decimal decimal({String? message}) => Decimal(message: message);
+
   Finite finite({String? message}) => Finite(message: message);
+
+  Integer integer({String? message}) => Integer(message: message);
 
   LessThan<T> lessThan<T extends num>(T value, {String? message}) =>
       LessThan<T>(value, message: message);
@@ -161,6 +175,18 @@ class _NumberRules {
 
   MoreThanEqual<T> moreThanEqual<T extends num>(T value, {String? message}) =>
       MoreThanEqual<T>(value, message: message);
+
+  Negative<T> negative<T extends num>({String? message}) =>
+      Negative<T>(message: message);
+
+  NonNegative<T> nonNegative<T extends num>({String? message}) =>
+      NonNegative<T>(message: message);
+
+  NonPositive<T> nonPositive<T extends num>({String? message}) =>
+      NonPositive<T>(message: message);
+
+  Positive<T> positive<T extends num>({String? message}) =>
+      Positive<T>(message: message);
 }
 
 class _IterableRules {
