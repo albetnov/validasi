@@ -13,7 +13,7 @@ class ValidasiGenerator extends Generator {
     for (final cls in library.classes) {
       if (!_hasAnnotation(cls, 'ValidateClass')) continue;
 
-      final fields = extractValidateFields(cls);
+      final fields = extractValidateFields(cls, library);
       if (fields.isEmpty) continue;
 
       buffer.write(generateValidateExtension(cls.name, fields));

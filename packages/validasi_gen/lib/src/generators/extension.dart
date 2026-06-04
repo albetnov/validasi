@@ -25,6 +25,8 @@ String generateValidateExtension(String className, List<FieldRules> fields) {
 }
 
 void _generateFieldValidation(StringBuffer buf, FieldRules ctx) {
+  if (ctx.isNested) return;
+
   final fieldName = ctx.field.name;
   final hasRequired = ctx.rules.any((r) => r.name == 'Required');
   final rules = ctx.rules.where((r) => r.name != 'Nullable').toList();

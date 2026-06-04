@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'package:validasi_gen/src/handlers.dart';
@@ -7,10 +8,22 @@ class FieldRules {
   final FieldElement field;
   final List<RuleInfo> rules;
   final String context;
-  FieldRules(this.field, this.rules, {this.context = ''});
+  final String? nestedClassName;
+  final bool isNestedIterable;
+
+  FieldRules(
+    this.field,
+    this.rules, {
+    this.context = '',
+    this.nestedClassName,
+    this.isNestedIterable = false,
+  });
+
+  bool get isNested => nestedClassName != null;
 }
 
-List<FieldRules> extractValidateFields(ClassElement element) {
+List<FieldRules> extractValidateFields(
+    ClassElement element, LibraryReader library) {
   final result = <FieldRules>[];
 
   for (final field in element.fields) {
@@ -19,10 +32,62 @@ List<FieldRules> extractValidateFields(ClassElement element) {
     final extracted = _extractRules(field);
     if (extracted != null) {
       result.add(FieldRules(field, extracted.$1, context: extracted.$2));
+      continue;
+    }
+
+    final nested = _detectNestedField(field, library);
+    if (nested != null) {
+      result.add(FieldRules(
+        field,
+        const [],
+        nestedClassName: nested.$1,
+        isNestedIterable: nested.$2,
+      ));
     }
   }
 
   return result;
+}
+
+bool _hasValidateClassAnnotation(ClassElement cls) {
+  return cls.metadata.any((meta) {
+    final element = meta.element;
+    return element is ConstructorElement &&
+        element.enclosingElement.name == 'ValidateClass';
+  });
+}
+
+(String className, bool isIterable)? _detectNestedField(
+    FieldElement field, LibraryReader library) {
+  final type = field.type;
+
+  if (type.isDartCoreMap) return null;
+
+  if (type is InterfaceType) {
+    final typeName = type.element.name;
+    if (typeName == 'List' || typeName == 'Iterable' || typeName == 'Set') {
+      if (type.typeArguments.isNotEmpty) {
+        final elementType = type.typeArguments.first;
+        final elementClass = _getClassFromType(elementType);
+        if (elementClass != null && _hasValidateClassAnnotation(elementClass)) {
+          return (elementClass.name, true);
+        }
+      }
+    }
+  }
+
+  final directClass = _getClassFromType(type);
+  if (directClass != null && _hasValidateClassAnnotation(directClass)) {
+    return (directClass.name, false);
+  }
+
+  return null;
+}
+
+ClassElement? _getClassFromType(DartType type) {
+  final element = type.element;
+  if (element is ClassElement) return element;
+  return null;
 }
 
 (List<RuleInfo>, String)? _extractRules(FieldElement field) {
