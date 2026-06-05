@@ -21,7 +21,8 @@ void main() {
 
       expect(state.errors.length, equals(1));
       expect(state.errors.first.rule, equals('Regex'));
-      expect(state.errors.first.message, equals('Must match pattern "^[a-z]+\$"'));
+      expect(
+          state.errors.first.message, equals('Must match pattern "^[a-z]+\$"'));
     });
 
     test('should use custom message', () {

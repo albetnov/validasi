@@ -21,6 +21,12 @@ import 'src/rules/string/url.dart';
 import 'src/rules/string/uuid.dart';
 
 import 'src/rules/iterable/foreach.dart';
+import 'src/rules/iterable/exact_length.dart';
+import 'src/rules/iterable/is_empty.dart';
+import 'src/rules/iterable/is_not_empty.dart';
+import 'src/rules/iterable/not_contains.dart';
+import 'src/rules/iterable/unique.dart';
+import 'src/rules/iterable/contains_all.dart';
 
 import 'src/rules/numbers/finite.dart';
 import 'src/rules/numbers/less_than.dart';
@@ -37,6 +43,8 @@ import 'src/rules/map/field_rules.dart';
 
 import 'src/rules/string/min_length.dart' as string_min_len;
 import 'src/rules/iterable/min_length.dart' as iterable_min_len;
+import 'src/rules/iterable/max_length.dart' as iterable_max_len;
+import 'src/rules/iterable/contains.dart' as iterable_contains;
 
 export 'src/rules/map/field_rules.dart';
 export 'src/rules/map/conditional_field.dart' show ConditionalFieldCallback;
@@ -168,6 +176,41 @@ class _IterableRules {
 
   iterable_min_len.MinLength<T> minLength<T>(int length, {String? message}) =>
       iterable_min_len.MinLength<T>(length, message: message);
+
+  iterable_max_len.MaxLength<T> maxLength<T>(int length, {String? message}) =>
+      iterable_max_len.MaxLength<T>(length, message: message);
+
+  ExactLength<T> exactLength<T>(int length, {String? message}) =>
+      ExactLength<T>(length, message: message);
+
+  IsEmpty<T> isEmpty<T>({String? message}) => IsEmpty<T>(message: message);
+
+  IsNotEmpty<T> isNotEmpty<T>({String? message}) =>
+      IsNotEmpty<T>(message: message);
+
+  iterable_contains.Contains<T> contains<T>(
+    T element, {
+    bool Function(T a, T b)? equals,
+    String? message,
+  }) =>
+      iterable_contains.Contains<T>(element, equals: equals, message: message);
+
+  NotContains<T> notContains<T>(
+    T element, {
+    bool Function(T a, T b)? equals,
+    String? message,
+  }) =>
+      NotContains<T>(element, equals: equals, message: message);
+
+  Unique<T> unique<T>({bool Function(T a, T b)? equals, String? message}) =>
+      Unique<T>(equals: equals, message: message);
+
+  ContainsAll<T> containsAll<T>(
+    List<T> elements, {
+    bool Function(T a, T b)? equals,
+    String? message,
+  }) =>
+      ContainsAll<T>(elements, equals: equals, message: message);
 
   ForEach<T> forEach<T>(List<Rule<T>> rules) => ForEach<T>(rules);
 }

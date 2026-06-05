@@ -48,7 +48,8 @@ void main() {
 
       expect(state.errors.length, equals(1));
       expect(state.errors.first.rule, equals('Email'));
-      expect(state.errors.first.message, equals('Must be a valid email address'));
+      expect(
+          state.errors.first.message, equals('Must be a valid email address'));
     });
 
     test('should fail with multiple @ symbols', () {
