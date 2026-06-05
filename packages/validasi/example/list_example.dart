@@ -3,9 +3,9 @@ import 'package:validasi/rules.dart';
 
 void main(List<String> args) {
   final schema = Validasi.list<List<String>>([
-    IterableRules.forEach<List<String>>([
-      IterableRules.forEach<String>([
-        StringRules.minLength(1, message: 'required'),
+    Rules.iterable.forEach<List<String>>([
+      Rules.iterable.forEach<String>([
+        Rules.string.minLength(1, message: 'required'),
       ]),
     ]),
   ]);

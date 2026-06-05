@@ -4,9 +4,9 @@ import 'package:validasi/rules.dart';
 
 class ListBenchmark extends BenchmarkBase {
   final schema = Validasi.list<String>([
-    IterableRules.minLength(1),
-    IterableRules.forEach<String>([
-      StringRules.minLength(2),
+    Rules.iterable.minLength(1),
+    Rules.iterable.forEach<String>([
+      Rules.string.minLength(2),
     ]),
   ]);
 

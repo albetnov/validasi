@@ -1,3 +1,19 @@
+## 1.0.0-dev.5
+
+### Breaking Changes
+- Unified `Rules` class replaces `StringRules`, `IterableRules`, `NumberRules`, `MapRules`.
+  - `StringRules.minLength(...)` → `Rules.string.minLength(...)`
+  - `IterableRules.forEach(...)` → `Rules.iterable.forEach(...)`
+  - `NumberRules.moreThanEqual(...)` → `Rules.number.moreThanEqual(...)`
+  - `MapRules.hasFields(...)` → `Rules.map.hasFields(...)`
+
+### Added
+- Generic rules: `Equals`, `NotEquals`, `AnyOf`
+- String rules: `startsWith`, `endsWith`, `contains`, `regex`, `lowercase`, `uppercase`, `alpha`, `alphanumeric`, `numeric`, `uuid`, `ulid`, `ip`, `ipv4`, `ipv6`, `url`, `email`
+- Number rules: `integer`, `decimal`, `positive`, `negative`, `nonNegative`, `nonPositive`, `between`
+- Iterable rules: `contains`, `notContains`, `containsAll`, `unique`, `isEmpty`, `isNotEmpty`, `exactLength`
+- Map rules: `allValues`, `allowedKeys`, `forbiddenKeys`, `minKeys`, `maxKeys`, `requiredAny`, `requiredOneOf`, `requiredAll`, `dependsOn`, `mutuallyExclusive`, `matchesField`
+
 ## 1.0.0-dev.4
 
 ### Added

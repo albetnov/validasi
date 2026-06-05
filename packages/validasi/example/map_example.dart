@@ -3,30 +3,30 @@ import 'package:validasi/rules.dart';
 
 void main(List<String> args) {
   final schema = Validasi.map<dynamic>([
-    MapRules.hasFields({
+    Rules.map.hasFields({
       'name': FieldRules<String>([
-        StringRules.minLength(1, message: 'Name cannot be empty'),
+        Rules.string.minLength(1, message: 'Name cannot be empty'),
       ]),
       'age': FieldRules<int>([
-        NumberRules.moreThanEqual(1, message: 'Age cannot be empty'),
+        Rules.number.moreThanEqual(1, message: 'Age cannot be empty'),
       ]),
       'is_order': FieldRules<bool>([]),
       'address': FieldRules<Map<String, dynamic>>([
-        MapRules.hasFields({
+        Rules.map.hasFields({
           'street': FieldRules<String>([
-            StringRules.minLength(1, message: 'Street cannot be empty'),
+            Rules.string.minLength(1, message: 'Street cannot be empty'),
           ]),
           'city': FieldRules<String>([
-            StringRules.minLength(1, message: 'City cannot be empty'),
+            Rules.string.minLength(1, message: 'City cannot be empty'),
           ]),
           'zip': FieldRules<String>([
-            StringRules.minLength(5,
-                message: 'Zip code must be at least 5 digits'),
+            Rules.string
+                .minLength(5, message: 'Zip code must be at least 5 digits'),
           ]),
         }),
       ]),
     }),
-    MapRules.conditionalField('address', (context, value) {
+    Rules.map.conditionalField('address', (context, value) {
       if (context.get('is_order') == true && context.get('address') == null) {
         return 'Address is required when is_order is true';
       }
@@ -48,7 +48,7 @@ void main(List<String> args) {
       "value: ${result.data}, type: ${result.data.runtimeType}");
 
   final schema2 = Validasi.map([
-    MapRules.hasFieldKeys({'name', 'email'}),
+    Rules.map.hasFieldKeys({'name', 'email'}),
   ]);
 
   final result2 = schema2.validate(<String, dynamic>{});
