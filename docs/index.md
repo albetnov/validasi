@@ -57,17 +57,17 @@ import 'package:validasi/rules.dart';
 
 // Define your validation schema
 final userSchema = Validasi.map<dynamic>([
-  MapRules.hasFields({
+  Rules.map.hasFields({
     'name': FieldRules<String>([
-      StringRules.minLength(2),
-      StringRules.maxLength(50),
+      Rules.string.minLength(2),
+      Rules.string.maxLength(50),
     ]),
     'email': FieldRules<String>([
-      StringRules.email(),
+      Rules.string.email(),
     ]),
     'age': FieldRules<int>([
-      NumberRules.moreThanEqual(18),
-      NumberRules.lessThan(100),
+      Rules.number.moreThanEqual(18),
+      Rules.number.lessThan(100),
     ]),
   }),
 ]);
@@ -97,7 +97,7 @@ Battle-tested in production applications. Validasi handles edge cases gracefully
 :::
 
 ::: warning Performance Matters
-With built-in caching and optimization, Validasi is designed for high-performance scenarios where validation speed is critical.
+Through a series of optimizations, Validasi is designed for high-performance scenarios where validation speed is critical.
 :::
 
 ## Installation

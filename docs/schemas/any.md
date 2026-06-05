@@ -11,7 +11,7 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 
 final boolSchema = Validasi.any<bool>([
-	Required(),
+	Rules.required(),
 ]);
 
 print(boolSchema.validate(true).isValid); // true
@@ -30,10 +30,9 @@ Example for non-String key maps:
 
 ```dart
 final intKeyMapSchema = Validasi.any<Map<int, String>>([
-	InlineRule<Map<int, String>>(
+	Rules.inline<Map<int, String>>(
 		(value) => value != null && value.containsKey(1),
 		message: 'Map must contain key 1',
-		name: 'contains_key_1',
 	),
 ]);
 
@@ -41,16 +40,73 @@ print(intKeyMapSchema.validate({1: 'ok'}).isValid); // true
 print(intKeyMapSchema.validate({2: 'no'}).isValid); // false
 ```
 
+## Available Rules
+
+### Rules.equals
+
+Ensures the value equals a specific value.
+
+```dart
+final statusSchema = Validasi.any<String>([
+	Rules.equals('active'),
+]);
+
+print(statusSchema.validate('active').isValid); // true
+print(statusSchema.validate('inactive').isValid); // false
+```
+
+For custom equality:
+
+```dart
+final userSchema = Validasi.any<Map<String, dynamic>>([
+	Rules.equals(
+		{'id': 1},
+		equals: (a, b) => a['id'] == b['id'],
+	),
+]);
+```
+
+### Rules.notEquals
+
+Ensures the value does not equal a specific value.
+
+```dart
+final nonZeroSchema = Validasi.any<int>([
+	Rules.notEquals(0),
+]);
+
+print(nonZeroSchema.validate(42).isValid); // true
+print(nonZeroSchema.validate(0).isValid); // false
+```
+
+### Rules.anyOf
+
+Ensures the value satisfies at least one of the given rule sets (OR logic).
+
+```dart
+final flexibleSchema = Validasi.any<String>([
+	Rules.anyOf([
+		[Rules.string.minLength(10)],
+		[Rules.string.startsWith('special-')],
+	]),
+]);
+
+print(flexibleSchema.validate('a long enough string').isValid); // true
+print(flexibleSchema.validate('special-ok').isValid); // true
+print(flexibleSchema.validate('short').isValid); // false
+```
+
+This is useful for "either/or" validation scenarios without dropping to `InlineRule`.
+
 ## InlineRule with Any
 
 `InlineRule` is the most common way to add straightforward custom validation.
 
 ```dart
 final scoreSchema = Validasi.any<int>([
-	InlineRule<int>(
+	Rules.inline<int>(
 		(value) => value != null && value >= 0 && value <= 100,
 		message: 'Score must be between 0 and 100',
-		name: 'score_range',
 	),
 ]);
 
@@ -99,12 +155,11 @@ print(ageSchema.validate(16).isValid); // false
 
 ```dart
 final normalizedCodeSchema = Validasi.any<String>([
-	Nullable(),
-	Transform((value) => value?.trim().toUpperCase()),
-	InlineRule<String>(
+	Rules.nullable(),
+	Rules.transform((value) => value?.trim().toUpperCase()),
+	Rules.inline<String>(
 		(value) => value == null || value.startsWith('SKU-'),
 		message: 'Code must start with SKU-',
-		name: 'sku_prefix',
 	),
 ]);
 

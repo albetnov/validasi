@@ -1,9 +1,6 @@
 import 'package:benchmark_harness/benchmark_harness.dart';
-import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 import 'package:validasi/engine.dart';
-import 'package:validasi/src/engine/state.dart';
-import 'package:validasi/src/rules/map/field_rules.dart';
 import 'package:validasi/src/rules/map/has_fields.dart';
 
 final mapData = <String, dynamic>{
@@ -14,11 +11,11 @@ final mapData = <String, dynamic>{
 };
 
 final fieldRules = HasFields({
-  'name': FieldRules<String>([StringRules.minLength(2)]),
-  'age': FieldRules<int>([NumberRules.moreThanEqual(18)]),
-  'email': FieldRules<String>([StringRules.minLength(5)]),
+  'name': FieldRules<String>([Rules.string.minLength(2)]),
+  'age': FieldRules<int>([Rules.number.moreThanEqual(18)]),
+  'email': FieldRules<String>([Rules.string.minLength(5)]),
   'score': FieldRules<int>(
-      [NumberRules.moreThanEqual(0), NumberRules.lessThan(100)]),
+      [Rules.number.moreThanEqual(0), Rules.number.lessThan(100)]),
 });
 
 class FieldRulesBenchmark extends BenchmarkBase {
@@ -34,16 +31,16 @@ class FieldRulesBenchmark extends BenchmarkBase {
 // Simulate old engine-based approach for comparison
 final engineFields = <String, ValidasiEngine<Object?, dynamic>>{
   'name': ValidasiEngine<Object?, dynamic>(
-    rules: [StringRules.minLength(2)],
+    rules: [Rules.string.minLength(2)],
   ),
   'age': ValidasiEngine<Object?, dynamic>(
-    rules: [NumberRules.moreThanEqual(18)],
+    rules: [Rules.number.moreThanEqual(18)],
   ),
   'email': ValidasiEngine<Object?, dynamic>(
-    rules: [StringRules.minLength(5)],
+    rules: [Rules.string.minLength(5)],
   ),
   'score': ValidasiEngine<Object?, dynamic>(
-    rules: [NumberRules.moreThanEqual(0), NumberRules.lessThan(100)],
+    rules: [Rules.number.moreThanEqual(0), Rules.number.lessThan(100)],
   ),
 };
 

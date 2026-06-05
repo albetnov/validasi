@@ -16,9 +16,9 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 
 final emailSchema = Validasi.string([
-  Transform((value) => value?.trim()),
-  Transform((value) => value?.toLowerCase()),
-  StringRules.minLength(5),
+  Rules.transform<String>((value) => value?.trim()),
+  Rules.transform<String>((value) => value?.toLowerCase()),
+  Rules.string.minLength(5),
 ]);
 
 final result = emailSchema.validate('  USER@EXAMPLE.COM  ');
@@ -43,7 +43,7 @@ import 'package:validasi/transformer.dart';
 
 // Create base schema validating int
 final ageSchema = Validasi.number<int>([
-  NumberRules.moreThanEqual(0),
+  Rules.number.moreThanEqual(0),
 ]);
 
 // Add preprocessing: accepts String, converts to int
@@ -69,7 +69,7 @@ Validation flow is:
 
 1. `withPreprocess(...)` transformation (if configured)
 2. Type check against schema type
-3. Rule execution, including `Transform(...)`
+3. Rule execution, including `Rules.transform<String>(...)`
 4. Final `ValidasiResult`
 
 This means:
@@ -92,10 +92,10 @@ This means:
 ```dart
 // Schema validates String and applies Transform rules
 final usernameSchema = Validasi.string([
-  Nullable(),
-  Transform((value) => value?.trim()),
-  Transform((value) => value?.toLowerCase()),
-  StringRules.minLength(3),
+  Rules.nullable<String>(),
+  Rules.transform<String>((value) => value?.trim()),
+  Rules.transform<String>((value) => value?.toLowerCase()),
+  Rules.string.minLength(3),
 ]);
 
 // Add preprocessing to accept dynamic input and convert to String
@@ -116,7 +116,7 @@ When you need to accept values of unknown type at compile time, two approaches:
 ```dart
 // Engine<OutputType, dynamic> accepts any input
 final schema = ValidasiEngine<int, dynamic>([
-  NumberRules.moreThan(0),
+  Rules.number.moreThan(0),
 ]);
 
 schema.validate(42);     // OK: int
@@ -127,7 +127,7 @@ schema.validate('42');   // Runtime TypeCheck error (no preprocess)
 ```dart
 // Explicit preprocessing handles type conversion
 final schema = Validasi.number<int>([
-  NumberRules.moreThan(0),
+  Rules.number.moreThan(0),
 ]).withPreprocess(
   ValidasiTransformation<String, int>((s) => int.parse(s)),
 );

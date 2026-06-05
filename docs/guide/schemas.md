@@ -14,8 +14,8 @@ import 'package:validasi/rules.dart';
 import 'package:validasi/engine.dart';
 
 final nameSchema = Validasi.string([
-  StringRules.minLength(2),
-  StringRules.maxLength(50),
+  Rules.string.minLength(2),
+  Rules.string.maxLength(50),
 ]);
 
 final result = nameSchema.validate('John Doe');
@@ -28,8 +28,8 @@ Use `Validasi.number<T>()` for numeric values.
 
 ```dart
 final ageSchema = Validasi.number<int>([
-  NumberRules.moreThanEqual(0),
-  NumberRules.lessThan(150),
+  Rules.number.moreThanEqual(0),
+  Rules.number.lessThan(150),
 ]);
 
 print(ageSchema.validate(25).isValid);
@@ -41,10 +41,10 @@ Use `Validasi.list<T>()` for lists and other iterables.
 
 ```dart
 final tagsSchema = Validasi.list<String>([
-  IterableRules.minLength(1),
-  IterableRules.forEach<String>([
-    StringRules.minLength(2),
-    StringRules.maxLength(20),
+  Rules.iterable.minLength(1),
+  Rules.iterable.forEach<String>([
+    Rules.string.minLength(2),
+    Rules.string.maxLength(20),
   ]),
 ]);
 
@@ -57,12 +57,12 @@ Use `Validasi.map<T>()` for objects and structured data.
 
 ```dart
 final userSchema = Validasi.map<dynamic>([
-  MapRules.hasFields({
+  Rules.map.hasFields({
     'name': FieldRules<String>([
-      StringRules.minLength(1),
+      Rules.string.minLength(1),
     ]),
     'age': FieldRules<int>([
-      NumberRules.moreThanEqual(18),
+      Rules.number.moreThanEqual(18),
     ]),
   }),
 ]);
@@ -79,7 +79,7 @@ Use `Validasi.any<T>()` when you want to validate a value with custom rules.
 
 ```dart
 final termsSchema = Validasi.any<bool>([
-  InlineRule<bool>((value) {
+  Rules.inline<bool>((value) {
     return value == true ? null : 'You must accept the terms';
   }),
 ]);
@@ -89,28 +89,28 @@ print(termsSchema.validate(true).isValid);
 
 ## Schema Composition
 
-Schemas are easy to extend because the API lets you reuse existing schemas as building blocks. Define small schemas once, then combine them into larger ones with `MapRules`, `IterableRules`, or additional inline rules.
+Schemas are easy to extend because the API lets you reuse existing schemas as building blocks. Define small schemas once, then combine them into larger ones with `Rules.map`, `Rules.iterable`, or additional inline rules.
 
 ```dart
 final emailRules = <Rule<String>>[
-  Transform((value) => value?.trim().toLowerCase()),
-  StringRules.minLength(5),
-  InlineRule<String>((value) {
+  Rules.transform<String>((value) => value?.trim().toLowerCase()),
+  Rules.string.minLength(5),
+  Rules.inline<String>((value) {
     return value.contains('@') ? null : 'Invalid email format';
   }),
 ];
 
 final passwordRules = <Rule<String>>[
-  StringRules.minLength(8),
+  Rules.string.minLength(8),
 ];
 
 final registrationSchema = Validasi.map<dynamic>([
-  MapRules.hasFields({
+  Rules.map.hasFields({
     'email': FieldRules<String>(emailRules),
     'password': FieldRules<String>(passwordRules),
     'confirmPassword': FieldRules<String>(passwordRules),
   }),
-  InlineRule<Map<String, dynamic>>((value) {
+  Rules.inline<Map<String, dynamic>>((value) {
     return value['password'] == value['confirmPassword']
         ? null
         : 'Passwords do not match';
@@ -127,8 +127,8 @@ By default, each schema accepts its output type. However, when you need to accep
 ```dart
 // Schema validates int, but accepts String input
 final ageSchema = Validasi.number<int>([
-  NumberRules.moreThanEqual(0),
-  NumberRules.lessThan(150),
+  Rules.number.moreThanEqual(0),
+  Rules.number.lessThan(150),
 ]).withPreprocess(
   ValidasiTransformation<String, int>((value) => int.parse(value)),
 );

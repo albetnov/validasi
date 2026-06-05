@@ -2,8 +2,6 @@
 
 ![Logo](https://github.com/albetnov/validasi/blob/v1/art/logo.png?raw=true)
 
-![image](https://github.com/albetnov/validasi/blob/v1/art/validasi.png?raw=true)
-
 A flexible, composeable, and type-safe validation library for Dart & Flutter.
 
 [Documentation](https://albetnov.github.io/validasi/)
@@ -18,8 +16,10 @@ To use this package, add `validasi` as a dependency in your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  validasi: 1.0.0-dev.0
+  validasi: 1.0.0-dev.x
 ```
+
+> Check the [pub.dev page](https://pub.dev/packages/validasi/versions) for the latest pre-release version.
 
 ## Quick Usage
 
@@ -31,10 +31,10 @@ import 'package:validasi/rules.dart';
 
 void main() {
   final schema = Validasi.string([
-    Nullable(),
-    Transform((input) => input?.trim()),
-    StringRules.minLength(3),
-    StringRules.maxLength(16)
+    Rules.nullable<String>(),
+    Rules.transform<String>((input) => input?.trim()),
+    Rules.string.minLength(3),
+    Rules.string.maxLength(16)
   ]);
 
   final result = schema.validate('   Hello World!   ');
@@ -47,9 +47,9 @@ void main() {
 **Map Validation:**
 ```dart
 final schema = Validasi.map<dynamic>([
-  MapRules.hasFields({
-    'name': Validasi.string([StringRules.minLength(1)]),
-    'age': Validasi.number<int>([NumberRules.moreThan(0)]),
+  Rules.map.hasFields({
+    'name': Validasi.string([Rules.string.minLength(1)]),
+    'age': Validasi.number<int>([Rules.number.moreThan(0)]),
   }),
 ]);
 
@@ -59,8 +59,8 @@ final result = schema.validate({'name': 'John', 'age': 30});
 **List Validation:**
 ```dart
 final schema = Validasi.list<String>([
-  IterableRules.forEach(
-    Validasi.string([StringRules.minLength(1)]),
+  Rules.iterable.forEach<String>(
+    Validasi.string([Rules.string.minLength(1)]),
   ),
 ]);
 
@@ -80,41 +80,20 @@ Validasi provides type-safe validation schemas for various data types:
 - `Validasi.any<T>()` - Generic type validation
 
 ### Built-in Rules
-The library comes with comprehensive built-in rules organized by data type:
 
-**String Rules:**
-- `StringRules.minLength()` - Minimum length validation
-- `StringRules.maxLength()` - Maximum length validation
-- `StringRules.oneOf()` - Value must be one of specified options
+The library comes with comprehensive built-in rules organized by data type. See the documentation for the full list:
 
-**Number Rules:**
-- `NumberRules.finite()` - Ensures number is finite
-- `NumberRules.lessThan()` - Less than comparison
-- `NumberRules.lessThanEqual()` - Less than or equal comparison
-- `NumberRules.moreThan()` - Greater than comparison
-- `NumberRules.moreThanEqual()` - Greater than or equal comparison
-
-**Iterable Rules:**
-- `IterableRules.minLength()` - Minimum list length
-- `IterableRules.forEach()` - Validate each item in the list
-
-**Map Rules:**
-- `MapRules.hasFields()` - Validate nested map fields with individual schemas
-- `MapRules.hasFieldKeys()` - Ensure required keys exist
-- `MapRules.conditionalField()` - Conditional field validation based on other fields
-
-**Modifier Rules:**
-- `Nullable()` - Allow null values
-- `Required()` - Ensure non-null values
-- `Transform()` - Transform values during validation
-- `Having()` - Custom validation with context access
-- `InlineRule()` - Create custom validation rules inline
+- [String Rules](https://albetnov.github.io/validasi/schemas/string) - `alpha`, `email`, `url`, `uuid`, `regex`, and more
+- [Number Rules](https://albetnov.github.io/validasi/schemas/number) - `finite`, `lessThan`, `moreThan`, and more
+- [List Rules](https://albetnov.github.io/validasi/schemas/list) - `minLength`, `maxLength`, `unique`, `contains`, `forEach`, and more
+- [Map Rules](https://albetnov.github.io/validasi/schemas/map) - `hasFields`, `hasFieldKeys`, `allowedKeys`, `requiredAny`, `matchesField`, and more
+- [Generic Rules](https://albetnov.github.io/validasi/schemas/any) - `required`, `nullable`, `transform`, `equals`, `anyOf`, `inline`, and more
 
 ### Preprocessing & Transformation
 Use `ValidasiTransformation` to preprocess input data before validation:
 
 ```dart
-final schema = Validasi.string([StringRules.minLength(3)])
+final schema = Validasi.string([Rules.string.minLength(3)])
   .withPreprocess(ValidasiTransformation((value) => value.toString()));
 
 final result = schema.validate(123); // Converts to "123" then validates

@@ -4,8 +4,8 @@ import 'package:validasi/rules.dart';
 
 class StringBenchmark extends BenchmarkBase {
   final schema = Validasi.string([
-    StringRules.minLength(3),
-    StringRules.maxLength(16),
+    Rules.string.minLength(3),
+    Rules.string.maxLength(16),
   ]);
 
   StringBenchmark() : super('String');

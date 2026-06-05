@@ -21,7 +21,7 @@ Create complex validation schemas from simple, reusable rules. Mix and match rul
 :::
 
 ::: warning Performance Optimized
-Built-in caching system ensures your validations run fast, even when validating thousands of objects.
+Through a series of optimizations, your validations run fast, even when validating thousands of objects.
 :::
 
 ## Why Choose Validasi?
@@ -30,8 +30,8 @@ Built-in caching system ensures your validations run fast, even when validating 
 
 ```dart
 final schema = Validasi.string([
-  StringRules.minLength(3),
-  StringRules.maxLength(20),
+  Rules.string.minLength(3),
+  Rules.string.maxLength(20),
 ]);
 
 final result = schema.validate('Hello');
@@ -53,11 +53,11 @@ Validate complex, nested data structures with ease:
 
 ```dart
 final userSchema = Validasi.map<dynamic>([
-  MapRules.hasFields({
+  Rules.map.hasFields({
     'profile': FieldRules<Map<String, dynamic>>([
-      MapRules.hasFields({
-        'name': FieldRules<String>([StringRules.minLength(2)]),
-        'age': FieldRules<int>([NumberRules.moreThan(0)]),
+      Rules.map.hasFields({
+        'name': FieldRules<String>([Rules.string.minLength(2)]),
+        'age': FieldRules<int>([Rules.number.moreThan(0)]),
       }),
     ]),
   }),
@@ -70,8 +70,8 @@ Transform data during validation:
 
 ```dart
 final schema = Validasi.string([
-  Transform((value) => value?.trim().toLowerCase()),
-  StringRules.minLength(3),
+  Rules.transform<String>((value) => value?.trim().toLowerCase()),
+  Rules.string.minLength(3),
 ]);
 ```
 
@@ -82,8 +82,8 @@ Validasi uses dual generics to enforce input type safety at compile time. When y
 ```dart
 // Accept String input, validate as int
 final ageSchema = Validasi.number<int>([
-  NumberRules.moreThan(0),
-  NumberRules.lessThan(150),
+  Rules.number.moreThan(0),
+  Rules.number.lessThan(150),
 ]).withPreprocess(
   ValidasiTransformation<String, int>((value) => int.parse(value)),
 );

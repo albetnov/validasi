@@ -35,7 +35,7 @@ Preprocessing runs first (if configured) and is responsible for converting input
 
 ```dart
 final schema = Validasi.number<int>([
-  NumberRules.moreThan(0),
+  Rules.number.moreThan(0),
 ]).withPreprocess(
   ValidasiTransformation<String, int>((input) => int.parse(input)),
 );
@@ -71,7 +71,7 @@ Rules run in declaration order. Each rule receives the current `value` (`T?`) an
 ```dart
 final schema = Validasi.string([
   Transform((s) => s?.trim()),
-  StringRules.minLength(3),
+  Rules.string.minLength(3),
 ]);
 ```
 
@@ -104,7 +104,7 @@ if (result.isValid) {
 
 ```dart
 final base = Validasi.number<int>([
-  NumberRules.moreThanEqual(0),
+  Rules.number.moreThanEqual(0),
 ]);
 
 final fromString = base.withPreprocess(

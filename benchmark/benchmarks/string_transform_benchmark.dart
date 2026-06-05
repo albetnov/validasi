@@ -4,9 +4,9 @@ import 'package:validasi/rules.dart';
 
 class StringTransformBenchmark extends BenchmarkBase {
   final schema = Validasi.string([
-    Transform((value) => value?.trim()),
-    Transform((value) => value?.toLowerCase()),
-    StringRules.minLength(3),
+    Rules.transform<String>((value) => value?.trim()),
+    Rules.transform<String>((value) => value?.toLowerCase()),
+    Rules.string.minLength(3),
   ]);
 
   StringTransformBenchmark() : super('StringTransform');

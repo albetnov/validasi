@@ -13,33 +13,156 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
 
 final tagsSchema = Validasi.list<String>([
-	IterableRules.minLength(1),
+	Rules.iterable.minLength(1),
 ]);
 ```
 
 ## Available Rules
 
-### IterableRules.minLength
+### Rules.iterable.minLength
 
 Ensures the list has at least the given number of items.
 
 ```dart
 final atLeastTwoTags = Validasi.list<String>([
-	IterableRules.minLength(2),
+	Rules.iterable.minLength(2),
 ]);
 
 print(atLeastTwoTags.validate(['dart']).isValid); // false
 print(atLeastTwoTags.validate(['dart', 'flutter']).isValid); // true
 ```
 
-### IterableRules.forEach
+### Rules.iterable.maxLength
+
+Ensures the list has at most the given number of items.
+
+```dart
+final maxThreeItems = Validasi.list<String>([
+	Rules.iterable.maxLength(3),
+]);
+
+print(maxThreeItems.validate(['a', 'b']).isValid); // true
+print(maxThreeItems.validate(['a', 'b', 'c', 'd']).isValid); // false
+```
+
+### Rules.iterable.exactLength
+
+Ensures the list has exactly the given number of items.
+
+```dart
+final pairSchema = Validasi.list<int>([
+	Rules.iterable.exactLength(2),
+]);
+
+print(pairSchema.validate([1, 2]).isValid); // true
+print(pairSchema.validate([1, 2, 3]).isValid); // false
+```
+
+### Rules.iterable.isEmpty
+
+Ensures the list is empty.
+
+```dart
+final emptySchema = Validasi.list<String>([
+	Rules.iterable.isEmpty(),
+]);
+
+print(emptySchema.validate([]).isValid); // true
+print(emptySchema.validate(['a']).isValid); // false
+```
+
+### Rules.iterable.isNotEmpty
+
+Ensures the list is not empty.
+
+```dart
+final nonEmptySchema = Validasi.list<String>([
+	Rules.iterable.isNotEmpty(),
+]);
+
+print(nonEmptySchema.validate(['a']).isValid); // true
+print(nonEmptySchema.validate([]).isValid); // false
+```
+
+### Rules.iterable.contains
+
+Ensures the list contains a specific element.
+
+```dart
+final mustContainAdmin = Validasi.list<String>([
+	Rules.iterable.contains('admin'),
+]);
+
+print(mustContainAdmin.validate(['user', 'admin']).isValid); // true
+print(mustContainAdmin.validate(['user', 'guest']).isValid); // false
+```
+
+For custom equality:
+
+```dart
+final mustContainId = Validasi.list<Map<String, int>>([
+	Rules.iterable.contains(
+		{'id': 1},
+		equals: (a, b) => a['id'] == b['id'],
+	),
+]);
+```
+
+### Rules.iterable.notContains
+
+Ensures the list does not contain a specific element.
+
+```dart
+final noBanned = Validasi.list<String>([
+	Rules.iterable.notContains('banned'),
+]);
+
+print(noBanned.validate(['user', 'admin']).isValid); // true
+print(noBanned.validate(['user', 'banned']).isValid); // false
+```
+
+### Rules.iterable.unique
+
+Ensures all elements in the list are unique.
+
+```dart
+final uniqueIds = Validasi.list<int>([
+	Rules.iterable.unique(),
+]);
+
+print(uniqueIds.validate([1, 2, 3]).isValid); // true
+print(uniqueIds.validate([1, 2, 2]).isValid); // false
+```
+
+For custom equality:
+
+```dart
+final uniqueByField = Validasi.list<Map<String, int>>([
+	Rules.iterable.unique(equals: (a, b) => a['id'] == b['id']),
+]);
+```
+
+### Rules.iterable.containsAll
+
+Ensures the list contains all specified elements.
+
+```dart
+final requiredRoles = Validasi.list<String>([
+	Rules.iterable.containsAll(['read', 'write']),
+]);
+
+print(requiredRoles.validate(['read', 'write', 'admin']).isValid); // true
+print(requiredRoles.validate(['read']).isValid); // false
+```
+
+### Rules.iterable.forEach
 
 Validates each item using another schema.
 
 ```dart
 	final emailListSchema = Validasi.list<String>([
-	IterableRules.forEach<String>([
-		StringRules.minLength(5),
+	Rules.iterable.forEach<String>([
+		Rules.string.minLength(5),
 	]),
 ]);
 
@@ -49,15 +172,15 @@ print(emailListSchema.validate(['x', 'test@example.com']).isValid); // false
 
 ## Nested List Validation
 
-`IterableRules.forEach` can validate nested structures by composing list schemas.
+`Rules.iterable.forEach` can validate nested structures by composing list schemas.
 
 ```dart
 	final matrixSchema = Validasi.list<List<int>>([
-	IterableRules.minLength(1),
-	IterableRules.forEach<List<int>>([
-		IterableRules.minLength(2),
-		IterableRules.forEach<int>([
-			NumberRules.moreThanEqual(0),
+	Rules.iterable.minLength(1),
+	Rules.iterable.forEach<List<int>>([
+		Rules.iterable.minLength(2),
+		Rules.iterable.forEach<int>([
+			Rules.number.moreThanEqual(0),
 		]),
 	]),
 ]);
@@ -81,10 +204,10 @@ Use both list-specific rules together for shape and item validation.
 
 ```dart
 	final usernamesSchema = Validasi.list<String>([
-	IterableRules.minLength(1),
-	IterableRules.forEach<String>([
-		StringRules.minLength(3),
-		StringRules.maxLength(20),
+	Rules.iterable.minLength(1),
+	Rules.iterable.forEach<String>([
+		Rules.string.minLength(3),
+		Rules.string.maxLength(20),
 	]),
 ]);
 
