@@ -14,10 +14,15 @@ class Email extends Rule<String> {
   final bool allowInternational;
   final List<String>? domains;
 
-  static final _localPartPattern = RegExp(r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+$");
-  static final _localPartIntlPattern = RegExp(r"^[\p{L}\p{N}!#$%&'*+/=?^_`{|}~.-]+$", unicode: true);
-  static final _domainPattern = RegExp(r'^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$');
-  static final _domainIntlPattern = RegExp(r'^[\p{L}\p{N}]([\p{L}\p{N}-]*[\p{L}\p{N}])?(\.[\p{L}\p{N}]([\p{L}\p{N}-]*[\p{L}\p{N}])?)*$', unicode: true);
+  static final _localPartPattern =
+      RegExp(r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+$");
+  static final _localPartIntlPattern =
+      RegExp(r"^[\p{L}\p{N}!#$%&'*+/=?^_`{|}~.-]+$", unicode: true);
+  static final _domainPattern = RegExp(
+      r'^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$');
+  static final _domainIntlPattern = RegExp(
+      r'^[\p{L}\p{N}]([\p{L}\p{N}-]*[\p{L}\p{N}])?(\.[\p{L}\p{N}]([\p{L}\p{N}-]*[\p{L}\p{N}])?)*$',
+      unicode: true);
 
   @override
   String? apply(String? value, ValidationState state) {
@@ -62,7 +67,8 @@ class Email extends Rule<String> {
         state.addError(
           ValidationError(
             rule: 'Email',
-            message: message ?? 'Email domain must be one of: ${domains!.join(', ')}',
+            message: message ??
+                'Email domain must be one of: ${domains!.join(', ')}',
             details: {'domains': domains!.join(', ')},
           ),
         );
@@ -77,7 +83,8 @@ class Email extends Rule<String> {
     if (localPart.startsWith('.') || localPart.endsWith('.')) return false;
     if (localPart.contains('..')) return false;
 
-    final pattern = allowInternational ? _localPartIntlPattern : _localPartPattern;
+    final pattern =
+        allowInternational ? _localPartIntlPattern : _localPartPattern;
     return pattern.hasMatch(localPart);
   }
 
@@ -95,7 +102,8 @@ class Email extends Rule<String> {
     }
 
     final tld = labels.last;
-    if (!allowTopLevelDomain && (tld.length < 2 || RegExp(r'^[0-9]+$').hasMatch(tld))) {
+    if (!allowTopLevelDomain &&
+        (tld.length < 2 || RegExp(r'^[0-9]+$').hasMatch(tld))) {
       return false;
     }
 

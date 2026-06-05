@@ -75,7 +75,9 @@ class Ip extends Rule<String> {
 
   @override
   String? apply(String? value, ValidationState state) {
-    if (value != null && !Ipv4._isValidIpv4(value) && !Ipv6._isValidIpv6(value)) {
+    if (value != null &&
+        !Ipv4._isValidIpv4(value) &&
+        !Ipv6._isValidIpv6(value)) {
       state.addError(
         ValidationError(
           rule: 'Ip',

@@ -39,7 +39,8 @@ void main() {
 
       expect(state.errors.length, equals(1));
       expect(state.errors.first.rule, equals('Ipv4'));
-      expect(state.errors.first.message, equals('Must be a valid IPv4 address'));
+      expect(
+          state.errors.first.message, equals('Must be a valid IPv4 address'));
     });
 
     test('should fail with leading zeros', () {
@@ -133,7 +134,8 @@ void main() {
 
       expect(state.errors.length, equals(1));
       expect(state.errors.first.rule, equals('Ipv6'));
-      expect(state.errors.first.message, equals('Must be a valid IPv6 address'));
+      expect(
+          state.errors.first.message, equals('Must be a valid IPv6 address'));
     });
 
     test('should fail with too many groups without compression', () {
