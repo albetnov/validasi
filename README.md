@@ -16,8 +16,10 @@ To use this package, add `validasi` as a dependency in your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  validasi: 1.0.0-dev.0
+  validasi: 1.0.0-dev.x
 ```
+
+> Check the [pub.dev page](https://pub.dev/packages/validasi/versions) for the latest pre-release version.
 
 ## Quick Usage
 
@@ -78,35 +80,14 @@ Validasi provides type-safe validation schemas for various data types:
 - `Validasi.any<T>()` - Generic type validation
 
 ### Built-in Rules
-The library comes with comprehensive built-in rules organized by data type:
 
-**String Rules:**
-- `Rules.string.minLength()` - Minimum length validation
-- `Rules.string.maxLength()` - Maximum length validation
-- `Rules.string.oneOf()` - Value must be one of specified options
+The library comes with comprehensive built-in rules organized by data type. See the documentation for the full list:
 
-**Number Rules:**
-- `Rules.number.finite()` - Ensures number is finite
-- `Rules.number.lessThan()` - Less than comparison
-- `Rules.number.lessThanEqual()` - Less than or equal comparison
-- `Rules.number.moreThan()` - Greater than comparison
-- `Rules.number.moreThanEqual()` - Greater than or equal comparison
-
-**Iterable Rules:**
-- `Rules.iterable.minLength()` - Minimum list length
-- `Rules.iterable.forEach()` - Validate each item in the list
-
-**Map Rules:**
-- `Rules.map.hasFields()` - Validate nested map fields with individual schemas
-- `Rules.map.hasFieldKeys()` - Ensure required keys exist
-- `Rules.map.conditionalField()` - Conditional field validation based on other fields
-
-**Modifier Rules:**
-- `Rules.nullable()` - Allow null values
-- `Rules.required()` - Ensure non-null values
-- `Rules.transform()` - Transform values during validation
-- `Rules.having()` - Custom validation with context access
-- `Rules.inline()` - Create custom validation rules inline
+- [String Rules](https://albetnov.github.io/validasi/schemas/string) - `alpha`, `email`, `url`, `uuid`, `regex`, and more
+- [Number Rules](https://albetnov.github.io/validasi/schemas/number) - `finite`, `lessThan`, `moreThan`, and more
+- [List Rules](https://albetnov.github.io/validasi/schemas/list) - `minLength`, `maxLength`, `unique`, `contains`, `forEach`, and more
+- [Map Rules](https://albetnov.github.io/validasi/schemas/map) - `hasFields`, `hasFieldKeys`, `allowedKeys`, `requiredAny`, `matchesField`, and more
+- [Generic Rules](https://albetnov.github.io/validasi/schemas/any) - `required`, `nullable`, `transform`, `equals`, `anyOf`, `inline`, and more
 
 ### Preprocessing & Transformation
 Use `ValidasiTransformation` to preprocess input data before validation:
