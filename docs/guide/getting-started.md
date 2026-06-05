@@ -21,7 +21,7 @@ Create complex validation schemas from simple, reusable rules. Mix and match rul
 :::
 
 ::: warning Performance Optimized
-Built-in caching system ensures your validations run fast, even when validating thousands of objects.
+Through a series of optimizations, your validations run fast, even when validating thousands of objects.
 :::
 
 ## Why Choose Validasi?

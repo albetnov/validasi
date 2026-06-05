@@ -97,7 +97,7 @@ Battle-tested in production applications. Validasi handles edge cases gracefully
 :::
 
 ::: warning Performance Matters
-With built-in caching and optimization, Validasi is designed for high-performance scenarios where validation speed is critical.
+Through a series of optimizations, Validasi is designed for high-performance scenarios where validation speed is critical.
 :::
 
 ## Installation
