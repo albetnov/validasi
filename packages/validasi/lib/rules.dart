@@ -37,6 +37,17 @@ import 'src/rules/numbers/more_than_equal.dart';
 import 'src/rules/map/has_fields.dart';
 import 'src/rules/map/has_field_keys.dart';
 import 'src/rules/map/conditional_field.dart';
+import 'src/rules/map/allowed_keys.dart';
+import 'src/rules/map/forbidden_keys.dart';
+import 'src/rules/map/min_keys.dart';
+import 'src/rules/map/max_keys.dart';
+import 'src/rules/map/all_values.dart';
+import 'src/rules/map/required_any.dart';
+import 'src/rules/map/required_one_of.dart';
+import 'src/rules/map/required_all.dart';
+import 'src/rules/map/depends_on.dart';
+import 'src/rules/map/mutually_exclusive.dart';
+import 'src/rules/map/matches_field.dart';
 
 import 'src/engine/rule.dart';
 import 'src/rules/map/field_rules.dart';
@@ -226,4 +237,43 @@ class _MapRules {
   ConditionalField<T> conditionalField<T>(
           String field, ConditionalFieldCallback<T> callback) =>
       ConditionalField<T>(field, callback);
+
+  AllowedKeys<T> allowedKeys<T>(Set<String> keys, {String? message}) =>
+      AllowedKeys<T>(keys, message: message);
+
+  ForbiddenKeys<T> forbiddenKeys<T>(Set<String> keys, {String? message}) =>
+      ForbiddenKeys<T>(keys, message: message);
+
+  MinKeys<T> minKeys<T>(int min, {String? message}) =>
+      MinKeys<T>(min, message: message);
+
+  MaxKeys<T> maxKeys<T>(int max, {String? message}) =>
+      MaxKeys<T>(max, message: message);
+
+  AllValues<T> allValues<T>(List<Rule<T>> rules) => AllValues<T>(rules);
+
+  RequiredAny<T> requiredAny<T>(List<String> fields, {String? message}) =>
+      RequiredAny<T>(fields, message: message);
+
+  RequiredOneOf<T> requiredOneOf<T>(List<String> fields, {String? message}) =>
+      RequiredOneOf<T>(fields, message: message);
+
+  RequiredAll<T> requiredAll<T>(List<String> fields, {String? message}) =>
+      RequiredAll<T>(fields, message: message);
+
+  DependsOn<T> dependsOn<T>(String field, String dependsOn,
+          {String? message}) =>
+      DependsOn<T>(field, dependsOn, message: message);
+
+  MutuallyExclusive<T> mutuallyExclusive<T>(String fieldA, String fieldB,
+          {String? message}) =>
+      MutuallyExclusive<T>(fieldA, fieldB, message: message);
+
+  MatchesField<T> matchesField<T>(
+    String field,
+    String matchesField, {
+    bool Function(T a, T b)? equals,
+    String? message,
+  }) =>
+      MatchesField<T>(field, matchesField, equals: equals, message: message);
 }
