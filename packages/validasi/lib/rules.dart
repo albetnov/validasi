@@ -3,6 +3,9 @@ import 'src/rules/nullable.dart';
 import 'src/rules/required.dart';
 import 'src/rules/inline_rule.dart';
 import 'src/rules/having.dart';
+import 'src/rules/equals.dart';
+import 'src/rules/not_equals.dart';
+import 'src/rules/any_of.dart';
 
 import 'src/rules/string/alpha.dart';
 import 'src/rules/string/alphanumeric.dart';
@@ -84,6 +87,26 @@ final class Rules {
 
   static Having<T> having<T>(List<T> validValues, {String? message}) =>
       Having<T>(validValues, message: message);
+
+  static Equals<T> equals<T>(
+    T expected, {
+    bool Function(T a, T b)? equals,
+    String? message,
+  }) =>
+      Equals<T>(expected, equals: equals, message: message);
+
+  static NotEquals<T> notEquals<T>(
+    T unexpected, {
+    bool Function(T a, T b)? equals,
+    String? message,
+  }) =>
+      NotEquals<T>(unexpected, equals: equals, message: message);
+
+  static AnyOf<T> anyOf<T>(
+    List<List<Rule<T>>> ruleSets, {
+    String? message,
+  }) =>
+      AnyOf<T>(ruleSets, message: message);
 
   static const string = _StringRules();
   static const number = _NumberRules();

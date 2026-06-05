@@ -189,13 +189,53 @@ void main() {
 }
 ```
 
+## Generic Rules
+
+Current rules in `lib/src/rules/`:
+- `Required<T>` - Value must be non-null (`runOnNull = true`)
+- `Nullable<T>` - Allows null, stops pipeline (`runOnNull = true`)
+- `Transform<T>` - Transforms value (`runOnNull = true`)
+- `InlineRule<T>` - Custom inline validator (`runOnNull = true`)
+- `Having<T>` - Value must be in a list (`runOnNull = true`)
+- `Equals<T>` - Value must equal a specific value (optional comparator)
+- `NotEquals<T>` - Value must not equal a specific value (optional comparator)
+- `AnyOf<T>` - Value must satisfy at least one rule set (OR logic)
+
 ## Iterable Rules
 
 Current rules in `lib/src/rules/iterable/`:
 - `MinLength<T>` - List must have at least N items
+- `MaxLength<T>` - List must have at most N items
+- `ExactLength<T>` - List must have exactly N items
+- `IsEmpty<T>` - List must be empty
+- `IsNotEmpty<T>` - List must not be empty
+- `Contains<T>` - List must contain element (optional comparator)
+- `NotContains<T>` - List must not contain element (optional comparator)
+- `Unique<T>` - All elements must be unique (optional comparator)
+- `ContainsAll<T>` - List must contain all given elements (optional comparator)
 - `ForEach<I>` - Apply rules to each list element
 
 All iterable rules extend `Rule<List<T>>`.
+
+## Map Rules
+
+Current rules in `lib/src/rules/map/`:
+- `HasFields` - Validate fields with their rules
+- `HasFieldKeys<T>` - Ensure keys exist
+- `ConditionalField<T>` - Conditional validation
+- `AllowedKeys<T>` - Whitelist keys
+- `ForbiddenKeys<T>` - Blacklist keys
+- `MinKeys<T>` - At least N keys
+- `MaxKeys<T>` - At most N keys
+- `AllValues<T>` - Apply rules to all values (like ForEach for maps)
+- `RequiredAny<T>` - At least one field present
+- `RequiredOneOf<T>` - Exactly one field present (XOR)
+- `RequiredAll<T>` - All or nothing
+- `DependsOn<T>` - Field A requires field B
+- `MutuallyExclusive<T>` - Fields A and B cannot both be present
+- `MatchesField<T>` - Two fields must have equal values (optional comparator)
+
+All map rules extend `Rule<Map<String, T>>`.
 
 ## Import Prefixes
 
