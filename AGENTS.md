@@ -63,6 +63,17 @@ dart run melos run analyze
 dart run melos run format:fix
 ```
 
+**When docs change (`docs/` directory):**
+
+The MCP server indexes documentation files, and e2e snapshot tests verify deterministic output. After any docs change, regenerate the snapshots and verify:
+
+```bash
+# From root directory - regenerates snapshots then runs tests
+dart run melos run test:mcp:update
+```
+
+This single command regenerates the snapshot files in `packages/validasi_mcp/test/snapshots/` and then runs the full MCP test suite to verify everything works.
+
 ## Architecture
 
 ### Core Types
