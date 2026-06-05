@@ -1,118 +1,122 @@
 {
   "ok": true,
-  "count": 28,
+  "count": 29,
   "examples": [
     {
       "language": "dart",
-      "code": "final schema = Validasi.string([\n  Transform((s) => s?.trim()),\n  StringRules.minLength(3),\n]);"
+      "code": "final schema = Validasi.string([\n  Transform((s) => s?.trim()),\n  Rules.string.minLength(3),\n]);"
     },
     {
       "language": "dart",
-      "code": "final schema = Validasi.string([\n  StringRules.minLength(3),\n  StringRules.maxLength(20),\n]);\n\nfinal result = schema.validate('Hello');"
+      "code": "final schema = Validasi.string([\n  Rules.string.minLength(3),\n  Rules.string.maxLength(20),\n]);\n\nfinal result = schema.validate('Hello');"
     },
     {
       "language": "dart",
-      "code": "final userSchema = Validasi.map<dynamic>([\n  MapRules.hasFields({\n    'profile': FieldRules<Map<String, dynamic>>([\n      MapRules.hasFields({\n        'name': FieldRules<String>([StringRules.minLength(2)]),\n        'age': FieldRules<int>([NumberRules.moreThan(0)]),\n      }),\n    ]),\n  }),\n]);"
+      "code": "final userSchema = Validasi.map<dynamic>([\n  Rules.map.hasFields({\n    'profile': FieldRules<Map<String, dynamic>>([\n      Rules.map.hasFields({\n        'name': FieldRules<String>([Rules.string.minLength(2)]),\n        'age': FieldRules<int>([Rules.number.moreThan(0)]),\n      }),\n    ]),\n  }),\n]);"
     },
     {
       "language": "dart",
-      "code": "final schema = Validasi.string([\n  Transform((value) => value?.trim().toLowerCase()),\n  StringRules.minLength(3),\n]);"
+      "code": "final schema = Validasi.string([\n  Rules.transform<String>((value) => value?.trim().toLowerCase()),\n  Rules.string.minLength(3),\n]);"
     },
     {
       "language": "dart",
-      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nvoid main() {\n  final schema = Validasi.string([\n    StringRules.minLength(3),\n  ]);\n\n  final result = schema.validate('Hello');\n  \n  print('Valid: ${result.isValid}'); // Output: Valid: true\n  print('Data: ${result.data}');     // Output: Data: Hello\n}"
+      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nvoid main() {\n  final schema = Validasi.string([\n    Rules.string.minLength(3),\n  ]);\n\n  final result = schema.validate('Hello');\n  \n  print('Valid: ${result.isValid}'); // Output: Valid: true\n  print('Data: ${result.data}');     // Output: Data: Hello\n}"
     },
     {
       "language": "dart",
-      "code": "final optionalNameSchema = Validasi.string([\n  Nullable(),\n  StringRules.minLength(3),\n]);\n\nprint(optionalNameSchema.validate(null).isValid);\nprint(optionalNameSchema.validate('John').isValid);"
+      "code": "final optionalNameSchema = Validasi.string([\n  Rules.nullable<String>(),\n  Rules.string.minLength(3),\n]);\n\nprint(optionalNameSchema.validate(null).isValid);\nprint(optionalNameSchema.validate('John').isValid);"
     },
     {
       "language": "dart",
-      "code": "final requiredNameSchema = Validasi.string([\n  Required(),\n  StringRules.minLength(3),\n]);\n\nprint(requiredNameSchema.validate(null).isValid);"
+      "code": "final requiredNameSchema = Validasi.string([\n  Rules.required<String>(),\n  Rules.string.minLength(3),\n]);\n\nprint(requiredNameSchema.validate(null).isValid);"
     },
     {
       "language": "dart",
-      "code": "final trimmedSchema = Validasi.string([\n  Transform((value) => value?.trim()),\n  StringRules.minLength(3),\n]);\n\nfinal result = trimmedSchema.validate('  hello  ');\nprint(result.data);\nprint(result.isValid);"
+      "code": "final trimmedSchema = Validasi.string([\n  Rules.transform<String>((value) => value?.trim()),\n  Rules.string.minLength(3),\n]);\n\nfinal result = trimmedSchema.validate('  hello  ');\nprint(result.data);\nprint(result.isValid);"
     },
     {
       "language": "dart",
-      "code": "final passwordSchema = Validasi.string([\n  StringRules.minLength(8),\n  InlineRule<String>((value) {\n    if (!value.contains(RegExp(r'[A-Z]'))) {\n      return 'Must contain at least one uppercase letter';\n    }\n    return null;\n  }),\n]);"
+      "code": "final passwordSchema = Validasi.string([\n  Rules.string.minLength(8),\n  Rules.inline<String>((value) {\n    if (!value.contains(RegExp(r'[A-Z]'))) {\n      return 'Must contain at least one uppercase letter';\n    }\n    return null;\n  }),\n]);"
     },
     {
       "language": "dart",
-      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nfinal nameSchema = Validasi.string([\n  StringRules.minLength(2),\n  StringRules.maxLength(50),\n]);\n\nfinal result = nameSchema.validate('John Doe');\nprint(result.isValid);"
+      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nfinal nameSchema = Validasi.string([\n  Rules.string.minLength(2),\n  Rules.string.maxLength(50),\n]);\n\nfinal result = nameSchema.validate('John Doe');\nprint(result.isValid);"
     },
     {
       "language": "dart",
-      "code": "final userSchema = Validasi.map<dynamic>([\n  MapRules.hasFields({\n    'name': FieldRules<String>([\n      StringRules.minLength(2),\n    ]),\n    'email': FieldRules<String>([\n      StringRules.email(),\n    ]),\n  }),\n]);\n\nfinal result = userSchema.validate({\n  'name': 'Alice',\n  'email': 'alice@example.com',\n});\n\nprint(result.isValid);"
+      "code": "final userSchema = Validasi.map<dynamic>([\n  Rules.map.hasFields({\n    'name': FieldRules<String>([\n      Rules.string.minLength(2),\n    ]),\n    'email': FieldRules<String>([\n      Rules.string.email(),\n    ]),\n  }),\n]);\n\nfinal result = userSchema.validate({\n  'name': 'Alice',\n  'email': 'alice@example.com',\n});\n\nprint(result.isValid);"
     },
     {
       "language": "dart",
-      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\nimport 'package:validasi/engine.dart';\n\nfinal nameSchema = Validasi.string([\n  StringRules.minLength(2),\n  StringRules.maxLength(50),\n]);\n\nfinal result = nameSchema.validate('John Doe');\nprint(result.isValid);"
+      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\nimport 'package:validasi/engine.dart';\n\nfinal nameSchema = Validasi.string([\n  Rules.string.minLength(2),\n  Rules.string.maxLength(50),\n]);\n\nfinal result = nameSchema.validate('John Doe');\nprint(result.isValid);"
     },
     {
       "language": "dart",
-      "code": "final tagsSchema = Validasi.list<String>([\n  IterableRules.minLength(1),\n  IterableRules.forEach<String>([\n    StringRules.minLength(2),\n    StringRules.maxLength(20),\n  ]),\n]);\n\nprint(tagsSchema.validate(['flutter', 'dart']).isValid);"
+      "code": "final tagsSchema = Validasi.list<String>([\n  Rules.iterable.minLength(1),\n  Rules.iterable.forEach<String>([\n    Rules.string.minLength(2),\n    Rules.string.maxLength(20),\n  ]),\n]);\n\nprint(tagsSchema.validate(['flutter', 'dart']).isValid);"
     },
     {
       "language": "dart",
-      "code": "final userSchema = Validasi.map<dynamic>([\n  MapRules.hasFields({\n    'name': FieldRules<String>([\n      StringRules.minLength(1),\n    ]),\n    'age': FieldRules<int>([\n      NumberRules.moreThanEqual(18),\n    ]),\n  }),\n]);\n\nprint(userSchema.validate({\n  'name': 'Alice',\n  'age': 25,\n}).isValid);"
+      "code": "final userSchema = Validasi.map<dynamic>([\n  Rules.map.hasFields({\n    'name': FieldRules<String>([\n      Rules.string.minLength(1),\n    ]),\n    'age': FieldRules<int>([\n      Rules.number.moreThanEqual(18),\n    ]),\n  }),\n]);\n\nprint(userSchema.validate({\n  'name': 'Alice',\n  'age': 25,\n}).isValid);"
     },
     {
       "language": "dart",
-      "code": "final emailRules = <Rule<String>>[\n  Transform((value) => value?.trim().toLowerCase()),\n  StringRules.minLength(5),\n  InlineRule<String>((value) {\n    return value.contains('@') ? null : 'Invalid email format';\n  }),\n];\n\nfinal passwordRules = <Rule<String>>[\n  StringRules.minLength(8),\n];\n\nfinal registrationSchema = Validasi.map<dynamic>([\n  MapRules.hasFields({\n    'email': FieldRules<String>(emailRules),\n    'password': FieldRules<String>(passwordRules),\n    'confirmPassword': FieldRules<String>(passwordRules),\n  }),\n  InlineRule<Map<String, dynamic>>((value) {\n    return value['password'] == value['confirmPassword']\n        ? null\n        : 'Passwords do not match';\n  }),\n]);"
+      "code": "final emailRules = <Rule<String>>[\n  Rules.transform<String>((value) => value?.trim().toLowerCase()),\n  Rules.string.minLength(5),\n  Rules.inline<String>((value) {\n    return value.contains('@') ? null : 'Invalid email format';\n  }),\n];\n\nfinal passwordRules = <Rule<String>>[\n  Rules.string.minLength(8),\n];\n\nfinal registrationSchema = Validasi.map<dynamic>([\n  Rules.map.hasFields({\n    'email': FieldRules<String>(emailRules),\n    'password': FieldRules<String>(passwordRules),\n    'confirmPassword': FieldRules<String>(passwordRules),\n  }),\n  Rules.inline<Map<String, dynamic>>((value) {\n    return value['password'] == value['confirmPassword']\n        ? null\n        : 'Passwords do not match';\n  }),\n]);"
     },
     {
       "language": "dart",
-      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nfinal emailSchema = Validasi.string([\n  Transform((value) => value?.trim()),\n  Transform((value) => value?.toLowerCase()),\n  StringRules.minLength(5),\n]);\n\nfinal result = emailSchema.validate('  USER@EXAMPLE.COM  ');\nprint(result.data); // \"user@example.com\""
+      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nfinal emailSchema = Validasi.string([\n  Rules.transform<String>((value) => value?.trim()),\n  Rules.transform<String>((value) => value?.toLowerCase()),\n  Rules.string.minLength(5),\n]);\n\nfinal result = emailSchema.validate('  USER@EXAMPLE.COM  ');\nprint(result.data); // \"user@example.com\""
     },
     {
       "language": "dart",
-      "code": "// Schema validates String and applies Transform rules\nfinal usernameSchema = Validasi.string([\n  Nullable(),\n  Transform((value) => value?.trim()),\n  Transform((value) => value?.toLowerCase()),\n  StringRules.minLength(3),\n]);\n\n// Add preprocessing to accept dynamic input and convert to String\nfinal usernameSchemaWithPreprocess = usernameSchema.withPreprocess(\n  ValidasiTransformation<dynamic, String>((value) => value.toString()),\n);\n\n// Now validate() accepts dynamic input with compile-time flexibility\nprint(usernameSchemaWithPreprocess.validate(1234).data);       // \"1234\"\nprint(usernameSchemaWithPreprocess.validate('  John  ').data); // \"john\""
+      "code": "// Schema validates String and applies Transform rules\nfinal usernameSchema = Validasi.string([\n  Rules.nullable<String>(),\n  Rules.transform<String>((value) => value?.trim()),\n  Rules.transform<String>((value) => value?.toLowerCase()),\n  Rules.string.minLength(3),\n]);\n\n// Add preprocessing to accept dynamic input and convert to String\nfinal usernameSchemaWithPreprocess = usernameSchema.withPreprocess(\n  ValidasiTransformation<dynamic, String>((value) => value.toString()),\n);\n\n// Now validate() accepts dynamic input with compile-time flexibility\nprint(usernameSchemaWithPreprocess.validate(1234).data);       // \"1234\"\nprint(usernameSchemaWithPreprocess.validate('  John  ').data); // \"john\""
     },
     {
       "language": "dart",
-      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nfinal tagsSchema = Validasi.list<String>([\n\tIterableRules.minLength(1),\n]);"
+      "code": "final flexibleSchema = Validasi.any<String>([\n\tRules.anyOf([\n\t\t[Rules.string.minLength(10)],\n\t\t[Rules.string.startsWith('special-')],\n\t]),\n]);\n\nprint(flexibleSchema.validate('a long enough string').isValid); // true\nprint(flexibleSchema.validate('special-ok').isValid); // true\nprint(flexibleSchema.validate('short').isValid); // false"
     },
     {
       "language": "dart",
-      "code": "final atLeastTwoTags = Validasi.list<String>([\n\tIterableRules.minLength(2),\n]);\n\nprint(atLeastTwoTags.validate(['dart']).isValid); // false\nprint(atLeastTwoTags.validate(['dart', 'flutter']).isValid); // true"
+      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nfinal tagsSchema = Validasi.list<String>([\n\tRules.iterable.minLength(1),\n]);"
     },
     {
       "language": "dart",
-      "code": "\tfinal emailListSchema = Validasi.list<String>([\n\tIterableRules.forEach<String>([\n\t\tStringRules.minLength(5),\n\t]),\n]);\n\nprint(emailListSchema.validate(['a@b.c', 'test@example.com']).isValid); // true\nprint(emailListSchema.validate(['x', 'test@example.com']).isValid); // false"
+      "code": "final atLeastTwoTags = Validasi.list<String>([\n\tRules.iterable.minLength(2),\n]);\n\nprint(atLeastTwoTags.validate(['dart']).isValid); // false\nprint(atLeastTwoTags.validate(['dart', 'flutter']).isValid); // true"
     },
     {
       "language": "dart",
-      "code": "\tfinal matrixSchema = Validasi.list<List<int>>([\n\tIterableRules.minLength(1),\n\tIterableRules.forEach<List<int>>([\n\t\tIterableRules.minLength(2),\n\t\tIterableRules.forEach<int>([\n\t\t\tNumberRules.moreThanEqual(0),\n\t\t]),\n\t]),\n]);\n\nprint(matrixSchema.validate([\n\t[1, 2],\n\t[3, 4],\n]).isValid); // true\n\nprint(matrixSchema.validate([\n\t[1],\n\t[3, -1],\n]).isValid); // false"
+      "code": "\tfinal emailListSchema = Validasi.list<String>([\n\tRules.iterable.forEach<String>([\n\t\tRules.string.minLength(5),\n\t]),\n]);\n\nprint(emailListSchema.validate(['a@b.c', 'test@example.com']).isValid); // true\nprint(emailListSchema.validate(['x', 'test@example.com']).isValid); // false"
     },
     {
       "language": "dart",
-      "code": "\tfinal usernamesSchema = Validasi.list<String>([\n\tIterableRules.minLength(1),\n\tIterableRules.forEach<String>([\n\t\tStringRules.minLength(3),\n\t\tStringRules.maxLength(20),\n\t]),\n]);\n\nfinal result = usernamesSchema.validate(['alice', 'bob']);\nprint(result.isValid); // true"
+      "code": "\tfinal matrixSchema = Validasi.list<List<int>>([\n\tRules.iterable.minLength(1),\n\tRules.iterable.forEach<List<int>>([\n\t\tRules.iterable.minLength(2),\n\t\tRules.iterable.forEach<int>([\n\t\t\tRules.number.moreThanEqual(0),\n\t\t]),\n\t]),\n]);\n\nprint(matrixSchema.validate([\n\t[1, 2],\n\t[3, 4],\n]).isValid); // true\n\nprint(matrixSchema.validate([\n\t[1],\n\t[3, -1],\n]).isValid); // false"
     },
     {
       "language": "dart",
-      "code": "final profileSchema = Validasi.map<dynamic>([\n\tMapRules.hasFields({\n\t\t'name': FieldRules<String>([\n\t\t\tStringRules.minLength(2),\n\t\t]),\n\t\t'age': FieldRules<int>([\n\t\t\tNumberRules.moreThanEqual(18),\n\t\t]),\n\t}),\n]);\n\nprint(profileSchema.validate({'name': 'Alice', 'age': 25}).isValid); // true\nprint(profileSchema.validate({'name': 'A', 'age': 16}).isValid); // false"
+      "code": "\tfinal usernamesSchema = Validasi.list<String>([\n\tRules.iterable.minLength(1),\n\tRules.iterable.forEach<String>([\n\t\tRules.string.minLength(3),\n\t\tRules.string.maxLength(20),\n\t]),\n]);\n\nfinal result = usernamesSchema.validate(['alice', 'bob']);\nprint(result.isValid); // true"
     },
     {
       "language": "dart",
-      "code": "final userSchema = Validasi.map<dynamic>([\n\tMapRules.hasFields({\n\t\t'profile': FieldRules<Map<String, dynamic>>([\n\t\t\tMapRules.hasFields({\n\t\t\t\t'name': FieldRules<String>([\n\t\t\t\t\tStringRules.minLength(2),\n\t\t\t\t]),\n\t\t\t\t'age': FieldRules<int>([\n\t\t\t\t\tNumberRules.moreThanEqual(0),\n\t\t\t\t]),\n\t\t\t}),\n\t\t]),\n\t}),\n]);\n\nprint(userSchema.validate({\n\t'profile': {'name': 'John', 'age': 30},\n}).isValid); // true\n\nprint(userSchema.validate({\n\t'profile': {'name': '', 'age': -1},\n}).isValid); // false"
+      "code": "final profileSchema = Validasi.map<dynamic>([\n\tRules.map.hasFields({\n\t\t'name': FieldRules<String>([\n\t\t\tRules.string.minLength(2),\n\t\t]),\n\t\t'age': FieldRules<int>([\n\t\t\tRules.number.moreThanEqual(18),\n\t\t]),\n\t}),\n]);\n\nprint(profileSchema.validate({'name': 'Alice', 'age': 25}).isValid); // true\nprint(profileSchema.validate({'name': 'A', 'age': 16}).isValid); // false"
     },
     {
       "language": "dart",
-      "code": "final orderSchema = Validasi.map<dynamic>([\n\tMapRules.hasFieldKeys({'id', 'isDelivery'}),\n\tMapRules.hasFields({\n\t\t'id': FieldRules<String>([\n\t\t\tStringRules.minLength(1),\n\t\t]),\n\t}),\n\tMapRules.conditionalField('address', (context, value) {\n\t\tif ((context.get<bool>('isDelivery') ?? false) && value == null) {\n\t\t\treturn 'address is required for delivery orders';\n\t\t}\n\t\treturn null;\n\t}),\n]);\n\nfinal result = orderSchema.validate({\n\t'id': 'ORD-001',\n\t'isDelivery': false,\n});\n\nprint(result.isValid); // true"
+      "code": "final userSchema = Validasi.map<dynamic>([\n\tRules.map.hasFields({\n\t\t'profile': FieldRules<Map<String, dynamic>>([\n\t\t\tRules.map.hasFields({\n\t\t\t\t'name': FieldRules<String>([\n\t\t\t\t\tRules.string.minLength(2),\n\t\t\t\t]),\n\t\t\t\t'age': FieldRules<int>([\n\t\t\t\t\tRules.number.moreThanEqual(0),\n\t\t\t\t]),\n\t\t\t}),\n\t\t]),\n\t}),\n]);\n\nprint(userSchema.validate({\n\t'profile': {'name': 'John', 'age': 30},\n}).isValid); // true\n\nprint(userSchema.validate({\n\t'profile': {'name': '', 'age': -1},\n}).isValid); // false"
     },
     {
       "language": "dart",
-      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nfinal schema = Validasi.string([\n\tStringRules.minLength(3),\n]);"
+      "code": "final orderSchema = Validasi.map<dynamic>([\n\tRules.map.hasFieldKeys({'id', 'isDelivery'}),\n\tRules.map.hasFields({\n\t\t'id': FieldRules<String>([\n\t\t\tRules.string.minLength(1),\n\t\t]),\n\t}),\n\tRules.map.conditionalField('address', (context, value) {\n\t\tif ((context.get<bool>('isDelivery') ?? false) && value == null) {\n\t\t\treturn 'address is required for delivery orders';\n\t\t}\n\t\treturn null;\n\t}),\n]);\n\nfinal result = orderSchema.validate({\n\t'id': 'ORD-001',\n\t'isDelivery': false,\n});\n\nprint(result.isValid); // true"
     },
     {
       "language": "dart",
-      "code": "final usernameSchema = Validasi.string([\n\tStringRules.minLength(3),\n]);\n\nprint(usernameSchema.validate('al').isValid); // false\nprint(usernameSchema.validate('alex').isValid); // true"
+      "code": "import 'package:validasi/validasi.dart';\nimport 'package:validasi/rules.dart';\n\nfinal schema = Validasi.string([\n\tRules.string.minLength(3),\n]);"
     },
     {
       "language": "dart",
-      "code": "final displayNameSchema = Validasi.string([\n\tStringRules.minLength(2),\n\tStringRules.maxLength(30),\n\tStringRules.oneOf(['alice', 'bob', 'charlie']),\n]);\n\nfinal result = displayNameSchema.validate('bob');\nprint(result.isValid); // true"
+      "code": "final usernameSchema = Validasi.string([\n\tRules.string.minLength(3),\n]);\n\nprint(usernameSchema.validate('al').isValid); // false\nprint(usernameSchema.validate('alex').isValid); // true"
+    },
+    {
+      "language": "dart",
+      "code": "final displayNameSchema = Validasi.string([\n\tRules.string.minLength(2),\n\tRules.string.maxLength(30),\n\tRules.string.oneOf(['alice', 'bob', 'charlie']),\n]);\n\nfinal result = displayNameSchema.validate('bob');\nprint(result.isValid); // true"
     }
   ]
 }

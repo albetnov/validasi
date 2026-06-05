@@ -34,3 +34,9 @@ melos:
     test:mcp:
       description: Run tests for the validasi_mcp package.
       run: dart run melos exec --scope=validasi_mcp -- dart test
+    test:mcp:update:
+      description: Regenerate MCP snapshots and run tests.
+      run: |
+        cd packages/validasi_mcp && \
+        UPDATE_SNAPSHOTS=true dart test test/mcp_e2e_test.dart && \
+        dart test
