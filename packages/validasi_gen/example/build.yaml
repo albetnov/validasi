@@ -1,0 +1,10 @@
+targets:
+  $default:
+    builders:
+      validasi_gen:validasi:
+        options:
+          # Global default for per-field generation. Per-class
+          # @ValidateClass(generateFields: ...) overrides this.
+          # Set to false to skip XFields class + validateField() generation
+          # entirely and keep generated code minimal.
+          generateFields: true

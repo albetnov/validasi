@@ -24,7 +24,9 @@ class OneOfGen extends RuleGen {
 
   @override
   void validateType(DartType? typeArg, FieldElement field) {
-    if (typeArg == null || typeArg is DynamicType || typeArg.isDartCoreObject) return;
+    if (typeArg == null || typeArg is DynamicType || typeArg.isDartCoreObject) {
+      return;
+    }
     if (typeArg.isDartCoreString) return;
     throw InvalidGenerationSourceError(
       "OneOf does not support type '${typeArg.getDisplayString(withNullability: false)}'. "

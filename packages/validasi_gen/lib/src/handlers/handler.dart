@@ -16,7 +16,8 @@ class RuleInfo {
   final String? message;
   final bool isUnknown;
   final DartType? typeArg;
-  RuleInfo(this.name, this.params, this.message, {this.isUnknown = false, this.typeArg});
+  RuleInfo(this.name, this.params, this.message,
+      {this.isUnknown = false, this.typeArg});
 }
 
 abstract class RuleGen {

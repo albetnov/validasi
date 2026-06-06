@@ -1,5 +1,6 @@
 name: validasi_gen_example
 publish_to: none
+version: 0.1.0-dev.2
 
 environment:
   sdk: ^3.5.0

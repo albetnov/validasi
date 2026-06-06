@@ -42,3 +42,13 @@ ClassElement? getClassFromType(DartType type) {
   if (element is ClassElement) return element;
   return null;
 }
+
+bool? boolOption(Map<String, dynamic>? config, String key) {
+  if (config == null) return null;
+  final value = config[key];
+  if (value == null) return null;
+  if (value is bool) return value;
+  throw InvalidGenerationSourceError(
+    'Invalid build option "$key": expected bool, got $value (${value.runtimeType})',
+  );
+}

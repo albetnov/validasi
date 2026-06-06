@@ -38,3 +38,11 @@ class Car {
 
   const Car({required this.make, required this.model});
 }
+
+@ValidateClass(generateFields: false)
+class InternalFoo {
+  @Validate.string([MinLength(1)])
+  final String code;
+
+  const InternalFoo({required this.code});
+}

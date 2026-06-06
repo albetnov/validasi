@@ -3,10 +3,15 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'package:validasi_gen/src/generators/extension.dart';
+import 'package:validasi_gen/src/generators/fields_class.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 import 'package:validasi_gen/src/utils.dart';
 
 class ValidasiGenerator extends Generator {
+  ValidasiGenerator({this.generateFieldsDefault = true});
+
+  final bool generateFieldsDefault;
+
   @override
   String generate(LibraryReader library, BuildStep buildStep) {
     final validateClasses = <String, ClassElement>{};
@@ -24,7 +29,17 @@ class ValidasiGenerator extends Generator {
       final fields = extractValidateFields(cls, library);
       if (fields.isEmpty) continue;
 
-      buffer.write(generateValidateExtension(cls.name, fields));
+      final generateFields =
+          readGenerateFieldsOverride(cls) ?? generateFieldsDefault;
+
+      if (generateFields) {
+        buffer.write(generateFieldsClass(cls.name, fields));
+      }
+      buffer.write(generateValidateExtension(
+        cls.name,
+        fields,
+        includeValidateField: generateFields,
+      ));
     }
 
     return buffer.toString();

@@ -4,6 +4,19 @@ import 'package:source_gen/source_gen.dart';
 import 'package:validasi_gen/src/handlers.dart';
 import 'package:validasi_gen/src/utils.dart';
 
+bool? readGenerateFieldsOverride(ClassElement cls) {
+  for (final meta in cls.metadata) {
+    final element = meta.element;
+    if (element is ConstructorElement &&
+        element.enclosingElement.name == 'ValidateClass') {
+      final constant = meta.computeConstantValue();
+      if (constant == null) return null;
+      return ConstantReader(constant).peek('generateFields')?.boolValue;
+    }
+  }
+  return null;
+}
+
 class FieldRules {
   final FieldElement field;
   final List<RuleInfo> rules;
@@ -20,6 +33,9 @@ class FieldRules {
   });
 
   bool get isNested => nestedClassName != null;
+
+  String get dartTypeDisplay =>
+      field.type.getDisplayString(withNullability: true);
 }
 
 List<FieldRules> extractValidateFields(

@@ -20,7 +20,9 @@ class MinLengthGen extends RuleGen {
 
   @override
   void validateType(DartType? typeArg, FieldElement field) {
-    if (typeArg == null || typeArg is DynamicType || typeArg.isDartCoreObject) return;
+    if (typeArg == null || typeArg is DynamicType || typeArg.isDartCoreObject) {
+      return;
+    }
     if (typeArg.isDartCoreString) return;
     if (typeArg is InterfaceType) {
       final name = typeArg.element.name;

@@ -1,7 +1,9 @@
 import 'package:validasi_annotation/src/base.dart';
 
 class ValidateClass {
-  const ValidateClass();
+  const ValidateClass({this.generateFields});
+
+  final bool? generateFields;
 }
 
 class Validate {
