@@ -11,6 +11,9 @@ workspace:
   - packages/validasi_mcp
   - packages/validasi_gen
   - packages/validasi_annotation
+  - packages/validasi_ui
+  - packages/validasi_ui/example
+  - packages/validasi_gen/example
 
 dev_dependencies:
   melos: ^7.5.1
@@ -33,6 +36,12 @@ melos:
     test:validasi:
       description: Run tests for the root validasi package.
       run: dart run melos exec --scope=validasi -- dart test
+    test:gen:
+      description: Run tests for the validasi_gen package.
+      run: dart run melos exec --scope=validasi_gen -- dart test
+    test:ui:
+      description: Run tests for the validasi_ui package.
+      run: dart run melos exec --scope=validasi_ui -- flutter test
     test:mcp:
       description: Run tests for the validasi_mcp package.
       run: dart run melos exec --scope=validasi_mcp -- dart test

@@ -3,7 +3,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
 bool hasValidateClassAnnotation(ClassElement cls) {
-  return cls.metadata.any((meta) {
+  return cls.metadata.annotations.any((meta) {
     final element = meta.element;
     return element is ConstructorElement &&
         element.enclosingElement.name == 'ValidateClass';
@@ -23,7 +23,7 @@ bool hasValidateClassAnnotation(ClassElement cls) {
         final elementType = type.typeArguments.first;
         final elementClass = getClassFromType(elementType);
         if (elementClass != null && hasValidateClassAnnotation(elementClass)) {
-          return (elementClass.name, true);
+          return (elementClass.name!, true);
         }
       }
     }
@@ -31,7 +31,7 @@ bool hasValidateClassAnnotation(ClassElement cls) {
 
   final directClass = getClassFromType(type);
   if (directClass != null && hasValidateClassAnnotation(directClass)) {
-    return (directClass.name, false);
+    return (directClass.name!, false);
   }
 
   return null;

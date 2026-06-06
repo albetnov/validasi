@@ -29,7 +29,7 @@ class OneOfGen extends RuleGen {
     }
     if (typeArg.isDartCoreString) return;
     throw InvalidGenerationSourceError(
-      "OneOf does not support type '${typeArg.getDisplayString(withNullability: false)}'. "
+      "OneOf does not support type '${typeArg.getDisplayString()}'. "
       "Supported: String",
       element: field,
     );

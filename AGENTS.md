@@ -13,6 +13,9 @@
 | Package | Purpose |
 |---------|---------|
 | `validasi` | Core validation library |
+| `validasi_annotation` | Annotations and core contracts (`ValidasiKey`, `@ValidateClass`) |
+| `validasi_gen` | Code generator for compile-time validation |
+| `validasi_ui` | Headless form management for Flutter |
 | `validasi_mcp` | MCP integration |
 
 ## Commands
@@ -31,8 +34,11 @@ dart run melos run test
 # Run tests for validasi package only
 dart run melos run test:validasi
 
-# Run tests for validasi_mcp package only
-dart run melos run test:mcp
+# Run tests for validasi_gen package only
+    dart run melos run test:gen
+
+    # Run tests for validasi_mcp package only
+    dart run melos run test:mcp
 
 # Analyze all packages
 dart run melos run analyze
@@ -81,9 +87,13 @@ This single command regenerates the snapshot files in `packages/validasi_mcp/tes
 - **`Rule<T>`** (`lib/src/engine/rule.dart`): Base class for all rules
 - **`ValidationState`** (`lib/src/engine/state.dart`): Collects errors during validation
 - **`ValidationError`** (`lib/src/engine/error.dart`): Represents a validation failure
+- **`ValidasiResult<T>`** (`lib/src/engine/result.dart`): Result of a validation run
 - **`ValidasiEngine<T, TInput>`**: Runs rules and returns `ValidasiResult<T>`
 - **`Validasi`**: Schema builder (`Validasi.string()`, `Validasi.list()`, etc.)
 - **`Rules`**: Factory for all built-in rules
+- **`ValidasiKey<T>`** (`validasi_annotation`): Marker for generated field keys
+- **`FieldDescriptor<T, V>`** (`validasi`): Field name + extractor interface
+- **`ValidasiField<T, V>`** (`validasi`): `FieldDescriptor` with validation capability
 
 ### Rule Pattern
 
@@ -247,6 +257,38 @@ Current rules in `lib/src/rules/map/`:
 - `MatchesField<T>` - Two fields must have equal values (optional comparator)
 
 All map rules extend `Rule<Map<String, T>>`.
+
+### Generated Field Classes
+
+When `@ValidateClass(generateFields: true)` is used, `validasi_gen` emits a sealed field class hierarchy:
+
+```dart
+sealed class UserFields<V> extends ValidasiKey<User> implements ValidasiField<User, V> {
+  static const UserFields<String> name = UserNameField();
+  static const UserFields<int> age = UserAgeField();
+}
+```
+
+Each leaf class implements `name`, `extract(owner)`, and `validate(value)`.
+
+### `validasi_ui` Architecture
+
+- **`ValidasiFormController<T>`** (`lib/src/controller.dart`): `ChangeNotifier` keyed by `ValidasiField<T, V>`
+- **`ValidasiForm<T>`** (`lib/src/form.dart`): `InheritedWidget` scope providing `ValidasiFormController<T>`
+- **`ValidasiFormField<T, V>`** (`lib/src/form_field.dart`): Binds a `ValidasiField<T, V>` to a builder
+- **`ValidasiFieldState<V>`** (`lib/src/field_state.dart`): Typed value, errors, `onChanged`, `validate`
+
+```dart
+ValidasiForm<User>(
+  child: ValidasiFormField<User, String>(
+    field: UserFields.name,
+    builder: (context, state) => TextField(
+      onChanged: state.onChanged,
+      decoration: InputDecoration(errorText: state.errorText),
+    ),
+  ),
+)
+```
 
 ## Import Prefixes
 

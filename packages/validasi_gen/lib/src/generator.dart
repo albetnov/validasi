@@ -17,7 +17,7 @@ class ValidasiGenerator extends Generator {
     final validateClasses = <String, ClassElement>{};
     for (final cls in library.classes) {
       if (hasValidateClassAnnotation(cls)) {
-        validateClasses[cls.name] = cls;
+        validateClasses[cls.name!] = cls;
       }
     }
 
@@ -33,10 +33,10 @@ class ValidasiGenerator extends Generator {
           readGenerateFieldsOverride(cls) ?? generateFieldsDefault;
 
       if (generateFields) {
-        buffer.write(generateFieldsClass(cls.name, fields));
+        buffer.write(generateFieldsClass(cls.name!, fields));
       }
       buffer.write(generateValidateExtension(
-        cls.name,
+        cls.name!,
         fields,
         includeValidateField: generateFields,
       ));
@@ -56,7 +56,7 @@ class ValidasiGenerator extends Generator {
       final deps = <String>{};
 
       for (final field in cls.fields) {
-        if (field.isSynthetic || field.isStatic) continue;
+        if (field.isStatic) continue;
         final nested = detectNestedField(field, library);
         if (nested != null && validateClasses.containsKey(nested.$1)) {
           deps.add(nested.$1);

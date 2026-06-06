@@ -10,15 +10,11 @@ String generateFieldsClass(String className, List<FieldRules> fields) {
 
   buf.writeln();
   buf.writeln(
-      'sealed class $fieldsClassName<V> extends ValidasiKey<$className> {');
+      'sealed class $fieldsClassName<V> extends ValidasiKey<$className> implements ValidasiField<$className, V> {');
   buf.writeln('  const $fieldsClassName._();');
   buf.writeln();
-  buf.writeln('  String get name;');
-  buf.writeln('  V? extract($className owner);');
-  buf.writeln('  ValidasiResult<V> validate(V? value);');
-  buf.writeln();
   for (final ctx in fields) {
-    final fieldName = ctx.field.name;
+    final fieldName = ctx.field.name!;
     final leafName = '$className${_capitalize(fieldName)}Field';
     leafClassNames[fieldName] = leafName;
     final staticType = ctx.dartTypeDisplay;
@@ -29,7 +25,7 @@ String generateFieldsClass(String className, List<FieldRules> fields) {
   buf.writeln();
 
   for (final ctx in fields) {
-    final fieldName = ctx.field.name;
+    final fieldName = ctx.field.name!;
     final leafName = leafClassNames[fieldName]!;
     _emitLeaf(buf, className, fieldsClassName, leafName, fieldName, ctx);
     buf.writeln();

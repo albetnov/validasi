@@ -29,7 +29,7 @@ class MinLengthGen extends RuleGen {
       if (name == 'Iterable' || name == 'List' || name == 'Set') return;
     }
     throw InvalidGenerationSourceError(
-      "MinLength does not support type '${typeArg.getDisplayString(withNullability: false)}'. "
+      "MinLength does not support type '${typeArg.getDisplayString()}'. "
       "Supported: String, Iterable<T>",
       element: field,
     );

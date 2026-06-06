@@ -29,7 +29,7 @@ class MaxLengthGen extends RuleGen {
       if (name == 'Iterable' || name == 'List' || name == 'Set') return;
     }
     throw InvalidGenerationSourceError(
-      "MaxLength does not support type '${typeArg.getDisplayString(withNullability: false)}'. "
+      "MaxLength does not support type '${typeArg.getDisplayString()}'. "
       "Supported: String, Iterable<T>",
       element: field,
     );

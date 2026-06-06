@@ -5,7 +5,7 @@ import 'package:validasi_gen/src/handlers.dart';
 import 'package:validasi_gen/src/utils.dart';
 
 bool? readGenerateFieldsOverride(ClassElement cls) {
-  for (final meta in cls.metadata) {
+  for (final meta in cls.metadata.annotations) {
     final element = meta.element;
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'ValidateClass') {
@@ -34,8 +34,7 @@ class FieldRules {
 
   bool get isNested => nestedClassName != null;
 
-  String get dartTypeDisplay =>
-      field.type.getDisplayString(withNullability: true);
+  String get dartTypeDisplay => field.type.getDisplayString();
 }
 
 List<FieldRules> extractValidateFields(
@@ -43,7 +42,7 @@ List<FieldRules> extractValidateFields(
   final result = <FieldRules>[];
 
   for (final field in element.fields) {
-    if (field.isSynthetic || field.isStatic) continue;
+    if (field.isStatic) continue;
 
     final extracted = _extractRules(field);
     if (extracted != null) {
@@ -66,11 +65,11 @@ List<FieldRules> extractValidateFields(
 }
 
 (List<RuleInfo>, String)? _extractRules(FieldElement field) {
-  for (final meta in field.metadata) {
+  for (final meta in field.metadata.annotations) {
     final element = meta.element;
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'Validate') {
-      final context = element.name;
+      final context = element.name!;
       final constant = meta.computeConstantValue();
       if (constant == null) return null;
 
@@ -95,7 +94,7 @@ List<FieldRules> extractValidateFields(
 RuleInfo _parseRule(ConstantReader rule) {
   final type = rule.objectValue.type;
   final typeElement = type?.element;
-  final name = typeElement is ClassElement ? typeElement.name : 'Unknown';
+  final name = typeElement is ClassElement ? typeElement.name! : 'Unknown';
   final message = rule.peek('message')?.stringValue;
 
   if (name == 'Required') return RuleInfo('Required', const {}, message);

@@ -48,7 +48,7 @@ void _generateFieldValidation(StringBuffer buf, FieldRules ctx) {
     return;
   }
 
-  final fieldName = ctx.field.name;
+  final fieldName = ctx.field.name!;
   buf.writeln('    // Field: $fieldName');
   _snippets.emitInline(
     buf,
@@ -61,7 +61,7 @@ void _generateFieldValidation(StringBuffer buf, FieldRules ctx) {
 }
 
 void _generateNestedValidation(StringBuffer buf, FieldRules ctx) {
-  final fieldName = ctx.field.name;
+  final fieldName = ctx.field.name!;
   final nestedClassName = ctx.nestedClassName!;
   final isIterable = ctx.isNestedIterable;
   final isNullable = ctx.field.type.nullabilitySuffix != NullabilitySuffix.none;

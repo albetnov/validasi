@@ -2,12 +2,9 @@
 
 part of 'example.dart';
 
-sealed class UserFields<V> extends ValidasiKey<User> {
+sealed class UserFields<V> extends ValidasiKey<User>
+    implements ValidasiField<User, V> {
   const UserFields._();
-
-  String get name;
-  V? extract(User owner);
-  ValidasiResult<V> validate(V? value);
 
   static const UserFields<String> email = UserEmailField();
   static const UserFields<List<String>> tags = UserTagsField();
@@ -249,12 +246,9 @@ extension $UserValidasi on User {
   }
 }
 
-sealed class CarFields<V> extends ValidasiKey<Car> {
+sealed class CarFields<V> extends ValidasiKey<Car>
+    implements ValidasiField<Car, V> {
   const CarFields._();
-
-  String get name;
-  V? extract(Car owner);
-  ValidasiResult<V> validate(V? value);
 
   static const CarFields<String> make = CarMakeField();
   static const CarFields<String> model = CarModelField();
