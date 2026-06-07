@@ -1,17 +1,33 @@
 import 'package:flutter/widgets.dart';
 import 'package:validasi_ui/src/controller.dart';
+import 'package:validasi_ui/src/validation_mode.dart';
 
 class ValidasiForm<T> extends StatefulWidget {
   final Widget child;
   final ValidasiFormController<T>? controller;
+  final ValidationMode mode;
+  final ReValidationMode reValidateMode;
 
-  const ValidasiForm({required this.child, this.controller, super.key});
+  const ValidasiForm({
+    required this.child,
+    this.controller,
+    this.mode = ValidationMode.onSubmit,
+    this.reValidateMode = ReValidationMode.onChange,
+    super.key,
+  });
 
   static ValidasiFormController<T> of<T>(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<_FormScope<T>>();
     assert(scope != null,
         'ValidasiForm.of<$T>() called outside a ValidasiForm<$T>.');
     return scope!.controller;
+  }
+
+  static (ValidationMode, ReValidationMode) modeOf<T>(BuildContext context) {
+    final scope = context.dependOnInheritedWidgetOfExactType<_FormScope<T>>();
+    assert(scope != null,
+        'ValidasiForm.modeOf<$T>() called outside a ValidasiForm<$T>.');
+    return (scope!.mode, scope.reValidateMode);
   }
 
   @override
@@ -37,6 +53,8 @@ class _FormState<T> extends State<ValidasiForm<T>> {
   Widget build(BuildContext context) {
     return _FormScope<T>(
       controller: _controller,
+      mode: widget.mode,
+      reValidateMode: widget.reValidateMode,
       child: widget.child,
     );
   }
@@ -44,13 +62,19 @@ class _FormState<T> extends State<ValidasiForm<T>> {
 
 class _FormScope<T> extends InheritedWidget {
   final ValidasiFormController<T> controller;
+  final ValidationMode mode;
+  final ReValidationMode reValidateMode;
 
   const _FormScope({
     required this.controller,
+    required this.mode,
+    required this.reValidateMode,
     required super.child,
   });
 
   @override
   bool updateShouldNotify(_FormScope<T> oldWidget) =>
-      oldWidget.controller != controller;
+      oldWidget.controller != controller ||
+      oldWidget.mode != mode ||
+      oldWidget.reValidateMode != reValidateMode;
 }

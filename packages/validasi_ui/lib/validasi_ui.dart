@@ -3,3 +3,4 @@ export 'src/controller.dart';
 export 'src/form.dart';
 export 'src/form_field.dart';
 export 'src/field_state.dart';
+export 'src/validation_mode.dart';

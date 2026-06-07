@@ -5,6 +5,15 @@ class ValidasiFormController<T> extends ChangeNotifier {
   final _values = <ValidasiField<T, dynamic>, dynamic>{};
   final _errors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
 
+  bool _isSubmitted = false;
+
+  bool get isSubmitted => _isSubmitted;
+
+  void markSubmitted() {
+    _isSubmitted = true;
+    notifyListeners();
+  }
+
   void register<V>(ValidasiField<T, V> field, {V? initialValue}) {
     if (_values.containsKey(field)) return;
     _values[field] = initialValue;
@@ -46,6 +55,7 @@ class ValidasiFormController<T> extends ChangeNotifier {
   bool get isValid => _errors.values.every((e) => e.isEmpty);
 
   void reset() {
+    _isSubmitted = false;
     for (final key in _values.keys) {
       _values[key] = null;
       _errors[key] = [];
