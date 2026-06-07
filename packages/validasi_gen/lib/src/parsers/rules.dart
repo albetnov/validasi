@@ -37,6 +37,20 @@ class FieldRules {
   String get dartTypeDisplay => field.type.getDisplayString();
 }
 
+class CrossFieldInfo {
+  final FieldElement field;
+  final String validatorName;
+  final List<String> dependsOn;
+  final String? functionName;
+
+  CrossFieldInfo({
+    required this.field,
+    required this.validatorName,
+    required this.dependsOn,
+    this.functionName,
+  });
+}
+
 List<FieldRules> extractValidateFields(
     ClassElement element, LibraryReader library) {
   final result = <FieldRules>[];
@@ -58,6 +72,53 @@ List<FieldRules> extractValidateFields(
         nestedClassName: nested.$1,
         isNestedIterable: nested.$2,
       ));
+    }
+  }
+
+  return result;
+}
+
+List<CrossFieldInfo> extractCrossFields(ClassElement element) {
+  final result = <CrossFieldInfo>[];
+
+  for (final field in element.fields) {
+    if (field.isStatic) continue;
+
+    for (final meta in field.metadata.annotations) {
+      final metaElement = meta.element;
+      if (metaElement is ConstructorElement &&
+          metaElement.enclosingElement.name == 'ValidateWith') {
+        final constant = meta.computeConstantValue();
+        if (constant == null) continue;
+
+        final reader = ConstantReader(constant);
+
+        // Read the validator function name
+        final validatorReader = reader.read('validator');
+        final validatorElement = validatorReader.objectValue.toFunctionValue();
+        final functionName = validatorElement?.name ?? '_unknown';
+
+        // Read dependsOn — a Set<Symbol>
+        final dependsOnReader = reader.read('dependsOn');
+        final dependsOnSet = dependsOnReader.setValue;
+        final dependsOn = <String>[];
+        for (final symbol in dependsOnSet) {
+          final nameValue = symbol.getField('name');
+          if (nameValue != null) {
+            final name = nameValue.toStringValue();
+            if (name != null && name.isNotEmpty) {
+              dependsOn.add(name);
+            }
+          }
+        }
+
+        result.add(CrossFieldInfo(
+          field: field,
+          validatorName: field.name!,
+          dependsOn: dependsOn,
+          functionName: functionName,
+        ));
+      }
     }
   }
 

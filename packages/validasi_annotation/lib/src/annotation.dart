@@ -15,3 +15,9 @@ class Validate {
 
   const Validate.iterable(List<Rule<Iterable>> this.rules);
 }
+
+class ValidateWith {
+  final Function validator;
+  final Set<Symbol> dependsOn;
+  const ValidateWith(this.validator, {this.dependsOn = const {}});
+}

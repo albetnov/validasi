@@ -3,10 +3,20 @@ import 'package:validasi_gen/src/parsers/rules.dart';
 
 const _snippets = FieldRuleSnippets();
 
-String generateFieldsClass(String className, List<FieldRules> fields) {
+String generateFieldsClass(
+  String className,
+  List<FieldRules> fields, {
+  List<CrossFieldInfo> crossFields = const [],
+}) {
   final buf = StringBuffer();
   final fieldsClassName = '${className}Fields';
   final leafClassNames = <String, String>{};
+
+  // Index cross-fields by field name for quick lookup
+  final crossByField = <String, CrossFieldInfo>{};
+  for (final cf in crossFields) {
+    crossByField[cf.field.name!] = cf;
+  }
 
   buf.writeln();
   buf.writeln(
@@ -27,7 +37,9 @@ String generateFieldsClass(String className, List<FieldRules> fields) {
   for (final ctx in fields) {
     final fieldName = ctx.field.name!;
     final leafName = leafClassNames[fieldName]!;
-    _emitLeaf(buf, className, fieldsClassName, leafName, fieldName, ctx);
+    final crossInfo = crossByField[fieldName];
+    _emitLeaf(buf, className, fieldsClassName, leafName, fieldName, ctx,
+        crossInfo: crossInfo);
     buf.writeln();
   }
 
@@ -40,8 +52,9 @@ void _emitLeaf(
   String fieldsClassName,
   String leafName,
   String fieldName,
-  FieldRules ctx,
-) {
+  FieldRules ctx, {
+  CrossFieldInfo? crossInfo,
+}) {
   final valueType = ctx.dartTypeDisplay;
   final typeArgForLeaf = valueType;
 
@@ -60,7 +73,40 @@ void _emitLeaf(
     _emitLeafValidate(buf, fieldsClassName, valueType, ctx);
   }
 
+  if (crossInfo != null) {
+    _emitCrossFieldOverrides(buf, className, crossInfo);
+  }
+
   buf.writeln('}');
+}
+
+void _emitCrossFieldOverrides(
+  StringBuffer buf,
+  String className,
+  CrossFieldInfo crossInfo,
+) {
+  final crossClassName = '${className}CrossFields';
+  final validatorFunc = crossInfo.functionName;
+
+  buf.writeln();
+  buf.writeln('  @override');
+  buf.writeln(
+      '  CrossFieldKey<$className> get crossFieldKey => $crossClassName.${crossInfo.field.name};');
+  buf.writeln();
+  buf.writeln('  @override');
+  buf.writeln('  List<ValidationError> Function(');
+  buf.writeln('    V? Function<V>(ValidasiField<$className, V>)');
+  buf.writeln('  ) get crossValidator {');
+  buf.writeln('    return (getField) {');
+  buf.writeln('      final model = _\$${className}_assemble(getField);');
+  buf.writeln('      final result = $validatorFunc(model);');
+  buf.writeln('      if (result != null) {');
+  buf.writeln(
+      "        return [ValidationError(rule: 'ValidateWith', message: result, path: ['${crossInfo.field.name}'])];");
+  buf.writeln('      }');
+  buf.writeln('      return [];');
+  buf.writeln('    };');
+  buf.writeln('  }');
 }
 
 String _nullableParam(String type) {

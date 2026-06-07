@@ -91,6 +91,25 @@ class UserEmailField extends UserFields<String> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<User> get crossFieldKey => UserCrossFields.email;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))
+      get crossValidator {
+    return (getField) {
+      final model = _$User_assemble(getField);
+      final result = _emailMatchesName(model);
+      if (result != null) {
+        return [
+          ValidationError(
+              rule: 'ValidateWith', message: result, path: ['email'])
+        ];
+      }
+      return [];
+    };
+  }
 }
 
 class UserAgeField extends UserFields<int> {
@@ -121,6 +140,23 @@ class UserAgeField extends UserFields<int> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+}
+
+sealed class UserCrossFields extends CrossFieldKey<User> {
+  const UserCrossFields._(super.name);
+  static const UserCrossFields email = _User_email_CrossField();
+}
+
+class _User_email_CrossField extends UserCrossFields {
+  const _User_email_CrossField() : super._('email');
+}
+
+User _$User_assemble<V>(V? Function<V>(ValidasiField<User, V> field) getField) {
+  return User(
+    name: getField(UserFields.name) as String,
+    email: getField(UserFields.email) as String,
+    age: getField(UserFields.age) as int,
+  );
 }
 
 extension $UserValidasi on User {

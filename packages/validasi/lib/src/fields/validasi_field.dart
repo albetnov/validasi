@@ -1,4 +1,14 @@
+import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/result.dart';
+
+/// A typed key identifying a cross-field validator on [T].
+///
+/// Generated classes extend this to produce typed constants
+/// (e.g. `UserCrossFields.passwordMatch`), one per `@ValidateWith` annotation.
+class CrossFieldKey<T> {
+  final String name;
+  const CrossFieldKey(this.name);
+}
 
 /// A descriptor for a single field on a typed model [T].
 ///
@@ -20,4 +30,17 @@ abstract class ValidasiField<T, V> extends FieldDescriptor<T, V> {
 
   /// Validate [value] using the rules defined for this field.
   ValidasiResult<V> validate(V? value);
+
+  /// If this field has a `@ValidateWith` cross-field validator,
+  /// this returns the key used to identify it. Otherwise `null`.
+  CrossFieldKey<T>? get crossFieldKey => null;
+
+  /// If this field has a `@ValidateWith` cross-field validator,
+  /// this returns the validator function. Otherwise `null`.
+  ///
+  /// The function receives a `getField` callback that reads field values
+  /// from the controller, enabling cross-field logic without a `T` instance.
+  List<ValidationError> Function(
+    TValue? Function<TValue>(ValidasiField<T, TValue>) getField,
+  )? get crossValidator => null;
 }

@@ -2,6 +2,7 @@ import 'package:build/build.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
 
+import 'package:validasi_gen/src/generators/cross_fields.dart';
 import 'package:validasi_gen/src/generators/extension.dart';
 import 'package:validasi_gen/src/generators/fields_class.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
@@ -32,9 +33,18 @@ class ValidasiGenerator extends Generator {
       final generateFields =
           readGenerateFieldsOverride(cls) ?? generateFieldsDefault;
 
+      final crossFields = extractCrossFields(cls);
+
       if (generateFields) {
-        buffer.write(generateFieldsClass(cls.name!, fields));
+        buffer.write(
+            generateFieldsClass(cls.name!, fields, crossFields: crossFields));
       }
+
+      if (crossFields.isNotEmpty) {
+        buffer.write(generateCrossFieldsClass(cls.name!, crossFields));
+        buffer.write(generateModelAssembler(cls.name!, fields));
+      }
+
       buffer.write(generateValidateExtension(
         cls.name!,
         fields,
