@@ -49,6 +49,15 @@ class _EmailField extends ValidasiField<_TestModel, String> {
   }
 }
 
+ValidasiFormController<_TestModel> _makeController() {
+  return ValidasiFormController<_TestModel>(
+    assembler: (ctrl) => _TestModel(
+      name: ctrl.getValue(const _NameField()) ?? '',
+      email: ctrl.getValue(const _EmailField()) ?? '',
+    ),
+  );
+}
+
 Widget _buildForm({
   required ValidasiFormController<_TestModel> controller,
   _TestModel? initialValues,
@@ -57,8 +66,12 @@ Widget _buildForm({
     home: Scaffold(
       body: ValidasiForm<_TestModel>(
         controller: controller,
+        assembler: (ctrl) => _TestModel(
+          name: ctrl.getValue(const _NameField()) ?? '',
+          email: ctrl.getValue(const _EmailField()) ?? '',
+        ),
         initialValues: initialValues,
-        child: Column(
+        builder: (context, submit) => Column(
           children: [
             ValidasiFormField<_TestModel, String>(
               field: const _NameField(),
@@ -92,7 +105,7 @@ Widget _buildForm({
 void main() {
   group('InitialValues', () {
     test('setInitialValues seeds registered fields', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
       const emailField = _EmailField();
 
@@ -107,7 +120,7 @@ void main() {
     });
 
     test('register after setInitialValues extracts from model', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
       const emailField = _EmailField();
 
@@ -122,7 +135,7 @@ void main() {
     });
 
     testWidgets('form initialValues seeds all fields', (tester) async {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const model = _TestModel(name: 'Charlie', email: 'charlie@test.com');
 
       await tester.pumpWidget(_buildForm(
@@ -137,7 +150,7 @@ void main() {
 
   group('Dirty / Pristine tracking', () {
     test('field starts pristine with no initialValues', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
 
       controller.register(nameField);
@@ -146,7 +159,7 @@ void main() {
     });
 
     test('field starts pristine with initialValues', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
 
       const model = _TestModel(name: 'Alice', email: 'alice@test.com');
@@ -157,7 +170,7 @@ void main() {
     });
 
     test('field becomes dirty after setValue', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
 
       const model = _TestModel(name: 'Alice', email: 'alice@test.com');
@@ -170,7 +183,7 @@ void main() {
     });
 
     test('field returns pristine after setValue back to initial', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
 
       const model = _TestModel(name: 'Alice', email: 'alice@test.com');
@@ -185,7 +198,7 @@ void main() {
     });
 
     test('form-wide isDirty reflects any dirty field', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
       const emailField = _EmailField();
 
@@ -206,7 +219,7 @@ void main() {
 
   group('Touched tracking', () {
     test('field starts untouched', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
 
       controller.register(nameField);
@@ -216,7 +229,7 @@ void main() {
     });
 
     test('field becomes touched after setValue', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
 
       controller.register(nameField);
@@ -229,7 +242,7 @@ void main() {
 
   group('Reset restores initial values', () {
     test('reset restores to initial values, not null', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
       const emailField = _EmailField();
 
@@ -248,7 +261,7 @@ void main() {
     });
 
     test('reset clears touched state', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
 
       const model = _TestModel(name: 'Alice', email: 'alice@test.com');
@@ -265,7 +278,7 @@ void main() {
     });
 
     test('reset clears isSubmitted', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
 
       controller.markSubmitted();
       expect(controller.isSubmitted, true);
@@ -275,7 +288,7 @@ void main() {
     });
 
     test('reset without initialValues restores to null', () {
-      final controller = ValidasiFormController<_TestModel>();
+      final controller = _makeController();
       const nameField = _NameField();
 
       controller.register(nameField);

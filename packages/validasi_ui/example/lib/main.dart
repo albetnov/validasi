@@ -26,7 +26,8 @@ class UserFormPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('User Form')),
       body: ValidasiForm<User>(
-        child: Padding(
+        assembler: assemble_User,
+        builder: (context, submit) => Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
@@ -65,16 +66,7 @@ class UserFormPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {
-                  final controller = ValidasiForm.of<User>(context);
-                  if (!controller.validate()) return;
-
-                  final user = User(
-                    name: controller.getValue(UserFields.name)!,
-                    email: controller.getValue(UserFields.email)!,
-                    age: controller.getValue(UserFields.age)!,
-                  );
-
+                onPressed: submit((user) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -82,7 +74,7 @@ class UserFormPage extends StatelessWidget {
                       ),
                     ),
                   );
-                },
+                }),
                 child: const Text('Submit'),
               ),
             ],

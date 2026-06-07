@@ -2,8 +2,8 @@
 
 part of 'user.dart';
 
-sealed class UserFields<V> extends ValidasiKey<User>
-    implements ValidasiField<User, V> {
+
+sealed class UserFields<V> extends ValidasiKey<User> implements ValidasiField<User, V> {
   const UserFields._();
 
   static const UserFields<String> name = UserNameField();
@@ -14,11 +14,9 @@ sealed class UserFields<V> extends ValidasiKey<User>
 class UserNameField extends UserFields<String> {
   const UserNameField() : super._();
 
-  @override
-  String get name => 'name';
+  @override String get name => 'name';
 
-  @override
-  String extract(User owner) => owner.name;
+  @override String extract(User owner) => owner.name;
 
   @override
   ValidasiResult<String> validate(String? value) {
@@ -55,22 +53,20 @@ class UserNameField extends UserFields<String> {
   CrossFieldKey<User>? get crossFieldKey => null;
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<User, V>)
+  )? get crossValidator => null;
 
   @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
+  Set<ValidasiField<User, dynamic>> get crossDependsOn => const <ValidasiField<User, dynamic>>{};
 }
 
 class UserEmailField extends UserFields<String> {
   const UserEmailField() : super._();
 
-  @override
-  String get name => 'email';
+  @override String get name => 'email';
 
-  @override
-  String extract(User owner) => owner.email;
+  @override String extract(User owner) => owner.email;
 
   @override
   ValidasiResult<String> validate(String? value) {
@@ -112,15 +108,13 @@ class UserEmailField extends UserFields<String> {
   }
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))
-      get crossValidator {
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<User, V>)
+  ) get crossValidator {
     return (getField) {
       final result = _emailMatchesName(getField);
       if (result != null) {
-        return [
-          ValidationError(
-              rule: 'ValidateWith', message: result, path: ['email'])
-        ];
+        return [ValidationError(rule: 'ValidateWith', message: result, path: ['email'])];
       }
       return [];
     };
@@ -130,11 +124,9 @@ class UserEmailField extends UserFields<String> {
 class UserAgeField extends UserFields<int> {
   const UserAgeField() : super._();
 
-  @override
-  String get name => 'age';
+  @override String get name => 'age';
 
-  @override
-  int extract(User owner) => owner.age;
+  @override int extract(User owner) => owner.age;
 
   @override
   ValidasiResult<int> validate(int? value) {
@@ -160,13 +152,21 @@ class UserAgeField extends UserFields<int> {
   CrossFieldKey<User>? get crossFieldKey => null;
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<User, V>)
+  )? get crossValidator => null;
 
   @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
+  Set<ValidasiField<User, dynamic>> get crossDependsOn => const <ValidasiField<User, dynamic>>{};
 }
+
+
+User assemble_User(
+    ValidasiFormController<User> ctrl) => User(
+    name: ctrl.getValue(UserFields.name) as String,
+    email: ctrl.getValue(UserFields.email) as String,
+    age: ctrl.getValue(UserFields.age) as int,
+  );
 
 sealed class UserCrossFields extends CrossFieldKey<User> {
   const UserCrossFields._(super.name);
@@ -176,6 +176,7 @@ sealed class UserCrossFields extends CrossFieldKey<User> {
 class _User_email_CrossField extends UserCrossFields {
   const _User_email_CrossField() : super._('email');
 }
+
 
 extension $UserValidasi on User {
   ValidasiResult<User> validate() {

@@ -38,6 +38,7 @@ class ValidasiGenerator extends Generator {
       if (generateFields) {
         buffer.write(
             generateFieldsClass(cls.name!, fields, crossFields: crossFields));
+        buffer.write(generateFromForm(cls.name!, fields));
       }
 
       if (crossFields.isNotEmpty) {

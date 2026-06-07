@@ -33,3 +33,25 @@ String generateCrossFieldsClass(
 
   return buf.toString();
 }
+
+String generateFromForm(
+  String className,
+  List<FieldRules> allFields,
+) {
+  final buf = StringBuffer();
+  final fieldsClassName = '${className}Fields';
+
+  buf.writeln();
+  buf.writeln('$className assemble_$className(');
+  buf.writeln('    ValidasiFormController<$className> ctrl) => $className(');
+  for (final f in allFields) {
+    if (f.isNested) continue;
+    final fieldName = f.field.name;
+    final typeName = f.dartTypeDisplay;
+    buf.writeln(
+        '    $fieldName: ctrl.getValue($fieldsClassName.$fieldName) as $typeName,');
+  }
+  buf.writeln('  );');
+
+  return buf.toString();
+}

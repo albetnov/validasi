@@ -7,6 +7,9 @@ class ValidasiFormController<T> extends ChangeNotifier {
   final _crossErrors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
   final _initialValues = <ValidasiField<T, dynamic>, dynamic>{};
   final _touched = <ValidasiField<T, dynamic>>{};
+  final T Function(ValidasiFormController<T>) assembler;
+
+  ValidasiFormController({required this.assembler});
 
   T? _initialModel;
   bool _isSubmitted = false;
@@ -16,6 +19,17 @@ class ValidasiFormController<T> extends ChangeNotifier {
   void markSubmitted() {
     _isSubmitted = true;
     notifyListeners();
+  }
+
+  VoidCallback submit(void Function(T) onSubmit) {
+    return () {
+      if (!validate()) {
+        markSubmitted();
+        return;
+      }
+
+      onSubmit(assembler(this));
+    };
   }
 
   void setInitialValues(T model) {

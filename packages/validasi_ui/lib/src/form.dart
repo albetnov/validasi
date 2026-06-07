@@ -2,15 +2,19 @@ import 'package:flutter/widgets.dart';
 import 'package:validasi_ui/src/controller.dart';
 import 'package:validasi_ui/src/validation_mode.dart';
 
+typedef SubmitHandler<T> = VoidCallback Function(void Function(T) onSubmit);
+
 class ValidasiForm<T> extends StatefulWidget {
-  final Widget child;
+  final Widget Function(BuildContext context, SubmitHandler<T> submit) builder;
   final ValidasiFormController<T>? controller;
+  final T Function(ValidasiFormController<T>) assembler;
   final ValidationMode mode;
   final ReValidationMode reValidateMode;
   final T? initialValues;
 
   const ValidasiForm({
-    required this.child,
+    required this.builder,
+    required this.assembler,
     this.controller,
     this.mode = ValidationMode.onSubmit,
     this.reValidateMode = ReValidationMode.onChange,
@@ -42,7 +46,8 @@ class _FormState<T> extends State<ValidasiForm<T>> {
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? ValidasiFormController<T>();
+    _controller = widget.controller ??
+        ValidasiFormController<T>(assembler: widget.assembler);
     if (widget.initialValues != null) {
       _controller.setInitialValues(widget.initialValues as T);
     }
@@ -60,7 +65,7 @@ class _FormState<T> extends State<ValidasiForm<T>> {
       controller: _controller,
       mode: widget.mode,
       reValidateMode: widget.reValidateMode,
-      child: widget.child,
+      child: widget.builder(context, _controller.submit),
     );
   }
 }

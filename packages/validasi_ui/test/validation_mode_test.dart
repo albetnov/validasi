@@ -22,6 +22,12 @@ class _TestKey extends ValidasiField<String, String> {
   }
 }
 
+ValidasiFormController<String> _makeController() {
+  return ValidasiFormController<String>(
+    assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+  );
+}
+
 Widget _buildForm({
   required ValidasiFormController<String> controller,
   ValidationMode mode = ValidationMode.onSubmit,
@@ -34,9 +40,10 @@ Widget _buildForm({
     home: Scaffold(
       body: ValidasiForm<String>(
         controller: controller,
+        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
         mode: mode,
         reValidateMode: reValidateMode,
-        child: Column(
+        builder: (context, submit) => Column(
           children: [
             ValidasiFormField<String, String>(
               field: const _TestKey(),
@@ -62,18 +69,18 @@ Widget _buildForm({
 void main() {
   group('ValidasiFormController - isSubmitted', () {
     test('isSubmitted starts as false', () {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       expect(controller.isSubmitted, false);
     });
 
     test('markSubmitted sets isSubmitted to true', () {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       controller.markSubmitted();
       expect(controller.isSubmitted, true);
     });
 
     test('reset clears isSubmitted', () {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       controller.markSubmitted();
       expect(controller.isSubmitted, true);
 
@@ -84,7 +91,7 @@ void main() {
 
   group('ValidationMode.onSubmit (default)', () {
     testWidgets('does not validate on onChanged', (tester) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(_buildForm(controller: controller));
 
       final textField = find.byType(TextField);
@@ -95,7 +102,7 @@ void main() {
     });
 
     testWidgets('validates on explicit controller.validate()', (tester) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(_buildForm(controller: controller));
 
       final result = controller.validate();
@@ -106,7 +113,7 @@ void main() {
     testWidgets('validates on explicit controller.validateField()', (
       tester,
     ) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(_buildForm(controller: controller));
 
       final result = controller.validateField(const _TestKey());
@@ -117,7 +124,7 @@ void main() {
 
   group('ValidationMode.onChange', () {
     testWidgets('validates after every onChanged call', (tester) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(
         _buildForm(controller: controller, mode: ValidationMode.onChange),
       );
@@ -140,7 +147,7 @@ void main() {
 
   group('ValidationMode.onBlur', () {
     testWidgets('does not validate on onChanged', (tester) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(
         _buildForm(controller: controller, mode: ValidationMode.onBlur),
       );
@@ -153,7 +160,7 @@ void main() {
     });
 
     testWidgets('validates when focus is lost', (tester) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       final focusNode = FocusNode();
 
       await tester.pumpWidget(
@@ -161,8 +168,9 @@ void main() {
           home: Scaffold(
             body: ValidasiForm<String>(
               controller: controller,
+              assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
               mode: ValidationMode.onBlur,
-              child: Column(
+              builder: (context, submit) => Column(
                 children: [
                   ValidasiFormField<String, String>(
                     field: const _TestKey(),
@@ -205,7 +213,7 @@ void main() {
 
   group('Field-level mode override', () {
     testWidgets('field onChange overrides form onSubmit', (tester) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(
         _buildForm(
           controller: controller,
@@ -225,7 +233,7 @@ void main() {
     });
 
     testWidgets('field onSubmit overrides form onChange', (tester) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(
         _buildForm(
           controller: controller,
@@ -246,7 +254,7 @@ void main() {
     testWidgets('onChange reValidation validates on change after submit', (
       tester,
     ) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(
         _buildForm(
           controller: controller,
@@ -273,7 +281,7 @@ void main() {
     testWidgets('onBlur reValidation validates on blur after submit', (
       tester,
     ) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       final focusNode = FocusNode();
 
       await tester.pumpWidget(
@@ -281,9 +289,10 @@ void main() {
           home: Scaffold(
             body: ValidasiForm<String>(
               controller: controller,
+              assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
               mode: ValidationMode.onSubmit,
               reValidateMode: ReValidationMode.onBlur,
-              child: Column(
+              builder: (context, submit) => Column(
                 children: [
                   ValidasiFormField<String, String>(
                     field: const _TestKey(),
@@ -321,7 +330,7 @@ void main() {
     });
 
     testWidgets('reverts to original mode after reset', (tester) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(
         _buildForm(
           controller: controller,
@@ -350,7 +359,7 @@ void main() {
     testWidgets('field reValidateMode overrides form reValidateMode', (
       tester,
     ) async {
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
       await tester.pumpWidget(
         _buildForm(
           controller: controller,
@@ -374,14 +383,15 @@ void main() {
   group('ValidasiFieldState.onFocusChange', () {
     testWidgets('is provided in field state', (tester) async {
       ValidasiFieldState<String>? capturedState;
-      final controller = ValidasiFormController<String>();
+      final controller = _makeController();
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: ValidasiForm<String>(
               controller: controller,
-              child: ValidasiFormField<String, String>(
+              assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+              builder: (context, submit) => ValidasiFormField<String, String>(
                 field: const _TestKey(),
                 builder: (context, state) {
                   capturedState = state;

@@ -24,7 +24,9 @@ class _TestKey extends ValidasiField<String, String> {
 void main() {
   group('ValidasiFormController', () {
     test('getValue and setValue are type-safe', () {
-      final controller = ValidasiFormController<String>();
+      final controller = ValidasiFormController<String>(
+        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+      );
       const field = _TestKey();
 
       controller.register(field, initialValue: 'hello');
@@ -40,7 +42,9 @@ void main() {
     });
 
     test('validateField runs the generated validator', () {
-      final controller = ValidasiFormController<String>();
+      final controller = ValidasiFormController<String>(
+        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+      );
       const field = _TestKey();
 
       controller.register(field);
@@ -53,7 +57,9 @@ void main() {
     });
 
     test('validate runs all registered fields', () {
-      final controller = ValidasiFormController<String>();
+      final controller = ValidasiFormController<String>(
+        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+      );
       const field = _TestKey();
 
       controller.register(field);
