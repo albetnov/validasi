@@ -209,7 +209,7 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
 }
 
 
-User _$User_fromForm(
+User assemble_User(
     ValidasiFormController<User> ctrl) => User(
     email: ctrl.getValue(UserFields.email) as String,
     tags: ctrl.getValue(UserFields.tags) as List<String>,
@@ -377,7 +377,7 @@ class CarModelField extends CarFields<String> {
 }
 
 
-Car _$Car_fromForm(
+Car assemble_Car(
     ValidasiFormController<Car> ctrl) => Car(
     make: ctrl.getValue(CarFields.make) as String,
     model: ctrl.getValue(CarFields.model) as String,
