@@ -36,7 +36,7 @@ void main() {
       expect(controller.getValue(field), 'world');
 
       controller.reset();
-      expect(controller.getValue(field), isNull);
+      expect(controller.getValue(field), 'hello');
     });
 
     test('validateField runs the generated validator', () {

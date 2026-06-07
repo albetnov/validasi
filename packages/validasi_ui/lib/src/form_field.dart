@@ -93,6 +93,8 @@ class _FormFieldState<T, V> extends State<ValidasiFormField<T, V>> {
       onFocusChange: (hasFocus) {
         if (!hasFocus) _validateOnBlur();
       },
+      isDirty: controller.isFieldDirty(widget.field),
+      isTouched: controller.isFieldTouched(widget.field),
     );
 
     return widget.builder(context, state);

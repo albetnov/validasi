@@ -7,12 +7,14 @@ class ValidasiForm<T> extends StatefulWidget {
   final ValidasiFormController<T>? controller;
   final ValidationMode mode;
   final ReValidationMode reValidateMode;
+  final T? initialValues;
 
   const ValidasiForm({
     required this.child,
     this.controller,
     this.mode = ValidationMode.onSubmit,
     this.reValidateMode = ReValidationMode.onChange,
+    this.initialValues,
     super.key,
   });
 
@@ -41,6 +43,9 @@ class _FormState<T> extends State<ValidasiForm<T>> {
   void initState() {
     super.initState();
     _controller = widget.controller ?? ValidasiFormController<T>();
+    if (widget.initialValues != null) {
+      _controller.setInitialValues(widget.initialValues as T);
+    }
   }
 
   @override
