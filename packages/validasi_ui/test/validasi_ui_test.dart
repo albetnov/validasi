@@ -68,5 +68,74 @@ void main() {
       controller.setValue(field, 'ok');
       expect(controller.validate(), true);
     });
+
+    test('getValues returns unmodifiable map of all field values', () {
+      final controller = ValidasiFormController<String>(
+        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+      );
+      const field = _TestKey();
+
+      controller.register(field, initialValue: 'hello');
+
+      final values = controller.getValues();
+      expect(values.length, 1);
+      expect(values[field], 'hello');
+
+      expect(
+        () => values[field] = 'mutated',
+        throwsA(isA<UnsupportedError>()),
+      );
+    });
+
+    test('submit runs onSubmit with assembled model when valid', () {
+      final controller = ValidasiFormController<String>(
+        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+      );
+      const field = _TestKey();
+
+      controller.register(field, initialValue: 'hello');
+
+      String? captured;
+      controller.submit((model) {
+        captured = model;
+      })();
+
+      expect(captured, 'hello');
+      expect(controller.isSubmitted, false);
+    });
+
+    test('submit marks submitted and skips callback when invalid', () {
+      final controller = ValidasiFormController<String>(
+        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+      );
+      const field = _TestKey();
+
+      controller.register(field);
+
+      bool called = false;
+      controller.submit((model) {
+        called = true;
+      })();
+
+      expect(called, false);
+      expect(controller.isSubmitted, true);
+    });
+
+    test('isValid reflects field validity', () {
+      final controller = ValidasiFormController<String>(
+        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+      );
+      const field = _TestKey();
+
+      controller.register(field);
+      expect(controller.isValid, true);
+
+      controller.validate();
+      expect(controller.isValid, false);
+
+      controller.setValue(field, 'ok');
+      controller.validate();
+      expect(controller.isValid, true);
+    });
   });
 }

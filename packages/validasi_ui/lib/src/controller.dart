@@ -57,6 +57,9 @@ class ValidasiFormController<T> extends ChangeNotifier {
 
   V? getValue<V>(ValidasiField<T, V> field) => _values[field] as V?;
 
+  Map<ValidasiField<T, dynamic>, dynamic> getValues() =>
+      Map.unmodifiable(_values);
+
   V? _getField<V>(ValidasiField<T, V> field) => _values[field] as V?;
 
   void setValue<V>(ValidasiField<T, V> field, V? value) {
