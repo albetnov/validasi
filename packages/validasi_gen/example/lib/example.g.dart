@@ -52,6 +52,17 @@ class UserEmailField extends UserFields<String> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<User>? get crossFieldKey => null;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
+      get crossValidator => null;
+
+  @override
+  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
+      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserTagsField extends UserFields<List<String>> {
@@ -82,6 +93,17 @@ class UserTagsField extends UserFields<List<String>> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<User>? get crossFieldKey => null;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
+      get crossValidator => null;
+
+  @override
+  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
+      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserCarField extends UserFields<Car> {
@@ -107,6 +129,17 @@ class UserCarField extends UserFields<Car> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<User>? get crossFieldKey => null;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
+      get crossValidator => null;
+
+  @override
+  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
+      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserSpareCarField extends UserFields<Car?> {
@@ -132,6 +165,17 @@ class UserSpareCarField extends UserFields<Car?> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<User>? get crossFieldKey => null;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
+      get crossValidator => null;
+
+  @override
+  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
+      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserPreviousCarsField extends UserFields<List<Car>> {
@@ -164,6 +208,17 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<User>? get crossFieldKey => null;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
+      get crossValidator => null;
+
+  @override
+  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
+      const <ValidasiField<User, dynamic>>{};
 }
 
 extension $UserValidasi on User {
@@ -282,6 +337,17 @@ class CarMakeField extends CarFields<String> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<Car>? get crossFieldKey => null;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<Car, V>))?
+      get crossValidator => null;
+
+  @override
+  Set<ValidasiField<Car, dynamic>> get crossDependsOn =>
+      const <ValidasiField<Car, dynamic>>{};
 }
 
 class CarModelField extends CarFields<String> {
@@ -312,6 +378,17 @@ class CarModelField extends CarFields<String> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<Car>? get crossFieldKey => null;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<Car, V>))?
+      get crossValidator => null;
+
+  @override
+  Set<ValidasiField<Car, dynamic>> get crossDependsOn =>
+      const <ValidasiField<Car, dynamic>>{};
 }
 
 extension $CarValidasi on Car {

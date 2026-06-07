@@ -43,4 +43,9 @@ abstract class ValidasiField<T, V> extends FieldDescriptor<T, V> {
   List<ValidationError> Function(
     TValue? Function<TValue>(ValidasiField<T, TValue>) getField,
   )? get crossValidator => null;
+
+  /// If this field is referenced by a `@ValidateWith(dependsOn:)` on
+  /// another field, returns the fields whose cross-validators depend on
+  /// this field's value. Otherwise an empty set.
+  Set<ValidasiField<T, dynamic>> get crossDependsOn => const {};
 }

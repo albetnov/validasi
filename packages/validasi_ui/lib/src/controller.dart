@@ -4,6 +4,7 @@ import 'package:validasi/validasi.dart';
 class ValidasiFormController<T> extends ChangeNotifier {
   final _values = <ValidasiField<T, dynamic>, dynamic>{};
   final _errors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
+  final _crossErrors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
   final _initialValues = <ValidasiField<T, dynamic>, dynamic>{};
   final _touched = <ValidasiField<T, dynamic>>{};
 
@@ -42,15 +43,31 @@ class ValidasiFormController<T> extends ChangeNotifier {
 
   V? getValue<V>(ValidasiField<T, V> field) => _values[field] as V?;
 
+  V? _getField<V>(ValidasiField<T, V> field) => _values[field] as V?;
+
   void setValue<V>(ValidasiField<T, V> field, V? value) {
     _values[field] = value;
     _errors[field] = [];
+    _crossErrors.clear();
     _touched.add(field);
     notifyListeners();
   }
 
   List<ValidationError> getErrors<V>(ValidasiField<T, V> field) {
-    return (_errors[field] ?? []).cast<ValidationError>();
+    return [
+      ...(_errors[field] ?? []),
+      ...(_crossErrors[field] ?? []),
+    ].cast<ValidationError>();
+  }
+
+  void _validateDependentCrossFields(ValidasiField<T, dynamic> source) {
+    for (final field in _values.keys) {
+      final cv = field.crossValidator;
+      if (cv != null &&
+          (field.crossDependsOn.contains(source) || field == source)) {
+        _crossErrors[field] = cv(_getField);
+      }
+    }
   }
 
   bool isFieldDirty<V>(ValidasiField<T, V> field) =>
@@ -68,8 +85,9 @@ class ValidasiFormController<T> extends ChangeNotifier {
     final value = _values[field];
     final result = field.validate(value);
     _errors[field] = result.errors;
+    _validateDependentCrossFields(field);
     notifyListeners();
-    return result.isValid;
+    return result.isValid && (_crossErrors[field]?.isEmpty ?? true);
   }
 
   bool validate() {
@@ -80,15 +98,26 @@ class ValidasiFormController<T> extends ChangeNotifier {
       _errors[key] = result.errors;
       if (!result.isValid) allValid = false;
     }
+    for (final key in _values.keys) {
+      final cv = key.crossValidator;
+      if (cv != null) {
+        final errors = cv(_getField);
+        _crossErrors[key] = errors;
+        if (errors.isNotEmpty) allValid = false;
+      }
+    }
     notifyListeners();
     return allValid;
   }
 
-  bool get isValid => _errors.values.every((e) => e.isEmpty);
+  bool get isValid =>
+      _errors.values.every((e) => e.isEmpty) &&
+      _crossErrors.values.every((e) => e.isEmpty);
 
   void reset() {
     _isSubmitted = false;
     _touched.clear();
+    _crossErrors.clear();
     for (final key in _values.keys) {
       _values[key] = _initialValues[key];
       _errors[key] = [];

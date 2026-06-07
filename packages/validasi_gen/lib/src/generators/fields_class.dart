@@ -74,15 +74,36 @@ void _emitLeaf(
   }
 
   if (crossInfo != null) {
-    _emitCrossFieldOverrides(buf, className, crossInfo);
+    _emitCrossFieldOverrides(buf, className, fieldsClassName, crossInfo);
+  } else {
+    _emitDefaultCrossFieldOverrides(buf, className);
   }
 
   buf.writeln('}');
 }
 
+void _emitDefaultCrossFieldOverrides(
+  StringBuffer buf,
+  String className,
+) {
+  buf.writeln();
+  buf.writeln('  @override');
+  buf.writeln('  CrossFieldKey<$className>? get crossFieldKey => null;');
+  buf.writeln();
+  buf.writeln('  @override');
+  buf.writeln('  List<ValidationError> Function(');
+  buf.writeln('    V? Function<V>(ValidasiField<$className, V>)');
+  buf.writeln('  )? get crossValidator => null;');
+  buf.writeln();
+  buf.writeln('  @override');
+  buf.writeln('  Set<ValidasiField<$className, dynamic>> get crossDependsOn =>'
+      ' const <ValidasiField<$className, dynamic>>{};');
+}
+
 void _emitCrossFieldOverrides(
   StringBuffer buf,
   String className,
+  String fieldsClassName,
   CrossFieldInfo crossInfo,
 ) {
   final crossClassName = '${className}CrossFields';
@@ -92,6 +113,18 @@ void _emitCrossFieldOverrides(
   buf.writeln('  @override');
   buf.writeln(
       '  CrossFieldKey<$className> get crossFieldKey => $crossClassName.${crossInfo.field.name};');
+  buf.writeln();
+  buf.writeln('  @override');
+  buf.writeln('  Set<ValidasiField<$className, dynamic>> get crossDependsOn {');
+  if (crossInfo.dependsOn.isEmpty) {
+    buf.writeln('    return const <ValidasiField<$className, dynamic>>{};');
+  } else {
+    buf.write('    return const <ValidasiField<$className, dynamic>>{');
+    final deps =
+        crossInfo.dependsOn.map((d) => '$fieldsClassName.$d').join(', ');
+    buf.writeln('$deps};');
+  }
+  buf.writeln('  }');
   buf.writeln();
   buf.writeln('  @override');
   buf.writeln('  List<ValidationError> Function(');

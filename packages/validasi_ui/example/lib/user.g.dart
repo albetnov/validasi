@@ -50,6 +50,17 @@ class UserNameField extends UserFields<String> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<User>? get crossFieldKey => null;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
+      get crossValidator => null;
+
+  @override
+  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
+      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserEmailField extends UserFields<String> {
@@ -96,6 +107,11 @@ class UserEmailField extends UserFields<String> {
   CrossFieldKey<User> get crossFieldKey => UserCrossFields.email;
 
   @override
+  Set<ValidasiField<User, dynamic>> get crossDependsOn {
+    return const <ValidasiField<User, dynamic>>{UserFields.name};
+  }
+
+  @override
   List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))
       get crossValidator {
     return (getField) {
@@ -140,6 +156,17 @@ class UserAgeField extends UserFields<int> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
+
+  @override
+  CrossFieldKey<User>? get crossFieldKey => null;
+
+  @override
+  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
+      get crossValidator => null;
+
+  @override
+  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
+      const <ValidasiField<User, dynamic>>{};
 }
 
 sealed class UserCrossFields extends CrossFieldKey<User> {

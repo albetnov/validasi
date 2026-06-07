@@ -103,12 +103,9 @@ List<CrossFieldInfo> extractCrossFields(ClassElement element) {
         final dependsOnSet = dependsOnReader.setValue;
         final dependsOn = <String>[];
         for (final symbol in dependsOnSet) {
-          final nameValue = symbol.getField('name');
-          if (nameValue != null) {
-            final name = nameValue.toStringValue();
-            if (name != null && name.isNotEmpty) {
-              dependsOn.add(name);
-            }
+          final name = symbol.toSymbolValue();
+          if (name != null && name.isNotEmpty) {
+            dependsOn.add(name);
           }
         }
 
