@@ -42,7 +42,6 @@ class ValidasiGenerator extends Generator {
 
       if (crossFields.isNotEmpty) {
         buffer.write(generateCrossFieldsClass(cls.name!, crossFields));
-        buffer.write(generateModelAssembler(cls.name!, fields));
       }
 
       buffer.write(generateValidateExtension(

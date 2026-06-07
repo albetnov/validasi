@@ -3,8 +3,10 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 part 'user.g.dart';
 
-String? _emailMatchesName(User user) {
-  if (user.email.startsWith(user.name)) {
+String? _emailMatchesName(V? Function<V>(ValidasiField<User, V>) get) {
+  final email = get(UserFields.email);
+  final name = get(UserFields.name);
+  if (email != null && name != null && email.startsWith(name)) {
     return 'Email should not start with name';
   }
   return null;

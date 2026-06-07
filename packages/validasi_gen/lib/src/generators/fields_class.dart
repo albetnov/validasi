@@ -131,8 +131,7 @@ void _emitCrossFieldOverrides(
   buf.writeln('    V? Function<V>(ValidasiField<$className, V>)');
   buf.writeln('  ) get crossValidator {');
   buf.writeln('    return (getField) {');
-  buf.writeln('      final model = _\$${className}_assemble(getField);');
-  buf.writeln('      final result = $validatorFunc(model);');
+  buf.writeln('      final result = $validatorFunc(getField);');
   buf.writeln('      if (result != null) {');
   buf.writeln(
       "        return [ValidationError(rule: 'ValidateWith', message: result, path: ['${crossInfo.field.name}'])];");

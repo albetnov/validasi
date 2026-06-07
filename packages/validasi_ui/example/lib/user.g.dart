@@ -115,8 +115,7 @@ class UserEmailField extends UserFields<String> {
   List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))
       get crossValidator {
     return (getField) {
-      final model = _$User_assemble(getField);
-      final result = _emailMatchesName(model);
+      final result = _emailMatchesName(getField);
       if (result != null) {
         return [
           ValidationError(
@@ -176,14 +175,6 @@ sealed class UserCrossFields extends CrossFieldKey<User> {
 
 class _User_email_CrossField extends UserCrossFields {
   const _User_email_CrossField() : super._('email');
-}
-
-User _$User_assemble<V>(V? Function<V>(ValidasiField<User, V> field) getField) {
-  return User(
-    name: getField(UserFields.name) as String,
-    email: getField(UserFields.email) as String,
-    age: getField(UserFields.age) as int,
-  );
 }
 
 extension $UserValidasi on User {
