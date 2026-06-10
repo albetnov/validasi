@@ -20,6 +20,7 @@ class ValidasiFieldSignals<V> {
 
   late final ReadonlySignal<bool> isDirty;
   late final ReadonlySignal<bool> isValid;
+  ReadonlySignal<bool> get touchedSignal => _touched;
 
   V? get value => _value.value;
   set value(V? v) => _value.value = v;

@@ -8,6 +8,7 @@ import 'package:validasi_ui/src/form_signals.dart';
 class ValidasiFormController<T> extends ChangeNotifier {
   final _fields = <ValidasiField<T, dynamic>, ValidasiFieldSignals>{};
   final _crossErrors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
+  final _subscriptions = <ValidasiField<T, dynamic>, List<void Function()>>{};
   final _formSignals = ValidasiFormSignals();
   final T Function(ValidasiFormController<T>) assembler;
 
@@ -17,6 +18,9 @@ class ValidasiFormController<T> extends ChangeNotifier {
 
   bool get isSubmitted => _formSignals.isSubmitted;
   bool get isLoading => _formSignals.isLoading;
+  bool get isDirty => _formSignals.isDirty;
+  bool get isPristine => !_formSignals.isDirty;
+  bool get isTouched => _formSignals.isTouched;
   List<FieldErrors> get fieldErrors => _formSignals.fieldErrors;
 
   ValidasiFieldSignals<V> getFieldController<V>(ValidasiField<T, V> field) {
@@ -49,7 +53,19 @@ class ValidasiFormController<T> extends ChangeNotifier {
     } else {
       initial = initialValue;
     }
-    _fields[field] = ValidasiFieldSignals<V>(field, initialValue: initial);
+    final fc = ValidasiFieldSignals<V>(field, initialValue: initial);
+    _fields[field] = fc;
+
+    _subscriptions[field] = [
+      fc.isDirty.subscribe((dirty) {
+        _formSignals.isDirty = _fields.values.any((f) => f.isDirty.value);
+        notifyListeners();
+      }),
+      fc.touchedSignal.subscribe((touched) {
+        _formSignals.isTouched = _fields.values.any((f) => f.touched);
+        notifyListeners();
+      }),
+    ];
   }
 
   void setInitialValues(T model) {
@@ -94,12 +110,6 @@ class ValidasiFormController<T> extends ChangeNotifier {
 
   bool isFieldTouched<V>(ValidasiField<T, V> field) =>
       getFieldController(field).touched;
-
-  bool get isDirty => _fields.values.any((fc) => fc.isDirty.value);
-
-  bool get isPristine => !isDirty;
-
-  bool get isTouched => _fields.values.any((fc) => fc.touched);
 
   bool validateField<V>(ValidasiField<T, V> field) {
     final fc = getFieldController(field);
@@ -151,6 +161,12 @@ class ValidasiFormController<T> extends ChangeNotifier {
 
   @override
   void dispose() {
+    for (final subs in _subscriptions.values) {
+      for (final sub in subs) {
+        sub();
+      }
+    }
+    _subscriptions.clear();
     for (final fc in _fields.values) {
       fc.dispose();
     }
