@@ -20,7 +20,11 @@ void main() {
   group('validasiBuilder', () {
     test('creates builder with correct extensions', () {
       final builder = validasiBuilder(BuilderOptions({}));
-      expect(builder.buildExtensions, equals({'.dart': ['.g.dart']}));
+      expect(
+          builder.buildExtensions,
+          equals({
+            '.dart': ['.g.dart']
+          }));
     });
   });
 }

@@ -1,23 +1,33 @@
 import 'package:flutter/foundation.dart';
+import 'package:signals/signals.dart';
 import 'package:validasi/validasi.dart';
+import 'package:validasi_ui/src/error.dart';
+import 'package:validasi_ui/src/field_signals.dart';
+import 'package:validasi_ui/src/form_signals.dart';
 
 class ValidasiFormController<T> extends ChangeNotifier {
-  final _values = <ValidasiField<T, dynamic>, dynamic>{};
-  final _errors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
+  final _fields = <ValidasiField<T, dynamic>, ValidasiFieldSignals>{};
   final _crossErrors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
-  final _initialValues = <ValidasiField<T, dynamic>, dynamic>{};
-  final _touched = <ValidasiField<T, dynamic>>{};
+  final _formSignals = ValidasiFormSignals();
   final T Function(ValidasiFormController<T>) assembler;
 
   ValidasiFormController({required this.assembler});
 
   T? _initialModel;
-  bool _isSubmitted = false;
 
-  bool get isSubmitted => _isSubmitted;
+  bool get isSubmitted => _formSignals.isSubmitted;
+  bool get isLoading => _formSignals.isLoading;
+  List<FieldErrors> get fieldErrors => _formSignals.fieldErrors;
+
+  ValidasiFieldSignals<V> getFieldController<V>(ValidasiField<T, V> field) {
+    if (!_fields.containsKey(field)) {
+      register(field);
+    }
+    return _fields[field] as ValidasiFieldSignals<V>;
+  }
 
   void markSubmitted() {
-    _isSubmitted = true;
+    _formSignals.isSubmitted = true;
     notifyListeners();
   }
 
@@ -27,118 +37,125 @@ class ValidasiFormController<T> extends ChangeNotifier {
         markSubmitted();
         return;
       }
-
       onSubmit(assembler(this));
     };
   }
 
+  void register<V>(ValidasiField<T, V> field, {V? initialValue}) {
+    if (_fields.containsKey(field)) return;
+    V? initial;
+    if (_initialModel != null) {
+      initial = field.extract(_initialModel as T);
+    } else {
+      initial = initialValue;
+    }
+    _fields[field] = ValidasiFieldSignals<V>(field, initialValue: initial);
+  }
+
   void setInitialValues(T model) {
     _initialModel = model;
-    for (final key in _values.keys) {
-      final extracted = key.extract(model);
-      _initialValues[key] = extracted;
-      _values[key] = extracted;
+    for (final entry in _fields.entries) {
+      entry.value.setInitialValue(entry.key.extract(model));
     }
     notifyListeners();
   }
 
-  void register<V>(ValidasiField<T, V> field, {V? initialValue}) {
-    if (_values.containsKey(field)) return;
-    if (_initialModel != null) {
-      final extracted = field.extract(_initialModel as T);
-      _values[field] = extracted;
-      _initialValues[field] = extracted;
-    } else {
-      _values[field] = initialValue;
-      _initialValues[field] = initialValue;
-    }
-    _errors[field] = [];
-  }
-
-  V? getValue<V>(ValidasiField<T, V> field) => _values[field] as V?;
-
-  Map<ValidasiField<T, dynamic>, dynamic> getValues() =>
-      Map.unmodifiable(_values);
-
-  V? _getField<V>(ValidasiField<T, V> field) => _values[field] as V?;
+  V? getValue<V>(ValidasiField<T, V> field) => getFieldController(field).value;
 
   void setValue<V>(ValidasiField<T, V> field, V? value) {
-    _values[field] = value;
-    _errors[field] = [];
-    _crossErrors.clear();
-    _touched.add(field);
+    final fc = getFieldController(field);
+    fc.value = value;
+    fc.markTouched();
     notifyListeners();
   }
 
-  List<ValidationError> getErrors<V>(ValidasiField<T, V> field) {
-    return [
-      ...(_errors[field] ?? []),
-      ...(_crossErrors[field] ?? []),
-    ].cast<ValidationError>();
-  }
+  List<FieldError> getErrors<V>(ValidasiField<T, V> field) =>
+      getFieldController(field).errors;
 
-  void _validateDependentCrossFields(ValidasiField<T, dynamic> source) {
-    for (final field in _values.keys) {
-      final cv = field.crossValidator;
-      if (cv != null &&
-          (field.crossDependsOn.contains(source) || field == source)) {
-        _crossErrors[field] = cv(_getField);
-      }
-    }
+  void _mergeErrorsForField(
+    ValidasiField<T, dynamic> field,
+    List<ValidationError> ownErrors,
+  ) {
+    final fc = _fields[field]!;
+    final crossRaw = _crossErrors[field];
+    fc.updateErrors([
+      ...ownErrors.map((e) => FieldValidationError(e)),
+      if (crossRaw != null)
+        ...crossRaw.map((e) => FieldCrossError(
+              e,
+              crossFieldName: field.crossFieldKey?.name ?? field.name,
+              dependsOn: field.crossDependsOn,
+            )),
+    ]);
   }
 
   bool isFieldDirty<V>(ValidasiField<T, V> field) =>
-      _values[field] != _initialValues[field];
+      getFieldController(field).isDirty.value;
 
-  bool isFieldTouched<V>(ValidasiField<T, V> field) => _touched.contains(field);
+  bool isFieldTouched<V>(ValidasiField<T, V> field) =>
+      getFieldController(field).touched;
 
-  bool get isDirty => _values.keys.any((k) => _values[k] != _initialValues[k]);
+  bool get isDirty => _fields.values.any((fc) => fc.isDirty.value);
 
   bool get isPristine => !isDirty;
 
-  bool get isTouched => _touched.isNotEmpty;
+  bool get isTouched => _fields.values.any((fc) => fc.touched);
 
   bool validateField<V>(ValidasiField<T, V> field) {
-    final value = _values[field];
-    final result = field.validate(value);
-    _errors[field] = result.errors;
-    _validateDependentCrossFields(field);
+    final fc = getFieldController(field);
+    final result = field.validate(fc.value);
+    _crossErrors.remove(field);
+    _mergeErrorsForField(field, result.errors);
+    _formSignals.syncFieldErrors(_fields);
     notifyListeners();
-    return result.isValid && (_crossErrors[field]?.isEmpty ?? true);
+    return result.isValid;
   }
 
   bool validate() {
-    var allValid = true;
-    for (final key in _values.keys) {
-      final value = _values[key];
-      final result = key.validate(value);
-      _errors[key] = result.errors;
-      if (!result.isValid) allValid = false;
-    }
-    for (final key in _values.keys) {
-      final cv = key.crossValidator;
-      if (cv != null) {
-        final errors = cv(_getField);
-        _crossErrors[key] = errors;
-        if (errors.isNotEmpty) allValid = false;
+    final ownErrors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
+    batch(() {
+      for (final entry in _fields.entries) {
+        ownErrors[entry.key] = entry.key.validate(entry.value.value).errors;
       }
-    }
+      _crossErrors.clear();
+      for (final entry in _fields.entries) {
+        final cv = entry.key.crossValidator;
+        if (cv != null) {
+          _crossErrors[entry.key] = cv(<V>(f) => getFieldController(f).value);
+        }
+      }
+      for (final entry in _fields.entries) {
+        _mergeErrorsForField(entry.key, ownErrors[entry.key]!);
+      }
+    });
+    _formSignals.syncFieldErrors(_fields);
     notifyListeners();
-    return allValid;
+    return isValid;
   }
 
   bool get isValid =>
-      _errors.values.every((e) => e.isEmpty) &&
+      _fields.values.every((fc) => fc.isValid.value) &&
       _crossErrors.values.every((e) => e.isEmpty);
 
+  Map<ValidasiField<T, dynamic>, dynamic> getValues() =>
+      Map.unmodifiable(_fields.map((k, v) => MapEntry(k, v.value)));
+
   void reset() {
-    _isSubmitted = false;
-    _touched.clear();
+    _formSignals.reset();
     _crossErrors.clear();
-    for (final key in _values.keys) {
-      _values[key] = _initialValues[key];
-      _errors[key] = [];
+    for (final fc in _fields.values) {
+      fc.reset();
     }
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    for (final fc in _fields.values) {
+      fc.dispose();
+    }
+    _crossErrors.clear();
+    _formSignals.dispose();
+    super.dispose();
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart';
+import 'package:signals/signals_flutter.dart';
 import 'package:validasi/validasi.dart';
-import 'package:validasi_ui/src/controller.dart';
 import 'package:validasi_ui/src/field_state.dart';
 import 'package:validasi_ui/src/form.dart';
 import 'package:validasi_ui/src/validation_mode.dart';
 
-class ValidasiFormField<T, V> extends StatefulWidget {
+class ValidasiFormField<T, V> extends SignalWidget {
   final ValidasiField<T, V> field;
   final Widget Function(BuildContext context, ValidasiFieldState<V> state)
       builder;
@@ -21,82 +21,55 @@ class ValidasiFormField<T, V> extends StatefulWidget {
   });
 
   @override
-  State<ValidasiFormField<T, V>> createState() => _FormFieldState<T, V>();
-}
-
-class _FormFieldState<T, V> extends State<ValidasiFormField<T, V>> {
-  ValidasiFormController<T>? _controller;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final controller = ValidasiForm.of<T>(context);
-    if (controller != _controller) {
-      _controller = controller;
-      _controller!.register<V>(widget.field);
-    }
-  }
-
-  void _validateOnBlur() {
-    final controller = _controller;
-    if (controller == null) return;
-
-    final (formMode, formReMode) = ValidasiForm.modeOf<T>(context);
-    final effectiveReMode = widget.reValidateMode ?? formReMode;
-
-    if (controller.isSubmitted) {
-      if (effectiveReMode == ReValidationMode.onBlur) {
-        controller.validateField<V>(widget.field);
-      }
-      return;
-    }
-
-    final effectiveMode = widget.mode ?? formMode;
-    if (effectiveMode == ValidationMode.onBlur) {
-      controller.validateField<V>(widget.field);
-    }
-  }
-
-  void _handleChanged(V? value) {
-    final controller = _controller;
-    if (controller == null) return;
-
-    controller.setValue<V>(widget.field, value);
-
-    final (formMode, formReMode) = ValidasiForm.modeOf<T>(context);
-    final effectiveReMode = widget.reValidateMode ?? formReMode;
-
-    if (controller.isSubmitted) {
-      if (effectiveReMode == ReValidationMode.onChange) {
-        controller.validateField<V>(widget.field);
-      }
-      return;
-    }
-
-    final effectiveMode = widget.mode ?? formMode;
-    if (effectiveMode == ValidationMode.onChange) {
-      controller.validateField<V>(widget.field);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final controller = ValidasiForm.of<T>(context);
-    final value = controller.getValue<V>(widget.field);
-    final errors = controller.getErrors<V>(widget.field);
+    final fc = controller.getFieldController<V>(field);
+
+    final value = fc.value;
+    final errors = fc.errors;
+    final isDirty = fc.isDirty.value;
+    final isTouched = fc.touched;
+    final isSubmitted = controller.isSubmitted;
 
     final state = ValidasiFieldState<V>(
       value: value,
-      errors: errors,
-      onChanged: _handleChanged,
-      validate: () => controller.validateField<V>(widget.field),
-      onFocusChange: (hasFocus) {
-        if (!hasFocus) _validateOnBlur();
+      errors: errors.map((e) => e.error).toList(),
+      onChanged: (v) {
+        controller.setValue<V>(field, v);
+        final (formMode, formReMode) = ValidasiForm.modeOf<T>(context);
+        final effectiveReMode = reValidateMode ?? formReMode;
+        if (isSubmitted) {
+          if (effectiveReMode == ReValidationMode.onChange) {
+            controller.validateField<V>(field);
+          }
+          return;
+        }
+        final effectiveMode = mode ?? formMode;
+        if (effectiveMode == ValidationMode.onChange) {
+          controller.validateField<V>(field);
+        }
       },
-      isDirty: controller.isFieldDirty(widget.field),
-      isTouched: controller.isFieldTouched(widget.field),
+      validate: () => controller.validateField<V>(field),
+      onFocusChange: (hasFocus) {
+        if (!hasFocus) {
+          final (formMode, formReMode) = ValidasiForm.modeOf<T>(context);
+          final effectiveReMode = reValidateMode ?? formReMode;
+          if (isSubmitted) {
+            if (effectiveReMode == ReValidationMode.onBlur) {
+              controller.validateField<V>(field);
+            }
+            return;
+          }
+          final effectiveMode = mode ?? formMode;
+          if (effectiveMode == ValidationMode.onBlur) {
+            controller.validateField<V>(field);
+          }
+        }
+      },
+      isDirty: isDirty,
+      isTouched: isTouched,
     );
 
-    return widget.builder(context, state);
+    return builder(context, state);
   }
 }
