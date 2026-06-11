@@ -150,6 +150,23 @@ class ValidasiFormController<T> extends ChangeNotifier {
   Map<ValidasiField<T, dynamic>, dynamic> getValues() =>
       Map.unmodifiable(_fields.map((k, v) => MapEntry(k, v.value)));
 
+  ReadonlySignal<V?> watchValue<V>(ValidasiField<T, V> field) =>
+      getFieldController<V>(field).valueSignal;
+
+  ReadonlySignal<R> watch<V, R>(
+    List<ValidasiField<T, V>> fields,
+    R Function(Map<ValidasiField<T, V>, V> values) selector,
+  ) {
+    return computed<R>(() {
+      final values = <ValidasiField<T, V>, V>{};
+      for (final f in fields) {
+        final v = getValue<V>(f);
+        if (v != null) values[f] = v;
+      }
+      return selector(values);
+    });
+  }
+
   void reset() {
     _formSignals.reset();
     _crossErrors.clear();

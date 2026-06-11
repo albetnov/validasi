@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:validasi_ui/validasi_ui.dart';
+import 'package:validasi_ui/validasi.dart';
 
 class _TestKey extends ValidasiField<String, String> {
   const _TestKey() : super();

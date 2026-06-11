@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:validasi_ui/validasi_ui.dart';
 import 'user.dart';
+import 'user_summary.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +32,8 @@ class UserFormPage extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
+              const UserSummary(),
+              const SizedBox(height: 16),
               ValidasiFormField<User, String>(
                 field: UserFields.name,
                 builder: (context, state) => TextField(

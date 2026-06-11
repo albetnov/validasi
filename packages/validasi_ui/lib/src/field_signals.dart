@@ -24,6 +24,7 @@ class ValidasiFieldSignals<V> {
 
   V? get value => _value.value;
   set value(V? v) => _value.value = v;
+  ReadonlySignal<V?> get valueSignal => _value;
 
   List<FieldError> get errors => _errors.value;
   void updateErrors(List<FieldError> errors) => _errors.value = errors;
