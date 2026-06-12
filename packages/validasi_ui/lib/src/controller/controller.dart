@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:signals/signals.dart';
 import 'package:validasi/validasi.dart';
-import 'package:validasi_ui/src/error.dart';
-import 'package:validasi_ui/src/field_signals.dart';
-import 'package:validasi_ui/src/form_signals.dart';
+import 'package:validasi_ui/src/controller/watch_mixin.dart';
+import 'package:validasi_ui/src/models/error.dart';
+import 'package:validasi_ui/src/signals/field_signals.dart';
+import 'package:validasi_ui/src/signals/form_signals.dart';
 
-class ValidasiFormController<T> extends ChangeNotifier {
+class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   final _fields = <ValidasiField<T, dynamic>, ValidasiFieldSignals>{};
   final _crossErrors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
   final _subscriptions = <ValidasiField<T, dynamic>, List<void Function()>>{};
@@ -23,6 +24,7 @@ class ValidasiFormController<T> extends ChangeNotifier {
   bool get isTouched => _formSignals.isTouched;
   List<FieldErrors> get fieldErrors => _formSignals.fieldErrors;
 
+  @override
   ValidasiFieldSignals<V> getFieldController<V>(ValidasiField<T, V> field) {
     if (!_fields.containsKey(field)) {
       register(field);
@@ -76,6 +78,7 @@ class ValidasiFormController<T> extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
   V? getValue<V>(ValidasiField<T, V> field) => getFieldController(field).value;
 
   void setValue<V>(ValidasiField<T, V> field, V? value) {
@@ -149,23 +152,6 @@ class ValidasiFormController<T> extends ChangeNotifier {
 
   Map<ValidasiField<T, dynamic>, dynamic> getValues() =>
       Map.unmodifiable(_fields.map((k, v) => MapEntry(k, v.value)));
-
-  ReadonlySignal<V?> watchValue<V>(ValidasiField<T, V> field) =>
-      getFieldController<V>(field).valueSignal;
-
-  ReadonlySignal<R> watch<V, R>(
-    List<ValidasiField<T, V>> fields,
-    R Function(Map<ValidasiField<T, V>, V> values) selector,
-  ) {
-    return computed<R>(() {
-      final values = <ValidasiField<T, V>, V>{};
-      for (final f in fields) {
-        final v = getValue<V>(f);
-        if (v != null) values[f] = v;
-      }
-      return selector(values);
-    });
-  }
 
   void reset() {
     _formSignals.reset();

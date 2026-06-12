@@ -1,6 +1,6 @@
 import 'package:signals/signals.dart';
 import 'package:validasi/validasi.dart';
-import 'package:validasi_ui/src/error.dart';
+import 'package:validasi_ui/src/models/error.dart';
 
 class ValidasiFieldSignals<V> {
   ValidasiFieldSignals(this.field, {V? initialValue})

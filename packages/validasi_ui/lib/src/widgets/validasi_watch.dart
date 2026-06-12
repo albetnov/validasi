@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:validasi/validasi.dart';
-import 'package:validasi_ui/src/controller.dart';
-import 'package:validasi_ui/src/form.dart';
+import 'package:validasi_ui/src/controller/controller.dart';
+import 'package:validasi_ui/src/widgets/validasi_form.dart';
 
 class ValidasiWatchForm<T> extends StatelessWidget {
   final Widget Function(BuildContext, ValidasiFormController<T>) _builder;

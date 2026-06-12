@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:validasi_ui/src/controller.dart';
-import 'package:validasi_ui/src/validation_mode.dart';
+import 'package:validasi_ui/src/controller/controller.dart';
+import 'package:validasi_ui/src/models/validation_mode.dart';
 
 typedef SubmitHandler<T> = VoidCallback Function(void Function(T) onSubmit);
 

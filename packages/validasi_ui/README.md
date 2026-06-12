@@ -317,6 +317,81 @@ This works, but it's boilerplate the generator removes. The generated path is th
 | Async submit with `isLoading` | ✅ |
 | Generated fields via `validasi_gen` | ✅ |
 
+## Contributing
+
+### Project structure
+
+```
+lib/
+  validasi_ui.dart              # barrel export (re-exports all public API)
+  validasi.dart                 # re-exports package:validasi
+  src/
+    controller/
+      controller.dart           # ValidasiFormController — core form logic
+      watch_mixin.dart          # WatchMixin — watchValue / watch computed signals
+    widgets/
+      validasi_form.dart        # ValidasiForm + _FormScope (InheritedWidget)
+      validasi_form_field.dart  # ValidasiFormField (field builder widget)
+      validasi_watch.dart       # ValidasiWatch, ValidasiWatchForm, ValidasiWatchField
+    signals/
+      field_signals.dart        # ValidasiFieldSignals — per-field reactive state
+      form_signals.dart         # ValidasiFormSignals — form-wide reactive state
+    models/
+      field_state.dart          # ValidasiFieldState — data passed to field builders
+      error.dart                # FieldError sealed hierarchy + FieldErrors
+      validation_mode.dart      # ValidationMode, ReValidationMode enums
+```
+
+| Layer | Purpose |
+|---|---|
+| `controller/` | Business logic — field registration, validation, submit, lifecycle |
+| `widgets/` | Flutter widgets — form scope, field binding, watch helpers |
+| `signals/` | Reactive state containers built on `package:signals` |
+| `models/` | Plain data classes, enums, sealed types — no side effects |
+
+### Conventions
+
+- **Package imports only** — use `package:validasi_ui/src/...` everywhere, never relative `../` paths.
+- **`const` constructors** where possible.
+- **No comments** unless the intent is genuinely unclear.
+- **Follow `package:flutter_lints`** — run `dart run melos run analyze` before committing.
+- **Widget files** are prefixed with `validasi_` (e.g. `validasi_form.dart`) to avoid name collisions with user code.
+- **Sealed hierarchies** for error types — add a new subclass rather than adding flags.
+- **Mixins** for optional controller capabilities (e.g. `WatchMixin`) — keeps the main class focused.
+
+### Running locally
+
+This package lives inside a Melos monorepo. Run commands from the **repo root**:
+
+```bash
+# Install dependencies
+dart run melos bootstrap
+
+# Run validasi_ui tests only
+dart run melos run test:ui
+
+# Run all tests
+dart run melos run test
+
+# Analyze all packages
+dart run melos run analyze
+
+# Fix formatting
+dart run melos run format:fix
+```
+
+### Adding a new widget
+
+1. Create `lib/src/widgets/validasi_<name>.dart`.
+2. Import dependencies from sibling `src/` folders using package imports.
+3. Export the new file from `lib/validasi_ui.dart`.
+4. Add tests in `test/`.
+5. Run `dart run melos run analyze && dart run melos run format:fix`.
+
+### Adding a new signal or model
+
+Same pattern — create the file in the appropriate `signals/` or `models/` subfolder, export it from the barrel, and add tests.
+
 ## License
 
 MIT — see repository for details.

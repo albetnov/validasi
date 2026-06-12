@@ -1,7 +1,7 @@
 import 'package:signals/signals.dart';
 import 'package:validasi/validasi.dart';
-import 'package:validasi_ui/src/error.dart';
-import 'package:validasi_ui/src/field_signals.dart';
+import 'package:validasi_ui/src/models/error.dart';
+import 'package:validasi_ui/src/signals/field_signals.dart';
 
 class ValidasiFormSignals {
   final Signal<bool> _isSubmitted = signal<bool>(false);

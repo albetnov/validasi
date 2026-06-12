@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:validasi/validasi.dart';
-import 'package:validasi_ui/src/field_state.dart';
-import 'package:validasi_ui/src/form.dart';
-import 'package:validasi_ui/src/validation_mode.dart';
+import 'package:validasi_ui/src/models/field_state.dart';
+import 'package:validasi_ui/src/models/validation_mode.dart';
+import 'package:validasi_ui/src/widgets/validasi_form.dart';
 
 class ValidasiFormField<T, V> extends SignalWidget {
   final ValidasiField<T, V> field;
