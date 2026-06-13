@@ -42,6 +42,25 @@ void main() {
 }
 ```
 
+### Async Validation
+
+Async rules (like checking email availability against a server) run seamlessly alongside sync rules:
+
+```dart
+final schema = Validasi.string([
+  Rules.required(),
+  Rules.string.email(),
+  Rules.inlineAsync((email) async {
+    final taken = await userRepository.isEmailTaken(email!);
+    return !taken;
+  }, message: 'Email is already taken'),
+]);
+
+final result = await schema.validateAsync('user@example.com');
+```
+
+Container rules (`hasFields`, `forEach`, `allValues`, `anyOf`) automatically support async children when using `validateAsync()`. See [Async Validation](https://albetnov.github.io/validasi/advanced/engine#async-validation-pipeline) for more.
+
 ### Validating Complex Data Structures
 
 **Map Validation:**

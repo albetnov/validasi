@@ -35,12 +35,15 @@ dart run bin/validasi_mcp.dart --refresh
 
 # Custom cache directory (defaults to ./.validasi_mcp_cache/)
 dart run bin/validasi_mcp.dart --cache-dir /path/to/cache
+
+# Point to a local VitePress preview server for development
+dart run bin/validasi_mcp.dart --base-url http://localhost:4173/validasi
 ```
 
 ## Configuration
 
 The docs URL defaults to `https://albetnov.github.io/validasi` and can be
-overridden via `DocsConfig.baseUrl` in code.
+overridden via the `--base-url` CLI flag or `DocsConfig.baseUrl` in code.
 
 The cache directory defaults to `.validasi_mcp_cache/` in the current working
 directory (project-local). Cache entries are considered fresh for 24 hours.

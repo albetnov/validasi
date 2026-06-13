@@ -1,3 +1,19 @@
+## 1.0.0-dev.6
+
+### Added
+- `AsyncRule<T>` base class for inherently async validation rules.
+- `ValidasiEngine.validateAsync()` and `executeAsync()` for async validation pipelines.
+- `applyRulesAsync()` helper for sequential async rule processing.
+- `AsyncInlineRule<T>` — async custom inline validator (`Rules.inlineAsync()`).
+- `AsyncTransform<T>` — async value transformation (`Rules.transformAsync()`).
+- `AsyncConditionalField<T>` — async conditional map validation (`Rules.map.conditionalFieldAsync()`).
+- Container rules (`HasFields`, `ForEach`, `AllValues`, `AnyOf`) now support async child rules via `applyAsync()` overrides.
+- All sync rules automatically work in async pipelines via the inherited default `applyAsync()`.
+
+### Changed
+- `Rule<T>` now includes `Future<T?> applyAsync(...)` defaulting to sync `apply()`.
+- `@pragma('vm:prefer-inline')` added to `executeAsync()` and `applyRulesAsync()`.
+
 ## 1.0.0-dev.5
 
 ### Breaking Changes

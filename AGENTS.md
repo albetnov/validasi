@@ -65,14 +65,29 @@ dart run melos run format:fix
 
 **When docs change (`docs/` directory):**
 
-The MCP server indexes documentation files, and e2e snapshot tests verify deterministic output. After any docs change, regenerate the snapshots and verify:
+The MCP server fetches docs from production (`https://albetnov.github.io/validasi`). E2e snapshot tests verify deterministic output. After any docs change, regenerate the snapshots **before** deployment using the local vitepress server:
 
 ```bash
-# From root directory - regenerates snapshots then runs tests
+# Terminal 1: serve the docs locally
+deno task docs:build && deno task docs:preview
+
+# Terminal 2 (from root directory): regenerate snapshots against local server
+dart run melos run test:mcp:update:local
+```
+
+This regenerates the snapshot files in `packages/validasi_mcp/test/snapshots/` and then runs the full MCP test suite to verify everything works.
+
+After deployment to production, also run the production variant:
+
+```bash
 dart run melos run test:mcp:update
 ```
 
-This single command regenerates the snapshot files in `packages/validasi_mcp/test/snapshots/` and then runs the full MCP test suite to verify everything works.
+If the above passes, also run the full MCP test suite separately:
+
+```bash
+dart run melos run test:mcp
+```
 
 ## Architecture
 
@@ -249,6 +264,7 @@ Current rules in `lib/src/rules/map/`:
 - `HasFields` - Validate fields with their rules
 - `HasFieldKeys<T>` - Ensure keys exist
 - `ConditionalField<T>` - Conditional validation
+- `AsyncConditionalField<T>` - Async conditional validation
 - `AllowedKeys<T>` - Whitelist keys
 - `ForbiddenKeys<T>` - Blacklist keys
 - `MinKeys<T>` - At least N keys

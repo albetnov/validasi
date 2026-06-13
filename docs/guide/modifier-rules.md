@@ -46,6 +46,22 @@ print(result.data);
 print(result.isValid);
 ```
 
+### TransformAsync
+
+Async version of `Transform`. Useful for async operations like fetching data:
+
+```dart
+final schema = Validasi.string([
+  Rules.transformAsync<String>((value) async {
+    final normalized = await normalizeEmail(value);
+    return normalized;
+  }),
+  Rules.string.email(),
+]);
+
+final result = await schema.validateAsync('USER@Example.com');
+```
+
 ### Having
 
 Ensures the value is one of a set of allowed values.
@@ -70,6 +86,24 @@ final passwordSchema = Validasi.string([
     return null;
   }),
 ]);
+```
+
+### InlineAsync
+
+Async version of `InlineRule`. Perfect for async checks like email availability:
+
+```dart
+final registerSchema = Validasi.string([
+  Rules.required(),
+  Rules.string.email(),
+  Rules.inlineAsync((email) async {
+    if (email == null) return true;
+    final taken = await userRepository.isEmailTaken(email);
+    return !taken;
+  }, message: 'Email is already taken'),
+]);
+
+final result = await registerSchema.validateAsync('user@example.com');
 ```
 
 ## Special Rules
@@ -100,8 +134,10 @@ final schema = Validasi.string([
 - Use `Rules.nullable<String>()` when `null` is allowed.
 - Use `Rules.required<String>()` when you want to make non-null intent explicit.
 - Use `Rules.transform<String>()` for normalization or data cleanup.
+- Use `Rules.transformAsync<String>()` for async normalization.
 - Use `Rules.having<String>()` when the rule needs validation context.
 - Use `Rules.inline<String>()` for simple custom validation.
+- Use `Rules.inlineAsync<String>()` for async custom validation (e.g., database checks).
 
 ## Best Practices
 

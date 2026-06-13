@@ -98,6 +98,26 @@ if (result.isValid) {
 }
 ```
 
+## Async Validation Pipeline
+
+When you call `validateAsync()`, the engine runs the same pipeline stages but uses `applyRulesAsync()` instead of `applyRules()`. Sync rules run via their inherited default `applyAsync()`, which delegates to `apply()`. Async rules (`AsyncRule<T>`) override `applyAsync()` with native async logic.
+
+```dart
+final schema = Validasi.string([
+  Rules.required(),
+  Rules.inlineAsync((email) async {
+    final taken = await repository.isTaken(email!);
+    return !taken;
+  }),
+]);
+
+final result = await schema.validateAsync('user@example.com');
+```
+
+- If any rule is an `AsyncRule`, calling `validate()` throws `StateError`.
+- Container rules (`HasFields`, `ForEach`, `AllValues`, `AnyOf`) automatically support async children via their `applyAsync()` overrides.
+- Preprocess stays sync in both paths.
+
 ## withPreprocess Type Behavior
 
 `withPreprocess` changes the accepted input type at compile time.
