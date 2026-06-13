@@ -1,7 +1,9 @@
 import 'src/rules/transform.dart';
+import 'src/rules/async_transform.dart';
 import 'src/rules/nullable.dart';
 import 'src/rules/required.dart';
 import 'src/rules/inline_rule.dart';
+import 'src/rules/async_inline_rule.dart';
 import 'src/rules/having.dart';
 import 'src/rules/equals.dart';
 import 'src/rules/not_equals.dart';
@@ -47,6 +49,7 @@ import 'src/rules/numbers/positive.dart';
 import 'src/rules/map/has_fields.dart';
 import 'src/rules/map/has_field_keys.dart';
 import 'src/rules/map/conditional_field.dart';
+import 'src/rules/map/async_conditional_field.dart';
 import 'src/rules/map/allowed_keys.dart';
 import 'src/rules/map/forbidden_keys.dart';
 import 'src/rules/map/min_keys.dart';
@@ -69,7 +72,9 @@ import 'src/rules/iterable/contains.dart' as iterable_contains;
 
 export 'src/rules/map/field_rules.dart';
 export 'src/rules/map/conditional_field.dart' show ConditionalFieldCallback;
-export 'src/engine/rule.dart' show Rule;
+export 'src/rules/map/async_conditional_field.dart'
+    show AsyncConditionalFieldCallback;
+export 'src/engine/rule.dart' show Rule, AsyncRule;
 export 'src/engine/result.dart' show ValidasiResult;
 export 'src/engine/error.dart' show ValidationError;
 
@@ -85,12 +90,24 @@ final class Rules {
           {String? message}) =>
       Transform<T>(transformer, message: message);
 
+  static AsyncTransform<T> transformAsync<T>(
+          Future<T?> Function(T? value) transformer,
+          {String? message}) =>
+      AsyncTransform<T>(transformer, message: message);
+
   static InlineRule<T> inline<T>(
     bool Function(T? value) validator, {
     String? message,
     String name = 'inline_rule',
   }) =>
       InlineRule<T>(validator, message: message, name: name);
+
+  static AsyncInlineRule<T> inlineAsync<T>(
+    Future<bool> Function(T? value) validator, {
+    String? message,
+    String name = 'async_inline_rule',
+  }) =>
+      AsyncInlineRule<T>(validator, message: message, name: name);
 
   static Having<T> having<T>(List<T> validValues, {String? message}) =>
       Having<T>(validValues, message: message);
@@ -286,6 +303,10 @@ class _MapRules {
   ConditionalField<T> conditionalField<T>(
           String field, ConditionalFieldCallback<T> callback) =>
       ConditionalField<T>(field, callback);
+
+  AsyncConditionalField<T> conditionalFieldAsync<T>(
+          String field, AsyncConditionalFieldCallback<T> callback) =>
+      AsyncConditionalField<T>(field, callback);
 
   AllowedKeys<T> allowedKeys<T>(Set<String> keys, {String? message}) =>
       AllowedKeys<T>(keys, message: message);

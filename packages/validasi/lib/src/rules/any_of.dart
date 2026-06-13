@@ -26,4 +26,24 @@ class AnyOf<T> extends Rule<T> {
     }
     return value;
   }
+
+  @override
+  Future<T?> applyAsync(T? value, ValidationState state) async {
+    if (value != null) {
+      for (final ruleSet in ruleSets) {
+        final testState = ValidationState();
+        await applyRulesAsync(value, ruleSet, testState);
+
+        if (testState.isValid) {
+          return value;
+        }
+      }
+
+      state.addError(ValidationError(
+        rule: 'AnyOf',
+        message: message ?? 'Value must satisfy at least one rule set',
+      ));
+    }
+    return value;
+  }
 }

@@ -78,10 +78,11 @@ This single command regenerates the snapshot files in `packages/validasi_mcp/tes
 
 ### Core Types
 
-- **`Rule<T>`** (`lib/src/engine/rule.dart`): Base class for all rules
+- **`Rule<T>`** (`lib/src/engine/rule.dart`): Base class for all rules; includes `applyAsync()` defaulting to sync `apply()`
+- **`AsyncRule<T>`** (`lib/src/engine/rule.dart`): Base class for inherently async rules; throws on sync `apply()`
 - **`ValidationState`** (`lib/src/engine/state.dart`): Collects errors during validation
 - **`ValidationError`** (`lib/src/engine/error.dart`): Represents a validation failure
-- **`ValidasiEngine<T, TInput>`**: Runs rules and returns `ValidasiResult<T>`
+- **`ValidasiEngine<T, TInput>`**: Runs rules and returns `ValidasiResult<T>`; exposes `validate()` and `validateAsync()`
 - **`Validasi`**: Schema builder (`Validasi.string()`, `Validasi.list()`, etc.)
 - **`Rules`**: Factory for all built-in rules
 
@@ -123,6 +124,7 @@ class MyRule<T> extends Rule<T> {
 | Category | Class | Location |
 |----------|-------|----------|
 | Generic | `Rules.required<T>()`, `Rules.nullable<T>()`, etc. | `lib/src/rules/` |
+| Async | `Rules.inlineAsync<T>()`, `Rules.transformAsync<T>()`, etc. | `lib/src/rules/` |
 | String | `Rules.string.*` | `lib/src/rules/string/` |
 | Number | `Rules.number.*` | `lib/src/rules/numbers/` |
 | Iterable | `Rules.iterable.*` | `lib/src/rules/iterable/` |
@@ -207,10 +209,23 @@ Current rules in `lib/src/rules/`:
 - `Nullable<T>` - Allows null, stops pipeline (`runOnNull = true`)
 - `Transform<T>` - Transforms value (`runOnNull = true`)
 - `InlineRule<T>` - Custom inline validator (`runOnNull = true`)
+- `AsyncTransform<T>` - Async transformation (`runOnNull = true`)
+- `AsyncInlineRule<T>` - Custom async inline validator (`runOnNull = true`)
 - `Having<T>` - Value must be in a list (`runOnNull = true`)
 - `Equals<T>` - Value must equal a specific value (optional comparator)
 - `NotEquals<T>` - Value must not equal a specific value (optional comparator)
 - `AnyOf<T>` - Value must satisfy at least one rule set (OR logic)
+
+## Async Rules
+
+Async rules extend `AsyncRule<T>` and can only be run via `validateAsync()`. They are placed alongside sync rules in the same pipeline and execute sequentially.
+
+Current async rules:
+- `AsyncInlineRule<T>` - Async custom validator (`Rules.inlineAsync()`)
+- `AsyncTransform<T>` - Async value transformation (`Rules.transformAsync()`)
+- `AsyncConditionalField<T>` - Async conditional map validation (`Rules.map.conditionalFieldAsync()`)
+
+Container rules (`HasFields`, `ForEach`, `AllValues`, `AnyOf`) override `applyAsync()` so they can host async child rules when `validateAsync()` is used.
 
 ## Iterable Rules
 
