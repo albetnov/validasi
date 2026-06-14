@@ -1,3 +1,9 @@
+## 0.1.0-beta.4
+
+### Added
+- `--base-url` CLI flag to override the docs source URL. Allows pointing to a
+  self-hosted docs instance or a local VitePress dev server.
+
 ## 0.1.0-beta.3
 
 **Rewrite**: Moved from a validation-engine adapter to a documentation assistant for AI.

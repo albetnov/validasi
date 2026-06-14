@@ -444,6 +444,53 @@ void main() {
 }
 ```
 
+## Async Custom Rules
+
+For rules that need async operations (e.g., database lookups), extend `AsyncRule<T>` instead:
+
+```dart
+import 'package:validasi/src/engine/error.dart';
+import 'package:validasi/src/engine/rule.dart';
+import 'package:validasi/src/engine/state.dart';
+
+class UniqueEmailRule extends AsyncRule<String> {
+  const UniqueEmailRule(this.userRepository, {super.message});
+
+  final UserRepository userRepository;
+
+  @override
+  bool get runOnNull => true;
+
+  @override
+  Future<String?> applyAsync(String? value, ValidationState state) async {
+    if (value == null) return null;
+    final taken = await userRepository.isEmailTaken(value);
+    if (taken) {
+      state.addError(
+        ValidationError(
+          rule: 'UniqueEmail',
+          message: message ?? 'Email is already registered',
+        ),
+      );
+    }
+    return value;
+  }
+}
+
+// Usage
+final schema = Validasi.string([
+  Rules.required(),
+  UniqueEmailRule(userRepository),
+]);
+final result = await schema.validateAsync('user@example.com');
+```
+
+Key differences from sync rules:
+- Extend `AsyncRule<T>` instead of `Rule<T>`
+- Override `applyAsync()` instead of `apply()`
+- Must use `validateAsync()` instead of `validate()`
+- `apply()` throws `StateError` if called directly
+
 ## Summary
 
 Creating custom rules in Validasi is straightforward:
@@ -456,5 +503,7 @@ Creating custom rules in Validasi is straightforward:
 6. Return the (potentially modified) value from `apply`
 7. Use `state.isStopped = true` for stopping validation chain
 8. Add error details for better debugging and programmatic handling
+
+For async rules, extend `AsyncRule<T>` and override `applyAsync()` instead. Use `validateAsync()` at the engine level.
 
 Custom rules give you full control while maintaining the composability and type safety that makes Validasi powerful.

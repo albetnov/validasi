@@ -1,7 +1,7 @@
 # Getting Started
 
 ::: warning 📢 v1.0.0-dev Documentation
-You are viewing the documentation for **Validasi v1.0.0-dev** (development version). This version includes significant API changes and new features, but it does not include the async variant yet and some rules may still be incomplete. Looking for the stable version? [View v0 Documentation →](/v0/)
+You are viewing the documentation for **Validasi v1.0.0-dev** (development version). Looking for the stable version? [View v0 Documentation →](/v0/)
 :::
 
 Welcome to Validasi! This guide will help you get started with the most flexible and type-safe validation library for Dart and Flutter.
@@ -21,7 +21,7 @@ Create complex validation schemas from simple, reusable rules. Mix and match rul
 :::
 
 ::: warning Performance Optimized
-Built-in caching system ensures your validations run fast, even when validating thousands of objects.
+Through a series of optimizations, your validations run fast, even when validating thousands of objects.
 :::
 
 ## Why Choose Validasi?

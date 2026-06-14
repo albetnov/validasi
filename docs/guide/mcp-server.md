@@ -58,7 +58,12 @@ The cache directory defaults to `.validasi_mcp_cache/` in the current directory
 (project-local). Cache entries are considered fresh for 24 hours.
 
 The docs URL defaults to `https://albetnov.github.io/validasi` and can be
-overridden in code via `DocsConfig.baseUrl`.
+overridden with the `--base-url` CLI flag:
+
+```bash
+# Point to a self-hosted docs instance or a local VitePress dev server
+dart run bin/validasi_mcp.dart --base-url http://localhost:4173/validasi
+```
 
 ## Integration
 

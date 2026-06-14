@@ -31,16 +31,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Not needed if lastUpdated is not enabled
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
         with:
-          bun-version: latest
+          deno-version: latest
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
-        run: bun install --no-progress
+        run: deno install --frozen
       - name: Build with VitePress
-        run: bun docs:build
+        run: deno task docs:build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -3,14 +3,18 @@ import 'package:validasi_mcp/validasi_mcp.dart';
 Future<void> main(List<String> args) async {
   final cacheDir = _argValue(args, '--cache-dir');
   final forceRefresh = args.contains('--refresh');
+  final baseUrl =
+      _argValue(args, '--base-url') ?? 'https://albetnov.github.io/validasi';
 
   if (args.contains('--clean-cache')) {
-    await DocsFetcher(config: DocsConfig(cacheDir: cacheDir)).clearCache();
+    await DocsFetcher(config: DocsConfig(baseUrl: baseUrl, cacheDir: cacheDir))
+        .clearCache();
     print('Cache cleared.');
     return;
   }
 
   final config = DocsConfig(
+    baseUrl: baseUrl,
     cacheDir: cacheDir,
     cacheTtl: forceRefresh ? Duration.zero : const Duration(hours: 24),
   );

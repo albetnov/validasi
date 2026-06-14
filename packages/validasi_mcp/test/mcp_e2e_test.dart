@@ -60,9 +60,19 @@ void main() {
     if (cacheDir.existsSync()) cacheDir.deleteSync(recursive: true);
     cacheDir.createSync();
 
+    final localDocsUrl = Platform.environment['LOCAL_DOCS'];
+    final serverArgs = [
+      'bin/validasi_mcp.dart',
+      '--cache-dir',
+      cacheDir.path,
+      '--refresh',
+      if (localDocsUrl != null) '--base-url',
+      if (localDocsUrl != null) localDocsUrl,
+    ];
+
     server = await Process.start(
       Platform.resolvedExecutable,
-      ['bin/validasi_mcp.dart', '--cache-dir', cacheDir.path, '--refresh'],
+      serverArgs,
     );
 
     stdoutSub = server.stdout
