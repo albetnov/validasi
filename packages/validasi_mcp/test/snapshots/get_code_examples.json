@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "count": 143,
+  "count": 144,
   "examples": [
     {
       "language": "dart",
@@ -145,6 +145,10 @@
     {
       "language": "bash",
       "code": "# Start the server (stdio mode)\ndart run bin/validasi_mcp.dart\n\n# Force re-fetch all docs\ndart run bin/validasi_mcp.dart --refresh\n\n# Clear the local cache\ndart run bin/validasi_mcp.dart --clean-cache"
+    },
+    {
+      "language": "bash",
+      "code": "# Point to a self-hosted docs instance or a local VitePress dev server\ndart run bin/validasi_mcp.dart --base-url http://localhost:4173/validasi"
     },
     {
       "language": "jsonc",
