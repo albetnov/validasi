@@ -72,10 +72,24 @@ List<FieldRules> extractValidateFields(
         nestedClassName: nested.$1,
         isNestedIterable: nested.$2,
       ));
+      continue;
+    }
+
+    if (_hasValidateWith(field)) {
+      result.add(FieldRules(field, const []));
     }
   }
 
   return result;
+}
+
+bool _hasValidateWith(FieldElement field) {
+  return field.metadata.annotations.any((meta) {
+    final element = meta.element;
+
+    return element is ConstructorElement &&
+        element.enclosingElement.name == 'ValidateWith';
+  });
 }
 
 List<CrossFieldInfo> extractCrossFields(ClassElement element) {

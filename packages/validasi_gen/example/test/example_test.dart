@@ -11,6 +11,7 @@ void main() {
     test('should pass for valid user', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
@@ -23,6 +24,7 @@ void main() {
     test('should fail for too short email', () {
       final user = User(
         email: 'ab',
+        confirmEmail: 'ab',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
@@ -38,6 +40,7 @@ void main() {
       final longEmail = 'a' * 101;
       final user = User(
         email: longEmail,
+        confirmEmail: longEmail,
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
@@ -51,6 +54,7 @@ void main() {
     test('should fail for empty tags', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: [],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
@@ -67,6 +71,7 @@ void main() {
     test('should pass for non-empty tags', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['a', 'b'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
@@ -80,6 +85,7 @@ void main() {
     test('should fail when nested car has invalid make', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'T', model: 'Camry'),
         previousCars: [],
@@ -94,6 +100,7 @@ void main() {
     test('should fail when nested car has invalid model', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'C'),
         previousCars: [],
@@ -108,6 +115,7 @@ void main() {
     test('should fail when nested car has multiple invalid fields', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'T', model: 'C'),
         previousCars: [],
@@ -127,6 +135,7 @@ void main() {
     test('should pass when nullable spareCar is null', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         spareCar: null,
@@ -139,6 +148,7 @@ void main() {
     test('should fail when nullable spareCar has invalid fields', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         spareCar: Car(make: 'T', model: 'C'),
@@ -159,6 +169,7 @@ void main() {
     test('should pass when previousCars is empty', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
@@ -170,6 +181,7 @@ void main() {
     test('should pass when all previousCars are valid', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [
@@ -184,6 +196,7 @@ void main() {
     test('should fail when first previousCar has invalid make', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [
@@ -201,6 +214,7 @@ void main() {
     test('should fail when second previousCar has invalid model', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [
@@ -218,6 +232,7 @@ void main() {
     test('should fail when multiple previousCars have invalid fields', () {
       final user = User(
         email: 'test@example.com',
+        confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [
@@ -242,6 +257,7 @@ void main() {
     test('should collect errors from multiple levels', () {
       final user = User(
         email: 'ab',
+        confirmEmail: 'ab',
         tags: [],
         car: Car(make: 'T', model: 'Camry'),
         spareCar: Car(make: 'Toyota', model: 'C'),
@@ -294,6 +310,7 @@ void main() {
     test('instance-driven validateField extracts and validates', () {
       final user = User(
         email: 'ab',
+        confirmEmail: 'ab',
         tags: ['x'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: const [],
@@ -306,6 +323,7 @@ void main() {
     test('instance-driven validateField type is inferred', () {
       final user = User(
         email: 'ok@ok.com',
+        confirmEmail: 'ok@ok.com',
         tags: ['x'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: const [],
@@ -318,6 +336,7 @@ void main() {
     test('nested key validates whole sub-object and prefixes paths', () {
       final user = User(
         email: 'ok@ok.com',
+        confirmEmail: 'ok@ok.com',
         tags: ['x'],
         car: Car(make: 'T', model: 'M'),
         previousCars: const [],
@@ -349,6 +368,7 @@ void main() {
     test('iterable nested key prefixes with index', () {
       final user = User(
         email: 'ok@ok.com',
+        confirmEmail: 'ok@ok.com',
         tags: ['x'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [Car(make: 'H', model: 'Civic')],
@@ -366,6 +386,7 @@ void main() {
     test('sealed switch is exhaustive over UserFields', () {
       String label(UserFields f) => switch (f) {
             UserEmailField() => 'email',
+            UserConfirmEmailField() => 'confirmEmail',
             UserTagsField() => 'tags',
             UserCarField() => 'car',
             UserSpareCarField() => 'spareCar',
@@ -386,6 +407,41 @@ void main() {
     test('generic ValidasiKey<T> infers owner for different class', () {
       final ValidasiKey<Car> key = CarFields.make;
       expect(key, isA<CarFields>());
+    });
+  });
+
+  group('Cross-field validation', () {
+    test('should pass when emails match', () {
+      final user = User(
+        email: 'test@example.com',
+        confirmEmail: 'test@example.com',
+        tags: ['dart'],
+        car: Car(make: 'Toyota', model: 'Camry'),
+        previousCars: [],
+      );
+      final result = user.validate();
+      expect(result.isValid, isTrue);
+    });
+
+    test('should fail when emails mismatch', () {
+      final user = User(
+        email: 'test@example.com',
+        confirmEmail: 'other@example.com',
+        tags: ['dart'],
+        car: Car(make: 'Toyota', model: 'Camry'),
+        previousCars: [],
+      );
+      final result = user.validate();
+      expect(result.isValid, isFalse);
+      expect(result.errors.any((e) => e.rule == 'ValidateWith'), isTrue);
+      expect(
+        result.errors.firstWhere((e) => e.rule == 'ValidateWith').message,
+        equals('Emails do not match'),
+      );
+      expect(
+        result.errors.firstWhere((e) => e.rule == 'ValidateWith').path,
+        equals(['confirmEmail']),
+      );
     });
   });
 

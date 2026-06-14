@@ -48,6 +48,7 @@ class ValidasiGenerator extends Generator {
       buffer.write(generateValidateExtension(
         cls.name!,
         fields,
+        crossFields: crossFields,
         includeValidateField: generateFields,
       ));
     }

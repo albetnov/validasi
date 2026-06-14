@@ -10,10 +10,21 @@ class Registration {
   @ValidateWith(_checkEmailMatch, dependsOn: {#email})
   final String confirmEmail;
 
-  const Registration({required this.email, required this.confirmEmail});
+  @ValidateWith(_checkNotes, dependsOn: {#email})
+  final String? notes;
+
+  const Registration({
+    required this.email,
+    required this.confirmEmail,
+    this.notes,
+  });
 }
 
 String? _checkEmailMatch(V? Function<V>(ValidasiField<Registration, V>) get) {
+  return 'Emails do not match';
+}
+
+String? _checkNotes(V? Function<V>(ValidasiField<Registration, V>) get) {
   return null;
 }
 

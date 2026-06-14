@@ -8,6 +8,10 @@ class User {
   @Validate.string([MinLength(3), MaxLength(100)])
   final String email;
 
+  @Validate.string([MinLength(3), MaxLength(100)])
+  @ValidateWith(_checkEmailMatch, dependsOn: {#email})
+  final String confirmEmail;
+
   @Validate.iterable([MinLength(1)])
   final List<String> tags;
 
@@ -19,6 +23,7 @@ class User {
 
   const User({
     required this.email,
+    required this.confirmEmail,
     required this.tags,
     required this.car,
     this.spareCar,
@@ -45,4 +50,13 @@ class InternalFoo {
   final String code;
 
   const InternalFoo({required this.code});
+}
+
+String? _checkEmailMatch(V? Function<V>(ValidasiField<User, V>) get) {
+  final email = get(UserFields.email);
+  final confirm = get(UserFields.confirmEmail);
+  if (email != null && confirm != null && email != confirm) {
+    return 'Emails do not match';
+  }
+  return null;
 }

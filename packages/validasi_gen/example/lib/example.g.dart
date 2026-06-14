@@ -2,11 +2,12 @@
 
 part of 'example.dart';
 
-sealed class UserFields<V> extends ValidasiKey<User>
-    implements ValidasiField<User, V> {
+
+sealed class UserFields<V> extends ValidasiKey<User> implements ValidasiField<User, V> {
   const UserFields._();
 
   static const UserFields<String> email = UserEmailField();
+  static const UserFields<String> confirmEmail = UserConfirmEmailField();
   static const UserFields<List<String>> tags = UserTagsField();
   static const UserFields<Car> car = UserCarField();
   static const UserFields<Car?> spareCar = UserSpareCarField();
@@ -16,11 +17,9 @@ sealed class UserFields<V> extends ValidasiKey<User>
 class UserEmailField extends UserFields<String> {
   const UserEmailField() : super._();
 
-  @override
-  String get name => 'email';
+  @override String get name => 'email';
 
-  @override
-  String extract(User owner) => owner.email;
+  @override String extract(User owner) => owner.email;
 
   @override
   ValidasiResult<String> validate(String? value) {
@@ -57,22 +56,80 @@ class UserEmailField extends UserFields<String> {
   CrossFieldKey<User>? get crossFieldKey => null;
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<User, V>)
+  )? get crossValidator => null;
 
   @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
+  Set<ValidasiField<User, dynamic>> get crossDependsOn => const <ValidasiField<User, dynamic>>{};
+}
+
+class UserConfirmEmailField extends UserFields<String> {
+  const UserConfirmEmailField() : super._();
+
+  @override String get name => 'confirmEmail';
+
+  @override String extract(User owner) => owner.confirmEmail;
+
+  @override
+  ValidasiResult<String> validate(String? value) {
+    final $errors = <ValidationError>[];
+
+    if (value != null && value.length < 3) {
+      $errors.add(
+        ValidationError(
+          rule: 'MinLength',
+          message: 'Minimum length is 3 characters',
+          details: {'length': '3'},
+          path: [name],
+        ),
+      );
+    }
+
+    if (value != null && value.length > 100) {
+      $errors.add(
+        ValidationError(
+          rule: 'MaxLength',
+          message: 'Maximum length is 100 characters',
+          details: {'length': '100'},
+          path: [name],
+        ),
+      );
+    }
+    if ($errors.isNotEmpty) {
+      return ValidasiResult(errors: $errors, isValid: false);
+    }
+    return ValidasiResult(errors: const [], isValid: true, data: value);
+  }
+
+  @override
+  CrossFieldKey<User> get crossFieldKey => UserCrossFields.confirmEmail;
+
+  @override
+  Set<ValidasiField<User, dynamic>> get crossDependsOn {
+    return const <ValidasiField<User, dynamic>>{UserFields.email};
+  }
+
+  @override
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<User, V>)
+  ) get crossValidator {
+    return (getField) {
+      final result = _checkEmailMatch(getField);
+      if (result != null) {
+        return [ValidationError(rule: 'ValidateWith', message: result, path: ['confirmEmail'])];
+      }
+      return [];
+    };
+  }
 }
 
 class UserTagsField extends UserFields<List<String>> {
   const UserTagsField() : super._();
 
-  @override
-  String get name => 'tags';
+  @override String get name => 'tags';
 
-  @override
-  List<String> extract(User owner) => owner.tags;
+  @override List<String> extract(User owner) => owner.tags;
 
   @override
   ValidasiResult<List<String>> validate(List<String>? value) {
@@ -98,22 +155,20 @@ class UserTagsField extends UserFields<List<String>> {
   CrossFieldKey<User>? get crossFieldKey => null;
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<User, V>)
+  )? get crossValidator => null;
 
   @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
+  Set<ValidasiField<User, dynamic>> get crossDependsOn => const <ValidasiField<User, dynamic>>{};
 }
 
 class UserCarField extends UserFields<Car> {
   const UserCarField() : super._();
 
-  @override
-  String get name => 'car';
+  @override String get name => 'car';
 
-  @override
-  Car extract(User owner) => owner.car;
+  @override Car extract(User owner) => owner.car;
 
   @override
   ValidasiResult<Car> validate(Car? value) {
@@ -134,22 +189,20 @@ class UserCarField extends UserFields<Car> {
   CrossFieldKey<User>? get crossFieldKey => null;
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<User, V>)
+  )? get crossValidator => null;
 
   @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
+  Set<ValidasiField<User, dynamic>> get crossDependsOn => const <ValidasiField<User, dynamic>>{};
 }
 
 class UserSpareCarField extends UserFields<Car?> {
   const UserSpareCarField() : super._();
 
-  @override
-  String get name => 'spareCar';
+  @override String get name => 'spareCar';
 
-  @override
-  Car? extract(User owner) => owner.spareCar;
+  @override Car? extract(User owner) => owner.spareCar;
 
   @override
   ValidasiResult<Car?> validate(Car? value) {
@@ -170,22 +223,20 @@ class UserSpareCarField extends UserFields<Car?> {
   CrossFieldKey<User>? get crossFieldKey => null;
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<User, V>)
+  )? get crossValidator => null;
 
   @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
+  Set<ValidasiField<User, dynamic>> get crossDependsOn => const <ValidasiField<User, dynamic>>{};
 }
 
 class UserPreviousCarsField extends UserFields<List<Car>> {
   const UserPreviousCarsField() : super._();
 
-  @override
-  String get name => 'previousCars';
+  @override String get name => 'previousCars';
 
-  @override
-  List<Car> extract(User owner) => owner.previousCars;
+  @override List<Car> extract(User owner) => owner.previousCars;
 
   @override
   ValidasiResult<List<Car>> validate(List<Car>? value) {
@@ -193,14 +244,11 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
       return const ValidasiResult(errors: [], isValid: true);
     }
     final $errors = <ValidationError>[];
-    for (var $previousCarsIndex = 0;
-        $previousCarsIndex < value.length;
-        $previousCarsIndex++) {
+    for (var $previousCarsIndex = 0; $previousCarsIndex < value.length; $previousCarsIndex++) {
       final $previousCarsItem = value[$previousCarsIndex];
       final $previousCarsResult = $previousCarsItem.validate();
       if (!$previousCarsResult.isValid) {
-        $errors.addAll($previousCarsResult.errors
-            .map((e) => e.withPrefix("$name[${$previousCarsIndex}]")));
+        $errors.addAll($previousCarsResult.errors.map((e) => e.withPrefix("$name[${$previousCarsIndex}]")));
       }
     }
     if ($errors.isNotEmpty) {
@@ -213,18 +261,31 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
   CrossFieldKey<User>? get crossFieldKey => null;
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<User, V>)
+  )? get crossValidator => null;
 
   @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
+  Set<ValidasiField<User, dynamic>> get crossDependsOn => const <ValidasiField<User, dynamic>>{};
 }
 
-User assemble_User(ValidasiFormController<User> ctrl) => User(
-      email: ctrl.getValue(UserFields.email) as String,
-      tags: ctrl.getValue(UserFields.tags) as List<String>,
-    );
+
+User assemble_User(
+    ValidasiFormController<User> ctrl) => User(
+    email: ctrl.getValue(UserFields.email) as String,
+    confirmEmail: ctrl.getValue(UserFields.confirmEmail) as String,
+    tags: ctrl.getValue(UserFields.tags) as List<String>,
+  );
+
+sealed class UserCrossFields extends CrossFieldKey<User> {
+  const UserCrossFields._(super.name);
+  static const UserCrossFields confirmEmail = _User_confirmEmail_CrossField();
+}
+
+class _User_confirmEmail_CrossField extends UserCrossFields {
+  const _User_confirmEmail_CrossField() : super._('confirmEmail');
+}
+
 
 extension $UserValidasi on User {
   ValidasiResult<User> validate() {
@@ -254,6 +315,30 @@ extension $UserValidasi on User {
       );
     }
 
+    // Field: confirmEmail
+
+    if (confirmEmail != null && confirmEmail.length < 3) {
+      $errors.add(
+        ValidationError(
+          rule: 'MinLength',
+          message: 'Minimum length is 3 characters',
+          details: {'length': '3'},
+          path: ['confirmEmail'],
+        ),
+      );
+    }
+
+    if (confirmEmail != null && confirmEmail.length > 100) {
+      $errors.add(
+        ValidationError(
+          rule: 'MaxLength',
+          message: 'Maximum length is 100 characters',
+          details: {'length': '100'},
+          path: ['confirmEmail'],
+        ),
+      );
+    }
+
     // Field: tags
 
     if (tags != null && tags.length < 1) {
@@ -278,20 +363,26 @@ extension $UserValidasi on User {
     if ($spareCarValue != null) {
       final $spareCarResult = $spareCarValue.validate();
       if (!$spareCarResult.isValid) {
-        $errors.addAll(
-            $spareCarResult.errors.map((e) => e.withPrefix('spareCar')));
+        $errors.addAll($spareCarResult.errors.map((e) => e.withPrefix('spareCar')));
       }
     }
 
     // Field: previousCars (nested Car)
-    for (var $previousCarsIndex = 0;
-        $previousCarsIndex < previousCars.length;
-        $previousCarsIndex++) {
+    for (var $previousCarsIndex = 0; $previousCarsIndex < previousCars.length; $previousCarsIndex++) {
       final $previousCarsItem = previousCars[$previousCarsIndex];
       final $previousCarsItemResult = $previousCarsItem.validate();
       if (!$previousCarsItemResult.isValid) {
-        $errors.addAll($previousCarsItemResult.errors
-            .map((e) => e.withPrefix('previousCars[${$previousCarsIndex}]')));
+        $errors.addAll($previousCarsItemResult.errors.map((e) => e.withPrefix('previousCars[${$previousCarsIndex}]')));
+      }
+    }
+
+    // Cross-field validators
+    dynamic? getField<V>(ValidasiField<User, V> field) => field.extract(this);
+    {
+      final field = UserFields.confirmEmail as ValidasiField<User, dynamic>;
+      final cv = field.crossValidator;
+      if (cv != null) {
+        $errors.addAll(cv(getField));
       }
     }
 
@@ -306,8 +397,7 @@ extension $UserValidasi on User {
   }
 }
 
-sealed class CarFields<V> extends ValidasiKey<Car>
-    implements ValidasiField<Car, V> {
+sealed class CarFields<V> extends ValidasiKey<Car> implements ValidasiField<Car, V> {
   const CarFields._();
 
   static const CarFields<String> make = CarMakeField();
@@ -317,11 +407,9 @@ sealed class CarFields<V> extends ValidasiKey<Car>
 class CarMakeField extends CarFields<String> {
   const CarMakeField() : super._();
 
-  @override
-  String get name => 'make';
+  @override String get name => 'make';
 
-  @override
-  String extract(Car owner) => owner.make;
+  @override String extract(Car owner) => owner.make;
 
   @override
   ValidasiResult<String> validate(String? value) {
@@ -347,22 +435,20 @@ class CarMakeField extends CarFields<String> {
   CrossFieldKey<Car>? get crossFieldKey => null;
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<Car, V>))?
-      get crossValidator => null;
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<Car, V>)
+  )? get crossValidator => null;
 
   @override
-  Set<ValidasiField<Car, dynamic>> get crossDependsOn =>
-      const <ValidasiField<Car, dynamic>>{};
+  Set<ValidasiField<Car, dynamic>> get crossDependsOn => const <ValidasiField<Car, dynamic>>{};
 }
 
 class CarModelField extends CarFields<String> {
   const CarModelField() : super._();
 
-  @override
-  String get name => 'model';
+  @override String get name => 'model';
 
-  @override
-  String extract(Car owner) => owner.model;
+  @override String extract(Car owner) => owner.model;
 
   @override
   ValidasiResult<String> validate(String? value) {
@@ -388,18 +474,20 @@ class CarModelField extends CarFields<String> {
   CrossFieldKey<Car>? get crossFieldKey => null;
 
   @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<Car, V>))?
-      get crossValidator => null;
+  List<ValidationError> Function(
+    V? Function<V>(ValidasiField<Car, V>)
+  )? get crossValidator => null;
 
   @override
-  Set<ValidasiField<Car, dynamic>> get crossDependsOn =>
-      const <ValidasiField<Car, dynamic>>{};
+  Set<ValidasiField<Car, dynamic>> get crossDependsOn => const <ValidasiField<Car, dynamic>>{};
 }
 
-Car assemble_Car(ValidasiFormController<Car> ctrl) => Car(
-      make: ctrl.getValue(CarFields.make) as String,
-      model: ctrl.getValue(CarFields.model) as String,
-    );
+
+Car assemble_Car(
+    ValidasiFormController<Car> ctrl) => Car(
+    make: ctrl.getValue(CarFields.make) as String,
+    model: ctrl.getValue(CarFields.model) as String,
+  );
 
 extension $CarValidasi on Car {
   ValidasiResult<Car> validate() {

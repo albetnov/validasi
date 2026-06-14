@@ -7,6 +7,7 @@ const _snippets = FieldRuleSnippets();
 String generateValidateExtension(
   String className,
   List<FieldRules> fields, {
+  List<CrossFieldInfo> crossFields = const [],
   bool includeValidateField = true,
 }) {
   final buf = StringBuffer();
@@ -20,6 +21,24 @@ String generateValidateExtension(
 
   for (final ctx in fields) {
     _generateFieldValidation(buf, ctx);
+  }
+
+  if (crossFields.isNotEmpty) {
+    buf.writeln('    // Cross-field validators');
+    buf.writeln(
+        '    dynamic? getField<V>(ValidasiField<$className, V> field) => field.extract(this);');
+    for (final cf in crossFields) {
+      final fieldName = cf.field.name!;
+      buf.writeln('    {');
+      buf.writeln(
+          '      final field = $fieldsClassName.$fieldName as ValidasiField<$className, dynamic>;');
+      buf.writeln('      final cv = field.crossValidator;');
+      buf.writeln('      if (cv != null) {');
+      buf.writeln('        \$errors.addAll(cv(getField));');
+      buf.writeln('      }');
+      buf.writeln('    }');
+    }
+    buf.writeln();
   }
 
   buf.writeln("    if (\$errors.isNotEmpty) {");
