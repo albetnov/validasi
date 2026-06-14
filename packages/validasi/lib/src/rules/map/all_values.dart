@@ -19,4 +19,19 @@ class AllValues<I> extends Rule<Map<String, I>> {
     }
     return value;
   }
+
+  @override
+  Future<Map<String, I>?> applyAsync(
+      Map<String, I>? value, ValidationState state) async {
+    if (value == null) return null;
+
+    for (final entry in value.entries) {
+      final before = state.errors.length;
+      await applyRulesAsync(entry.value, rules, state);
+      for (var j = before; j < state.errors.length; j++) {
+        state.errors[j] = state.errors[j].withPrefix(entry.key);
+      }
+    }
+    return value;
+  }
 }

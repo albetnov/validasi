@@ -19,4 +19,18 @@ class ForEach<I> extends Rule<List<I>> {
     }
     return value;
   }
+
+  @override
+  Future<List<I>?> applyAsync(List<I>? value, ValidationState state) async {
+    if (value == null) return null;
+
+    for (var i = 0; i < value.length; i++) {
+      final before = state.errors.length;
+      value[i] = await applyRulesAsync(value[i], itemRules, state) as I;
+      for (var j = before; j < state.errors.length; j++) {
+        state.errors[j] = state.errors[j].withPrefix('[$i]');
+      }
+    }
+    return value;
+  }
 }

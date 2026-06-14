@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "count": 138,
+  "count": 144,
   "examples": [
     {
       "language": "dart",
@@ -55,6 +55,10 @@
       "code": "import 'package:test/test.dart';\nimport 'package:validasi/validasi.dart';\n\nvoid main() {\n  group('UrlRule', () {\n    test('accepts valid HTTPS URL', () {\n      final schema = ValidasiEngine<String, String>(rules: [UrlRule()]);\n      final result = schema.validate('https://example.com');\n      expect(result.isValid, true);\n    });\n\n    test('rejects URL without scheme', () {\n      final schema = ValidasiEngine<String, String>(rules: [UrlRule()]);\n      final result = schema.validate('example.com');\n      expect(result.isValid, false);\n      expect(result.errors.first.rule, 'Url');\n    });\n\n    test('accepts custom message', () {\n      final schema = ValidasiEngine<String, String>(\n        rules: [UrlRule(message: 'Custom error')],\n      );\n      final result = schema.validate('invalid');\n      expect(result.errors.first.message, 'Custom error');\n    });\n  });\n}"
     },
     {
+      "language": "dart",
+      "code": "import 'package:validasi/src/engine/error.dart';\nimport 'package:validasi/src/engine/rule.dart';\nimport 'package:validasi/src/engine/state.dart';\n\nclass UniqueEmailRule extends AsyncRule<String> {\n  const UniqueEmailRule(this.userRepository, {super.message});\n\n  final UserRepository userRepository;\n\n  @override\n  bool get runOnNull => true;\n\n  @override\n  Future<String?> applyAsync(String? value, ValidationState state) async {\n    if (value == null) return null;\n    final taken = await userRepository.isEmailTaken(value);\n    if (taken) {\n      state.addError(\n        ValidationError(\n          rule: 'UniqueEmail',\n          message: message ?? 'Email is already registered',\n        ),\n      );\n    }\n    return value;\n  }\n}\n\n// Usage\nfinal schema = Validasi.string([\n  Rules.required(),\n  UniqueEmailRule(userRepository),\n]);\nfinal result = await schema.validateAsync('user@example.com');"
+    },
+    {
       "language": "text",
       "code": "Input Value\n    ↓\nPreprocess (optional)\n    ↓\nType Check (against T)\n    ↓\nRule Loop\n    ↓\nBuild Result\n    ↓\nReturn ValidasiResult<T>"
     },
@@ -73,6 +77,10 @@
     {
       "language": "dart",
       "code": "final result = schema.validate(input);\n\nif (result.isValid) {\n  print(result.data);\n} else {\n  for (final error in result.errors) {\n    print('${error.rule}: ${error.message}');\n  }\n}"
+    },
+    {
+      "language": "dart",
+      "code": "final schema = Validasi.string([\n  Rules.required(),\n  Rules.inlineAsync((email) async {\n    final taken = await repository.isTaken(email!);\n    return !taken;\n  }),\n]);\n\nfinal result = await schema.validateAsync('user@example.com');"
     },
     {
       "language": "dart",
@@ -139,6 +147,10 @@
       "code": "# Start the server (stdio mode)\ndart run bin/validasi_mcp.dart\n\n# Force re-fetch all docs\ndart run bin/validasi_mcp.dart --refresh\n\n# Clear the local cache\ndart run bin/validasi_mcp.dart --clean-cache"
     },
     {
+      "language": "bash",
+      "code": "# Point to a self-hosted docs instance or a local VitePress dev server\ndart run bin/validasi_mcp.dart --base-url http://localhost:4173/validasi"
+    },
+    {
       "language": "jsonc",
       "code": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"mcp\": {\n    \"validasi_docs\": {\n      \"type\": \"local\",\n      \"command\": \"validasi_mcp\",\n      \"enabled\": true,\n      \"environment\": {}\n    }\n  }\n}"
     },
@@ -172,11 +184,19 @@
     },
     {
       "language": "dart",
+      "code": "final schema = Validasi.string([\n  Rules.transformAsync<String>((value) async {\n    final normalized = await normalizeEmail(value);\n    return normalized;\n  }),\n  Rules.string.email(),\n]);\n\nfinal result = await schema.validateAsync('USER@Example.com');"
+    },
+    {
+      "language": "dart",
       "code": "final schema = Validasi.string([\n  Rules.having<String>(['draft', 'published', 'archived']),\n]);"
     },
     {
       "language": "dart",
       "code": "final passwordSchema = Validasi.string([\n  Rules.string.minLength(8),\n  Rules.inline<String>((value) {\n    if (!value.contains(RegExp(r'[A-Z]'))) {\n      return 'Must contain at least one uppercase letter';\n    }\n    return null;\n  }),\n]);"
+    },
+    {
+      "language": "dart",
+      "code": "final registerSchema = Validasi.string([\n  Rules.required(),\n  Rules.string.email(),\n  Rules.inlineAsync((email) async {\n    if (email == null) return true;\n    final taken = await userRepository.isEmailTaken(email);\n    return !taken;\n  }, message: 'Email is already taken'),\n]);\n\nfinal result = await registerSchema.validateAsync('user@example.com');"
     },
     {
       "language": "dart",
@@ -357,6 +377,10 @@
     {
       "language": "dart",
       "code": "final shippingSchema = Validasi.map<dynamic>([\n\tRules.map.hasFieldKeys({'isDelivery'}),\n\tRules.map.conditionalField('address', (context, value) {\n\t\tfinal isDelivery = context.get<bool>('isDelivery') ?? false;\n\t\tif (isDelivery && (value == null || value.toString().isEmpty)) {\n\t\t\treturn 'address is required when isDelivery is true';\n\t\t}\n\t\treturn null;\n\t}),\n]);\n\nprint(shippingSchema.validate({\n\t'isDelivery': true,\n\t'address': 'Main Street',\n}).isValid); // true\n\nprint(shippingSchema.validate({\n\t'isDelivery': true,\n}).isValid); // false"
+    },
+    {
+      "language": "dart",
+      "code": "final signupSchema = Validasi.map<dynamic>([\n\tRules.map.hasFieldKeys({'email'}),\n\tRules.map.conditionalFieldAsync('email', (context, value) async {\n\t\tfinal isDelivery = context.get<bool>('isDelivery') ?? false;\n\t\tif (value == null || value.toString().isEmpty) return null;\n\t\tfinal taken = await userRepository.isEmailTaken(value.toString());\n\t\treturn taken ? 'Email is already registered' : null;\n\t}),\n]);\n\nfinal result = await signupSchema.validateAsync({\n\t'email': 'user@example.com',\n});"
     },
     {
       "language": "dart",

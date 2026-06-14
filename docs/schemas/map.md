@@ -79,6 +79,26 @@ print(shippingSchema.validate({
 }).isValid); // false
 ```
 
+### Rules.map.conditionalFieldAsync
+
+Async version of `conditionalField`. Useful for checks that require async operations:
+
+```dart
+final signupSchema = Validasi.map<dynamic>([
+	Rules.map.hasFieldKeys({'email'}),
+	Rules.map.conditionalFieldAsync('email', (context, value) async {
+		final isDelivery = context.get<bool>('isDelivery') ?? false;
+		if (value == null || value.toString().isEmpty) return null;
+		final taken = await userRepository.isEmailTaken(value.toString());
+		return taken ? 'Email is already registered' : null;
+	}),
+]);
+
+final result = await signupSchema.validateAsync({
+	'email': 'user@example.com',
+});
+```
+
 ### Rules.map.allowedKeys
 
 Ensures the map only contains allowed keys (whitelist).
