@@ -9,9 +9,13 @@ import 'package:validasi_gen/src/parsers/rules.dart';
 import 'package:validasi_gen/src/utils.dart';
 
 class ValidasiGenerator extends Generator {
-  ValidasiGenerator({this.generateFieldsDefault = true});
+  ValidasiGenerator({
+    this.generateFieldsDefault = true,
+    this.generateAssembleDefault = true,
+  });
 
   final bool generateFieldsDefault;
+  final bool generateAssembleDefault;
 
   @override
   String generate(LibraryReader library, BuildStep buildStep) {
@@ -32,13 +36,17 @@ class ValidasiGenerator extends Generator {
 
       final generateFields =
           readGenerateFieldsOverride(cls) ?? generateFieldsDefault;
+      final generateAssemble =
+          readGenerateAssembleOverride(cls) ?? generateAssembleDefault;
 
       final crossFields = extractCrossFields(cls);
 
       if (generateFields) {
         buffer.write(
             generateFieldsClass(cls.name!, fields, crossFields: crossFields));
-        buffer.write(generateFromForm(cls.name!, fields));
+        if (generateAssemble) {
+          buffer.write(generateFromForm(cls.name!, fields));
+        }
       }
 
       if (crossFields.isNotEmpty) {

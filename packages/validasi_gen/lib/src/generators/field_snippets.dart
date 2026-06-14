@@ -10,6 +10,7 @@ class FieldRuleSnippets {
     String indent = '',
     required String accessor,
     required String pathExpr,
+    bool async = false,
   }) {
     final hasRequired = ctx.rules.any((r) => r.name == 'Required');
     final rules = ctx.rules.where((r) => r.name != 'Nullable').toList();
@@ -27,8 +28,23 @@ class FieldRuleSnippets {
         continue;
       }
 
+      if (rule.isAsync && !async) {
+        continue;
+      }
+
       final gen = ruleGens[rule.name];
       if (gen == null) continue;
+
+      if (rule.name == 'AsyncInline') {
+        _emitAsyncInlineBlock(
+          buf,
+          rule,
+          accessor,
+          pathExpr,
+          indent: indent,
+        );
+        continue;
+      }
 
       final check = gen.check(rule, accessor);
       buf.writeln();
@@ -37,6 +53,40 @@ class FieldRuleSnippets {
           context: context, indent: '$indent  ');
       buf.writeln('$indent}');
     }
+  }
+
+  void _emitAsyncInlineBlock(
+    StringBuffer buf,
+    RuleInfo rule,
+    String accessor,
+    String pathExpr, {
+    required String indent,
+  }) {
+    final fn = rule.functionName ?? '_unknown';
+    final customName = (rule.params['customName'] as String?) ?? 'async_inline';
+    final message = rule.message ?? 'Validation failed';
+    final msgLiteral = _msg(rule, message);
+
+    buf.writeln();
+    buf.writeln('$indent try {');
+    buf.writeln('$indent  if (!await $fn($accessor)) {');
+    buf.writeln('$indent    \$errors.add(');
+    buf.writeln('$indent      ValidationError(');
+    buf.writeln("$indent        rule: '$customName',");
+    buf.writeln('$indent        message: $msgLiteral,');
+    buf.writeln('$indent        path: $pathExpr,');
+    buf.writeln('$indent      ),');
+    buf.writeln('$indent    );');
+    buf.writeln('$indent  }');
+    buf.writeln('$indent } catch (e) {');
+    buf.writeln('$indent  \$errors.add(');
+    buf.writeln('$indent    ValidationError(');
+    buf.writeln("$indent      rule: '$customName',");
+    buf.writeln("$indent      message: e.toString(),");
+    buf.writeln('$indent      path: $pathExpr,');
+    buf.writeln('$indent    ),');
+    buf.writeln('$indent  );');
+    buf.writeln('$indent}');
   }
 
   void _emitError(

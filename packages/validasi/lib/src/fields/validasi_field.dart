@@ -31,6 +31,12 @@ abstract class ValidasiField<T, V> extends FieldDescriptor<T, V> {
   /// Validate [value] using the rules defined for this field.
   ValidasiResult<V> validate(V? value);
 
+  /// Async counterpart of [validate]. By default it delegates to [validate];
+  /// generated classes override this to support async rules (e.g. `@AsyncInline`).
+  Future<ValidasiResult<V>> validateAsync(V? value) async {
+    return validate(value);
+  }
+
   /// If this field has a `@ValidateWith` cross-field validator,
   /// this returns the key used to identify it. Otherwise `null`.
   CrossFieldKey<T>? get crossFieldKey => null;
@@ -43,6 +49,12 @@ abstract class ValidasiField<T, V> extends FieldDescriptor<T, V> {
   List<ValidationError> Function(
     TValue? Function<TValue>(ValidasiField<T, TValue>) getField,
   )? get crossValidator => null;
+
+  /// If this field has a `@ValidateWithAsync` cross-field validator,
+  /// this returns the async validator function. Otherwise `null`.
+  Future<List<ValidationError>> Function(
+    TValue? Function<TValue>(ValidasiField<T, TValue>) getField,
+  )? get crossValidatorAsync => null;
 
   /// If this field is referenced by a `@ValidateWith(dependsOn:)` on
   /// another field, returns the fields whose cross-validators depend on

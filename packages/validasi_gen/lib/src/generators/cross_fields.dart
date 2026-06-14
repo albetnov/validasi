@@ -45,7 +45,6 @@ String generateFromForm(
   buf.writeln('$className assemble_$className(');
   buf.writeln('    ValidasiFormController<$className> ctrl) => $className(');
   for (final f in allFields) {
-    if (f.isNested) continue;
     final fieldName = f.field.name;
     final typeName = f.dartTypeDisplay;
     buf.writeln(

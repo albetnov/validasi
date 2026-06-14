@@ -1,9 +1,10 @@
 import 'package:validasi_annotation/src/base.dart';
 
 class ValidateClass {
-  const ValidateClass({this.generateFields});
+  const ValidateClass({this.generateFields, this.generateAssemble});
 
   final bool? generateFields;
+  final bool? generateAssemble;
 }
 
 class Validate {
@@ -20,4 +21,10 @@ class ValidateWith {
   final Function validator;
   final Set<Symbol> dependsOn;
   const ValidateWith(this.validator, {this.dependsOn = const {}});
+}
+
+class ValidateWithAsync {
+  final Function validator;
+  final Set<Symbol> dependsOn;
+  const ValidateWithAsync(this.validator, {this.dependsOn = const {}});
 }

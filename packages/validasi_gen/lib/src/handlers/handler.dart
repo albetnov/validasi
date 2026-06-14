@@ -16,12 +16,22 @@ class RuleInfo {
   final String? message;
   final bool isUnknown;
   final DartType? typeArg;
-  RuleInfo(this.name, this.params, this.message,
-      {this.isUnknown = false, this.typeArg});
+  final bool isAsync;
+  final String? functionName;
+  RuleInfo(
+    this.name,
+    this.params,
+    this.message, {
+    this.isUnknown = false,
+    this.typeArg,
+    this.isAsync = false,
+    this.functionName,
+  });
 }
 
 abstract class RuleGen {
   bool get isControl => false;
+  bool get isAsync => false;
   String get name;
   RuleInfo parse(ConstantReader rule);
   String check(RuleInfo info, String fieldName);

@@ -1,12 +1,18 @@
+import 'dart:async';
+
 import 'package:validasi/validasi.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 
 part 'example.g.dart';
 
-@ValidateClass()
+@ValidateClass(generateAssemble: false)
 class User {
   @Validate.string([MinLength(3), MaxLength(100)])
   final String email;
+
+  @Validate.string(
+      [MinLength(3), MaxLength(100), AsyncInline(_checkUsernameAvailable)])
+  final String username;
 
   @Validate.string([MinLength(3), MaxLength(100)])
   @ValidateWith(_checkEmailMatch, dependsOn: {#email})
@@ -23,6 +29,7 @@ class User {
 
   const User({
     required this.email,
+    required this.username,
     required this.confirmEmail,
     required this.tags,
     required this.car,
@@ -31,7 +38,7 @@ class User {
   });
 }
 
-@ValidateClass()
+@ValidateClass(generateAssemble: false)
 class Car {
   @Validate.string([MinLength(2)])
   final String make;
@@ -59,4 +66,9 @@ String? _checkEmailMatch(V? Function<V>(ValidasiField<User, V>) get) {
     return 'Emails do not match';
   }
   return null;
+}
+
+FutureOr<bool> _checkUsernameAvailable(String? value) async {
+  await Future<void>.delayed(Duration.zero);
+  return value != 'taken';
 }

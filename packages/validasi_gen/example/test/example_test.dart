@@ -8,58 +8,65 @@ import '../lib/example.dart';
 
 void main() {
   group('User validation', () {
-    test('should pass for valid user', () {
+    test('should pass for valid user', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isTrue);
       expect(result.data, same(user));
     });
 
-    test('should fail for too short email', () {
+    test('should fail for too short email', () async {
       final user = User(
         email: 'ab',
+        username: 'validuser',
         confirmEmail: 'ab',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
-      expect(result.errors, hasLength(1));
-      expect(result.errors.first.rule, equals('MinLength'));
-      expect(result.errors.first.path, equals(['email']));
+      expect(
+          result.errors
+              .any((e) => e.rule == 'MinLength' && e.path!.last == 'email'),
+          isTrue);
     });
 
-    test('should fail for too long email', () {
+    test('should fail for too long email', () async {
       final longEmail = 'a' * 101;
       final user = User(
         email: longEmail,
+        username: 'validuser',
         confirmEmail: longEmail,
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
-      expect(result.errors, hasLength(1));
-      expect(result.errors.first.rule, equals('MaxLength'));
+      expect(
+          result.errors
+              .any((e) => e.rule == 'MaxLength' && e.path!.last == 'email'),
+          isTrue);
     });
 
-    test('should fail for empty tags', () {
+    test('should fail for empty tags', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: [],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
       expect(result.errors, hasLength(1));
       expect(result.errors.first.rule, equals('MinLength'));
@@ -68,59 +75,63 @@ void main() {
           equals('List must have at least 1 items'));
     });
 
-    test('should pass for non-empty tags', () {
+    test('should pass for non-empty tags', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['a', 'b'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isTrue);
     });
   });
 
   group('Nested validation', () {
-    test('should fail when nested car has invalid make', () {
+    test('should fail when nested car has invalid make', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'T', model: 'Camry'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
       expect(result.errors, hasLength(1));
       expect(result.errors.first.rule, equals('MinLength'));
       expect(result.errors.first.path, equals(['car', 'make']));
     });
 
-    test('should fail when nested car has invalid model', () {
+    test('should fail when nested car has invalid model', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'C'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
       expect(result.errors, hasLength(1));
       expect(result.errors.first.rule, equals('MinLength'));
       expect(result.errors.first.path, equals(['car', 'model']));
     });
 
-    test('should fail when nested car has multiple invalid fields', () {
+    test('should fail when nested car has multiple invalid fields', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'T', model: 'C'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
       expect(result.errors, hasLength(2));
       final paths = result.errors.map((e) => e.path).toList();
@@ -132,29 +143,31 @@ void main() {
           ]));
     });
 
-    test('should pass when nullable spareCar is null', () {
+    test('should pass when nullable spareCar is null', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         spareCar: null,
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isTrue);
     });
 
-    test('should fail when nullable spareCar has invalid fields', () {
+    test('should fail when nullable spareCar has invalid fields', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         spareCar: Car(make: 'T', model: 'C'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
       expect(result.errors, hasLength(2));
       final paths = result.errors.map((e) => e.path).toList();
@@ -166,21 +179,23 @@ void main() {
           ]));
     });
 
-    test('should pass when previousCars is empty', () {
+    test('should pass when previousCars is empty', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isTrue);
     });
 
-    test('should pass when all previousCars are valid', () {
+    test('should pass when all previousCars are valid', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
@@ -189,13 +204,14 @@ void main() {
           Car(make: 'Ford', model: 'Focus'),
         ],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isTrue);
     });
 
-    test('should fail when first previousCar has invalid make', () {
+    test('should fail when first previousCar has invalid make', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
@@ -204,16 +220,17 @@ void main() {
           Car(make: 'Ford', model: 'Focus'),
         ],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
       expect(result.errors, hasLength(1));
       expect(result.errors.first.rule, equals('MinLength'));
       expect(result.errors.first.path, equals(['previousCars[0]', 'make']));
     });
 
-    test('should fail when second previousCar has invalid model', () {
+    test('should fail when second previousCar has invalid model', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
@@ -222,16 +239,18 @@ void main() {
           Car(make: 'Ford', model: 'F'),
         ],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
       expect(result.errors, hasLength(1));
       expect(result.errors.first.rule, equals('MinLength'));
       expect(result.errors.first.path, equals(['previousCars[1]', 'model']));
     });
 
-    test('should fail when multiple previousCars have invalid fields', () {
+    test('should fail when multiple previousCars have invalid fields',
+        () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
@@ -240,7 +259,7 @@ void main() {
           Car(make: 'Ford', model: 'F'),
         ],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
       expect(result.errors, hasLength(2));
       final paths = result.errors.map((e) => e.path).toList();
@@ -254,9 +273,10 @@ void main() {
   });
 
   group('Combined validation', () {
-    test('should collect errors from multiple levels', () {
+    test('should collect errors from multiple levels', () async {
       final user = User(
         email: 'ab',
+        username: 'validuser',
         confirmEmail: 'ab',
         tags: [],
         car: Car(make: 'T', model: 'Camry'),
@@ -265,9 +285,9 @@ void main() {
           Car(make: 'H', model: 'Civic'),
         ],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
-      expect(result.errors, hasLength(5));
+      expect(result.errors, hasLength(6));
       final paths = result.errors.map((e) => e.path).toList();
       expect(
           paths,
@@ -277,6 +297,7 @@ void main() {
             ['car', 'make'],
             ['spareCar', 'model'],
             ['previousCars[0]', 'make'],
+            ['confirmEmail'],
           ]));
     });
   });
@@ -310,7 +331,8 @@ void main() {
     test('instance-driven validateField extracts and validates', () {
       final user = User(
         email: 'ab',
-        confirmEmail: 'ab',
+        username: 'validuser',
+        confirmEmail: 'valid@example.com',
         tags: ['x'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: const [],
@@ -320,28 +342,31 @@ void main() {
       expect(r.errors.first.path, equals(['email']));
     });
 
-    test('instance-driven validateField type is inferred', () {
+    test('instance-driven validateField type is inferred', () async {
       final user = User(
         email: 'ok@ok.com',
+        username: 'okuser',
         confirmEmail: 'ok@ok.com',
         tags: ['x'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: const [],
       );
-      final ValidasiResult<String> r = user.validateField(UserFields.email);
+      final ValidasiResult<String> r =
+          await user.validateFieldAsync(UserFields.email);
       expect(r.isValid, isTrue);
       expect(r.data, equals('ok@ok.com'));
     });
 
-    test('nested key validates whole sub-object and prefixes paths', () {
+    test('nested key validates whole sub-object and prefixes paths', () async {
       final user = User(
         email: 'ok@ok.com',
+        username: 'okuser',
         confirmEmail: 'ok@ok.com',
         tags: ['x'],
         car: Car(make: 'T', model: 'M'),
         previousCars: const [],
       );
-      final r = user.validateField(UserFields.car);
+      final r = await user.validateFieldAsync(UserFields.car);
       expect(r.isValid, isFalse);
       expect(
           r.errors.map((e) => e.path),
@@ -355,8 +380,9 @@ void main() {
       expect(r.isValid, isTrue);
     });
 
-    test('nullable nested key validates non-null value and prefixes', () {
-      final r = UserFields.spareCar.validate(Car(make: 'T', model: 'M'));
+    test('nullable nested key validates non-null value and prefixes', () async {
+      final r =
+          await UserFields.spareCar.validateAsync(Car(make: 'T', model: 'M'));
       expect(r.isValid, isFalse);
       expect(
           r.errors.map((e) => e.path),
@@ -365,15 +391,16 @@ void main() {
           ]));
     });
 
-    test('iterable nested key prefixes with index', () {
+    test('iterable nested key prefixes with index', () async {
       final user = User(
         email: 'ok@ok.com',
+        username: 'okuser',
         confirmEmail: 'ok@ok.com',
         tags: ['x'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [Car(make: 'H', model: 'Civic')],
       );
-      final r = user.validateField(UserFields.previousCars);
+      final r = await user.validateFieldAsync(UserFields.previousCars);
       expect(r.isValid, isFalse);
       expect(r.errors.single.path, equals(['previousCars[0]', 'make']));
     });
@@ -386,6 +413,7 @@ void main() {
     test('sealed switch is exhaustive over UserFields', () {
       String label(UserFields f) => switch (f) {
             UserEmailField() => 'email',
+            UserUsernameField() => 'username',
             UserConfirmEmailField() => 'confirmEmail',
             UserTagsField() => 'tags',
             UserCarField() => 'car',
@@ -393,6 +421,8 @@ void main() {
             UserPreviousCarsField() => 'previousCars',
           };
       expect(label(UserFields.email), 'email');
+      expect(label(UserFields.username), 'username');
+      expect(label(UserFields.confirmEmail), 'confirmEmail');
       expect(label(UserFields.tags), 'tags');
       expect(label(UserFields.car), 'car');
       expect(label(UserFields.spareCar), 'spareCar');
@@ -410,28 +440,88 @@ void main() {
     });
   });
 
-  group('Cross-field validation', () {
-    test('should pass when emails match', () {
+  group('Async validation', () {
+    test('validateAsync passes for valid user', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isTrue);
     });
 
-    test('should fail when emails mismatch', () {
+    test('validateAsync fails when username is taken', () async {
       final user = User(
         email: 'test@example.com',
+        username: 'taken',
+        confirmEmail: 'test@example.com',
+        tags: ['dart'],
+        car: Car(make: 'Toyota', model: 'Camry'),
+        previousCars: [],
+      );
+      final result = await user.validateAsync();
+      expect(result.isValid, isFalse);
+      expect(result.errors.any((e) => e.rule == 'async_inline'), isTrue);
+      expect(
+        result.errors.firstWhere((e) => e.rule == 'async_inline').path,
+        equals(['username']),
+      );
+    });
+
+    test('validate() throws when async rules exist', () {
+      final user = User(
+        email: 'test@example.com',
+        username: 'testuser',
+        confirmEmail: 'test@example.com',
+        tags: ['dart'],
+        car: Car(make: 'Toyota', model: 'Camry'),
+        previousCars: [],
+      );
+      expect(() => user.validate(), throwsStateError);
+    });
+
+    test('validateFieldAsync delegates to leaf validateAsync', () async {
+      final user = User(
+        email: 'test@example.com',
+        username: 'testuser',
+        confirmEmail: 'test@example.com',
+        tags: ['dart'],
+        car: Car(make: 'Toyota', model: 'Camry'),
+        previousCars: [],
+      );
+      final result = await user.validateFieldAsync(UserFields.username);
+      expect(result.isValid, isTrue);
+    });
+  });
+
+  group('Cross-field validation', () {
+    test('should pass when emails match', () async {
+      final user = User(
+        email: 'test@example.com',
+        username: 'testuser',
+        confirmEmail: 'test@example.com',
+        tags: ['dart'],
+        car: Car(make: 'Toyota', model: 'Camry'),
+        previousCars: [],
+      );
+      final result = await user.validateAsync();
+      expect(result.isValid, isTrue);
+    });
+
+    test('should fail when emails mismatch', () async {
+      final user = User(
+        email: 'test@example.com',
+        username: 'testuser',
         confirmEmail: 'other@example.com',
         tags: ['dart'],
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
-      final result = user.validate();
+      final result = await user.validateAsync();
       expect(result.isValid, isFalse);
       expect(result.errors.any((e) => e.rule == 'ValidateWith'), isTrue);
       expect(

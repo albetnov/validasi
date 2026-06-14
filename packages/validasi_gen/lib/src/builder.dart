@@ -21,8 +21,11 @@ class _ValidasiBuilder implements Builder {
     final library = await buildStep.inputLibrary;
     final generateFieldsDefault =
         boolOption(options.config, 'generateFields') ?? true;
+    final generateAssembleDefault =
+        boolOption(options.config, 'generateAssemble') ?? true;
     final output = ValidasiGenerator(
       generateFieldsDefault: generateFieldsDefault,
+      generateAssembleDefault: generateAssembleDefault,
     ).generate(
       LibraryReader(library),
       buildStep,

@@ -71,11 +71,11 @@ Future<void> main() async {
       );
     });
 
-    test('generates dynamic? getField helper for cross-field extraction', () {
+    test('generates V? getField helper for cross-field extraction', () {
       expect(
         output,
         contains(
-          'dynamic? getField<V>(ValidasiField<Registration, V> field) => field.extract(this);',
+          'V? getField<V>(ValidasiField<Registration, V> field) => field.extract(this);',
         ),
       );
     });
