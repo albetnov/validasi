@@ -29,32 +29,32 @@ void main() {
       expect(error.path, isNull);
     });
 
-    test('withPrefix should add prefix to empty path', () {
+    test('prefix should add prefix to empty path', () {
       final error = ValidationError(
         rule: 'testRule',
         message: 'Test message',
       );
 
-      final prefixed = error.withPrefix('newPrefix');
+      error.prefix('newPrefix');
 
-      expect(prefixed.rule, equals('testRule'));
-      expect(prefixed.message, equals('Test message'));
-      expect(prefixed.path, equals(['newPrefix']));
+      expect(error.rule, equals('testRule'));
+      expect(error.message, equals('Test message'));
+      expect(error.path, equals(['newPrefix']));
     });
 
-    test('withPrefix should prepend prefix to existing path', () {
+    test('prefix should prepend to existing path', () {
       final error = ValidationError(
         rule: 'testRule',
         message: 'Test message',
         path: ['existing', 'path'],
       );
 
-      final prefixed = error.withPrefix('newPrefix');
+      error.prefix('newPrefix');
 
-      expect(prefixed.path, equals(['newPrefix', 'existing', 'path']));
+      expect(error.path, equals(['newPrefix', 'existing', 'path']));
     });
 
-    test('withPrefix should preserve other properties', () {
+    test('prefix should preserve other properties', () {
       final error = ValidationError(
         rule: 'testRule',
         message: 'Test message',
@@ -62,23 +62,25 @@ void main() {
         path: ['existing'],
       );
 
-      final prefixed = error.withPrefix('prefix');
+      error.prefix('prefix');
 
-      expect(prefixed.rule, equals('testRule'));
-      expect(prefixed.message, equals('Test message'));
-      expect(prefixed.details, equals({'key': 'value'}));
+      expect(error.rule, equals('testRule'));
+      expect(error.message, equals('Test message'));
+      expect(error.details, equals({'key': 'value'}));
     });
 
-    test('withPrefix can be chained multiple times', () {
+    test('prefix can be chained multiple times', () {
       final error = ValidationError(
         rule: 'testRule',
         message: 'Test message',
       );
 
-      final prefixed =
-          error.withPrefix('first').withPrefix('second').withPrefix('third');
+      error
+        ..prefix('first')
+        ..prefix('second')
+        ..prefix('third');
 
-      expect(prefixed.path, equals(['third', 'second', 'first']));
+      expect(error.path, equals(['third', 'second', 'first']));
     });
   });
 }

@@ -267,27 +267,45 @@ class _IterableRules {
 
   iterable_contains.Contains<T> contains<T>(
     T element, {
-    bool Function(T a, T b)? equals,
+    Object? Function(T)? keySelector,
     String? message,
   }) =>
-      iterable_contains.Contains<T>(element, equals: equals, message: message);
+      iterable_contains.Contains<T>(
+        element,
+        keySelector: keySelector,
+        message: message,
+      );
 
   NotContains<T> notContains<T>(
     T element, {
-    bool Function(T a, T b)? equals,
+    Object? Function(T)? keySelector,
     String? message,
   }) =>
-      NotContains<T>(element, equals: equals, message: message);
+      NotContains<T>(
+        element,
+        keySelector: keySelector,
+        message: message,
+      );
 
-  Unique<T> unique<T>({bool Function(T a, T b)? equals, String? message}) =>
-      Unique<T>(equals: equals, message: message);
+  Unique<T> unique<T>({
+    bool Function(T a, T b)? equals,
+    int Function(T)? hasher,
+    Object? Function(T)? keySelector,
+    String? message,
+  }) =>
+      Unique<T>(
+        equals: equals,
+        hasher: hasher,
+        keySelector: keySelector,
+        message: message,
+      );
 
   ContainsAll<T> containsAll<T>(
     List<T> elements, {
-    bool Function(T a, T b)? equals,
+    Object? Function(T)? keySelector,
     String? message,
   }) =>
-      ContainsAll<T>(elements, equals: equals, message: message);
+      ContainsAll<T>(elements, keySelector: keySelector, message: message);
 
   ForEach<T> forEach<T>(List<Rule<T>> rules) => ForEach<T>(rules);
 }

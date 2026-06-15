@@ -14,7 +14,7 @@ class ForEach<I> extends Rule<List<I>> {
       final before = state.errors.length;
       value[i] = applyRules(value[i], itemRules, state) as I;
       for (var j = before; j < state.errors.length; j++) {
-        state.errors[j] = state.errors[j].withPrefix('[$i]');
+        state.errors[j].prefix('[$i]');
       }
     }
     return value;
@@ -28,7 +28,7 @@ class ForEach<I> extends Rule<List<I>> {
       final before = state.errors.length;
       value[i] = await applyRulesAsync(value[i], itemRules, state) as I;
       for (var j = before; j < state.errors.length; j++) {
-        state.errors[j] = state.errors[j].withPrefix('[$i]');
+        state.errors[j].prefix('[$i]');
       }
     }
     return value;

@@ -51,10 +51,10 @@ void main() {
       expect(state.errors, isEmpty);
     });
 
-    test('should work with custom equals', () {
+    test('should work with keySelector', () {
       final rule = Contains<Map<String, int>>(
         {'id': 2},
-        equals: (a, b) => a['id'] == b['id'],
+        keySelector: (m) => m['id'],
       );
       final state = ValidationState();
 
@@ -67,10 +67,10 @@ void main() {
       expect(state.errors, isEmpty);
     });
 
-    test('should fail with custom equals when not found', () {
+    test('should fail with keySelector when not found', () {
       final rule = Contains<Map<String, int>>(
         {'id': 5},
-        equals: (a, b) => a['id'] == b['id'],
+        keySelector: (m) => m['id'],
       );
       final state = ValidationState();
 
@@ -82,11 +82,44 @@ void main() {
       expect(state.errors.length, equals(1));
     });
 
+    test('should work with keySelector on simple types', () {
+      final rule = Contains<String>(
+        'aa',
+        keySelector: (s) => s.length,
+      );
+      final state = ValidationState();
+
+      rule.apply(['aa', 'bb', 'cc'], state);
+
+      expect(state.errors, isEmpty);
+    });
+
+    test('should fail with keySelector on simple types when not found', () {
+      final rule = Contains<String>(
+        'aaa',
+        keySelector: (s) => s.length,
+      );
+      final state = ValidationState();
+
+      rule.apply(['aa', 'bb', 'cc'], state);
+
+      expect(state.errors.length, equals(1));
+    });
+
     test('should work with lists containing nulls', () {
       final rule = Contains<int?>(null);
       final state = ValidationState();
 
       rule.apply([1, null, 3], state);
+
+      expect(state.errors, isEmpty);
+    });
+
+    test('should handle null value', () {
+      final rule = Contains<int>(1);
+      final state = ValidationState();
+
+      rule.apply(null, state);
 
       expect(state.errors, isEmpty);
     });

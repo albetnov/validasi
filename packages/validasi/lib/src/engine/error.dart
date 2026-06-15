@@ -1,22 +1,23 @@
 class ValidationError {
-  const ValidationError({
+  ValidationError({
     required this.rule,
     required this.message,
     this.details,
-    this.path,
-  });
+    List<String>? path,
+  }) : _path = path;
 
   final String rule;
   final String message;
   final Map<String, dynamic>? details;
-  final List<String>? path;
+  List<String>? _path;
 
-  ValidationError withPrefix(String prefix) {
-    return ValidationError(
-      rule: rule,
-      message: message,
-      details: details,
-      path: [prefix, ...?path],
-    );
+  List<String>? get path => _path;
+
+  void prefix(String segment) {
+    if (_path != null) {
+      _path!.insert(0, segment);
+    } else {
+      _path = [segment];
+    }
   }
 }
