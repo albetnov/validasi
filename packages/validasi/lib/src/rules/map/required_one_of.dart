@@ -10,16 +10,25 @@ class RequiredOneOf<T> extends Rule<Map<String, T>> {
   @override
   Map<String, T>? apply(Map<String, T>? value, ValidationState state) {
     if (value != null) {
-      final presentCount =
-          fields.where((field) => value.containsKey(field)).length;
+      int presentCount = 0;
+
+      for (final field in fields) {
+        if (value.containsKey(field)) {
+          presentCount++;
+
+          if (presentCount > 1) break;
+        }
+      }
 
       if (presentCount != 1) {
         state.addError(ValidationError(
           rule: 'RequiredOneOf',
-          message: message ?? 'Exactly one of ${fields.join(', ')} is required',
+          message: message ??
+              'Exactly one of the following fields must be present: ${fields.join(', ')}',
         ));
       }
     }
+
     return value;
   }
 }
