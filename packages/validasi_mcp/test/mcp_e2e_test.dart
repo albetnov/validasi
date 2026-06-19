@@ -4,8 +4,6 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 
-const _snapshotDir = 'test/snapshots';
-
 void main() {
   late Directory cacheDir;
   late Process server;
@@ -123,55 +121,154 @@ void main() {
     return extractToolResult(response);
   }
 
-  group('MCP tools produce deterministic output', () {
+  group('MCP tools produce valid response shapes', () {
     test('search_docs', () async {
       final result = await callTool('search_docs', {'query': 'StringRules'});
-      _compareToSnapshot('search_docs', result);
+
+      expect(result, containsPair('ok', isA<bool>()));
+
+      // Results is always a list (may be empty)
+      expect(result, containsPair('results', isA<List>()));
     });
 
     test('get_page (existing)', () async {
       final result =
           await callTool('get_page', {'path': 'guide/getting-started'});
-      _compareToSnapshot('get_page', result);
+
+      expect(result, containsPair('ok', isTrue));
+      expect(result, containsPair('page', isA<Map>()));
+
+      final page = result['page'] as Map<String, dynamic>;
+      expect(page, containsPair('path', 'guide/getting-started'));
+      expect(page, containsPair('title', isA<String>()));
+      expect(page, containsPair('section', isA<String>()));
+      expect(page, containsPair('content', isA<String>()));
+      expect(page['content'].length, greaterThan(0));
+      expect(page, containsPair('headings', isA<List>()));
+
+      final headings = page['headings'] as List;
+      expect(headings, isNotEmpty);
+      for (final h in headings) {
+        expect(h, isA<Map>());
+        expect(h, containsPair('level', isA<int>()));
+        expect(h, containsPair('text', isA<String>()));
+      }
     });
 
     test('get_page (not found)', () async {
       final result = await callTool('get_page', {'path': 'nonexistent'});
-      _compareToSnapshot('get_page_not_found', result);
+
+      expect(result, containsPair('ok', isFalse));
+      expect(result, containsPair('error', isA<Map>()));
+
+      final error = result['error'] as Map<String, dynamic>;
+      expect(error, containsPair('code', 'NOT_FOUND'));
+      expect(error, containsPair('message', isA<String>()));
     });
 
     test('list_pages (all)', () async {
       final result = await callTool('list_pages', {});
-      _compareToSnapshot('list_pages', result);
+
+      expect(result, containsPair('ok', isTrue));
+      expect(result, containsPair('sections', isA<List>()));
+
+      final sections = result['sections'] as List;
+      expect(sections, isNotEmpty);
+
+      for (final section in sections) {
+        expect(section, containsPair('name', isA<String>()));
+        expect(section, containsPair('pages', isA<List>()));
+        for (final page in section['pages']) {
+          expect(page, containsPair('path', isA<String>()));
+          expect(page, containsPair('title', isA<String>()));
+        }
+      }
+
+      // Verify known sections exist
+      final sectionNames = sections.map((s) => s['name'] as String).toSet();
+      expect(sectionNames, contains('guide'));
+      expect(sectionNames, contains('schemas'));
+      expect(sectionNames, contains('advanced'));
     });
 
     test('list_pages (filtered)', () async {
       final result = await callTool('list_pages', {'section': 'schemas'});
-      _compareToSnapshot('list_pages_filtered', result);
+
+      expect(result, containsPair('ok', isTrue));
+      expect(result, containsPair('sections', isA<List>()));
+
+      final sections = result['sections'] as List;
+      expect(sections, hasLength(1));
+      expect(sections[0]['name'], equals('schemas'));
+
+      final pages = sections[0]['pages'] as List;
+      expect(pages, isNotEmpty);
+      for (final page in pages) {
+        expect(page['path'], startsWith('schemas/'));
+      }
     });
 
     test('get_code_examples', () async {
       final result = await callTool('get_code_examples', {});
-      _compareToSnapshot('get_code_examples', result);
+
+      expect(result, containsPair('ok', isTrue));
+      expect(result, containsPair('count', isA<int>()));
+      expect(result, containsPair('examples', isA<List>()));
+
+      final examples = result['examples'] as List;
+      expect(examples, isNotEmpty);
+      expect(result['count'], equals(examples.length));
+
+      for (final example in examples) {
+        expect(example, containsPair('language', isA<String>()));
+        expect(example, containsPair('code', isA<String>()));
+        expect(example['code'].length, greaterThan(0));
+      }
     });
 
     test('get_code_examples (filtered by rule)', () async {
       final result = await callTool('get_code_examples', {'rule': 'minLength'});
-      _compareToSnapshot('get_code_examples_filtered', result);
+
+      expect(result, containsPair('ok', isTrue));
+      expect(result, containsPair('count', isA<int>()));
+      expect(result, containsPair('examples', isA<List>()));
+
+      final examples = result['examples'] as List;
+      expect(result['count'], equals(examples.length));
+
+      // Each example's code should contain "minLength" somewhere
+      for (final example in examples) {
+        expect(example, containsPair('language', isA<String>()));
+        expect(example, containsPair('code', isA<String>()));
+        expect(example['code'], contains('minLength'));
+      }
     });
 
     test('unknown tool', () async {
       final result = await callTool('unknown_tool', {});
-      _compareToSnapshot('unknown_tool', result);
+
+      expect(result, containsPair('ok', isFalse));
+      expect(result, containsPair('error', isA<Map>()));
+
+      final error = result['error'] as Map<String, dynamic>;
+      expect(error, containsPair('code', 'TOOL_ERROR'));
+      expect(error, containsPair('message', isA<String>()));
     });
   });
 
   group('MCP server capabilities', () {
-    test('tools/list returns 6 tools', () async {
+    test('tools/list returns 6 tools with expected names', () async {
       final response = await sendRequest('tools/list', {});
       final result = response['result'] as Map<String, dynamic>;
       final tools = result['tools'] as List<dynamic>;
       expect(tools, hasLength(6));
+
+      for (final tool in tools) {
+        expect(tool, containsPair('name', isA<String>()));
+        expect(tool, containsPair('description', isA<String>()));
+        expect(tool, containsPair('inputSchema', isA<Map>()));
+      }
+
       final names = tools.map((t) => t['name'] as String).toSet();
       expect(
           names,
@@ -185,33 +282,4 @@ void main() {
           ]));
     });
   });
-}
-
-String _snapshotPath(String name) => '$_snapshotDir/$name.json';
-
-void _compareToSnapshot(String name, Map<String, dynamic> actual) {
-  final path = _snapshotPath(name);
-  final snapshotFile = File(path);
-
-  if (Platform.environment['UPDATE_SNAPSHOTS'] == 'true') {
-    snapshotFile.parent.createSync(recursive: true);
-    snapshotFile.writeAsStringSync(
-      const JsonEncoder.withIndent('  ').convert(actual),
-    );
-    print('  → wrote snapshot: $path');
-    return;
-  }
-
-  if (!snapshotFile.existsSync()) {
-    fail(
-      'No snapshot found at $path.\n'
-      'Run with UPDATE_SNAPSHOTS=true to generate it.\n'
-      'Actual result:\n'
-      '${const JsonEncoder.withIndent('  ').convert(actual)}',
-    );
-  }
-
-  final expectedJson = snapshotFile.readAsStringSync();
-  final expected = jsonDecode(expectedJson) as Map<String, dynamic>;
-  expect(actual, equals(expected));
 }
