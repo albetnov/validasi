@@ -39,7 +39,6 @@ Use `withPreprocess` when raw input may be a different type than the schema expe
 ```dart
 import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
-import 'package:validasi/transformer.dart';
 
 // Create base schema validating int
 final ageSchema = Validasi.number<int>([
@@ -48,7 +47,7 @@ final ageSchema = Validasi.number<int>([
 
 // Add preprocessing: accepts String, converts to int
 final ageSchemaWithPreprocess = ageSchema.withPreprocess(
-  ValidasiTransformation<String, int>((value) => int.parse(value)),
+  (String value) => int.parse(value),
 );
 
 // Now validate() accepts String, not int
@@ -85,7 +84,7 @@ This means:
 - Put `Transform` before other validation rules that depend on normalized values.
 - Keep transforms null-safe when using nullable schemas.
 - When accepting dynamic input, create `ValidasiEngine<T, dynamic>` or use `withPreprocess` to define the allowed input type.
-- Use explicit transformation input types: `ValidasiTransformation<InputType, OutputType>` for compile-time safety.
+- Use explicit type annotations on transformation functions for compile-time safety: `.withPreprocess((InputType value) => ...)`.
 
 ## Combined Example: Type-Safe Transformation
 
@@ -100,7 +99,7 @@ final usernameSchema = Validasi.string([
 
 // Add preprocessing to accept dynamic input and convert to String
 final usernameSchemaWithPreprocess = usernameSchema.withPreprocess(
-  ValidasiTransformation<dynamic, String>((value) => value.toString()),
+  (dynamic value) => value.toString(),
 );
 
 // Now validate() accepts dynamic input with compile-time flexibility
@@ -113,6 +112,7 @@ print(usernameSchemaWithPreprocess.validate('  John  ').data); // "john"
 When you need to accept values of unknown type at compile time, two approaches:
 
 **Approach 1: Use `dynamic` as input type**
+
 ```dart
 // Engine<OutputType, dynamic> accepts any input
 final schema = ValidasiEngine<int, dynamic>([
@@ -124,12 +124,13 @@ schema.validate('42');   // Runtime TypeCheck error (no preprocess)
 ```
 
 **Approach 2: Use withPreprocess (recommended)**
+
 ```dart
 // Explicit preprocessing handles type conversion
 final schema = Validasi.number<int>([
   Rules.number.moreThan(0),
 ]).withPreprocess(
-  ValidasiTransformation<String, int>((s) => int.parse(s)),
+  (String s) => int.parse(s),
 );
 
 schema.validate('42'); // OK: compile-time guarantees String input

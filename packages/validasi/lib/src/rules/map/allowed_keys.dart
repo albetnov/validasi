@@ -10,7 +10,7 @@ class AllowedKeys<T> extends Rule<Map<String, T>> {
   @override
   Map<String, T>? apply(Map<String, T>? value, ValidationState state) {
     if (value != null) {
-      final extraKeys = value.keys.where((key) => !keys.contains(key)).toList();
+      final extraKeys = value.keys.where((key) => !keys.contains(key));
 
       if (extraKeys.isNotEmpty) {
         state.addError(ValidationError(

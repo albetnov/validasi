@@ -36,9 +36,7 @@ Preprocessing runs first (if configured) and is responsible for converting input
 ```dart
 final schema = Validasi.number<int>([
   Rules.number.moreThan(0),
-]).withPreprocess(
-  ValidasiTransformation<String, int>((input) => int.parse(input)),
-);
+]).withPreprocess((String input) => int.parse(input));
 
 final result = schema.validate('42');
 print(result.data); // 42
@@ -127,9 +125,7 @@ final base = Validasi.number<int>([
   Rules.number.moreThanEqual(0),
 ]);
 
-final fromString = base.withPreprocess(
-  ValidasiTransformation<String, int>((s) => int.parse(s)),
-);
+final fromString = base.withPreprocess((String s) => int.parse(s));
 
 fromString.validate('10'); // OK
 // fromString.validate(10); // Compile-time error

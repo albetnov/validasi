@@ -14,7 +14,7 @@ class AllValues<I> extends Rule<Map<String, I>> {
       final before = state.errors.length;
       applyRules(entry.value, rules, state);
       for (var j = before; j < state.errors.length; j++) {
-        state.errors[j] = state.errors[j].withPrefix(entry.key);
+        state.errors[j].prefix(entry.key);
       }
     }
     return value;
@@ -29,7 +29,7 @@ class AllValues<I> extends Rule<Map<String, I>> {
       final before = state.errors.length;
       await applyRulesAsync(entry.value, rules, state);
       for (var j = before; j < state.errors.length; j++) {
-        state.errors[j] = state.errors[j].withPrefix(entry.key);
+        state.errors[j].prefix(entry.key);
       }
     }
     return value;

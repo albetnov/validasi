@@ -12,10 +12,11 @@ class ValidasiEngine<T, TInput> {
   final ValidasiTransformation<dynamic, T>? preprocess;
 
   ValidasiEngine<T, TNextInput> withPreprocess<TNextInput>(
-      ValidasiTransformation<TNextInput, T> preprocess) {
+      TransformFn<TNextInput, T> transform,
+      {String? message}) {
     final wrappedPreprocess = ValidasiTransformation<dynamic, T>(
-      (input) => preprocess.transform(input as TNextInput),
-      message: preprocess.message,
+      (input) => transform(input),
+      message: message,
     );
 
     return ValidasiEngine<T, TNextInput>(

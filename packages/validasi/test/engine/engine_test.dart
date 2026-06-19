@@ -3,7 +3,6 @@ import 'package:validasi/src/engine/engine.dart';
 import 'package:validasi/src/engine/error.dart';
 import 'package:validasi/src/engine/rule.dart';
 import 'package:validasi/src/engine/state.dart';
-import 'package:validasi/src/transformer/validasi_transformation.dart';
 
 void main() {
   group('ValidasiEngine', () {
@@ -27,11 +26,8 @@ void main() {
     group('withPreprocess', () {
       test('should add preprocess transformation', () {
         final engine = ValidasiEngine<int, int>();
-        final transformation = ValidasiTransformation<String, int>(
-          (input) => int.parse(input),
-        );
 
-        final newEngine = engine.withPreprocess(transformation);
+        final newEngine = engine.withPreprocess<int>((input) => input);
 
         expect(newEngine.preprocess, isNotNull);
         expect(newEngine.rules, equals(engine.rules));
@@ -40,11 +36,8 @@ void main() {
       test('should preserve rules when adding preprocess', () {
         final rule = _TestRule<int>();
         final engine = ValidasiEngine<int, int>(rules: [rule]);
-        final transformation = ValidasiTransformation<String, int>(
-          (input) => int.parse(input),
-        );
 
-        final newEngine = engine.withPreprocess(transformation);
+        final newEngine = engine.withPreprocess<int>((input) => input);
 
         expect(newEngine.rules, equals(engine.rules));
       });
@@ -141,11 +134,8 @@ void main() {
       });
 
       test('should validate with preprocess transformation', () {
-        final transformation = ValidasiTransformation<String, int>(
-          (input) => int.parse(input),
-        );
-        final engine =
-            ValidasiEngine<int, int>().withPreprocess(transformation);
+        final engine = ValidasiEngine<int, int>()
+            .withPreprocess((String input) => int.parse(input));
 
         final result = engine.validate('42');
 
@@ -154,11 +144,8 @@ void main() {
       });
 
       test('should fail validation if preprocess fails', () {
-        final transformation = ValidasiTransformation<String, int>(
-          (input) => int.parse(input),
-        );
-        final engine =
-            ValidasiEngine<int, int>().withPreprocess(transformation);
+        final engine = ValidasiEngine<int, int>()
+            .withPreprocess((String input) => int.parse(input));
 
         final result = engine.validate('not a number');
 

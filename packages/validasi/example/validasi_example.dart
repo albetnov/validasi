@@ -1,6 +1,5 @@
 import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
-import 'package:validasi/transformer.dart';
 
 void log(ValidasiResult result) {
   print(
@@ -18,16 +17,14 @@ void main() {
   final testNullable = schema.validate(null);
   log(testNullable);
 
-  final transformableSchema = schema.withPreprocess(
-    ValidasiTransformation(
-      (value) => value.toString(),
-    ),
-  );
+  final transformableSchema =
+      schema.withPreprocess<int>((value) => value.toString());
 
   final result = schema.validate('   Hello World!   ');
   log(result);
 
   final testTransform = transformableSchema.validate(1234);
+
   log(testTransform);
 
   final failResult = schema.validate('Hi');

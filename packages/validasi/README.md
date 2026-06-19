@@ -64,6 +64,7 @@ Container rules (`hasFields`, `forEach`, `allValues`, `anyOf`) automatically sup
 ### Validating Complex Data Structures
 
 **Map Validation:**
+
 ```dart
 final schema = Validasi.map<dynamic>([
   Rules.map.hasFields({
@@ -80,6 +81,7 @@ final result = schema.validate({'name': 'John', 'age': 30});
 ```
 
 **List Validation:**
+
 ```dart
 final schema = Validasi.list<String>([
   Rules.iterable.forEach<String>([
@@ -95,7 +97,9 @@ Refer to the [examples](example/) folder to see more usage samples or see the [d
 ## Features
 
 ### Type-Safe Validation Engine
+
 Validasi provides type-safe validation schemas for various data types:
+
 - `Validasi.string()` - String validation
 - `Validasi.number<T>()` - Numeric validation (int, double, num)
 - `Validasi.list<T>()` - List/Iterable validation
@@ -103,6 +107,7 @@ Validasi provides type-safe validation schemas for various data types:
 - `Validasi.any<T>()` - Generic type validation
 
 ### Built-in Rules
+
 The library comes with comprehensive built-in rules organized by data type. See the [documentation](https://albetnov.github.io/validasi/) for the full list:
 
 - [String Rules](https://albetnov.github.io/validasi/schemas/string) - `alpha`, `email`, `url`, `uuid`, `regex`, and more
@@ -112,22 +117,26 @@ The library comes with comprehensive built-in rules organized by data type. See 
 - [Generic Rules](https://albetnov.github.io/validasi/schemas/any) - `required`, `nullable`, `transform`, `equals`, `anyOf`, `inline`, and more
 
 ### Preprocessing & Transformation
-Use `ValidasiTransformation` to preprocess input data before validation:
+
+Use `withPreprocess` to transform input data before validation:
 
 ```dart
 final schema = Validasi.string([Rules.string.minLength(3)])
-  .withPreprocess(ValidasiTransformation((value) => value.toString()));
+  .withPreprocess((value) => value.toString());
 
 final result = schema.validate(123); // Converts to "123" then validates
 ```
 
 ### Safe Validation
+
 All validation returns a `ValidasiResult` object that contains:
+
 - `isValid` - Boolean indicating validation success
 - `data` - The validated (and potentially transformed) data
 - `errors` - List of validation errors with messages and paths
 
 ### Nested Validation with Error Paths
+
 Validasi tracks error paths for nested structures, making it easy to identify exactly where validation fails:
 
 ```dart
