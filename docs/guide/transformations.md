@@ -84,7 +84,7 @@ This means:
 - Put `Transform` before other validation rules that depend on normalized values.
 - Keep transforms null-safe when using nullable schemas.
 - When accepting dynamic input, create `ValidasiEngine<T, dynamic>` or use `withPreprocess` to define the allowed input type.
-- Use explicit transformation input types: `ValidasiTransformation<InputType, OutputType>` for compile-time safety.
+- Use explicit type annotations on transformation functions for compile-time safety: `.withPreprocess((InputType value) => ...)`.
 
 ## Combined Example: Type-Safe Transformation
 
@@ -112,6 +112,7 @@ print(usernameSchemaWithPreprocess.validate('  John  ').data); // "john"
 When you need to accept values of unknown type at compile time, two approaches:
 
 **Approach 1: Use `dynamic` as input type**
+
 ```dart
 // Engine<OutputType, dynamic> accepts any input
 final schema = ValidasiEngine<int, dynamic>([
@@ -123,6 +124,7 @@ schema.validate('42');   // Runtime TypeCheck error (no preprocess)
 ```
 
 **Approach 2: Use withPreprocess (recommended)**
+
 ```dart
 // Explicit preprocessing handles type conversion
 final schema = Validasi.number<int>([

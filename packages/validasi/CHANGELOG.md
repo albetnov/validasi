@@ -1,6 +1,52 @@
+## 1.0.0-rc.1
+
+### Added
+
+- `keySelector` parameter to `Rules.iterable.contains()`, `Rules.iterable.notContains()`,
+  `Rules.iterable.containsAll()`, and `Rules.iterable.unique()` for O(k) key-based lookups.
+- `hasher` parameter to `Rules.iterable.unique()` for LinkedHashSet-based O(N) uniqueness
+  checks with custom equality.
+- Mutating `ValidationError.prefix()` for zero-allocation path prefixing in container
+  rules (`ForEach`, `HasFields`, `AllValues`).
+- Comprehensive nested path tests covering 2-level and 3-level container nesting
+  (HasFields ⇄ ForEach ⇄ AllValues).
+
+### Changed
+
+- **`withPreprocess` now accepts a plain function** instead of `ValidasiTransformation`.
+  Removed the `ValidasiTransformation` class and the `transformer.dart` export.
+
+  ```dart
+  // Before
+  .withPreprocess(ValidasiTransformation<String, int>((s) => int.parse(s)))
+
+  // After
+  .withPreprocess((String s) => int.parse(s))
+  ```
+
+- `Contains`, `NotContains` replaced `equals` with `keySelector` parameter.
+- `ContainsAll` replaced `equals` with `keySelector` parameter for O(N+M) Set-based
+  lookups.
+- `Unique` replaced `equals` with `keySelector` and optional `hasher` + `equals` for
+  LinkedHashSet-based O(N) checks (O(N²) fallback for `equals` without `hasher`).
+- `ValidationError.withPrefix()` → mutating `ValidationError.prefix()` — eliminates
+  error object allocations per prefix call.
+- Optimized `allowed_keys`, `forbidden_keys`, `has_field_keys`, `required_all`,
+  `required_one_of` with early-exit and lazy iteration patterns.
+- `ForEach`, `HasFields`, `AllValues` use mutating `prefix()` instead of `withPrefix()`.
+
+### Performance
+
+- Iterable membership checks: O(N²) → O(k) for `contains`/`notContains`, O(N×M) → O(N+M)
+  for `containsAll`, O(N²) → O(N) for `unique`.
+- Path prefixing in container rules: no error object allocations per prefix.
+- Map key checks: lazy `.where()` instead of `.where().toList()`, early-exit in
+  `required_one_of`, `value.containsKey` instead of `keys.where` in `forbidden_keys`.
+
 ## 1.0.0-dev.6
 
 ### Added
+
 - `AsyncRule<T>` base class for inherently async validation rules.
 - `ValidasiEngine.validateAsync()` and `executeAsync()` for async validation pipelines.
 - `applyRulesAsync()` helper for sequential async rule processing.
@@ -11,12 +57,14 @@
 - All sync rules automatically work in async pipelines via the inherited default `applyAsync()`.
 
 ### Changed
+
 - `Rule<T>` now includes `Future<T?> applyAsync(...)` defaulting to sync `apply()`.
 - `@pragma('vm:prefer-inline')` added to `executeAsync()` and `applyRulesAsync()`.
 
 ## 1.0.0-dev.5
 
 ### Breaking Changes
+
 - Unified `Rules` class replaces `StringRules`, `IterableRules`, `NumberRules`, `MapRules`.
   - `StringRules.minLength(...)` → `Rules.string.minLength(...)`
   - `IterableRules.forEach(...)` → `Rules.iterable.forEach(...)`
@@ -24,6 +72,7 @@
   - `MapRules.hasFields(...)` → `Rules.map.hasFields(...)`
 
 ### Added
+
 - Generic rules: `Equals`, `NotEquals`, `AnyOf`
 - String rules: `startsWith`, `endsWith`, `contains`, `regex`, `lowercase`, `uppercase`, `alpha`, `alphanumeric`, `numeric`, `uuid`, `ulid`, `ip`, `ipv4`, `ipv6`, `url`, `email`
 - Number rules: `integer`, `decimal`, `positive`, `negative`, `nonNegative`, `nonPositive`, `between`
@@ -33,24 +82,29 @@
 ## 1.0.0-dev.4
 
 ### Added
+
 - `@pragma('vm:prefer-inline')` to `execute()` and `applyRules()` for better performance (up to 10%).
 
 ### Changed
+
 - Removed agent-native support documentation and related code.
 - Updated documentation to reflect newer version.
 
 ## 1.0.0-dev.3
 
 ### Changed
+
 - Replaced direct `state.errors.add` calls with `state.addError` for consistent error handling.
 
 ## 1.0.0-dev.2
 
 ### Added
+
 - `FieldRules` class for lightweight field validation rules (replaces `ValidasiEngine` per field).
 - Benchmarks for `hasFields` comparison.
 
 ### Changed
+
 - `HasFields` now uses `FieldRules` instead of `ValidasiEngine` per field.
 - `ForEach` now accepts `List<Rule<I>>` directly instead of `ValidasiEngine`.
 - Code formatting for improved readability.
@@ -58,12 +112,14 @@
 ## 1.0.0-dev.1
 
 ### Added
+
 - `ValidationState` class with lazy error allocation, managing validation errors and state.
 - `applyRules()` top-level function as a reusable rule iteration primitive.
 - `execute()` internal method separating the validation pipeline from result wrapping.
 - Comprehensive benchmarks for List, Map, NestedMap, Number, String, StringTransform, and Preprocess.
 
 ### Changed
+
 - Migrated all rules, engine, and tests from `ValidationContext` to `ValidationState`.
 - Removed `ValidationContext` class entirely.
 - Rule `apply` method signature changed to `T? apply(T? value, ValidationState state)`.
@@ -76,6 +132,7 @@
 This is the v1 development release of Validasi. It is a major rework of the library and is not source-compatible with the 0.0.x series.
 
 ### Added
+
 - Agent-native schema introspection contracts:
   - `RuleMetadata`
   - `SchemaDescriptor`
@@ -97,11 +154,13 @@ This is the v1 development release of Validasi. It is a major rework of the libr
 - `any()` helper for flexible validation
 
 ### Changed
+
 - Reworked the validation core around the new engine, cache, and generic context model.
 - Moved the core package into `packages/validasi`.
 - Refreshed the documentation set and examples for the new API surface.
 
 ### Fixed
+
 - Nullable runtime checks now return the expected validation error.
 - Finite-rule type handling and condition checks were corrected.
 - Documentation links, image paths, and README references were cleaned up.
@@ -179,55 +238,57 @@ TextFormField(
 This means the previous code is not longer valid and should be updated to the new API.
 
 Affected methods:
+
 - `FieldValidator.validate`
 - `GroupValidator.validate`
 
 ## 0.0.6
 
 ### What's Changed
-* chore(deps): bump intl from 0.19.0 to 0.20.2 by @dependabot in https://github.com/albetnov/validasi/pull/4
-* chore(deps): bump lints from 4.0.0 to 5.1.1 by @dependabot in https://github.com/albetnov/validasi/pull/5
+- chore(deps): bump intl from 0.19.0 to 0.20.2 by @dependabot in <https://github.com/albetnov/validasi/pull/4>
+- chore(deps): bump lints from 4.0.0 to 5.1.1 by @dependabot in <https://github.com/albetnov/validasi/pull/5>
 
 ### New Contributors
-* @dependabot made their first contribution in https://github.com/albetnov/validasi/pull/4
+- @dependabot made their first contribution in <https://github.com/albetnov/validasi/pull/4>
 
-**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.5...v0.0.6
+**Full Changelog**: <https://github.com/albetnov/validasi/compare/v0.0.5...v0.0.6>
 
 ## 0.0.7
 
 ### What's Changed
-* feat(string/url): Enhance url validation adding `checks` for validating `schema` and `host` using `UrlChecks` enum 
-* chore(docs): Add `checks` to `url` method in `string.md` documentation
-* chore(docs): Updated Quick Start guide in `doc/quick-start.md` to include
+- feat(string/url): Enhance url validation adding `checks` for validating `schema` and `host` using `UrlChecks` enum
+- chore(docs): Add `checks` to `url` method in `string.md` documentation
+- chore(docs): Updated Quick Start guide in `doc/quick-start.md` to include
 Flutter example
 
-**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.6...v0.0.7
+**Full Changelog**: <https://github.com/albetnov/validasi/compare/v0.0.6...v0.0.7>
 
 ## 0.0.8
 
 ### What's Changed
-* rewrite most of GroupValidator code for better maintainability and readability
-* Renamed `on` method to `using` to improve clarity
-* Added `extend` method to allow extending the existing validator in group
-* New `validateMap` and `validateMapAsync` methods to validate a map of values against the group schema.
+- rewrite most of GroupValidator code for better maintainability and readability
+- Renamed `on` method to `using` to improve clarity
+- Added `extend` method to allow extending the existing validator in group
+- New `validateMap` and `validateMapAsync` methods to validate a map of values against the group schema.
 
 ### Breaking Changes
 
-* `on` method in `GroupValidator` has been renamed to `using`. Update your code accordingly.
-* Invalid field will return `ValidasiException("Field '$field' is not found in the schema")`. Impacted method (`validate`, `validateAsync`)
-* Unset field will return `ValidasiException("Field is not set. Use 'using' method to set the field.")`. Impacted method (`validate`, `validateAsync`)
+- `on` method in `GroupValidator` has been renamed to `using`. Update your code accordingly.
+- Invalid field will return `ValidasiException("Field '$field' is not found in the schema")`. Impacted method (`validate`, `validateAsync`)
+- Unset field will return `ValidasiException("Field is not set. Use 'using' method to set the field.")`. Impacted method (`validate`, `validateAsync`)
 
-**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.7...v0.0.8
+**Full Changelog**: <https://github.com/albetnov/validasi/compare/v0.0.7...v0.0.8>
 
 ## 0.0.9
 
 ### What's Changed
-* Refactored `using` method to return `GroupValidatorUsing` instead of `GroupValidator` to improve DX and better isolation
+- Refactored `using` method to return `GroupValidatorUsing` instead of `GroupValidator` to improve DX and better isolation
 
 ### Breaking Changes
 
-* `using` method in `GroupValidator` now returns `GroupValidatorUsing` instead of `GroupValidator`. Update your code accordingly.
-* `validate` and `validateAsync` methods in `GroupValidator` is now removed. It could only be used in `GroupValidatorUsing` class.
+- `using` method in `GroupValidator` now returns `GroupValidatorUsing` instead of `GroupValidator`. Update your code accordingly.
+- `validate` and `validateAsync` methods in `GroupValidator` is now removed. It could only be used in `GroupValidatorUsing` class.
+
 ```dart
 // before
 GroupValidator(...).validate(); // static check: OK
@@ -237,4 +298,4 @@ GroupValidator(...).using('field').validate(); // static check: OK
 GroupValidator(...).validate(); // static check: ERROR
 ```
 
-**Full Changelog**: https://github.com/albetnov/validasi/compare/v0.0.8...v0.0.9
+**Full Changelog**: <https://github.com/albetnov/validasi/compare/v0.0.8...v0.0.9>
