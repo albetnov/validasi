@@ -42,6 +42,7 @@ Simple, readable, and self-documenting code.
 ### 🔧 Comprehensive Rules
 
 Built-in rules for every common validation scenario:
+
 - String validation (length, patterns, formats)
 - Number validation (ranges, comparisons)
 - Collection validation (lists, maps)
@@ -84,9 +85,7 @@ Validasi uses dual generics to enforce input type safety at compile time. When y
 final ageSchema = Validasi.number<int>([
   Rules.number.moreThan(0),
   Rules.number.lessThan(150),
-]).withPreprocess(
-  ValidasiTransformation<String, int>((value) => int.parse(value)),
-);
+]).withPreprocess((String value) => int.parse(value));
 
 // validate() now only accepts String at compile time
 final result = ageSchema.validate('25'); // ✓ Correct type
@@ -94,6 +93,7 @@ final result = ageSchema.validate('25'); // ✓ Correct type
 ```
 
 **When to use `withPreprocess`:**
+
 - Accepting data from JSON, APIs, or form inputs (usually strings)
 - Converting between types in a type-safe way
 - Building flexible schemas that accept specific input types
@@ -106,8 +106,6 @@ Read more in the [Transformations Guide](/guide/transformations.md) and [Engine 
 - **Issues**: [Report bugs or request features](https://github.com/albetnov/validasi/issues)
 - **Pub.dev**: [Package documentation](https://pub.dev/packages/validasi)
 
-
 ## LLM Support
 
 This documentation has support for LLMS, you can click the button at the bottom right corner to copy or download the current page as markdown file for your LLM processing. Or you can visit [`llms-full.txt`](/llms-full.txt) or [`llms.txt`](/llms.txt) files.
-

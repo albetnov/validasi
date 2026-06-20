@@ -129,9 +129,7 @@ By default, each schema accepts its output type. However, when you need to accep
 final ageSchema = Validasi.number<int>([
   Rules.number.moreThanEqual(0),
   Rules.number.lessThan(150),
-]).withPreprocess(
-  ValidasiTransformation<String, int>((value) => int.parse(value)),
-);
+]).withPreprocess((String value) => int.parse(value));
 
 // validate() now requires String at compile time
 final result = ageSchema.validate('25');
@@ -139,6 +137,7 @@ print(result.data); // 25 (int)
 ```
 
 **Key Points:**
+
 - Without `withPreprocess`, `validate()` accepts the schema's output type
 - `withPreprocess` changes the accepted input type at compile time
 - Use this for parsing external data: JSON strings, form inputs, API responses

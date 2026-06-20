@@ -1,7 +1,0 @@
-{
-  "ok": false,
-  "error": {
-    "code": "TOOL_ERROR",
-    "message": "No tool registered with the name unknown_tool"
-  }
-}

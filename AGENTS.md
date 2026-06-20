@@ -71,28 +71,21 @@ dart run melos run format:fix
 
 **When docs change (`docs/` directory):**
 
-The MCP server fetches docs from production (`https://albetnov.github.io/validasi`). E2e snapshot tests verify deterministic output. After any docs change, regenerate the snapshots **before** deployment using the local vitepress server:
+The MCP server fetches docs from production (`https://albetnov.github.io/validasi`).
+MCP e2e tests verify response **structure** (shape, types, known sections)
+rather than pinning exact content, so they don't break on routine doc edits.
 
-```bash
-# Terminal 1: serve the docs locally
-deno task docs:build && deno task docs:preview
-
-# Terminal 2 (from root directory): regenerate snapshots against local server
-dart run melos run test:mcp:update:local
-```
-
-This regenerates the snapshot files in `packages/validasi_mcp/test/snapshots/` and then runs the full MCP test suite to verify everything works.
-
-After deployment to production, also run the production variant:
-
-```bash
-dart run melos run test:mcp:update
-```
-
-If the above passes, also run the full MCP test suite separately:
+After any docs change, simply run:
 
 ```bash
 dart run melos run test:mcp
+```
+
+If you need to test against a local VitePress dev server, set the
+`LOCAL_DOCS` environment variable:
+
+```bash
+LOCAL_DOCS=http://localhost:4173/validasi dart run melos run test:mcp
 ```
 
 ## Architecture
@@ -139,6 +132,7 @@ class MyRule<T> extends Rule<T> {
 ```
 
 **Key conventions:**
+
 - `const` constructor with `super.message`
 - `runOnNull = false` by default (override to `true` if rule must see nulls)
 - Always return the value (unless it's a transform rule)
@@ -230,6 +224,7 @@ void main() {
 ## Generic Rules
 
 Current rules in `lib/src/rules/`:
+
 - `Required<T>` - Value must be non-null (`runOnNull = true`)
 - `Nullable<T>` - Allows null, stops pipeline (`runOnNull = true`)
 - `Transform<T>` - Transforms value (`runOnNull = true`)
@@ -246,6 +241,7 @@ Current rules in `lib/src/rules/`:
 Async rules extend `AsyncRule<T>` and can only be run via `validateAsync()`. They are placed alongside sync rules in the same pipeline and execute sequentially.
 
 Current async rules:
+
 - `AsyncInlineRule<T>` - Async custom validator (`Rules.inlineAsync()`)
 - `AsyncTransform<T>` - Async value transformation (`Rules.transformAsync()`)
 - `AsyncConditionalField<T>` - Async conditional map validation (`Rules.map.conditionalFieldAsync()`)
@@ -255,6 +251,7 @@ Container rules (`HasFields`, `ForEach`, `AllValues`, `AnyOf`) override `applyAs
 ## Iterable Rules
 
 Current rules in `lib/src/rules/iterable/`:
+
 - `MinLength<T>` - List must have at least N items
 - `MaxLength<T>` - List must have at most N items
 - `ExactLength<T>` - List must have exactly N items
@@ -271,6 +268,7 @@ All iterable rules extend `Rule<List<T>>`.
 ## Map Rules
 
 Current rules in `lib/src/rules/map/`:
+
 - `HasFields` - Validate fields with their rules
 - `HasFieldKeys<T>` - Ensure keys exist
 - `ConditionalField<T>` - Conditional validation

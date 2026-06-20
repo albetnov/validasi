@@ -10,13 +10,10 @@ class RequiredAll<T> extends Rule<Map<String, T>> {
   @override
   Map<String, T>? apply(Map<String, T>? value, ValidationState state) {
     if (value != null) {
-      final hasAny = fields.any((field) => value.containsKey(field));
+      if (fields.any(value.containsKey)) {
+        final isMissingAny = fields.any((field) => !value.containsKey(field));
 
-      if (hasAny) {
-        final missing =
-            fields.where((field) => !value.containsKey(field)).toList();
-
-        if (missing.isNotEmpty) {
+        if (isMissingAny) {
           state.addError(ValidationError(
             rule: 'RequiredAll',
             message:

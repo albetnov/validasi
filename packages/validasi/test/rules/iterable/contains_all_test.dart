@@ -81,13 +81,13 @@ void main() {
       expect(state.errors, isEmpty);
     });
 
-    test('should work with custom equals', () {
+    test('should work with keySelector', () {
       final rule = ContainsAll<Map<String, int>>(
         [
           {'id': 1},
           {'id': 2},
         ],
-        equals: (a, b) => a['id'] == b['id'],
+        keySelector: (m) => m['id'],
       );
       final state = ValidationState();
 
@@ -100,13 +100,13 @@ void main() {
       expect(state.errors, isEmpty);
     });
 
-    test('should fail with custom equals when missing element', () {
+    test('should fail with keySelector when missing element', () {
       final rule = ContainsAll<Map<String, int>>(
         [
           {'id': 1},
           {'id': 5},
         ],
-        equals: (a, b) => a['id'] == b['id'],
+        keySelector: (m) => m['id'],
       );
       final state = ValidationState();
 
@@ -118,11 +118,56 @@ void main() {
       expect(state.errors.length, equals(1));
     });
 
+    test('should work with keySelector on simple types', () {
+      final rule = ContainsAll<String>(
+        ['aa', 'bb'],
+        keySelector: (s) => s.length,
+      );
+      final state = ValidationState();
+
+      rule.apply(['aa', 'bb', 'cc'], state);
+
+      expect(state.errors, isEmpty);
+    });
+
+    test('should fail with keySelector on simple types when missing', () {
+      final rule = ContainsAll<String>(
+        ['aa', 'bbb'],
+        keySelector: (s) => s.length,
+      );
+      final state = ValidationState();
+
+      rule.apply(['aa', 'bb', 'cc'], state);
+
+      expect(state.errors.length, equals(1));
+    });
+
+    test('should work with keySelector on lists containing nulls', () {
+      final rule = ContainsAll<int?>(
+        [1, null],
+        keySelector: (v) => v ?? -1,
+      );
+      final state = ValidationState();
+
+      rule.apply([1, null, 3], state);
+
+      expect(state.errors, isEmpty);
+    });
+
     test('should work with lists containing nulls', () {
       final rule = ContainsAll<int?>([1, null]);
       final state = ValidationState();
 
       rule.apply([1, null, 3], state);
+
+      expect(state.errors, isEmpty);
+    });
+
+    test('should handle null value', () {
+      final rule = ContainsAll<int>([1]);
+      final state = ValidationState();
+
+      rule.apply(null, state);
 
       expect(state.errors, isEmpty);
     });

@@ -45,15 +45,8 @@ melos:
     test:mcp:
       description: Run tests for the validasi_mcp package.
       run: dart run melos exec --scope=validasi_mcp -- dart test
-    test:mcp:update:
-      description: Regenerate MCP snapshots from production docs and run tests.
+    test:mcp:local:
+      description: Run MCP tests against a local docs server.
       run: |
         cd packages/validasi_mcp && \
-        UPDATE_SNAPSHOTS=true dart test test/mcp_e2e_test.dart && \
-        dart test
-    test:mcp:update:local:
-      description: Regenerate MCP snapshots from local vitepress server on port 4173.
-      run: |
-        cd packages/validasi_mcp && \
-        LOCAL_DOCS=http://localhost:4173/validasi UPDATE_SNAPSHOTS=true dart test test/mcp_e2e_test.dart && \
         LOCAL_DOCS=http://localhost:4173/validasi dart test

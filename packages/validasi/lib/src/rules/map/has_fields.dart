@@ -16,7 +16,7 @@ class HasFields extends Rule<Map<String, dynamic>> {
       final before = state.errors.length;
       applyRules(value[entry.key], entry.value.rules, state);
       for (var j = before; j < state.errors.length; j++) {
-        state.errors[j] = state.errors[j].withPrefix(entry.key);
+        state.errors[j].prefix(entry.key);
       }
     }
     return value;
@@ -31,7 +31,7 @@ class HasFields extends Rule<Map<String, dynamic>> {
       final before = state.errors.length;
       await applyRulesAsync(value[entry.key], entry.value.rules, state);
       for (var j = before; j < state.errors.length; j++) {
-        state.errors[j] = state.errors[j].withPrefix(entry.key);
+        state.errors[j].prefix(entry.key);
       }
     }
     return value;

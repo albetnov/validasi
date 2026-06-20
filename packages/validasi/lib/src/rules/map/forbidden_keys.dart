@@ -10,7 +10,7 @@ class ForbiddenKeys<T> extends Rule<Map<String, T>> {
   @override
   Map<String, T>? apply(Map<String, T>? value, ValidationState state) {
     if (value != null) {
-      final forbidden = value.keys.where((key) => keys.contains(key)).toList();
+      final forbidden = keys.where(value.containsKey);
 
       if (forbidden.isNotEmpty) {
         state.addError(ValidationError(
