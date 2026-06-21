@@ -52,6 +52,7 @@ class ValidasiFormField<T, V> extends SignalWidget {
       validate: () => controller.validateField<V>(field),
       onFocusChange: (hasFocus) {
         if (!hasFocus) {
+          fc.markTouched();
           final (formMode, formReMode) = ValidasiForm.modeOf<T>(context);
           final effectiveReMode = reValidateMode ?? formReMode;
           if (isSubmitted) {

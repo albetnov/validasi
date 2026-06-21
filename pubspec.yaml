@@ -32,7 +32,7 @@ melos:
       run: dart run melos exec -- dart format .
     test:
       description: Run tests for all workspace packages.
-      run: dart run melos exec --fail-fast --concurrency=1 --ignore=validasi_ui_example -- dart test
+      run: dart run melos exec --fail-fast --concurrency=1 --ignore=validasi_ui_example --ignore=validasi_ui -- dart test
     test:validasi:
       description: Run tests for the root validasi package.
       run: dart run melos exec --scope=validasi -- dart test

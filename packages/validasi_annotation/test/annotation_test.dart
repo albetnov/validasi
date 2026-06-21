@@ -40,30 +40,15 @@ void main() {
     });
   });
 
-  group('Refine', () {
+  group('RefineFn', () {
     test('construct with defaults', () {
-      final a = Refine(_dummyValidator);
-      expect(a.validator, isNotNull);
+      const a = RefineFn();
       expect(a.dependsOn, isEmpty);
     });
 
     test('construct with dependsOn', () {
-      final a = Refine(_dummyValidator, dependsOn: {#name, #email});
-      expect(a.dependsOn, containsAll([#name, #email]));
-      expect(a.dependsOn.length, 2);
-    });
-  });
-
-  group('RefineAsync', () {
-    test('construct with defaults', () {
-      final a = RefineAsync(_dummyValidator);
-      expect(a.validator, isNotNull);
-      expect(a.dependsOn, isEmpty);
-    });
-
-    test('construct with dependsOn', () {
-      final a = RefineAsync(_dummyValidator, dependsOn: {#password});
-      expect(a.dependsOn, contains(#password));
+      const a = RefineFn(dependsOn: ['name', 'email']);
+      expect(a.dependsOn, ['name', 'email']);
     });
   });
 

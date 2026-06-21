@@ -5,6 +5,7 @@ import 'package:source_gen/source_gen.dart';
 import 'package:validasi_gen/src/generators/cross_fields.dart';
 import 'package:validasi_gen/src/generators/extension.dart';
 import 'package:validasi_gen/src/generators/fields_class.dart';
+import 'package:validasi_gen/src/generators/form_validator.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 import 'package:validasi_gen/src/utils.dart';
 
@@ -12,10 +13,12 @@ class ValidasiGenerator extends Generator {
   ValidasiGenerator({
     this.generateFieldsDefault = true,
     this.generateAssembleDefault = true,
+    this.generateValidateFormDefault = false,
   });
 
   final bool generateFieldsDefault;
   final bool generateAssembleDefault;
+  final bool generateValidateFormDefault;
 
   @override
   String generate(LibraryReader library, BuildStep buildStep) {
@@ -38,6 +41,9 @@ class ValidasiGenerator extends Generator {
           readGenerateFieldsOverride(cls) ?? generateFieldsDefault;
       final generateAssemble =
           readGenerateAssembleOverride(cls) ?? generateAssembleDefault;
+      final refines = extractRefineMethods(cls);
+      final shouldEmitValidateForm =
+          generateFields && generateValidateFormDefault;
 
       if (generateFields) {
         buffer.write(generateFieldsClass(cls.name!, fields));
@@ -50,7 +56,12 @@ class ValidasiGenerator extends Generator {
         cls.name!,
         fields,
         includeValidateField: generateFields,
+        refines: refines,
       ));
+
+      if (shouldEmitValidateForm) {
+        buffer.write(generateValidateForm(cls.name!, fields, refines: refines));
+      }
     }
 
     return buffer.toString();

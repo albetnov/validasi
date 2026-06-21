@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'package:validasi_gen/src/handlers.dart';
@@ -52,15 +53,24 @@ class FieldRules {
   String get dartTypeDisplay => field.type.getDisplayString();
 }
 
-class RefineInfo {
-  final String functionName;
+class RefineParamInfo {
+  final String name;
+  final DartType type;
+
+  const RefineParamInfo({required this.name, required this.type});
+}
+
+class RefineMethodInfo {
+  final String methodName;
   final List<String> dependsOn;
+  final List<RefineParamInfo> parameters;
   final bool isAsync;
 
-  const RefineInfo({
-    required this.functionName,
+  const RefineMethodInfo({
+    required this.methodName,
     required this.dependsOn,
-    this.isAsync = false,
+    required this.parameters,
+    required this.isAsync,
   });
 }
 
@@ -92,45 +102,62 @@ List<FieldRules> extractValidateFields(
   return result;
 }
 
-List<RefineInfo> extractRefines(ClassElement element) {
-  final result = <RefineInfo>[];
+List<RefineMethodInfo> extractRefineMethods(ClassElement element) {
+  final result = <RefineMethodInfo>[];
 
-  for (final meta in element.metadata.annotations) {
-    final metaElement = meta.element;
-    if (metaElement is! ConstructorElement) continue;
-    final annotationName = metaElement.enclosingElement.name;
-    if (annotationName != 'Refine' && annotationName != 'RefineAsync') {
-      continue;
-    }
-    final isAsync = annotationName == 'RefineAsync';
+  for (final method in element.methods) {
+    if (method.isStatic) continue;
+    if (method.name == null) continue;
 
-    final constant = meta.computeConstantValue();
-    if (constant == null) continue;
+    final annotation = _findRefineFn(method);
+    if (annotation == null) continue;
 
-    final reader = ConstantReader(constant);
+    final dependsOn = _readDependsOnList(annotation);
+    final parameters = method.formalParameters
+        .where((p) => p.isNamed)
+        .map((p) => RefineParamInfo(name: p.name!, type: p.type))
+        .toList();
+    final isAsync = _isAsyncMethod(method);
 
-    final validatorReader = reader.read('validator');
-    final validatorElement = validatorReader.objectValue.toFunctionValue();
-    final functionName = validatorElement?.name ?? '_unknown';
-
-    final dependsOnReader = reader.read('dependsOn');
-    final dependsOnSet = dependsOnReader.setValue;
-    final dependsOn = <String>[];
-    for (final symbol in dependsOnSet) {
-      final name = symbol.toSymbolValue();
-      if (name != null && name.isNotEmpty) {
-        dependsOn.add(name);
-      }
-    }
-
-    result.add(RefineInfo(
-      functionName: functionName,
+    result.add(RefineMethodInfo(
+      methodName: method.name!,
       dependsOn: dependsOn,
+      parameters: parameters,
       isAsync: isAsync,
     ));
   }
 
   return result;
+}
+
+ElementAnnotation? _findRefineFn(MethodElement method) {
+  for (final meta in method.metadata.annotations) {
+    final e = meta.element;
+    if (e is ConstructorElement && e.enclosingElement.name == 'RefineFn') {
+      return meta;
+    }
+  }
+  return null;
+}
+
+List<String> _readDependsOnList(ElementAnnotation annotation) {
+  final constant = annotation.computeConstantValue();
+  if (constant == null) return const [];
+  final list = ConstantReader(constant).peek('dependsOn')?.listValue;
+  if (list == null) return const [];
+  return list
+      .map((obj) => ConstantReader(obj).stringValue)
+      .where((s) => s.isNotEmpty)
+      .toList();
+}
+
+bool _isAsyncMethod(MethodElement method) {
+  final returnType = method.returnType;
+  final element = returnType.element;
+  if (element is ClassElement && element.name == 'Future') return true;
+  if (returnType.isDartCoreNull) return false;
+  final display = returnType.getDisplayString();
+  return display.startsWith('Future<');
 }
 
 (List<RuleInfo>, String)? _extractRules(FieldElement field) {

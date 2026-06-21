@@ -17,14 +17,11 @@ class Validate {
   const Validate.iterable(List<Rule<Iterable>> this.rules);
 }
 
-class Refine {
-  final Function validator;
-  final Set<Symbol> dependsOn;
-  const Refine(this.validator, {this.dependsOn = const {}});
+class RefineFn {
+  final List<String> dependsOn;
+  const RefineFn({this.dependsOn = const []});
 }
 
-class RefineAsync {
-  final Function validator;
-  final Set<Symbol> dependsOn;
-  const RefineAsync(this.validator, {this.dependsOn = const {}});
-}
+/// Callback passed to a `@RefineFn` method for reporting validation
+/// failures. `path` defaults to `[]` (form-level) when omitted.
+typedef FailFn = void Function({required String message, List<String> path});

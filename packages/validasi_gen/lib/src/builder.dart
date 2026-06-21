@@ -28,9 +28,12 @@ class _ValidasiBuilder implements Builder {
         boolOption(options.config, 'generateFields') ?? true;
     final generateAssembleDefault =
         boolOption(options.config, 'generateAssemble') ?? true;
+    final generateValidateFormDefault =
+        boolOption(options.config, 'generateValidateForm') ?? false;
     final output = ValidasiGenerator(
       generateFieldsDefault: generateFieldsDefault,
       generateAssembleDefault: generateAssembleDefault,
+      generateValidateFormDefault: generateValidateFormDefault,
     ).generate(
       LibraryReader(library),
       buildStep,

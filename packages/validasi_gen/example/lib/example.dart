@@ -35,6 +35,17 @@ class User {
     this.spareCar,
     required this.previousCars,
   });
+
+  @RefineFn(dependsOn: ['email', 'confirmEmail'])
+  void emailMatchesConfirm(
+    FailFn fail, {
+    String? email,
+    String? confirmEmail,
+  }) {
+    if (email != null && confirmEmail != null && email != confirmEmail) {
+      fail(message: 'Emails do not match', path: ['confirmEmail']);
+    }
+  }
 }
 
 @ValidateClass(generateAssemble: false)

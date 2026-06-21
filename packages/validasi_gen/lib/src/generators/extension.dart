@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:validasi_gen/src/generators/field_snippets.dart';
+import 'package:validasi_gen/src/generators/refine.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 
 const _snippets = FieldRuleSnippets();
@@ -11,9 +12,17 @@ String generateValidateExtension(
   String className,
   List<FieldRules> fields, {
   bool includeValidateField = true,
+  List<RefineMethodInfo> refines = const [],
 }) {
   final fieldsClassName = '${className}Fields';
-  final classHasAsync = fields.any((f) => f.hasAsyncRule);
+  final classHasAsync =
+      fields.any((f) => f.hasAsyncRule) || refines.any((r) => r.isAsync);
+
+  // Build a map of field name -> accessor expression for object-level context.
+  // For object-level, the accessor is just the field name (e.g. `email`).
+  final objectAccessors = <String, String>{
+    for (final ctx in fields) ctx.field.name!: ctx.field.name!,
+  };
 
   final ext = Extension((e) {
     e.name = '\$${className}Validasi';
@@ -31,6 +40,14 @@ String generateValidateExtension(
         buf.writeln('final \$errors = <ValidationError>[];');
         for (final ctx in fields) {
           _generateFieldBody(buf, ctx, isAsync: false);
+        }
+        for (final r in refines) {
+          buf.write(emitRefineInvocation(
+            info: r,
+            fieldAccessors: objectAccessors,
+            isFormContext: false,
+            isAsync: false,
+          ));
         }
         buf.writeln('if (\$errors.isNotEmpty) {');
         buf.writeln('return ValidasiResult(errors: \$errors, isValid: false);');
@@ -50,6 +67,14 @@ String generateValidateExtension(
       buf.writeln('final \$errors = <ValidationError>[];');
       for (final ctx in fields) {
         _generateFieldBody(buf, ctx, isAsync: true);
+      }
+      for (final r in refines) {
+        buf.write(emitRefineInvocation(
+          info: r,
+          fieldAccessors: objectAccessors,
+          isFormContext: false,
+          isAsync: r.isAsync,
+        ));
       }
       buf.writeln('if (\$errors.isNotEmpty) {');
       buf.writeln('return ValidasiResult(errors: \$errors, isValid: false);');

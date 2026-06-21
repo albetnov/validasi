@@ -8,7 +8,6 @@ import 'package:validasi_ui/src/signals/form_signals.dart';
 
 class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   final _fields = <ValidasiField<T, dynamic>, ValidasiFieldSignals>{};
-  final _crossErrors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
   final _subscriptions = <ValidasiField<T, dynamic>, List<void Function()>>{};
   final _formSignals = ValidasiFormSignals();
   final T Function(ValidasiFormController<T>) assembler;
@@ -91,20 +90,13 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   List<FieldError> getErrors<V>(ValidasiField<T, V> field) =>
       getFieldController(field).errors;
 
-  void _mergeErrorsForField(
+  void _applyErrors(
     ValidasiField<T, dynamic> field,
-    List<ValidationError> ownErrors,
+    List<ValidationError> errors,
   ) {
     final fc = _fields[field]!;
-    final crossRaw = _crossErrors[field];
     fc.updateErrors([
-      ...ownErrors.map((e) => FieldValidationError(e)),
-      if (crossRaw != null)
-        ...crossRaw.map((e) => FieldCrossError(
-              e,
-              crossFieldName: field.crossFieldKey?.name ?? field.name,
-              dependsOn: field.crossDependsOn,
-            )),
+      ...errors.map((e) => FieldValidationError(e)),
     ]);
   }
 
@@ -117,28 +109,17 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   bool validateField<V>(ValidasiField<T, V> field) {
     final fc = getFieldController(field);
     final result = field.validate(fc.value);
-    _crossErrors.remove(field);
-    _mergeErrorsForField(field, result.errors);
+    _applyErrors(field, result.errors);
     _formSignals.syncFieldErrors(_fields);
     notifyListeners();
     return result.isValid;
   }
 
   bool validate() {
-    final ownErrors = <ValidasiField<T, dynamic>, List<ValidationError>>{};
     batch(() {
       for (final entry in _fields.entries) {
-        ownErrors[entry.key] = entry.key.validate(entry.value.value).errors;
-      }
-      _crossErrors.clear();
-      for (final entry in _fields.entries) {
-        final cv = entry.key.crossValidator;
-        if (cv != null) {
-          _crossErrors[entry.key] = cv(<V>(f) => getFieldController(f).value);
-        }
-      }
-      for (final entry in _fields.entries) {
-        _mergeErrorsForField(entry.key, ownErrors[entry.key]!);
+        final result = entry.key.validate(entry.value.value);
+        _applyErrors(entry.key, result.errors);
       }
     });
     _formSignals.syncFieldErrors(_fields);
@@ -146,16 +127,13 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     return isValid;
   }
 
-  bool get isValid =>
-      _fields.values.every((fc) => fc.isValid.value) &&
-      _crossErrors.values.every((e) => e.isEmpty);
+  bool get isValid => _fields.values.every((fc) => fc.isValid.value);
 
   Map<ValidasiField<T, dynamic>, dynamic> getValues() =>
       Map.unmodifiable(_fields.map((k, v) => MapEntry(k, v.value)));
 
   void reset() {
     _formSignals.reset();
-    _crossErrors.clear();
     for (final fc in _fields.values) {
       fc.reset();
     }
@@ -173,7 +151,6 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     for (final fc in _fields.values) {
       fc.dispose();
     }
-    _crossErrors.clear();
     _formSignals.dispose();
     super.dispose();
   }

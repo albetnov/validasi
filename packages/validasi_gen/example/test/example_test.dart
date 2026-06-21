@@ -526,4 +526,37 @@ void main() {
       );
     });
   });
+
+  group('@Refine class-level cross-field validation', () {
+    test('passes when email and confirmEmail match', () async {
+      final user = User(
+        email: 'test@example.com',
+        username: 'testuser',
+        confirmEmail: 'test@example.com',
+        tags: ['dart'],
+        car: Car(make: 'Toyota', model: 'Camry'),
+        previousCars: [],
+      );
+      final result = await user.validateAsync();
+      expect(result.isValid, isTrue);
+    });
+
+    test('fails when email and confirmEmail mismatch', () async {
+      final user = User(
+        email: 'test@example.com',
+        username: 'testuser',
+        confirmEmail: 'other@example.com',
+        tags: ['dart'],
+        car: Car(make: 'Toyota', model: 'Camry'),
+        previousCars: [],
+      );
+      final result = await user.validateAsync();
+      expect(result.isValid, isFalse);
+      final refineErrors =
+          result.errors.where((e) => e.rule == 'Refine').toList();
+      expect(refineErrors, hasLength(1));
+      expect(refineErrors.first.message, equals('Emails do not match'));
+      expect(refineErrors.first.path, equals(['confirmEmail']));
+    });
+  });
 }

@@ -414,24 +414,67 @@ Then in `extension.dart`, splice the block into the `validate()` and `validateAs
 
 ---
 
-## 7. Changing the build config defaults
+## 7. Build config options
 
-`build.yaml` consumers can override per-project:
+`build.yaml` consumers can override the three builder options per-project. The per-class `@ValidateClass(generateFields: …, generateAssemble: …)` override always wins over the build-level default.
+
+| Option | Default | Controls |
+|---|---|---|
+| `generateFields` | `true` | Emit `XFields` sealed hierarchy + `validateField()` on the extension. |
+| `generateAssemble` | `true` | Emit `X assemble_X(ValidasiFormController<X> ctrl)`. |
+| `generateValidateForm` | `false` | Emit `ValidasiResult<X> validateForm_X(ValidasiFormController<X> ctrl)`. |
+
+### Why `generateValidateForm` is off by default
+
+The emitted function references `ValidasiFormController<T>`, which lives in `validasi_ui`. `validasi_ui` depends on Flutter, so any package that turns this option on must also depend on `validasi_ui` and import it in the source file. Pure-Dart packages and the `validasi_gen` example don't depend on `validasi_ui` and would fail to compile if the option were on by default.
+
+### Opting in (Flutter consumer example)
+
+In a Flutter package's `build.yaml`:
 
 ```yaml
-# In a downstream package
 targets:
   $default:
     builders:
-      validasi:
+      validasi_gen:validasi:
         options:
-          generateFields: false
-          generateAssemble: false
+          generateValidateForm: true
 ```
 
-The builder reads both keys in `builder.dart:build` via `boolOption(options.config, ...)`. The per-class `@ValidateClass(generateFields: …, generateAssemble: …)` override wins if present.
+Then in the source file:
 
-To add a new global toggle, mirror the existing pattern: read it in `builder.dart`, forward it to `ValidasiGenerator`, and use it in `generator.dart` orchestration.
+```dart
+import 'package:validasi/validasi.dart';
+import 'package:validasi_annotation/validasi_annotation.dart';
+import 'package:validasi_ui/validasi_ui.dart';
+
+part 'user.g.dart';
+
+@ValidateClass()
+class User { ... }
+```
+
+`User.validateForm_User(ctrl)` is now in scope and the UI controller can call it.
+
+### Minimal example (no Flutter)
+
+The `validasi_gen` example omits `generateValidateForm` entirely — the default is already off, so the example's `build.yaml` stays minimal. Per-class `@ValidateClass(generateFields: false, generateAssemble: false)` remains the right escape hatch for opting out individual classes.
+
+### How the builder reads these
+
+In `lib/src/builder.dart:build`:
+
+```dart
+final generateFieldsDefault = boolOption(options.config, 'generateFields') ?? true;
+final generateAssembleDefault = boolOption(options.config, 'generateAssemble') ?? true;
+final generateValidateFormDefault = boolOption(options.config, 'generateValidateForm') ?? false;
+```
+
+Each is forwarded to `ValidasiGenerator`, which consults the per-class override in `parsers/rules.dart` (`readGenerateFieldsOverride`, `readGenerateAssembleOverride`) and falls back to the builder default.
+
+### Adding a new global toggle
+
+Mirror the existing pattern: add a key to `builder.dart`, forward it to `ValidasiGenerator`, and use it in `generator.dart` orchestration. If the option touches generated code that references a type from an optional dependency, default to `false` and document the opt-in (see `generateValidateForm` above).
 
 ---
 
