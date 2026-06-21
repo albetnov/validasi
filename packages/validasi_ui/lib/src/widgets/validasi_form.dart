@@ -16,6 +16,7 @@ class ValidasiForm<T> extends StatefulWidget {
   final ValidationMode mode;
   final ReValidationMode reValidateMode;
   final T? initialValues;
+  final bool shouldUnregister;
 
   const ValidasiForm({
     required this.builder,
@@ -25,6 +26,7 @@ class ValidasiForm<T> extends StatefulWidget {
     this.mode = ValidationMode.onSubmit,
     this.reValidateMode = ReValidationMode.onChange,
     this.initialValues,
+    this.shouldUnregister = true,
     super.key,
   });
 
@@ -40,6 +42,13 @@ class ValidasiForm<T> extends StatefulWidget {
     assert(scope != null,
         'ValidasiForm.modeOf<$T>() called outside a ValidasiForm<$T>.');
     return (scope!.mode, scope.reValidateMode);
+  }
+
+  static bool shouldUnregisterOf<T>(BuildContext context) {
+    final scope = context.dependOnInheritedWidgetOfExactType<_FormScope<T>>();
+    assert(scope != null,
+        'ValidasiForm.shouldUnregisterOf<$T>() called outside a ValidasiForm<$T>.');
+    return scope!.shouldUnregister;
   }
 
   @override
@@ -74,6 +83,7 @@ class _FormState<T> extends State<ValidasiForm<T>> {
       controller: _controller,
       mode: widget.mode,
       reValidateMode: widget.reValidateMode,
+      shouldUnregister: widget.shouldUnregister,
       child: widget.builder(context, _controller.submit),
     );
   }
@@ -83,11 +93,13 @@ class _FormScope<T> extends InheritedWidget {
   final ValidasiFormController<T> controller;
   final ValidationMode mode;
   final ReValidationMode reValidateMode;
+  final bool shouldUnregister;
 
   const _FormScope({
     required this.controller,
     required this.mode,
     required this.reValidateMode,
+    required this.shouldUnregister,
     required super.child,
   });
 
@@ -95,5 +107,6 @@ class _FormScope<T> extends InheritedWidget {
   bool updateShouldNotify(_FormScope<T> oldWidget) =>
       oldWidget.controller != controller ||
       oldWidget.mode != mode ||
-      oldWidget.reValidateMode != reValidateMode;
+      oldWidget.reValidateMode != reValidateMode ||
+      oldWidget.shouldUnregister != shouldUnregister;
 }

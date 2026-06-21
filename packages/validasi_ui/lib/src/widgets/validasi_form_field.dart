@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:validasi/validasi.dart';
+import 'package:validasi_ui/src/controller/controller.dart';
 import 'package:validasi_ui/src/models/field_state.dart';
 import 'package:validasi_ui/src/models/validation_mode.dart';
 import 'package:validasi_ui/src/widgets/validasi_form.dart';
@@ -14,6 +15,7 @@ class ValidasiFormField<T, V> extends SignalWidget {
   final bool disabled;
   final Future<String?> Function(V?)? validator;
   final Duration debounceDuration;
+  final bool? shouldUnregister;
 
   const ValidasiFormField({
     required this.field,
@@ -23,6 +25,7 @@ class ValidasiFormField<T, V> extends SignalWidget {
     this.disabled = false,
     this.validator,
     this.debounceDuration = const Duration(milliseconds: 300),
+    this.shouldUnregister,
     super.key,
   });
 
@@ -44,6 +47,9 @@ class ValidasiFormField<T, V> extends SignalWidget {
     final isTouched = fc.touched;
     final isSubmitted = controller.isSubmitted;
     final isValidating = fc.isValidating;
+
+    final effectiveShouldUnregister =
+        shouldUnregister ?? ValidasiForm.shouldUnregisterOf<T>(context);
 
     final state = ValidasiFieldState<V>(
       value: value,
@@ -97,6 +103,40 @@ class ValidasiFormField<T, V> extends SignalWidget {
       clearErrors: disabled ? null : () => controller.clearErrors(field),
     );
 
-    return builder(context, state);
+    final child = builder(context, state);
+
+    if (!effectiveShouldUnregister) return child;
+
+    return _FieldDisposer<T>(
+      controller: controller,
+      field: field,
+      child: child,
+    );
   }
+}
+
+class _FieldDisposer<T> extends StatefulWidget {
+  final ValidasiFormController<T> controller;
+  final ValidasiField<T, dynamic> field;
+  final Widget child;
+
+  const _FieldDisposer({
+    required this.controller,
+    required this.field,
+    required this.child,
+  });
+
+  @override
+  State<_FieldDisposer<T>> createState() => _FieldDisposerState<T>();
+}
+
+class _FieldDisposerState<T> extends State<_FieldDisposer<T>> {
+  @override
+  void dispose() {
+    widget.controller.unregister(widget.field);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

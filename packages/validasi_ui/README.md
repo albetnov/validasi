@@ -157,6 +157,7 @@ The root widget. Provides an `InheritedWidget` scope for descendant `ValidasiFor
 | `mode` | When fields first validate: `onSubmit` (default), `onBlur`, `onChange` |
 | `reValidateMode` | After first validation: `onChange` (default), `onBlur` |
 | `initialValues` | Optional `T` used to seed every registered field |
+| `shouldUnregister` | When `true` (default), fields auto-unregister on widget unmount; `false` keeps values (wizards) |
 
 `SubmitHandler<T>` is `VoidCallback Function(void Function(T) onSubmit)` — call the returned `VoidCallback` from your button's `onPressed` to trigger submit with validation + assembly.
 
@@ -173,6 +174,7 @@ Binds a `ValidasiField<T, V>` to a builder. Each instance rebuilds only when its
 | `disabled` | When `true`, skips validation, dirty/tracking, and clears errors |
 | `validator` | Optional `Future<String?> Function(V?)` for async validation |
 | `debounceDuration` | Debounce for async validation (default: 300ms) |
+| `shouldUnregister` | Override form-level `shouldUnregister` for this field |
 
 ### `ValidasiFieldState<V>`
 
@@ -229,7 +231,10 @@ For external/imperative control. Lives on `ValidasiForm.of<T>(context)`.
 | `insertArrayItem<V>(field, index, value)` | Insert an item at a specific index |
 | `removeArrayItem<V>(field, index)` | Remove an item by index |
 | `swapArrayItems<V>(field, i, j)` | Swap two items |
-| `getArrayItemField<V>(field, index)` | Get the synthetic `ValidasiField` for an array item |
+| `getArrayItemField<V>(field, index)` | Get the synthetic `ValidasiField` for a scalar array item |
+| `getArraySubField<SubV>(field, index, fieldName)` | Get an indexed sub-field for an object array item |
+| `getArrayItemCount(field)` | Number of items in the array |
+| `unregister<V>(field)` | Remove a field, dispose signal, clear subscriptions |
 
 ### Field errors
 
@@ -433,7 +438,7 @@ This works, but it's boilerplate the generator removes. The generated path is th
 | `clearErrors` / `clearAllErrors` | ✅ |
 | Scalar field arrays (`append`/`insert`/`remove`/`swap`) | ✅ |
 | Object field arrays (`withIndex` codegen) | ✅ |
-| `unregister` / `shouldUnregister` | 🚧 |
+| `unregister` / `shouldUnregister` | ✅ |
 | Field focus API | 🔮 |
 
 ## Contributing

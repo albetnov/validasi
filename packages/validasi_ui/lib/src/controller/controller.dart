@@ -199,8 +199,9 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     notifyListeners();
   }
 
-  void _unregisterArrayItem(ValidasiField<T, dynamic> field) {
+  void _unregister(ValidasiField<T, dynamic> field) {
     _asyncValidators.remove(field)?.cancel();
+    _objectArrayStructures.remove(field);
     final subs = _subscriptions.remove(field);
     if (subs != null) {
       for (final sub in subs) {
@@ -212,6 +213,16 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     _fieldsByName.remove(field.name);
     _arrayItemFields.remove(field);
     _arrayItemParents.remove(field);
+  }
+
+  void unregister<V>(ValidasiField<T, V> field) {
+    _unregister(field as ValidasiField<T, dynamic>);
+    _formSignals.syncFieldErrors(_fields);
+    notifyListeners();
+  }
+
+  void _unregisterArrayItem(ValidasiField<T, dynamic> field) {
+    _unregister(field);
   }
 
   void _rebuildArrayItems<V>(ValidasiField<T, List<V>> field) {
@@ -582,18 +593,9 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
       state.cancel();
     }
     _asyncValidators.clear();
-    _arrayItemFields.clear();
-    _arrayItemParents.clear();
     _objectArrayStructures.clear();
-    for (final subs in _subscriptions.values) {
-      for (final sub in subs) {
-        sub();
-      }
-    }
-    _subscriptions.clear();
-    _fieldsByName.clear();
-    for (final fc in _fields.values) {
-      fc.dispose();
+    for (final field in _fields.keys.toList()) {
+      _unregister(field);
     }
     _formSignals.dispose();
     super.dispose();
