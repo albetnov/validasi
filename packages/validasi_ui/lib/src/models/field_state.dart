@@ -10,7 +10,7 @@ class ValidasiFieldState<V> {
   final bool isTouched;
   final bool isValidating;
   final bool disabled;
-  final void Function(String message)? setError;
+  final void Function(String message, {bool overwrite})? setError;
   final void Function()? clearErrors;
 
   const ValidasiFieldState({

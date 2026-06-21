@@ -90,8 +90,10 @@ class ValidasiFormField<T, V> extends SignalWidget {
       isTouched: isTouched,
       disabled: disabled,
       isValidating: isValidating,
-      setError:
-          disabled ? null : (message) => controller.setError(field, message),
+      setError: disabled
+          ? null
+          : (message, {overwrite = true}) =>
+              controller.setError(field, message, overwrite: overwrite),
       clearErrors: disabled ? null : () => controller.clearErrors(field),
     );
 

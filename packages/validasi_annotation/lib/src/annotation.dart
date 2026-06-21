@@ -9,6 +9,12 @@ class ValidateClass {
 
   final bool? generateFields;
   final bool? generateAssemble;
+
+  /// When true, generates `indexedFields<FormType>`, `reconstructItem`,
+  /// and `reconstructAll` static methods on the sealed field class.
+  ///
+  /// Requires `validasi_ui` as a dependency (generated code references
+  /// `IndexedField` from that package).
   final bool? generateIndexedFields;
 }
 

@@ -192,7 +192,7 @@ What your builder receives.
 | `isPristine` | `bool` | `!isDirty` |
 | `isValidating` | `bool` | Async validation in progress |
 | `disabled` | `bool` | Field is disabled |
-| `setError` | `void Function(String)?` | Manually set an error on the field |
+| `setError` | `void Function(String message, {bool overwrite})?` | Manually set an error (`overwrite: true` replaces existing, `false` only sets if error-free) |
 | `clearErrors` | `void Function()?` | Clear all errors on the field |
 
 ### `ValidasiFormController<T>`
