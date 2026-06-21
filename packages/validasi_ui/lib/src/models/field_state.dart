@@ -9,6 +9,7 @@ class ValidasiFieldState<V> {
   final bool isDirty;
   final bool isTouched;
   final bool isValidating;
+  final bool disabled;
   final void Function(String message)? setError;
   final void Function()? clearErrors;
 
@@ -21,6 +22,7 @@ class ValidasiFieldState<V> {
     this.isDirty = false,
     this.isTouched = false,
     this.isValidating = false,
+    this.disabled = false,
     this.setError,
     this.clearErrors,
   });
