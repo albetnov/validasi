@@ -165,11 +165,14 @@ The root widget. Provides an `InheritedWidget` scope for descendant `ValidasiFor
 Binds a `ValidasiField<T, V>` to a builder. Each instance rebuilds only when its own signals change.
 
 | Parameter | Description |
-|---|---|
+|---|---|---|
 | `field` | The `ValidasiField` to bind (from the generated `YourModelFields`) |
 | `builder` | `Widget Function(BuildContext, ValidasiFieldState<V>)` — your field UI |
 | `mode` | Per-field override of the form's `ValidationMode` |
 | `reValidateMode` | Per-field override of the form's `ReValidationMode` |
+| `disabled` | When `true`, skips validation, dirty/tracking, and clears errors |
+| `validator` | Optional `Future<String?> Function(V?)` for async validation |
+| `debounceDuration` | Debounce for async validation (default: 300ms) |
 
 ### `ValidasiFieldState<V>`
 
@@ -187,6 +190,10 @@ What your builder receives.
 | `isDirty` | `bool` | `value != initialValue` |
 | `isTouched` | `bool` | User has interacted with this field |
 | `isPristine` | `bool` | `!isDirty` |
+| `isValidating` | `bool` | Async validation in progress |
+| `disabled` | `bool` | Field is disabled |
+| `setError` | `void Function(String)?` | Manually set an error on the field |
+| `clearErrors` | `void Function()?` | Clear all errors on the field |
 
 ### `ValidasiFormController<T>`
 
@@ -203,7 +210,7 @@ For external/imperative control. Lives on `ValidasiForm.of<T>(context)`.
 | `register<V>(field, {initialValue})` | Pre-register a field with a value |
 | `setInitialValues(model)` | Reset every field to values extracted from `model` |
 | `getValue<V>(field)` / `setValue<V>(field, v)` | Read/write a single field |
-| `getValues()` | `Map<ValidasiField, dynamic>` of all values |
+| `getValues()` | `Map<ValidasiField, dynamic>` of all values (excludes array-items + disabled) |
 | `getErrors<V>(field)` | `List<FieldError>` for one field |
 | `validate()` | Validate all fields + cross-field rules; returns `isValid` |
 | `validateField<V>(field)` | Validate one field |
@@ -212,6 +219,17 @@ For external/imperative control. Lives on `ValidasiForm.of<T>(context)`.
 | `submit(onSubmit)` | Returns a `VoidCallback` that validates, then calls `onSubmit(assembler(this))` |
 | `reset()` | Restore initial values, clear all errors + touched + submitted |
 | `isValid` | `true` if every field has no errors |
+| `setFieldDisabled<V>(field, disabled)` | Enable/disable a field at runtime |
+| `setFieldValidator<V>(field, validator, {debounce})` | Connect an async validator |
+| `triggerAsyncValidation<V>(field)` | Manually trigger async validation |
+| `setError<V>(field, message, {overwrite})` | Manually set an error (`overwrite: true` replaces existing, `false` only sets if error-free) |
+| `clearErrors<V>(field)` | Clear errors for one field |
+| `clearAllErrors()` | Clear all field + form errors |
+| `appendArrayItem<V>(field, value)` | Append an item to a `List<V>` field |
+| `insertArrayItem<V>(field, index, value)` | Insert an item at a specific index |
+| `removeArrayItem<V>(field, index)` | Remove an item by index |
+| `swapArrayItems<V>(field, i, j)` | Swap two items |
+| `getArrayItemField<V>(field, index)` | Get the synthetic `ValidasiField` for an array item |
 
 ### Field errors
 
@@ -277,6 +295,98 @@ c.setInitialValues(User(name: 'Ada', email: 'ada@example.com'));
 c.reset();
 ```
 
+### Field arrays
+
+`validasi_ui` supports dynamic arrays of both **scalar** and **object** items.
+
+#### Scalar arrays
+
+Use `appendArrayItem`, `insertArrayItem`, `removeArrayItem`, and `swapArrayItems` to manage a `List<V>` field. Each item registers as a sub-field with name `parentName[index]`, making per-item validation and error display possible.
+
+```dart
+final emailsField = ValidasiField<MyForm, List<String>>(...);
+
+// Append
+controller.appendArrayItem(emailsField, 'a@example.com');
+controller.appendArrayItem(emailsField, 'b@example.com');
+
+// Insert
+controller.insertArrayItem(emailsField, 1, 'mid@example.com');
+
+// Remove
+controller.removeArrayItem(emailsField, 0);
+
+// Swap
+controller.swapArrayItems(emailsField, 0, 1);
+
+// Get a specific item's field for reading/validating
+final itemField = controller.getArrayItemField(emailsField, 0)!;
+controller.setValue(itemField, 'updated@example.com');
+```
+
+In the widget tree, access array item fields dynamically:
+
+```dart
+final list = controller.getValue(field) ?? [];
+for (int i = 0; i < list.length; i++) {
+  final itemField = controller.getArrayItemField(field, i)!;
+  // Use itemField with ValidasiFormField
+  ValidasiFormField<MyForm, String>(
+    field: itemField,
+    builder: (context, state) => TextField(
+      onChanged: state.onChanged,
+      decoration: InputDecoration(errorText: state.errorText),
+    ),
+  );
+}
+```
+
+Array sub-fields are excluded from `getValues()` — only the parent list field appears.
+
+#### Object arrays
+
+When `validasi_gen` emits field classes with `withIndex(int)`, you can manage arrays of objects with full sub-field support:
+
+```dart
+// index is the row number
+final nameField = PersonFields.name.withIndex(0);
+final ageField = PersonFields.age.withIndex(0);
+```
+
+Each indexed field has `name = 'parentName[0].name'`, delegates `validate()` to the original field, and works with `ValidasiFormField<T, V>` in the widget tree.
+
+### Async validation
+
+Pass an async validator to `ValidasiFormField` for server-side checks (e.g. email uniqueness):
+
+```dart
+ValidasiFormField<User, String>(
+  field: UserFields.email,
+  validator: (email) async {
+    if (email == null) return null;
+    final taken = await checkEmailTaken(email);
+    return taken ? 'Email already taken' : null;
+  },
+  builder: (context, state) => TextField(
+    onChanged: state.onChanged,
+    decoration: InputDecoration(
+      errorText: state.errorText,
+      suffixIcon: state.isValidating
+          ? const CircularProgressIndicator(strokeWidth: 2)
+          : null,
+    ),
+  ),
+);
+```
+
+The validator is debounced (default 300ms) and uses a version counter to discard stale results from previous runs. Errors from async validation appear alongside sync errors in `state.errors`.
+
+### Disabled fields
+
+Set `disabled: true` on `ValidasiFormField` to skip validation, dirty/touched tracking, and value updates. Existing errors are cleared on disable.
+
+`disabled` can also be toggled at runtime via `controller.setFieldDisabled(field, true)`.
+
 ### Cross-field validation
 
 Cross-field errors are returned alongside the field's own errors and surface as `FieldCrossError`, so you can render cross-field messages inline at the dependent field. With `validasi_gen`, define the rule as a top-level function and tag the field with `@ValidateWith`:
@@ -304,11 +414,12 @@ This works, but it's boilerplate the generator removes. The generated path is th
 ## Feature status
 
 | Feature | Status |
-|---|---|
+|---|---|---|
 | Form / field builders | ✅ |
 | Imperative controller | ✅ |
 | `onSubmit` / `onBlur` / `onChange` modes | ✅ |
 | Per-field mode override | ✅ |
+| Per-field re-validation mode override | ✅ |
 | Dirty / touched / pristine tracking | ✅ |
 | Imperative `validate` / `validateField` | ✅ |
 | `reset()` to initial values | ✅ |
@@ -316,6 +427,14 @@ This works, but it's boilerplate the generator removes. The generated path is th
 | Cross-field validation errors | ✅ |
 | Async submit with `isLoading` | ✅ |
 | Generated fields via `validasi_gen` | ✅ |
+| Disabled fields | ✅ |
+| Async validation (per-field) | ✅ |
+| Manual `setError` (with `overwrite` control) | ✅ |
+| `clearErrors` / `clearAllErrors` | ✅ |
+| Scalar field arrays (`append`/`insert`/`remove`/`swap`) | ✅ |
+| Object field arrays (`withIndex` codegen) | ✅ |
+| `unregister` / `shouldUnregister` | 🚧 |
+| Field focus API | 🔮 |
 
 ## Contributing
 

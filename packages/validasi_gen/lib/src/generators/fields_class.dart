@@ -8,8 +8,9 @@ DartEmitter get _emitter => DartEmitter(allocator: Allocator.none);
 
 String generateFieldsClass(
   String className,
-  List<FieldRules> fields,
-) {
+  List<FieldRules> fields, {
+  bool generateIndexedFields = false,
+}) {
   final fieldsClassName = '${className}Fields';
   final leafClassNames = <String, String>{};
 
@@ -36,6 +37,15 @@ String generateFieldsClass(
         f.type = refer('$fieldsClassName<$staticType>');
         f.assignment = refer(leafName).call([]).code;
       }));
+    }
+
+    if (generateIndexedFields) {
+      c.methods.add(_buildIndexedFieldsMethod(
+          className, fieldsClassName, fields, leafClassNames));
+      c.methods.add(_buildReconstructItemMethod(
+          className, fieldsClassName, fields, leafClassNames));
+      c.methods.add(_buildReconstructAllMethod(
+          className, fieldsClassName, fields, leafClassNames));
     }
   });
 
@@ -267,6 +277,137 @@ Method _buildNestedMethod(
       p.type = refer(nullableType);
     }));
     m.body = Code(buf.toString());
+  });
+}
+
+Method _buildIndexedFieldsMethod(
+  String className,
+  String fieldsClassName,
+  List<FieldRules> fields,
+  Map<String, String> leafClassNames,
+) {
+  final entries = <String>[];
+  for (final ctx in fields) {
+    final fieldName = ctx.field.name!;
+    final leafName = leafClassNames[fieldName]!;
+    final valueType = ctx.dartTypeDisplay;
+    entries.add(
+      'IndexedField<FormType, $valueType>(\n'
+      '        fieldName: \'$fieldName\',\n'
+      '        parentPath: parentPath,\n'
+      '        index: index,\n'
+      '        validate: (v) => $leafName().validate(v),\n'
+      '        validateAsync: (v) => $leafName().validateAsync(v),\n'
+      '        extractFromItem: (item) => (item as $className).$fieldName,\n'
+      '      )',
+    );
+  }
+
+  final body = StringBuffer();
+  body.writeln('return <ValidasiField<FormType, dynamic>>[');
+  for (var i = 0; i < entries.length; i++) {
+    body.write(entries[i]);
+    if (i < entries.length - 1) {
+      body.writeln(',');
+    } else {
+      body.writeln();
+    }
+  }
+  body.writeln('];');
+
+  return Method((m) {
+    m.name = 'indexedFields';
+    m.static = true;
+    m.types.add(refer('FormType'));
+    m.returns = refer('List<ValidasiField<FormType, dynamic>>');
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'parentPath';
+      p.type = refer('String');
+    }));
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'index';
+      p.type = refer('int');
+    }));
+    m.body = Code(body.toString());
+  });
+}
+
+Method _buildReconstructItemMethod(
+  String className,
+  String fieldsClassName,
+  List<FieldRules> fields,
+  Map<String, String> leafClassNames,
+) {
+  final constructorArgs = <String>[];
+  for (final ctx in fields) {
+    final fieldName = ctx.field.name!;
+    final valueType = ctx.dartTypeDisplay;
+    final isNullable = valueType.endsWith('?');
+    constructorArgs.add(
+      '$fieldName: ctrl.getValue('
+      'ctrl.getArraySubField(field, index, \'$fieldName\'))'
+      '${isNullable ? '' : ' as $valueType'}',
+    );
+  }
+
+  final body = StringBuffer();
+  body.writeln('return $className(');
+  for (var i = 0; i < constructorArgs.length; i++) {
+    body.write('      ${constructorArgs[i]}');
+    if (i < constructorArgs.length - 1) {
+      body.writeln(',');
+    } else {
+      body.writeln();
+    }
+  }
+  body.write('    );');
+
+  return Method((m) {
+    m.name = 'reconstructItem';
+    m.static = true;
+    m.types.add(refer('FormType'));
+    m.returns = refer(className);
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'ctrl';
+      p.type = refer('ValidasiFormController<FormType>');
+    }));
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'field';
+      p.type = refer('ValidasiField<FormType, List<$className>>');
+    }));
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'index';
+      p.type = refer('int');
+    }));
+    m.body = Code(body.toString());
+  });
+}
+
+Method _buildReconstructAllMethod(
+  String className,
+  String fieldsClassName,
+  List<FieldRules> fields,
+  Map<String, String> leafClassNames,
+) {
+  final body = StringBuffer();
+  body.writeln('final count = ctrl.getArrayItemCount(field);');
+  body.writeln(
+      'return List.generate(count, (i) => reconstructItem(ctrl, field, i));');
+
+  return Method((m) {
+    m.name = 'reconstructAll';
+    m.static = true;
+    m.types.add(refer('FormType'));
+    m.returns = refer('List<$className>');
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'ctrl';
+      p.type = refer('ValidasiFormController<FormType>');
+    }));
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'field';
+      p.type = refer('ValidasiField<FormType, List<$className>>');
+    }));
+    m.body = Code(body.toString());
   });
 }
 

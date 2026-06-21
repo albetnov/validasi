@@ -14,11 +14,13 @@ class ValidasiGenerator extends Generator {
     this.generateFieldsDefault = true,
     this.generateAssembleDefault = true,
     this.generateValidateFormDefault = false,
+    this.generateIndexedFieldsDefault = false,
   });
 
   final bool generateFieldsDefault;
   final bool generateAssembleDefault;
   final bool generateValidateFormDefault;
+  final bool generateIndexedFieldsDefault;
 
   @override
   String generate(LibraryReader library, BuildStep buildStep) {
@@ -41,12 +43,18 @@ class ValidasiGenerator extends Generator {
           readGenerateFieldsOverride(cls) ?? generateFieldsDefault;
       final generateAssemble =
           readGenerateAssembleOverride(cls) ?? generateAssembleDefault;
+      final generateIndexedFields = readGenerateIndexedFieldsOverride(cls) ??
+          generateIndexedFieldsDefault;
       final refines = extractRefineMethods(cls);
       final shouldEmitValidateForm =
           generateFields && generateValidateFormDefault;
 
       if (generateFields) {
-        buffer.write(generateFieldsClass(cls.name!, fields));
+        buffer.write(generateFieldsClass(
+          cls.name!,
+          fields,
+          generateIndexedFields: generateIndexedFields,
+        ));
         if (generateAssemble) {
           buffer.write(generateFromForm(cls.name!, fields));
         }

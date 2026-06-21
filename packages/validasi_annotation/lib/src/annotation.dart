@@ -1,10 +1,15 @@
 import 'package:validasi_annotation/src/base.dart';
 
 class ValidateClass {
-  const ValidateClass({this.generateFields, this.generateAssemble});
+  const ValidateClass({
+    this.generateFields,
+    this.generateAssemble,
+    this.generateIndexedFields,
+  });
 
   final bool? generateFields;
   final bool? generateAssemble;
+  final bool? generateIndexedFields;
 }
 
 class Validate {

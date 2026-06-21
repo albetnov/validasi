@@ -189,18 +189,41 @@ void main() {
       expect(errors.first.message, 'Manual error');
     });
 
-    test('setError appends to existing errors', () {
+    test('setError replaces existing errors by default', () {
       final controller = _makeController();
       const nameField = _NameField();
       controller.register(nameField, initialValue: '');
 
       controller.validateField(nameField);
-      final errorsAfterValidate = controller.getErrors(nameField);
-      expect(errorsAfterValidate, hasLength(1));
+      expect(controller.getErrors(nameField).length, 1);
 
-      controller.setError(nameField, 'Second error');
+      controller.setError(nameField, 'Replacement error');
       final errorsAfterSet = controller.getErrors(nameField);
-      expect(errorsAfterSet, hasLength(2));
+      expect(errorsAfterSet, hasLength(1));
+      expect(errorsAfterSet.first.message, 'Replacement error');
+    });
+
+    test('setError with overwrite: false preserves existing errors', () {
+      final controller = _makeController();
+      const nameField = _NameField();
+      controller.register(nameField, initialValue: '');
+
+      controller.validateField(nameField);
+      expect(controller.getErrors(nameField).length, 1);
+
+      controller.setError(nameField, 'Skipped error', overwrite: false);
+      expect(controller.getErrors(nameField).length, 1);
+    });
+
+    test('setError with overwrite: false adds error when field is clean', () {
+      final controller = _makeController();
+      const nameField = _NameField();
+      controller.register(nameField, initialValue: 'Alice');
+
+      controller.setError(nameField, 'Only error', overwrite: false);
+      final errors = controller.getErrors(nameField);
+      expect(errors, hasLength(1));
+      expect(errors.first.message, 'Only error');
     });
 
     test('clearErrors removes all errors from a single field', () {

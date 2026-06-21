@@ -1,4 +1,5 @@
 export 'src/controller/controller.dart';
+export 'src/controller/indexed_field.dart';
 export 'src/models/error.dart';
 export 'src/models/field_state.dart';
 export 'src/models/validation_mode.dart';
