@@ -7,11 +7,17 @@ sealed class UserFields<V> extends ValidasiKey<User>
   const UserFields._();
 
   static const UserFields<String> email = UserEmailField();
+
   static const UserFields<String> username = UserUsernameField();
+
   static const UserFields<String> confirmEmail = UserConfirmEmailField();
+
   static const UserFields<List<String>> tags = UserTagsField();
+
   static const UserFields<Car> car = UserCarField();
+
   static const UserFields<Car?> spareCar = UserSpareCarField();
+
   static const UserFields<List<Car>> previousCars = UserPreviousCarsField();
 }
 
@@ -19,15 +25,18 @@ class UserEmailField extends UserFields<String> {
   const UserEmailField() : super._();
 
   @override
-  String get name => 'email';
+  String get name {
+    return 'email';
+  }
 
   @override
-  String extract(User owner) => owner.email;
+  String extract(User owner) {
+    return owner.email;
+  }
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
-
     if (value != null && value.length < 3) {
       $errors.add(
         ValidationError(
@@ -38,7 +47,6 @@ class UserEmailField extends UserFields<String> {
         ),
       );
     }
-
     if (value != null && value.length > 100) {
       $errors.add(
         ValidationError(
@@ -59,42 +67,31 @@ class UserEmailField extends UserFields<String> {
   Future<ValidasiResult<String>> validateAsync(String? value) async {
     return validate(value);
   }
-
-  @override
-  CrossFieldKey<User>? get crossFieldKey => null;
-
-  @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
-
-  @override
-  Future<List<ValidationError>> Function(
-      V? Function<V>(ValidasiField<User, V>))? get crossValidatorAsync => null;
-
-  @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserUsernameField extends UserFields<String> {
   const UserUsernameField() : super._();
 
   @override
-  String get name => 'username';
+  String get name {
+    return 'username';
+  }
 
   @override
-  String extract(User owner) => owner.username;
+  String extract(User owner) {
+    return owner.username;
+  }
 
   @override
   ValidasiResult<String> validate(String? value) {
     throw StateError(
-        'Async rules cannot be used with validate(). Use validateAsync() instead.');
+      'Async rules cannot be used with validate(). Use validateAsync() instead.',
+    );
   }
 
   @override
   Future<ValidasiResult<String>> validateAsync(String? value) async {
     final $errors = <ValidationError>[];
-
     if (value != null && value.length < 3) {
       $errors.add(
         ValidationError(
@@ -105,7 +102,6 @@ class UserUsernameField extends UserFields<String> {
         ),
       );
     }
-
     if (value != null && value.length > 100) {
       $errors.add(
         ValidationError(
@@ -116,7 +112,6 @@ class UserUsernameField extends UserFields<String> {
         ),
       );
     }
-
     try {
       if (!await _checkUsernameAvailable(value)) {
         $errors.add(
@@ -141,36 +136,24 @@ class UserUsernameField extends UserFields<String> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
-
-  @override
-  CrossFieldKey<User>? get crossFieldKey => null;
-
-  @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
-
-  @override
-  Future<List<ValidationError>> Function(
-      V? Function<V>(ValidasiField<User, V>))? get crossValidatorAsync => null;
-
-  @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserConfirmEmailField extends UserFields<String> {
   const UserConfirmEmailField() : super._();
 
   @override
-  String get name => 'confirmEmail';
+  String get name {
+    return 'confirmEmail';
+  }
 
   @override
-  String extract(User owner) => owner.confirmEmail;
+  String extract(User owner) {
+    return owner.confirmEmail;
+  }
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
-
     if (value != null && value.length < 3) {
       $errors.add(
         ValidationError(
@@ -181,7 +164,6 @@ class UserConfirmEmailField extends UserFields<String> {
         ),
       );
     }
-
     if (value != null && value.length > 100) {
       $errors.add(
         ValidationError(
@@ -202,48 +184,24 @@ class UserConfirmEmailField extends UserFields<String> {
   Future<ValidasiResult<String>> validateAsync(String? value) async {
     return validate(value);
   }
-
-  @override
-  CrossFieldKey<User> get crossFieldKey => UserCrossFields.confirmEmail;
-
-  @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn {
-    return const <ValidasiField<User, dynamic>>{UserFields.email};
-  }
-
-  @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))
-      get crossValidator {
-    return (getField) {
-      final result = _checkEmailMatch(getField);
-      if (result != null) {
-        return [
-          ValidationError(
-              rule: 'ValidateWith', message: result, path: ['confirmEmail'])
-        ];
-      }
-      return [];
-    };
-  }
-
-  @override
-  Future<List<ValidationError>> Function(
-      V? Function<V>(ValidasiField<User, V>))? get crossValidatorAsync => null;
 }
 
 class UserTagsField extends UserFields<List<String>> {
   const UserTagsField() : super._();
 
   @override
-  String get name => 'tags';
+  String get name {
+    return 'tags';
+  }
 
   @override
-  List<String> extract(User owner) => owner.tags;
+  List<String> extract(User owner) {
+    return owner.tags;
+  }
 
   @override
   ValidasiResult<List<String>> validate(List<String>? value) {
     final $errors = <ValidationError>[];
-
     if (value != null && value.length < 1) {
       $errors.add(
         ValidationError(
@@ -262,34 +220,24 @@ class UserTagsField extends UserFields<List<String>> {
 
   @override
   Future<ValidasiResult<List<String>>> validateAsync(
-      List<String>? value) async {
+    List<String>? value,
+  ) async {
     return validate(value);
   }
-
-  @override
-  CrossFieldKey<User>? get crossFieldKey => null;
-
-  @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
-
-  @override
-  Future<List<ValidationError>> Function(
-      V? Function<V>(ValidasiField<User, V>))? get crossValidatorAsync => null;
-
-  @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserCarField extends UserFields<Car> {
   const UserCarField() : super._();
 
   @override
-  String get name => 'car';
+  String get name {
+    return 'car';
+  }
 
   @override
-  Car extract(User owner) => owner.car;
+  Car extract(User owner) {
+    return owner.car;
+  }
 
   @override
   ValidasiResult<Car> validate(Car? value) {
@@ -299,7 +247,7 @@ class UserCarField extends UserFields<Car> {
     final $carResult = value.validate();
     if (!$carResult.isValid) {
       return ValidasiResult(
-        errors: $carResult.errors.map((e) => e.withPrefix(name)).toList(),
+        errors: $carResult.errors.map((e) => e..prefix(name)).toList(),
         isValid: false,
       );
     }
@@ -314,37 +262,26 @@ class UserCarField extends UserFields<Car> {
     final $carResult = await value.validateAsync();
     if (!$carResult.isValid) {
       return ValidasiResult(
-        errors: $carResult.errors.map((e) => e.withPrefix(name)).toList(),
+        errors: $carResult.errors.map((e) => e..prefix(name)).toList(),
         isValid: false,
       );
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
-
-  @override
-  CrossFieldKey<User>? get crossFieldKey => null;
-
-  @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
-
-  @override
-  Future<List<ValidationError>> Function(
-      V? Function<V>(ValidasiField<User, V>))? get crossValidatorAsync => null;
-
-  @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserSpareCarField extends UserFields<Car?> {
   const UserSpareCarField() : super._();
 
   @override
-  String get name => 'spareCar';
+  String get name {
+    return 'spareCar';
+  }
 
   @override
-  Car? extract(User owner) => owner.spareCar;
+  Car? extract(User owner) {
+    return owner.spareCar;
+  }
 
   @override
   ValidasiResult<Car?> validate(Car? value) {
@@ -354,7 +291,7 @@ class UserSpareCarField extends UserFields<Car?> {
     final $spareCarResult = value.validate();
     if (!$spareCarResult.isValid) {
       return ValidasiResult(
-        errors: $spareCarResult.errors.map((e) => e.withPrefix(name)).toList(),
+        errors: $spareCarResult.errors.map((e) => e..prefix(name)).toList(),
         isValid: false,
       );
     }
@@ -369,37 +306,26 @@ class UserSpareCarField extends UserFields<Car?> {
     final $spareCarResult = await value.validateAsync();
     if (!$spareCarResult.isValid) {
       return ValidasiResult(
-        errors: $spareCarResult.errors.map((e) => e.withPrefix(name)).toList(),
+        errors: $spareCarResult.errors.map((e) => e..prefix(name)).toList(),
         isValid: false,
       );
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
-
-  @override
-  CrossFieldKey<User>? get crossFieldKey => null;
-
-  @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
-
-  @override
-  Future<List<ValidationError>> Function(
-      V? Function<V>(ValidasiField<User, V>))? get crossValidatorAsync => null;
-
-  @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
 }
 
 class UserPreviousCarsField extends UserFields<List<Car>> {
   const UserPreviousCarsField() : super._();
 
   @override
-  String get name => 'previousCars';
+  String get name {
+    return 'previousCars';
+  }
 
   @override
-  List<Car> extract(User owner) => owner.previousCars;
+  List<Car> extract(User owner) {
+    return owner.previousCars;
+  }
 
   @override
   ValidasiResult<List<Car>> validate(List<Car>? value) {
@@ -413,8 +339,11 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
       final $previousCarsItem = value[$previousCarsIndex];
       final $previousCarsResult = $previousCarsItem.validate();
       if (!$previousCarsResult.isValid) {
-        $errors.addAll($previousCarsResult.errors
-            .map((e) => e.withPrefix("$name[${$previousCarsIndex}]")));
+        $errors.addAll(
+          $previousCarsResult.errors.map(
+            (e) => e..prefix("$name[${$previousCarsIndex}]"),
+          ),
+        );
       }
     }
     if ($errors.isNotEmpty) {
@@ -435,8 +364,11 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
       final $previousCarsItem = value[$previousCarsIndex];
       final $previousCarsResult = await $previousCarsItem.validateAsync();
       if (!$previousCarsResult.isValid) {
-        $errors.addAll($previousCarsResult.errors
-            .map((e) => e.withPrefix("$name[${$previousCarsIndex}]")));
+        $errors.addAll(
+          $previousCarsResult.errors.map(
+            (e) => e..prefix("$name[${$previousCarsIndex}]"),
+          ),
+        );
       }
     }
     if ($errors.isNotEmpty) {
@@ -444,43 +376,18 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
     }
     return ValidasiResult(errors: const [], isValid: true, data: value);
   }
-
-  @override
-  CrossFieldKey<User>? get crossFieldKey => null;
-
-  @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<User, V>))?
-      get crossValidator => null;
-
-  @override
-  Future<List<ValidationError>> Function(
-      V? Function<V>(ValidasiField<User, V>))? get crossValidatorAsync => null;
-
-  @override
-  Set<ValidasiField<User, dynamic>> get crossDependsOn =>
-      const <ValidasiField<User, dynamic>>{};
-}
-
-sealed class UserCrossFields extends CrossFieldKey<User> {
-  const UserCrossFields._(super.name);
-  static const UserCrossFields confirmEmail = _User_confirmEmail_CrossField();
-}
-
-class _User_confirmEmail_CrossField extends UserCrossFields {
-  const _User_confirmEmail_CrossField() : super._('confirmEmail');
 }
 
 extension $UserValidasi on User {
   ValidasiResult<User> validate() {
     throw StateError(
-        'Async rules cannot be used with validate(). Use validateAsync() instead.');
+      'Async rules cannot be used with validate(). Use validateAsync() instead.',
+    );
   }
 
   Future<ValidasiResult<User>> validateAsync() async {
     final $errors = <ValidationError>[];
-
     // Field: email
-
     if (email != null && email.length < 3) {
       $errors.add(
         ValidationError(
@@ -491,7 +398,6 @@ extension $UserValidasi on User {
         ),
       );
     }
-
     if (email != null && email.length > 100) {
       $errors.add(
         ValidationError(
@@ -502,9 +408,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-
     // Field: username
-
     if (username != null && username.length < 3) {
       $errors.add(
         ValidationError(
@@ -515,7 +419,6 @@ extension $UserValidasi on User {
         ),
       );
     }
-
     if (username != null && username.length > 100) {
       $errors.add(
         ValidationError(
@@ -526,7 +429,6 @@ extension $UserValidasi on User {
         ),
       );
     }
-
     try {
       if (!await _checkUsernameAvailable(username)) {
         $errors.add(
@@ -546,9 +448,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-
     // Field: confirmEmail
-
     if (confirmEmail != null && confirmEmail.length < 3) {
       $errors.add(
         ValidationError(
@@ -559,7 +459,6 @@ extension $UserValidasi on User {
         ),
       );
     }
-
     if (confirmEmail != null && confirmEmail.length > 100) {
       $errors.add(
         ValidationError(
@@ -570,9 +469,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-
     // Field: tags
-
     if (tags != null && tags.length < 1) {
       $errors.add(
         ValidationError(
@@ -583,23 +480,21 @@ extension $UserValidasi on User {
         ),
       );
     }
-
     // Field: car (nested Car)
     final $carResult = await car.validateAsync();
     if (!$carResult.isValid) {
-      $errors.addAll($carResult.errors.map((e) => e.withPrefix('car')));
+      $errors.addAll($carResult.errors.map((e) => e..prefix('car')));
     }
-
     // Field: spareCar (nested Car)
     final $spareCarValue = spareCar;
     if ($spareCarValue != null) {
       final $spareCarResult = await $spareCarValue.validateAsync();
       if (!$spareCarResult.isValid) {
         $errors.addAll(
-            $spareCarResult.errors.map((e) => e.withPrefix('spareCar')));
+          $spareCarResult.errors.map((e) => e..prefix('spareCar')),
+        );
       }
     }
-
     // Field: previousCars (nested Car)
     for (var $previousCarsIndex = 0;
         $previousCarsIndex < previousCars.length;
@@ -607,21 +502,13 @@ extension $UserValidasi on User {
       final $previousCarsItem = previousCars[$previousCarsIndex];
       final $previousCarsItemResult = await $previousCarsItem.validateAsync();
       if (!$previousCarsItemResult.isValid) {
-        $errors.addAll($previousCarsItemResult.errors
-            .map((e) => e.withPrefix('previousCars[${$previousCarsIndex}]')));
+        $errors.addAll(
+          $previousCarsItemResult.errors.map(
+            (e) => e..prefix('previousCars[${$previousCarsIndex}]'),
+          ),
+        );
       }
     }
-
-    // Cross-field validators
-    V? getField<V>(ValidasiField<User, V> field) => field.extract(this);
-    {
-      final field = UserFields.confirmEmail as ValidasiField<User, dynamic>;
-      final cv = field.crossValidator;
-      if (cv != null) {
-        $errors.addAll(cv(getField));
-      }
-    }
-
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }
@@ -642,6 +529,7 @@ sealed class CarFields<V> extends ValidasiKey<Car>
   const CarFields._();
 
   static const CarFields<String> make = CarMakeField();
+
   static const CarFields<String> model = CarModelField();
 }
 
@@ -649,15 +537,18 @@ class CarMakeField extends CarFields<String> {
   const CarMakeField() : super._();
 
   @override
-  String get name => 'make';
+  String get name {
+    return 'make';
+  }
 
   @override
-  String extract(Car owner) => owner.make;
+  String extract(Car owner) {
+    return owner.make;
+  }
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
-
     if (value != null && value.length < 2) {
       $errors.add(
         ValidationError(
@@ -678,36 +569,24 @@ class CarMakeField extends CarFields<String> {
   Future<ValidasiResult<String>> validateAsync(String? value) async {
     return validate(value);
   }
-
-  @override
-  CrossFieldKey<Car>? get crossFieldKey => null;
-
-  @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<Car, V>))?
-      get crossValidator => null;
-
-  @override
-  Future<List<ValidationError>> Function(V? Function<V>(ValidasiField<Car, V>))?
-      get crossValidatorAsync => null;
-
-  @override
-  Set<ValidasiField<Car, dynamic>> get crossDependsOn =>
-      const <ValidasiField<Car, dynamic>>{};
 }
 
 class CarModelField extends CarFields<String> {
   const CarModelField() : super._();
 
   @override
-  String get name => 'model';
+  String get name {
+    return 'model';
+  }
 
   @override
-  String extract(Car owner) => owner.model;
+  String extract(Car owner) {
+    return owner.model;
+  }
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
-
     if (value != null && value.length < 2) {
       $errors.add(
         ValidationError(
@@ -728,29 +607,12 @@ class CarModelField extends CarFields<String> {
   Future<ValidasiResult<String>> validateAsync(String? value) async {
     return validate(value);
   }
-
-  @override
-  CrossFieldKey<Car>? get crossFieldKey => null;
-
-  @override
-  List<ValidationError> Function(V? Function<V>(ValidasiField<Car, V>))?
-      get crossValidator => null;
-
-  @override
-  Future<List<ValidationError>> Function(V? Function<V>(ValidasiField<Car, V>))?
-      get crossValidatorAsync => null;
-
-  @override
-  Set<ValidasiField<Car, dynamic>> get crossDependsOn =>
-      const <ValidasiField<Car, dynamic>>{};
 }
 
 extension $CarValidasi on Car {
   ValidasiResult<Car> validate() {
     final $errors = <ValidationError>[];
-
     // Field: make
-
     if (make != null && make.length < 2) {
       $errors.add(
         ValidationError(
@@ -761,9 +623,7 @@ extension $CarValidasi on Car {
         ),
       );
     }
-
     // Field: model
-
     if (model != null && model.length < 2) {
       $errors.add(
         ValidationError(
@@ -774,7 +634,6 @@ extension $CarValidasi on Car {
         ),
       );
     }
-
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }
@@ -783,9 +642,7 @@ extension $CarValidasi on Car {
 
   Future<ValidasiResult<Car>> validateAsync() async {
     final $errors = <ValidationError>[];
-
     // Field: make
-
     if (make != null && make.length < 2) {
       $errors.add(
         ValidationError(
@@ -796,9 +653,7 @@ extension $CarValidasi on Car {
         ),
       );
     }
-
     // Field: model
-
     if (model != null && model.length < 2) {
       $errors.add(
         ValidationError(
@@ -809,7 +664,6 @@ extension $CarValidasi on Car {
         ),
       );
     }
-
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }
@@ -828,9 +682,7 @@ extension $CarValidasi on Car {
 extension $InternalFooValidasi on InternalFoo {
   ValidasiResult<InternalFoo> validate() {
     final $errors = <ValidationError>[];
-
     // Field: code
-
     if (code != null && code.length < 1) {
       $errors.add(
         ValidationError(
@@ -841,7 +693,6 @@ extension $InternalFooValidasi on InternalFoo {
         ),
       );
     }
-
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }
@@ -850,9 +701,7 @@ extension $InternalFooValidasi on InternalFoo {
 
   Future<ValidasiResult<InternalFoo>> validateAsync() async {
     final $errors = <ValidationError>[];
-
     // Field: code
-
     if (code != null && code.length < 1) {
       $errors.add(
         ValidationError(
@@ -863,7 +712,6 @@ extension $InternalFooValidasi on InternalFoo {
         ),
       );
     }
-
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }

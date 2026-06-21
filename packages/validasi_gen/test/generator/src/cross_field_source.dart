@@ -1,4 +1,3 @@
-import 'package:validasi/validasi.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
@@ -7,10 +6,8 @@ class Registration {
   final String email;
 
   @Validate.string([MinLength(3)])
-  @ValidateWith(_checkEmailMatch, dependsOn: {#email})
   final String confirmEmail;
 
-  @ValidateWith(_checkNotes, dependsOn: {#email})
   final String? notes;
 
   const Registration({
@@ -18,14 +15,6 @@ class Registration {
     required this.confirmEmail,
     this.notes,
   });
-}
-
-String? _checkEmailMatch(V? Function<V>(ValidasiField<Registration, V>) get) {
-  return 'Emails do not match';
-}
-
-String? _checkNotes(V? Function<V>(ValidasiField<Registration, V>) get) {
-  return null;
 }
 
 @ValidateClass()

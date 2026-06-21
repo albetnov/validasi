@@ -52,18 +52,14 @@ class FieldRules {
   String get dartTypeDisplay => field.type.getDisplayString();
 }
 
-class CrossFieldInfo {
-  final FieldElement field;
-  final String validatorName;
+class RefineInfo {
+  final String functionName;
   final List<String> dependsOn;
-  final String? functionName;
   final bool isAsync;
 
-  CrossFieldInfo({
-    required this.field,
-    required this.validatorName,
+  const RefineInfo({
+    required this.functionName,
     required this.dependsOn,
-    this.functionName,
     this.isAsync = false,
   });
 }
@@ -91,70 +87,47 @@ List<FieldRules> extractValidateFields(
       ));
       continue;
     }
-
-    if (_hasCrossField(field)) {
-      result.add(FieldRules(field, const []));
-    }
   }
 
   return result;
 }
 
-bool _hasCrossField(FieldElement field) {
-  return field.metadata.annotations.any((meta) {
-    final element = meta.element;
+List<RefineInfo> extractRefines(ClassElement element) {
+  final result = <RefineInfo>[];
 
-    return element is ConstructorElement &&
-        (element.enclosingElement.name == 'ValidateWith' ||
-            element.enclosingElement.name == 'ValidateWithAsync');
-  });
-}
-
-List<CrossFieldInfo> extractCrossFields(ClassElement element) {
-  final result = <CrossFieldInfo>[];
-
-  for (final field in element.fields) {
-    if (field.isStatic) continue;
-
-    for (final meta in field.metadata.annotations) {
-      final metaElement = meta.element;
-      if (metaElement is! ConstructorElement) continue;
-      final annotationName = metaElement.enclosingElement.name;
-      if (annotationName != 'ValidateWith' &&
-          annotationName != 'ValidateWithAsync') {
-        continue;
-      }
-      final isAsync = annotationName == 'ValidateWithAsync';
-
-      final constant = meta.computeConstantValue();
-      if (constant == null) continue;
-
-      final reader = ConstantReader(constant);
-
-      // Read the validator function name
-      final validatorReader = reader.read('validator');
-      final validatorElement = validatorReader.objectValue.toFunctionValue();
-      final functionName = validatorElement?.name ?? '_unknown';
-
-      // Read dependsOn — a Set<Symbol>
-      final dependsOnReader = reader.read('dependsOn');
-      final dependsOnSet = dependsOnReader.setValue;
-      final dependsOn = <String>[];
-      for (final symbol in dependsOnSet) {
-        final name = symbol.toSymbolValue();
-        if (name != null && name.isNotEmpty) {
-          dependsOn.add(name);
-        }
-      }
-
-      result.add(CrossFieldInfo(
-        field: field,
-        validatorName: field.name!,
-        dependsOn: dependsOn,
-        functionName: functionName,
-        isAsync: isAsync,
-      ));
+  for (final meta in element.metadata.annotations) {
+    final metaElement = meta.element;
+    if (metaElement is! ConstructorElement) continue;
+    final annotationName = metaElement.enclosingElement.name;
+    if (annotationName != 'Refine' && annotationName != 'RefineAsync') {
+      continue;
     }
+    final isAsync = annotationName == 'RefineAsync';
+
+    final constant = meta.computeConstantValue();
+    if (constant == null) continue;
+
+    final reader = ConstantReader(constant);
+
+    final validatorReader = reader.read('validator');
+    final validatorElement = validatorReader.objectValue.toFunctionValue();
+    final functionName = validatorElement?.name ?? '_unknown';
+
+    final dependsOnReader = reader.read('dependsOn');
+    final dependsOnSet = dependsOnReader.setValue;
+    final dependsOn = <String>[];
+    for (final symbol in dependsOnSet) {
+      final name = symbol.toSymbolValue();
+      if (name != null && name.isNotEmpty) {
+        dependsOn.add(name);
+      }
+    }
+
+    result.add(RefineInfo(
+      functionName: functionName,
+      dependsOn: dependsOn,
+      isAsync: isAsync,
+    ));
   }
 
   return result;

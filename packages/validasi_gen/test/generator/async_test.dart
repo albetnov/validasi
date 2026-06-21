@@ -24,7 +24,7 @@ Future<void> main() async {
     test('extension generates validateAsync method', () {
       expect(
         output,
-        contains('Future<ValidasiResult<AsyncModel>> validateAsync() async {'),
+        contains('Future<ValidasiResult<AsyncModel>> validateAsync()'),
       );
     });
 
@@ -32,7 +32,7 @@ Future<void> main() async {
       expect(
         output,
         contains(
-          'Future<ValidasiResult<V>> validateFieldAsync<V>(AsyncModelFields<V> field) async {',
+          'Future<ValidasiResult<V>> validateFieldAsync<V>(AsyncModelFields<V> field)',
         ),
       );
     });
@@ -46,37 +46,6 @@ Future<void> main() async {
 
     test('sync rules still emit MinLength check in validateAsync', () {
       expect(output, contains('if (value != null && value.length < 3)'));
-    });
-  });
-
-  group('Async cross-field validator', () {
-    late String output;
-
-    setUpAll(() async {
-      output = await generateForSource(
-        'test/generator/src',
-        'async_source.dart',
-      );
-    });
-
-    test('emits crossValidatorAsync override with await', () {
-      expect(output, contains('get crossValidatorAsync {'));
-      expect(output, contains('final result = await _checkMatch(getField);'));
-      expect(
-        output,
-        contains("rule: 'ValidateWithAsync'"),
-      );
-    });
-
-    test('extension awaits async cross validator in validateAsync', () {
-      expect(
-        output,
-        contains('final cv = field.crossValidatorAsync;'),
-      );
-      expect(
-        output,
-        contains('\$errors.addAll(await cv(getField));'),
-      );
     });
   });
 }

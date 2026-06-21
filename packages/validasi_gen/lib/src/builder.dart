@@ -1,4 +1,5 @@
 import 'package:build/build.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'package:validasi_gen/src/generator.dart';
@@ -10,6 +11,10 @@ class _ValidasiBuilder implements Builder {
   _ValidasiBuilder(this.options);
 
   final BuilderOptions options;
+  final _formatter = DartFormatter(
+    languageVersion: DartFormatter.latestLanguageVersion,
+    pageWidth: 80,
+  );
 
   @override
   Map<String, List<String>> get buildExtensions => const {
@@ -36,13 +41,17 @@ class _ValidasiBuilder implements Builder {
     final inputFile = buildStep.inputId.pathSegments.last;
     final outputId = buildStep.inputId.changeExtension('.g.dart');
 
-    await buildStep.writeAsString(
-      outputId,
-      '''// GENERATED CODE - DO NOT MODIFY BY HAND
+    final unformatted = '''// GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of '$inputFile';
 
-$output''',
-    );
+$output''';
+
+    try {
+      final formatted = _formatter.format(unformatted);
+      await buildStep.writeAsString(outputId, formatted);
+    } catch (_) {
+      await buildStep.writeAsString(outputId, unformatted);
+    }
   }
 }

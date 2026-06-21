@@ -17,14 +17,14 @@ class Validate {
   const Validate.iterable(List<Rule<Iterable>> this.rules);
 }
 
-class ValidateWith {
+class Refine {
   final Function validator;
   final Set<Symbol> dependsOn;
-  const ValidateWith(this.validator, {this.dependsOn = const {}});
+  const Refine(this.validator, {this.dependsOn = const {}});
 }
 
-class ValidateWithAsync {
+class RefineAsync {
   final Function validator;
   final Set<Symbol> dependsOn;
-  const ValidateWithAsync(this.validator, {this.dependsOn = const {}});
+  const RefineAsync(this.validator, {this.dependsOn = const {}});
 }

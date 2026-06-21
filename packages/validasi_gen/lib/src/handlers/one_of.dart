@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:validasi_gen/src/handlers/handler.dart';
+import 'package:validasi_gen/src/utils.dart';
 
 class OneOfGen extends RuleGen {
   @override
@@ -38,7 +39,7 @@ class OneOfGen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName) {
     final options = info.params['options'] as List<String>;
-    final items = options.map(_escapeDartString).join(', ');
+    final items = options.map(escapeDartString).join(', ');
     return '$fieldName != null && ![$items].contains($fieldName)';
   }
 
@@ -50,7 +51,4 @@ class OneOfGen extends RuleGen {
 
   @override
   String? details(RuleInfo info) => null;
-
-  String _escapeDartString(String value) =>
-      "'${value.replaceAll("\\", "\\\\").replaceAll("'", "\\'").replaceAll("\n", "\\n").replaceAll("\$", "\\\$")}'";
 }

@@ -156,7 +156,7 @@ void main() {
 
       expect(output, contains("rule: 'Required'"));
       expect(output, contains("'Field is required'"));
-      expect(output, isNot(contains('if (')));
+      expect(output, contains('if (value == null)'));
     });
   });
 }

@@ -38,7 +38,7 @@ Future<void> main() async {
       expect(
           output,
           contains(
-              'errors: \$carResult.errors.map((e) => e.withPrefix(name)).toList()'));
+              'errors: \$carResult.errors.map((e) => e..prefix(name)).toList()'));
     });
 
     test('nullable nested validate checks for null', () {
@@ -55,7 +55,7 @@ Future<void> main() async {
       expect(
           output,
           contains(
-              r'$errors.addAll($previousCarsResult.errors.map((e) => e.withPrefix("$name[${$previousCarsIndex}]")));'));
+              r'$errors.addAll($previousCarsResult.errors.map((e) => e..prefix("$name[${$previousCarsIndex}]")));'));
     });
 
     test('extension generates nested validation in validate()', () {
@@ -63,7 +63,7 @@ Future<void> main() async {
       expect(
           output,
           contains(
-              "\$errors.addAll(\$carResult.errors.map((e) => e.withPrefix('car')))"));
+              "\$errors.addAll(\$carResult.errors.map((e) => e..prefix('car')))"));
     });
 
     test('extension generates nullable nested validation', () {
@@ -72,7 +72,7 @@ Future<void> main() async {
       expect(
           output,
           contains(
-              "\$spareCarResult.errors.map((e) => e.withPrefix('spareCar'))"));
+              "\$spareCarResult.errors.map((e) => e..prefix('spareCar'))"));
     });
 
     test('extension generates List<Nested> validation', () {

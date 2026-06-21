@@ -498,43 +498,6 @@ void main() {
     });
   });
 
-  group('Cross-field validation', () {
-    test('should pass when emails match', () async {
-      final user = User(
-        email: 'test@example.com',
-        username: 'testuser',
-        confirmEmail: 'test@example.com',
-        tags: ['dart'],
-        car: Car(make: 'Toyota', model: 'Camry'),
-        previousCars: [],
-      );
-      final result = await user.validateAsync();
-      expect(result.isValid, isTrue);
-    });
-
-    test('should fail when emails mismatch', () async {
-      final user = User(
-        email: 'test@example.com',
-        username: 'testuser',
-        confirmEmail: 'other@example.com',
-        tags: ['dart'],
-        car: Car(make: 'Toyota', model: 'Camry'),
-        previousCars: [],
-      );
-      final result = await user.validateAsync();
-      expect(result.isValid, isFalse);
-      expect(result.errors.any((e) => e.rule == 'ValidateWith'), isTrue);
-      expect(
-        result.errors.firstWhere((e) => e.rule == 'ValidateWith').message,
-        equals('Emails do not match'),
-      );
-      expect(
-        result.errors.firstWhere((e) => e.rule == 'ValidateWith').path,
-        equals(['confirmEmail']),
-      );
-    });
-  });
-
   group('generateFields option', () {
     test('opt-out still produces a working validate()', () {
       final r = InternalFoo(code: 'x').validate();

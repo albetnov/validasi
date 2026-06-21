@@ -37,8 +37,10 @@ Future<void> main() async {
     test('generates leaf class with name and extract', () {
       expect(output,
           contains('class SimpleNameField extends SimpleFields<String>'));
-      expect(output, contains("String get name => 'name'"));
-      expect(output, contains('String extract(Simple owner) => owner.name'));
+      expect(output, contains("String get name"));
+      expect(output, contains("'name'"));
+      expect(output, contains('String extract(Simple owner)'));
+      expect(output, contains('owner.name'));
     });
 
     test('generates validate with MinLength and MaxLength checks', () {

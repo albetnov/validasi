@@ -15,7 +15,6 @@ class User {
   final String username;
 
   @Validate.string([MinLength(3), MaxLength(100)])
-  @ValidateWith(_checkEmailMatch, dependsOn: {#email})
   final String confirmEmail;
 
   @Validate.iterable([MinLength(1)])
@@ -57,15 +56,6 @@ class InternalFoo {
   final String code;
 
   const InternalFoo({required this.code});
-}
-
-String? _checkEmailMatch(V? Function<V>(ValidasiField<User, V>) get) {
-  final email = get(UserFields.email);
-  final confirm = get(UserFields.confirmEmail);
-  if (email != null && confirm != null && email != confirm) {
-    return 'Emails do not match';
-  }
-  return null;
 }
 
 FutureOr<bool> _checkUsernameAvailable(String? value) async {

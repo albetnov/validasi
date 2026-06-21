@@ -1,57 +1,37 @@
+import 'package:code_builder/code_builder.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 
-String generateCrossFieldsClass(
-  String className,
-  List<CrossFieldInfo> crossFields,
-) {
-  if (crossFields.isEmpty) return '';
-
-  final buf = StringBuffer();
-  final crossClassName = '${className}CrossFields';
-
-  buf.writeln();
-  buf.writeln(
-      'sealed class $crossClassName extends CrossFieldKey<$className> {');
-  buf.writeln('  const $crossClassName._(super.name);');
-
-  for (final cf in crossFields) {
-    final constName = cf.field.name;
-    final leafName = '_${className}_${constName}_CrossField';
-    buf.writeln('  static const $crossClassName $constName = $leafName();');
-  }
-
-  buf.writeln('}');
-  buf.writeln();
-
-  for (final cf in crossFields) {
-    final leafName = '_${className}_${cf.field.name}_CrossField';
-    buf.writeln('class $leafName extends $crossClassName {');
-    buf.writeln("  const $leafName() : super._('${cf.field.name}');");
-    buf.writeln('}');
-    buf.writeln();
-  }
-
-  return buf.toString();
-}
+DartEmitter get _emitter => DartEmitter(allocator: Allocator.none);
 
 String generateFromForm(
   String className,
   List<FieldRules> allFields,
 ) {
-  final buf = StringBuffer();
   final fieldsClassName = '${className}Fields';
 
-  buf.writeln();
-  buf.writeln('$className assemble_$className(');
-  buf.writeln('    ValidasiFormController<$className> ctrl) => $className(');
+  final body = StringBuffer();
+  body.writeln('return $className(');
   for (final f in allFields) {
     if (f.isNested) continue;
-    final fieldName = f.field.name;
+    final fieldName = f.field.name!;
     final typeName = f.dartTypeDisplay;
-    buf.writeln(
-        '    $fieldName: ctrl.getValue($fieldsClassName.$fieldName) as $typeName,');
+    body.writeln(
+        '$fieldName: ctrl.getValue($fieldsClassName.$fieldName) as $typeName,');
   }
-  buf.writeln('  );');
+  body.write(');');
 
+  final fn = Method((m) {
+    m.name = 'assemble_$className';
+    m.returns = refer(className);
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'ctrl';
+      p.type = refer('ValidasiFormController<$className>');
+    }));
+    m.body = Code(body.toString());
+  });
+
+  final buf = StringBuffer();
+  buf.writeln();
+  buf.write(fn.accept(_emitter));
   return buf.toString();
 }

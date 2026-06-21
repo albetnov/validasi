@@ -52,3 +52,7 @@ bool? boolOption(Map<String, dynamic>? config, String key) {
     'Invalid build option "$key": expected bool, got $value (${value.runtimeType})',
   );
 }
+
+String escapeDartString(String value) {
+  return "'${value.replaceAll("\\", "\\\\").replaceAll("'", "\\'").replaceAll("\n", "\\n").replaceAll("\$", "\\\$")}'";
+}

@@ -1,5 +1,6 @@
 import 'package:validasi_gen/src/handlers.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
+import 'package:validasi_gen/src/utils.dart';
 
 class FieldRuleSnippets {
   const FieldRuleSnippets();
@@ -18,7 +19,10 @@ class FieldRuleSnippets {
 
     if (hasRequired) {
       final rule = rules.firstWhere((r) => r.name == 'Required');
-      _emitError(buf, rule, pathExpr, null, context: context, indent: indent);
+      buf.writeln('$indent if ($accessor == null) {');
+      _emitError(buf, rule, pathExpr, null,
+          context: context, indent: '$indent   ');
+      buf.writeln('$indent }');
     }
 
     for (final rule in rules) {
@@ -47,11 +51,10 @@ class FieldRuleSnippets {
       }
 
       final check = gen.check(rule, accessor);
-      buf.writeln();
-      buf.writeln('${indent}if ($check) {');
+      buf.writeln('$indent if ($check) {');
       _emitError(buf, rule, pathExpr, gen,
-          context: context, indent: '$indent  ');
-      buf.writeln('$indent}');
+          context: context, indent: '$indent   ');
+      buf.writeln('$indent }');
     }
   }
 
@@ -67,26 +70,25 @@ class FieldRuleSnippets {
     final message = rule.message ?? 'Validation failed';
     final msgLiteral = _msg(rule, message);
 
-    buf.writeln();
     buf.writeln('$indent try {');
-    buf.writeln('$indent  if (!await $fn($accessor)) {');
-    buf.writeln('$indent    \$errors.add(');
-    buf.writeln('$indent      ValidationError(');
-    buf.writeln("$indent        rule: '$customName',");
-    buf.writeln('$indent        message: $msgLiteral,');
-    buf.writeln('$indent        path: $pathExpr,');
-    buf.writeln('$indent      ),');
-    buf.writeln('$indent    );');
-    buf.writeln('$indent  }');
+    buf.writeln('$indent   if (!await $fn($accessor)) {');
+    buf.writeln('$indent     \$errors.add(');
+    buf.writeln('$indent       ValidationError(');
+    buf.writeln("$indent         rule: '$customName',");
+    buf.writeln('$indent         message: $msgLiteral,');
+    buf.writeln('$indent         path: $pathExpr,');
+    buf.writeln('$indent       ),');
+    buf.writeln('$indent     );');
+    buf.writeln('$indent   }');
     buf.writeln('$indent } catch (e) {');
-    buf.writeln('$indent  \$errors.add(');
-    buf.writeln('$indent    ValidationError(');
-    buf.writeln("$indent      rule: '$customName',");
-    buf.writeln("$indent      message: e.toString(),");
-    buf.writeln('$indent      path: $pathExpr,');
-    buf.writeln('$indent    ),');
-    buf.writeln('$indent  );');
-    buf.writeln('$indent}');
+    buf.writeln('$indent   \$errors.add(');
+    buf.writeln('$indent     ValidationError(');
+    buf.writeln("$indent       rule: '$customName',");
+    buf.writeln("$indent       message: e.toString(),");
+    buf.writeln('$indent       path: $pathExpr,');
+    buf.writeln('$indent     ),');
+    buf.writeln('$indent   );');
+    buf.writeln('$indent }');
   }
 
   void _emitError(
@@ -102,26 +104,22 @@ class FieldRuleSnippets {
         : _msg(rule, 'Field is required');
     final details = gen?.details(rule);
 
-    buf.writeln('$indent\$errors.add(');
-    buf.writeln('$indent  ValidationError(');
-    buf.writeln("$indent    rule: '${rule.name}',");
-    buf.writeln('$indent    message: $message,');
+    buf.writeln('$indent \$errors.add(');
+    buf.writeln('$indent   ValidationError(');
+    buf.writeln("$indent     rule: '${rule.name}',");
+    buf.writeln('$indent     message: $message,');
     if (details != null) {
-      buf.writeln('$indent    details: $details,');
+      buf.writeln('$indent     details: $details,');
     }
-    buf.writeln('$indent    path: $pathExpr,');
-    buf.writeln('$indent  ),');
-    buf.writeln('$indent);');
+    buf.writeln('$indent     path: $pathExpr,');
+    buf.writeln('$indent   ),');
+    buf.writeln('$indent );');
   }
 
   String _msg(RuleInfo rule, String defaultMsg) {
     if (rule.message != null && rule.message!.isNotEmpty) {
-      return _escapeDartString(rule.message!);
+      return escapeDartString(rule.message!);
     }
-    return _escapeDartString(defaultMsg);
-  }
-
-  String _escapeDartString(String value) {
-    return "'${value.replaceAll("\\", "\\\\").replaceAll("'", "\\'").replaceAll("\n", "\\n").replaceAll("\$", "\\\$")}'";
+    return escapeDartString(defaultMsg);
   }
 }

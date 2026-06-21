@@ -39,24 +39,16 @@ class ValidasiGenerator extends Generator {
       final generateAssemble =
           readGenerateAssembleOverride(cls) ?? generateAssembleDefault;
 
-      final crossFields = extractCrossFields(cls);
-
       if (generateFields) {
-        buffer.write(
-            generateFieldsClass(cls.name!, fields, crossFields: crossFields));
+        buffer.write(generateFieldsClass(cls.name!, fields));
         if (generateAssemble) {
           buffer.write(generateFromForm(cls.name!, fields));
         }
       }
 
-      if (crossFields.isNotEmpty) {
-        buffer.write(generateCrossFieldsClass(cls.name!, crossFields));
-      }
-
       buffer.write(generateValidateExtension(
         cls.name!,
         fields,
-        crossFields: crossFields,
         includeValidateField: generateFields,
       ));
     }
@@ -68,7 +60,6 @@ class ValidasiGenerator extends Generator {
       Map<String, ClassElement> validateClasses, LibraryReader library) {
     final graph = <String, Set<String>>{};
 
-    // 1. Build Adjacency List
     for (final entry in validateClasses.entries) {
       final className = entry.key;
       final cls = entry.value;
@@ -89,16 +80,10 @@ class ValidasiGenerator extends Generator {
     final inStack = <String>{};
     final path = <String>[];
 
-    // 2. Run DFS
     for (final className in graph.keys) {
       if (_dfsCycle(className, graph, visited, inStack, path)) {
-        // The last item added is the node that triggered the loop
         final duplicateNode = path.last;
-
-        // Find where that node first appeared in our current tracking path
         final cycleStart = path.indexOf(duplicateNode);
-
-        // Slice out ONLY the participating members of the cycle
         final cycle = path.sublist(cycleStart);
 
         throw InvalidGenerationSourceError(
@@ -116,7 +101,7 @@ class ValidasiGenerator extends Generator {
     List<String> path,
   ) {
     if (inStack.contains(node)) {
-      path.add(node); // Append the "closer" node to complete the visual trace
+      path.add(node);
       return true;
     }
 
@@ -135,7 +120,6 @@ class ValidasiGenerator extends Generator {
       }
     }
 
-    // Backtrack
     inStack.remove(node);
     path.removeLast();
     return false;

@@ -1,341 +1,273 @@
+import 'package:code_builder/code_builder.dart';
 import 'package:validasi_gen/src/generators/field_snippets.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 
 const _snippets = FieldRuleSnippets();
 
+DartEmitter get _emitter => DartEmitter(allocator: Allocator.none);
+
 String generateFieldsClass(
   String className,
-  List<FieldRules> fields, {
-  List<CrossFieldInfo> crossFields = const [],
-}) {
-  final buf = StringBuffer();
+  List<FieldRules> fields,
+) {
   final fieldsClassName = '${className}Fields';
   final leafClassNames = <String, String>{};
 
-  final crossByField = <String, CrossFieldInfo>{};
-  for (final cf in crossFields) {
-    crossByField[cf.field.name!] = cf;
-  }
+  final sealedClass = Class((c) {
+    c.sealed = true;
+    c.name = fieldsClassName;
+    c.types.add(refer('V'));
+    c.extend = refer('ValidasiKey<$className>');
+    c.implements.add(refer('ValidasiField<$className, V>'));
+    c.constructors.add(Constructor((con) {
+      con.name = '_';
+      con.constant = true;
+    }));
 
+    for (final ctx in fields) {
+      final fieldName = ctx.field.name!;
+      final leafName = '$className${_capitalize(fieldName)}Field';
+      leafClassNames[fieldName] = leafName;
+      final staticType = ctx.dartTypeDisplay;
+      c.fields.add(Field((f) {
+        f.name = fieldName;
+        f.modifier = FieldModifier.constant;
+        f.static = true;
+        f.type = refer('$fieldsClassName<$staticType>');
+        f.assignment = refer(leafName).call([]).code;
+      }));
+    }
+  });
+
+  final buf = StringBuffer();
   buf.writeln();
-  buf.writeln(
-      'sealed class $fieldsClassName<V> extends ValidasiKey<$className> implements ValidasiField<$className, V> {');
-  buf.writeln('  const $fieldsClassName._();');
-  buf.writeln();
-  for (final ctx in fields) {
-    final fieldName = ctx.field.name!;
-    final leafName = '$className${_capitalize(fieldName)}Field';
-    leafClassNames[fieldName] = leafName;
-    final staticType = ctx.dartTypeDisplay;
-    buf.writeln(
-        '  static const $fieldsClassName<$staticType> $fieldName = $leafName();');
-  }
-  buf.writeln('}');
+  buf.write(sealedClass.accept(_emitter));
   buf.writeln();
 
   for (final ctx in fields) {
     final fieldName = ctx.field.name!;
     final leafName = leafClassNames[fieldName]!;
-    final crossInfo = crossByField[fieldName];
-    _emitLeaf(buf, className, fieldsClassName, leafName, fieldName, ctx,
-        crossInfo: crossInfo);
+    buf.write(_buildLeafClass(
+      className,
+      fieldsClassName,
+      leafName,
+      fieldName,
+      ctx,
+    ));
     buf.writeln();
   }
 
   return buf.toString();
 }
 
-void _emitLeaf(
-  StringBuffer buf,
+String _buildLeafClass(
   String className,
   String fieldsClassName,
   String leafName,
   String fieldName,
-  FieldRules ctx, {
-  CrossFieldInfo? crossInfo,
-}) {
+  FieldRules ctx,
+) {
   final valueType = ctx.dartTypeDisplay;
-  final typeArgForLeaf = valueType;
 
-  buf.writeln('class $leafName extends $fieldsClassName<$typeArgForLeaf> {');
-  buf.writeln('  const $leafName() : super._();');
-  buf.writeln();
-  buf.writeln("  @override String get name => '$fieldName';");
-  buf.writeln();
-  buf.writeln(
-      '  @override $valueType extract($className owner) => owner.$fieldName;');
+  final leafClass = Class((c) {
+    c.name = leafName;
+    c.extend = refer('$fieldsClassName<$valueType>');
+    c.constructors.add(Constructor((con) {
+      con.constant = true;
+      con.initializers.add(Code('super._()'));
+    }));
 
-  if (ctx.isNested) {
-    _emitNestedValidate(
-        buf, className, fieldsClassName, leafName, valueType, ctx);
-  } else {
-    _emitLeafValidate(buf, fieldsClassName, valueType, ctx);
-  }
+    c.methods.add(Method((m) {
+      m.name = 'name';
+      m.type = MethodType.getter;
+      m.returns = refer('String');
+      m.annotations.add(refer('override'));
+      m.body = Code("return '$fieldName';");
+    }));
 
-  if (crossInfo != null) {
-    _emitCrossFieldOverrides(buf, className, fieldsClassName, crossInfo);
-  } else {
-    _emitDefaultCrossFieldOverrides(buf, className);
-  }
+    c.methods.add(Method((m) {
+      m.name = 'extract';
+      m.returns = refer(valueType);
+      m.annotations.add(refer('override'));
+      m.requiredParameters.add(Parameter((p) {
+        p.name = 'owner';
+        p.type = refer(className);
+      }));
+      m.body = Code('return owner.$fieldName;');
+    }));
 
-  buf.writeln('}');
+    if (ctx.isNested) {
+      _addNestedValidate(c, valueType, ctx);
+    } else {
+      _addLeafValidate(c, valueType, ctx);
+    }
+  });
+
+  return leafClass.accept(_emitter).toString();
 }
 
-void _emitDefaultCrossFieldOverrides(
-  StringBuffer buf,
-  String className,
-) {
-  buf.writeln();
-  buf.writeln('  @override');
-  buf.writeln('  CrossFieldKey<$className>? get crossFieldKey => null;');
-  buf.writeln();
-  buf.writeln('  @override');
-  buf.writeln('  List<ValidationError> Function(');
-  buf.writeln('    V? Function<V>(ValidasiField<$className, V>)');
-  buf.writeln('  )? get crossValidator => null;');
-  buf.writeln();
-  buf.writeln('  @override');
-  buf.writeln('  Future<List<ValidationError>> Function(');
-  buf.writeln('    V? Function<V>(ValidasiField<$className, V>)');
-  buf.writeln('  )? get crossValidatorAsync => null;');
-  buf.writeln();
-  buf.writeln('  @override');
-  buf.writeln('  Set<ValidasiField<$className, dynamic>> get crossDependsOn =>'
-      ' const <ValidasiField<$className, dynamic>>{};');
-}
+void _addLeafValidate(ClassBuilder c, String valueType, FieldRules ctx) {
+  final nullableType = valueType.endsWith('?') ? valueType : '$valueType?';
 
-void _emitCrossFieldOverrides(
-  StringBuffer buf,
-  String className,
-  String fieldsClassName,
-  CrossFieldInfo crossInfo,
-) {
-  final crossClassName = '${className}CrossFields';
-  final validatorFunc = crossInfo.functionName;
-  final ruleName = crossInfo.isAsync ? 'ValidateWithAsync' : 'ValidateWith';
-
-  buf.writeln();
-  buf.writeln('  @override');
-  buf.writeln(
-      '  CrossFieldKey<$className> get crossFieldKey => $crossClassName.${crossInfo.field.name};');
-  buf.writeln();
-  buf.writeln('  @override');
-  buf.writeln('  Set<ValidasiField<$className, dynamic>> get crossDependsOn {');
-  if (crossInfo.dependsOn.isEmpty) {
-    buf.writeln('    return const <ValidasiField<$className, dynamic>>{};');
-  } else {
-    buf.write('    return const <ValidasiField<$className, dynamic>>{');
-    final deps =
-        crossInfo.dependsOn.map((d) => '$fieldsClassName.$d').join(', ');
-    buf.writeln('$deps};');
-  }
-  buf.writeln('  }');
-
-  if (crossInfo.isAsync) {
-    buf.writeln();
-    buf.writeln('  @override');
-    buf.writeln('  List<ValidationError> Function(');
-    buf.writeln('    V? Function<V>(ValidasiField<$className, V>)');
-    buf.writeln('  )? get crossValidator => null;');
-    buf.writeln();
-    buf.writeln('  @override');
-    buf.writeln('  Future<List<ValidationError>> Function(');
-    buf.writeln('    V? Function<V>(ValidasiField<$className, V>)');
-    buf.writeln('  ) get crossValidatorAsync {');
-    buf.writeln('    return (getField) async {');
-    buf.writeln('      final result = await $validatorFunc(getField);');
-    buf.writeln('      if (result != null) {');
-    buf.writeln(
-        "        return [ValidationError(rule: '$ruleName', message: result, path: ['${crossInfo.field.name}'])];");
-    buf.writeln('      }');
-    buf.writeln('      return [];');
-    buf.writeln('    };');
-    buf.writeln('  }');
-  } else {
-    buf.writeln();
-    buf.writeln('  @override');
-    buf.writeln('  List<ValidationError> Function(');
-    buf.writeln('    V? Function<V>(ValidasiField<$className, V>)');
-    buf.writeln('  ) get crossValidator {');
-    buf.writeln('    return (getField) {');
-    buf.writeln('      final result = $validatorFunc(getField);');
-    buf.writeln('      if (result != null) {');
-    buf.writeln(
-        "        return [ValidationError(rule: '$ruleName', message: result, path: ['${crossInfo.field.name}'])];");
-    buf.writeln('      }');
-    buf.writeln('      return [];');
-    buf.writeln('    };');
-    buf.writeln('  }');
-    buf.writeln();
-    buf.writeln('  @override');
-    buf.writeln('  Future<List<ValidationError>> Function(');
-    buf.writeln('    V? Function<V>(ValidasiField<$className, V>)');
-    buf.writeln('  )? get crossValidatorAsync => null;');
-  }
-}
-
-String _nullableParam(String type) {
-  if (type.endsWith('?')) return type;
-  return '$type?';
-}
-
-void _emitLeafValidate(
-  StringBuffer buf,
-  String fieldsClassName,
-  String valueType,
-  FieldRules ctx,
-) {
   if (ctx.hasAsyncRule) {
-    buf.writeln();
-    buf.writeln('  @override');
-    buf.writeln(
-        '  ValidasiResult<$valueType> validate(${_nullableParam(valueType)} value) {');
-    buf.writeln(
-        "    throw StateError('Async rules cannot be used with validate(). Use validateAsync() instead.');");
-    buf.writeln('  }');
+    c.methods.add(Method((m) {
+      m.name = 'validate';
+      m.returns = refer('ValidasiResult<$valueType>');
+      m.annotations.add(refer('override'));
+      m.requiredParameters.add(Parameter((p) {
+        p.name = 'value';
+        p.type = refer(nullableType);
+      }));
+      m.body = Code(
+          "throw StateError('Async rules cannot be used with validate(). Use validateAsync() instead.');");
+    }));
   } else {
-    buf.writeln();
-    buf.writeln('  @override');
+    final buf = StringBuffer();
+    buf.writeln('final \$errors = <ValidationError>[];');
+    final innerBuf = StringBuffer();
+    _snippets.emitInline(innerBuf, ctx,
+        indent: '', accessor: 'value', pathExpr: '[name]');
+    buf.write(innerBuf);
+    buf.writeln('if (\$errors.isNotEmpty) {');
+    buf.writeln('return ValidasiResult(errors: \$errors, isValid: false);');
+    buf.writeln('}');
     buf.writeln(
-        '  ValidasiResult<$valueType> validate(${_nullableParam(valueType)} value) {');
-    buf.writeln('    final \$errors = <ValidationError>[];');
-    _snippets.emitInline(
-      buf,
-      ctx,
-      indent: '    ',
-      accessor: 'value',
-      pathExpr: '[name]',
-    );
-    buf.writeln('    if (\$errors.isNotEmpty) {');
-    buf.writeln(
-        '      return ValidasiResult(errors: \$errors, isValid: false);');
-    buf.writeln('    }');
-    buf.writeln(
-        '    return ValidasiResult(errors: const [], isValid: true, data: value);');
-    buf.writeln('  }');
+        'return ValidasiResult(errors: const [], isValid: true, data: value);');
+
+    c.methods.add(Method((m) {
+      m.name = 'validate';
+      m.returns = refer('ValidasiResult<$valueType>');
+      m.annotations.add(refer('override'));
+      m.requiredParameters.add(Parameter((p) {
+        p.name = 'value';
+        p.type = refer(nullableType);
+      }));
+      m.body = Code(buf.toString());
+    }));
   }
 
-  buf.writeln();
-  buf.writeln('  @override');
+  final asyncBuf = StringBuffer();
   if (ctx.hasAsyncRule) {
-    buf.writeln(
-        '  Future<ValidasiResult<$valueType>> validateAsync(${_nullableParam(valueType)} value) async {');
-    buf.writeln('    final \$errors = <ValidationError>[];');
-    _snippets.emitInline(
-      buf,
-      ctx,
-      indent: '    ',
-      accessor: 'value',
-      pathExpr: '[name]',
-      async: true,
-    );
-    buf.writeln('    if (\$errors.isNotEmpty) {');
-    buf.writeln(
-        '      return ValidasiResult(errors: \$errors, isValid: false);');
-    buf.writeln('    }');
-    buf.writeln(
-        '    return ValidasiResult(errors: const [], isValid: true, data: value);');
-    buf.writeln('  }');
+    asyncBuf.writeln('final \$errors = <ValidationError>[];');
+    final innerBuf = StringBuffer();
+    _snippets.emitInline(innerBuf, ctx,
+        indent: '', accessor: 'value', pathExpr: '[name]', async: true);
+    asyncBuf.write(innerBuf);
+    asyncBuf.writeln('if (\$errors.isNotEmpty) {');
+    asyncBuf
+        .writeln('return ValidasiResult(errors: \$errors, isValid: false);');
+    asyncBuf.writeln('}');
+    asyncBuf.writeln(
+        'return ValidasiResult(errors: const [], isValid: true, data: value);');
   } else {
-    buf.writeln(
-        '  Future<ValidasiResult<$valueType>> validateAsync(${_nullableParam(valueType)} value) async {');
-    buf.writeln('    return validate(value);');
-    buf.writeln('  }');
+    asyncBuf.writeln('return validate(value);');
   }
+
+  c.methods.add(Method((m) {
+    m.name = 'validateAsync';
+    m.modifier = MethodModifier.async;
+    m.returns = refer('Future<ValidasiResult<$valueType>>');
+    m.annotations.add(refer('override'));
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'value';
+      p.type = refer(nullableType);
+    }));
+    m.body = Code(asyncBuf.toString());
+  }));
 }
 
-void _emitNestedValidate(
-  StringBuffer buf,
-  String className,
-  String fieldsClassName,
-  String leafName,
-  String valueType,
-  FieldRules ctx,
-) {
+void _addNestedValidate(ClassBuilder c, String valueType, FieldRules ctx) {
   final isIterable = ctx.isNestedIterable;
-  final indexVar = '\$${ctx.field.name}Index';
-  final itemVar = '\$${ctx.field.name}Item';
-  final resultVar = '\$${ctx.field.name}Result';
+  final nullableType = valueType.endsWith('?') ? valueType : '$valueType?';
+  final fieldName = ctx.field.name!;
+  final indexVar = '\$${fieldName}Index';
+  final itemVar = '\$${fieldName}Item';
+  final resultVar = '\$${fieldName}Result';
 
-  buf.writeln();
-  buf.writeln('  @override');
-  buf.writeln(
-      '  ValidasiResult<$valueType> validate(${_nullableParam(valueType)} value) {');
-  buf.writeln('    if (value == null) {');
-  buf.writeln('      return const ValidasiResult(errors: [], isValid: true);');
-  buf.writeln('    }');
+  // Add both validate and validateAsync using a shared body builder
+  c.methods.add(_buildNestedMethod(
+    'validate',
+    'ValidasiResult<$valueType>',
+    nullableType,
+    isIterable,
+    indexVar,
+    itemVar,
+    resultVar,
+    fieldName,
+    isAsync: false,
+  ));
+  c.methods.add(_buildNestedMethod(
+    'validateAsync',
+    'Future<ValidasiResult<$valueType>>',
+    nullableType,
+    isIterable,
+    indexVar,
+    itemVar,
+    resultVar,
+    fieldName,
+    isAsync: true,
+  ));
+}
 
-  if (!isIterable) {
-    buf.writeln('    final $resultVar = value.validate();');
-    buf.writeln('    if (!$resultVar.isValid) {');
-    buf.writeln('      return ValidasiResult(');
-    buf.writeln(
-        '        errors: $resultVar.errors.map((e) => e.withPrefix(name)).toList(),');
-    buf.writeln('        isValid: false,');
-    buf.writeln('      );');
-    buf.writeln('    }');
-    buf.writeln(
-        '    return ValidasiResult(errors: const [], isValid: true, data: value);');
-  } else {
-    buf.writeln('    final \$errors = <ValidationError>[];');
-    buf.writeln(
-        '    for (var $indexVar = 0; $indexVar < value.length; $indexVar++) {');
-    buf.writeln('      final $itemVar = value[$indexVar];');
-    buf.writeln('      final $resultVar = $itemVar.validate();');
-    buf.writeln('      if (!$resultVar.isValid) {');
-    buf.writeln(
-        '        \$errors.addAll($resultVar.errors.map((e) => e.withPrefix("\$name[\${$indexVar}]")));');
-    buf.writeln('      }');
-    buf.writeln('    }');
-    buf.writeln('    if (\$errors.isNotEmpty) {');
-    buf.writeln(
-        '      return ValidasiResult(errors: \$errors, isValid: false);');
-    buf.writeln('    }');
-    buf.writeln(
-        '    return ValidasiResult(errors: const [], isValid: true, data: value);');
-  }
+Method _buildNestedMethod(
+  String methodName,
+  String returnType,
+  String nullableType,
+  bool isIterable,
+  String indexVar,
+  String itemVar,
+  String resultVar,
+  String fieldName, {
+  required bool isAsync,
+}) {
+  final validateMethod = isAsync ? 'validateAsync' : 'validate';
+  final awaitKw = isAsync ? 'await ' : '';
 
-  buf.writeln('  }');
-
-  buf.writeln();
-  buf.writeln('  @override');
-  buf.writeln(
-      '  Future<ValidasiResult<$valueType>> validateAsync(${_nullableParam(valueType)} value) async {');
-  buf.writeln('    if (value == null) {');
-  buf.writeln('      return const ValidasiResult(errors: [], isValid: true);');
-  buf.writeln('    }');
+  final buf = StringBuffer();
+  buf.writeln('if (value == null) {');
+  buf.writeln('return const ValidasiResult(errors: [], isValid: true);');
+  buf.writeln('}');
 
   if (!isIterable) {
-    buf.writeln('    final $resultVar = await value.validateAsync();');
-    buf.writeln('    if (!$resultVar.isValid) {');
-    buf.writeln('      return ValidasiResult(');
+    buf.writeln('final $resultVar = ${awaitKw}value.$validateMethod();');
+    buf.writeln('if (!$resultVar.isValid) {');
+    buf.writeln('return ValidasiResult(');
     buf.writeln(
-        '        errors: $resultVar.errors.map((e) => e.withPrefix(name)).toList(),');
-    buf.writeln('        isValid: false,');
-    buf.writeln('      );');
-    buf.writeln('    }');
+        'errors: $resultVar.errors.map((e) => e..prefix(name)).toList(),');
+    buf.writeln('isValid: false,');
+    buf.writeln(');');
+    buf.writeln('}');
     buf.writeln(
-        '    return ValidasiResult(errors: const [], isValid: true, data: value);');
+        'return ValidasiResult(errors: const [], isValid: true, data: value);');
   } else {
-    buf.writeln('    final \$errors = <ValidationError>[];');
+    buf.writeln('final \$errors = <ValidationError>[];');
     buf.writeln(
-        '    for (var $indexVar = 0; $indexVar < value.length; $indexVar++) {');
-    buf.writeln('      final $itemVar = value[$indexVar];');
-    buf.writeln('      final $resultVar = await $itemVar.validateAsync();');
-    buf.writeln('      if (!$resultVar.isValid) {');
+        'for (var $indexVar = 0; $indexVar < value.length; $indexVar++) {');
+    buf.writeln('final $itemVar = value[$indexVar];');
+    buf.writeln('final $resultVar = $awaitKw$itemVar.$validateMethod();');
+    buf.writeln('if (!$resultVar.isValid) {');
     buf.writeln(
-        '        \$errors.addAll($resultVar.errors.map((e) => e.withPrefix("\$name[\${$indexVar}]")));');
-    buf.writeln('      }');
-    buf.writeln('    }');
-    buf.writeln('    if (\$errors.isNotEmpty) {');
+        '\$errors.addAll($resultVar.errors.map((e) => e..prefix("\$name[\${$indexVar}]")));');
+    buf.writeln('}');
+    buf.writeln('}');
+    buf.writeln('if (\$errors.isNotEmpty) {');
+    buf.writeln('return ValidasiResult(errors: \$errors, isValid: false);');
+    buf.writeln('}');
     buf.writeln(
-        '      return ValidasiResult(errors: \$errors, isValid: false);');
-    buf.writeln('    }');
-    buf.writeln(
-        '    return ValidasiResult(errors: const [], isValid: true, data: value);');
+        'return ValidasiResult(errors: const [], isValid: true, data: value);');
   }
 
-  buf.writeln('  }');
+  return Method((m) {
+    m.name = methodName;
+    if (isAsync) m.modifier = MethodModifier.async;
+    m.returns = refer(returnType);
+    m.annotations.add(refer('override'));
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'value';
+      p.type = refer(nullableType);
+    }));
+    m.body = Code(buf.toString());
+  });
 }
 
 String _capitalize(String name) {
