@@ -76,6 +76,42 @@ class ValidasiFieldSignals<V> {
     _asyncError.value = null;
   }
 
+  void migrateFrom(ValidasiFieldSignals<V> other) {
+    _value.value = other._value.value;
+    _initialValue.value = other._initialValue.value;
+    _errors.value = List<FieldError>.of(other._errors.value);
+    _touched.value = other._touched.value;
+    _disabled.value = other._disabled.value;
+    _isValidating.value = other._isValidating.value;
+    _asyncError.value = other._asyncError.value;
+  }
+
+  void swapSignalsWith(ValidasiFieldSignals<V> other) {
+    final tmpVal = _value.value;
+    final tmpInit = _initialValue.value;
+    final tmpErr = List<FieldError>.of(_errors.value);
+    final tmpTouched = _touched.value;
+    final tmpDisabled = _disabled.value;
+    final tmpValidating = _isValidating.value;
+    final tmpAsync = _asyncError.value;
+
+    _value.value = other._value.value;
+    _initialValue.value = other._initialValue.value;
+    _errors.value = List<FieldError>.of(other._errors.value);
+    _touched.value = other._touched.value;
+    _disabled.value = other._disabled.value;
+    _isValidating.value = other._isValidating.value;
+    _asyncError.value = other._asyncError.value;
+
+    other._value.value = tmpVal;
+    other._initialValue.value = tmpInit;
+    other._errors.value = tmpErr;
+    other._touched.value = tmpTouched;
+    other._disabled.value = tmpDisabled;
+    other._isValidating.value = tmpValidating;
+    other._asyncError.value = tmpAsync;
+  }
+
   void dispose() {
     _value.dispose();
     _initialValue.dispose();
@@ -84,5 +120,7 @@ class ValidasiFieldSignals<V> {
     _disabled.dispose();
     _isValidating.dispose();
     _asyncError.dispose();
+    isDirty.dispose();
+    isValid.dispose();
   }
 }

@@ -64,6 +64,8 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
       <ValidasiField<T, dynamic>, ValidasiField<T, dynamic>>{};
   final _objectArrayStructures =
       <ValidasiField<T, dynamic>, _ObjectArrayStructure<T>>{};
+  final _arraySubFields =
+      <ValidasiField<T, dynamic>, List<ValidasiField<T, dynamic>>>{};
   final _formSignals = ValidasiFormSignals();
   final T Function(ValidasiFormController<T>) assembler;
   final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?
@@ -247,7 +249,10 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     fc?.dispose();
     _fieldsByName.remove(field.name);
     _arrayItemFields.remove(field);
-    _arrayItemParents.remove(field);
+    final parent = _arrayItemParents.remove(field);
+    if (parent != null) {
+      _arraySubFields[parent]?.remove(field);
+    }
     if (!_disposed) {
       _formSignals.isDirty =
           _fields.values.any((f) => !f.disabled && f.isDirty.value);
@@ -259,9 +264,10 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   void unregister<V>(ValidasiField<T, V> field) {
     _throwIfDisposed();
     final key = field as ValidasiField<T, dynamic>;
-    for (final name in _fieldsByName.keys.toList()) {
-      if (name.startsWith('${key.name}[')) {
-        _unregister(_fieldsByName[name]!);
+    final subs = _arraySubFields.remove(key);
+    if (subs != null) {
+      for (final sub in subs) {
+        _unregister(sub);
       }
     }
     _unregister(key);
@@ -274,15 +280,15 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void _rebuildArrayItems<V>(ValidasiField<T, List<V>> field) {
-    for (final name in _fieldsByName.keys.toList()) {
-      if (name.startsWith('${field.name}[')) {
-        _unregisterArrayItem(_fieldsByName[name]!);
-      }
+    final previous = _arraySubFields.remove(field) ?? const [];
+    for (final sub in previous) {
+      _unregisterArrayItem(sub);
     }
 
     final parentFc = getFieldController<List<V>>(field);
     final list = parentFc.value ?? <V>[];
     final structure = _objectArrayStructures[field];
+    final newSubs = <ValidasiField<T, dynamic>>[];
 
     for (var i = 0; i < list.length; i++) {
       if (structure != null) {
@@ -296,14 +302,17 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
           fc.setInitialValue(subValue);
           _arrayItemFields.add(subField);
           _arrayItemParents[subField] = field as ValidasiField<T, dynamic>;
+          newSubs.add(subField);
         }
       } else {
         final itemField = _ArrayItemField<T, V>('${field.name}[$i]');
         register(itemField, initialValue: list[i]);
         _arrayItemFields.add(itemField);
         _arrayItemParents[itemField] = field as ValidasiField<T, dynamic>;
+        newSubs.add(itemField);
       }
     }
+    _arraySubFields[field] = newSubs;
   }
 
   ValidasiField<T, V>? getArrayItemField<V>(
@@ -355,7 +364,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     final parentFc = getFieldController<List<V>>(field);
     final list = <V>[...parentFc.value ?? <V>[], value];
     parentFc.value = list;
-    _rebuildArrayItems(field);
+    _registerNewSlot(field, list.length - 1, _objectArrayStructures[key], list);
     notifyListeners();
   }
 
@@ -383,7 +392,38 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     if (index < 0 || index > list.length) return;
     list.insert(index, value);
     parentFc.value = list;
-    _rebuildArrayItems(field);
+    final structure = _objectArrayStructures[key];
+    final n = list.length;
+    _registerNewSlot(field, n - 1, structure, list);
+    _isBatching = true;
+    try {
+      for (var i = n - 2; i >= index; i--) {
+        _migrateSlotSignals(field, i, i + 1);
+      }
+      if (structure != null) {
+        final subFields = structure.indexedFields(index);
+        for (final subField in subFields) {
+          final existingField = _fieldsByName[subField.name];
+          if (existingField == null) continue;
+          final indexedField = existingField as IndexedField<T, dynamic>;
+          final subValue = indexedField.extractFromItem(list[index]);
+          final fc = _fields[existingField];
+          if (fc != null) {
+            fc.setInitialValue(subValue);
+            fc.reset();
+          }
+        }
+      } else {
+        final itemField = _ArrayItemField<T, V>('${field.name}[$index]');
+        final fc = _fields[itemField];
+        if (fc != null) {
+          fc.setInitialValue(list[index]);
+          fc.reset();
+        }
+      }
+    } finally {
+      _isBatching = false;
+    }
     notifyListeners();
   }
 
@@ -394,8 +434,159 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     if (index < 0 || index >= list.length) return;
     list.removeAt(index);
     parentFc.value = list;
-    _rebuildArrayItems(field);
+    final n = list.length;
+    _isBatching = true;
+    try {
+      for (var i = index; i < n; i++) {
+        _migrateSlotSignals(field, i + 1, i);
+      }
+    } finally {
+      _isBatching = false;
+    }
+    _unregisterLastSlot(field, n);
     notifyListeners();
+  }
+
+  void _swapSlotSignals<V>(
+    ValidasiField<T, List<V>> parentField,
+    int i,
+    int j,
+  ) {
+    if (i == j) return;
+    final subs = _arraySubFields[parentField] ?? const [];
+
+    for (final subField in subs) {
+      final name = subField.name;
+      final start = name.lastIndexOf('[');
+      final end = name.lastIndexOf(']');
+      if (start == -1 || end == -1) continue;
+
+      final slotIndex = int.parse(name.substring(start + 1, end));
+      if (slotIndex != i && slotIndex != j) continue;
+      if (slotIndex != i) continue;
+
+      final prefix = name.substring(0, start + 1);
+      final suffix = name.substring(end);
+      final otherName = '$prefix$j$suffix';
+
+      final otherSubField = _fieldsByName[otherName];
+      if (otherSubField == null) continue;
+
+      final fcI = _fields[subField]!;
+      final fcJ = _fields[otherSubField]!;
+      fcI.swapSignalsWith(fcJ);
+    }
+
+    for (final subField in subs) {
+      final name = subField.name;
+      final start = name.lastIndexOf('[');
+      final end = name.lastIndexOf(']');
+      if (start == -1 || end == -1) continue;
+      final slotIndex = int.parse(name.substring(start + 1, end));
+      if (slotIndex != i && slotIndex != j) continue;
+      final state = _asyncValidators.remove(subField);
+      state?.cancel();
+      final fc = _fields[subField];
+      if (fc != null && fc.isValidating) {
+        fc.isValidating = false;
+      }
+    }
+  }
+
+  void _migrateAsyncValidator(
+    ValidasiField<T, dynamic> srcField,
+    ValidasiField<T, dynamic> destField,
+    ValidasiFieldSignals<dynamic> srcFc,
+    ValidasiFieldSignals<dynamic> destFc,
+  ) {
+    final state = _asyncValidators.remove(srcField);
+    if (state == null) return;
+    _asyncValidators[destField] = state;
+    final wasInFlight =
+        srcFc.isValidating || (state.debounceTimer?.isActive ?? false);
+    state.cancel();
+    destFc.isValidating = false;
+    if (wasInFlight) {
+      triggerAsyncValidation(destField);
+    }
+  }
+
+  void _migrateSlotSignals<V>(
+    ValidasiField<T, List<V>> parentField,
+    int fromIndex,
+    int toIndex,
+  ) {
+    final subs = _arraySubFields[parentField] ?? const [];
+    for (final subField in subs) {
+      final name = subField.name;
+      final start = name.lastIndexOf('[');
+      final end = name.lastIndexOf(']');
+      if (start == -1 || end == -1) continue;
+      final slotIndex = int.parse(name.substring(start + 1, end));
+      if (slotIndex != fromIndex) continue;
+
+      final prefix = name.substring(0, start + 1);
+      final suffix = name.substring(end);
+      final destName = '$prefix$toIndex$suffix';
+      final destSubField = _fieldsByName[destName];
+      if (destSubField == null) continue;
+
+      final srcFc = _fields[subField]!;
+      final destFc = _fields[destSubField]!;
+      destFc.migrateFrom(srcFc);
+      _migrateAsyncValidator(subField, destSubField, srcFc, destFc);
+    }
+  }
+
+  void _registerNewSlot<V>(
+    ValidasiField<T, List<V>> parentField,
+    int newIndex,
+    _ObjectArrayStructure<T>? structure,
+    List<V> list,
+  ) {
+    final newSubs = <ValidasiField<T, dynamic>>[];
+    if (structure != null) {
+      final subFields = structure.indexedFields(newIndex);
+      for (final subField in subFields) {
+        register(subField);
+        final indexedField = subField as IndexedField<T, dynamic>;
+        final subValue = indexedField.extractFromItem(list[newIndex]);
+        final fc = _fields[subField]!;
+        fc.setInitialValue(subValue);
+        _arrayItemFields.add(subField);
+        _arrayItemParents[subField] = parentField as ValidasiField<T, dynamic>;
+        newSubs.add(subField);
+      }
+    } else {
+      final itemField = _ArrayItemField<T, V>('${parentField.name}[$newIndex]');
+      register(itemField, initialValue: list[newIndex]);
+      _arrayItemFields.add(itemField);
+      _arrayItemParents[itemField] = parentField as ValidasiField<T, dynamic>;
+      newSubs.add(itemField);
+    }
+    final existing = _arraySubFields[parentField];
+    if (existing != null) {
+      existing.addAll(newSubs);
+    } else {
+      _arraySubFields[parentField] = newSubs;
+    }
+  }
+
+  void _unregisterLastSlot<V>(
+    ValidasiField<T, List<V>> parentField,
+    int lastIndex,
+  ) {
+    final subs = _arraySubFields[parentField]?.toList() ?? const [];
+    for (final subField in subs) {
+      final name = subField.name;
+      final start = name.lastIndexOf('[');
+      final end = name.lastIndexOf(']');
+      if (start == -1 || end == -1) continue;
+      final slotIndex = int.parse(name.substring(start + 1, end));
+      if (slotIndex == lastIndex) {
+        _unregisterArrayItem(subField);
+      }
+    }
   }
 
   void swapArrayItems<V>(ValidasiField<T, List<V>> field, int i, int j) {
@@ -407,7 +598,12 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     list[i] = list[j];
     list[j] = temp;
     parentFc.value = list;
-    _rebuildArrayItems(field);
+    _isBatching = true;
+    try {
+      _swapSlotSignals(field, i, j);
+    } finally {
+      _isBatching = false;
+    }
     notifyListeners();
   }
 
@@ -665,10 +861,11 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
 
   @override
   void notifyListeners() {
-    if (_disposed) return;
+    if (_disposed || _isBatching) return;
     super.notifyListeners();
   }
 
+  bool _isBatching = false;
   bool _disposed = false;
 
   void _throwIfDisposed() {
@@ -688,6 +885,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     }
     _asyncValidators.clear();
     _objectArrayStructures.clear();
+    _arraySubFields.clear();
     for (final field in _fields.keys.toList()) {
       _unregister(field);
     }
