@@ -9,6 +9,8 @@ class ValidasiFormSignals {
   final Signal<bool> _isDirty = signal<bool>(false);
   final Signal<bool> _isTouched = signal<bool>(false);
   final Signal<List<FieldErrors>> _fieldErrors = signal<List<FieldErrors>>([]);
+  final Signal<List<ValidationError>> _formErrors =
+      signal<List<ValidationError>>([]);
 
   bool get isSubmitted => _isSubmitted.value;
   set isSubmitted(bool v) => _isSubmitted.value = v;
@@ -23,6 +25,8 @@ class ValidasiFormSignals {
   set isTouched(bool v) => _isTouched.value = v;
 
   List<FieldErrors> get fieldErrors => _fieldErrors.value;
+  List<ValidationError> get formErrors => _formErrors.value;
+  set formErrors(List<ValidationError> v) => _formErrors.value = v;
 
   void syncFieldErrors(
       Map<ValidasiField<dynamic, dynamic>, ValidasiFieldSignals> fields) {
@@ -37,6 +41,7 @@ class ValidasiFormSignals {
     _isLoading.value = false;
     _isDirty.value = false;
     _isTouched.value = false;
+    _formErrors.value = [];
   }
 
   void dispose() {
@@ -45,5 +50,6 @@ class ValidasiFormSignals {
     _isDirty.dispose();
     _isTouched.dispose();
     _fieldErrors.dispose();
+    _formErrors.dispose();
   }
 }

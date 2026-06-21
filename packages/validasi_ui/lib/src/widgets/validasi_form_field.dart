@@ -69,6 +69,8 @@ class ValidasiFormField<T, V> extends SignalWidget {
       },
       isDirty: isDirty,
       isTouched: isTouched,
+      setError: (message) => controller.setError(field, message),
+      clearErrors: () => controller.clearErrors(field),
     );
 
     return builder(context, state);

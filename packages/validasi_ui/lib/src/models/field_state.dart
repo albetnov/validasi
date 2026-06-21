@@ -8,6 +8,9 @@ class ValidasiFieldState<V> {
   final void Function(bool hasFocus)? onFocusChange;
   final bool isDirty;
   final bool isTouched;
+  final bool isValidating;
+  final void Function(String message)? setError;
+  final void Function()? clearErrors;
 
   const ValidasiFieldState({
     required this.value,
@@ -17,6 +20,9 @@ class ValidasiFieldState<V> {
     this.onFocusChange,
     this.isDirty = false,
     this.isTouched = false,
+    this.isValidating = false,
+    this.setError,
+    this.clearErrors,
   });
 
   String? get errorText => errors.isEmpty ? null : errors.first.message;

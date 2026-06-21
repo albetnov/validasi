@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
+import 'package:validasi/validasi.dart';
 import 'package:validasi_ui/src/controller/controller.dart';
 import 'package:validasi_ui/src/models/validation_mode.dart';
 
@@ -8,6 +11,7 @@ class ValidasiForm<T> extends StatefulWidget {
   final Widget Function(BuildContext context, SubmitHandler<T> submit) builder;
   final ValidasiFormController<T>? controller;
   final T Function(ValidasiFormController<T>) assembler;
+  final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)? formValidator;
   final ValidationMode mode;
   final ReValidationMode reValidateMode;
   final T? initialValues;
@@ -16,6 +20,7 @@ class ValidasiForm<T> extends StatefulWidget {
     required this.builder,
     required this.assembler,
     this.controller,
+    this.formValidator,
     this.mode = ValidationMode.onSubmit,
     this.reValidateMode = ReValidationMode.onChange,
     this.initialValues,
@@ -47,7 +52,10 @@ class _FormState<T> extends State<ValidasiForm<T>> {
   void initState() {
     super.initState();
     _controller = widget.controller ??
-        ValidasiFormController<T>(assembler: widget.assembler);
+        ValidasiFormController<T>(
+          assembler: widget.assembler,
+          formValidator: widget.formValidator,
+        );
     if (widget.initialValues != null) {
       _controller.setInitialValues(widget.initialValues as T);
     }
