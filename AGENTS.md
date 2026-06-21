@@ -35,10 +35,13 @@ dart run melos run test
 dart run melos run test:validasi
 
 # Run tests for validasi_gen package only
-    dart run melos run test:gen
+dart run melos run test:gen
 
-    # Run tests for validasi_mcp package only
-    dart run melos run test:mcp
+# Run tests for validasi_ui package only (Flutter)
+dart run melos run test:ui
+
+# Run tests for validasi_mcp package only
+dart run melos run test:mcp
 
 # Analyze all packages
 dart run melos run analyze
@@ -68,6 +71,14 @@ dart test test/rules/iterable/min_length_test.dart
 dart run melos run analyze
 dart run melos run format:fix
 ```
+
+Note: `dart run melos run analyze` only covers pure-Dart packages (`validasi`, `validasi_annotation`, `validasi_gen`, `validasi_gen/example`, `validasi_mcp`). The `validasi_ui` package requires Flutter — run its analysis separately:
+
+```bash
+cd packages/validasi_ui && flutter analyze
+```
+
+**Do not commit `packages/validasi_ui/roadmap.md`** — this file is untracked and should remain so. It documents internal planning and is not part of the published package.
 
 **When docs change (`docs/` directory):**
 

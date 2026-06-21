@@ -100,6 +100,18 @@ final result = ageSchema.validate('25'); // ✓ Correct type
 
 Read more in the [Transformations Guide](/guide/transformations.md) and [Engine Architecture](/advanced/engine.md).
 
+## Companion Packages
+
+Validasi also ships with two companion packages:
+
+- **`validasi_annotation` + `validasi_gen`** — annotation-based code generation. Decorate your model with `@ValidateClass()` and `@Validate()`, and the generator produces a typed `XFields<V>` hierarchy plus `validate()` / `validateAsync()` extension. No Runtime codegen — the generator runs at build time via `build_runner`.
+- **`validasi_ui`** — headless form management for Flutter. A `ValidasiFormController<T>` bridges generated schemas to the widget tree with hooks-style ergonomics: `watch`, `watchField`, `setError`, `formErrors`.
+
+See the individual package READMEs for details:
+- `packages/validasi_annotation/README.md`
+- `packages/validasi_gen/README.md`
+- `packages/validasi_ui/README.md`
+
 ## Community & Support
 
 - **GitHub**: [albetnov/validasi](https://github.com/albetnov/validasi)

@@ -13,9 +13,12 @@ class _Model {
 
 class _NameField extends ValidasiField<_Model, String> {
   const _NameField() : super();
-  @override String get name => 'name';
-  @override String? extract(_Model owner) => owner.name;
-  @override ValidasiResult<String> validate(String? value) {
+  @override
+  String get name => 'name';
+  @override
+  String? extract(_Model owner) => owner.name;
+  @override
+  ValidasiResult<String> validate(String? value) {
     if (value == null || value.isEmpty) {
       return ValidasiResult.error(
         ValidationError(rule: 'Required', message: 'Required'),
@@ -27,9 +30,12 @@ class _NameField extends ValidasiField<_Model, String> {
 
 class _EmailField extends ValidasiField<_Model, String> {
   const _EmailField() : super();
-  @override String get name => 'email';
-  @override String? extract(_Model owner) => owner.email;
-  @override ValidasiResult<String> validate(String? value) {
+  @override
+  String get name => 'email';
+  @override
+  String? extract(_Model owner) => owner.email;
+  @override
+  ValidasiResult<String> validate(String? value) {
     if (value == null || value.isEmpty) {
       return ValidasiResult.error(
         ValidationError(rule: 'Required', message: 'Required'),
@@ -44,24 +50,33 @@ ValidasiResult<_Model> _formValidator(ValidasiFormController<_Model> ctrl) {
   final name = ctrl.getValue(const _NameField());
   final email = ctrl.getValue(const _EmailField());
   if (name == null || name.isEmpty) {
-    errors.add(ValidationError(rule: 'Required', message: 'Name required', path: ['name']));
+    errors.add(ValidationError(
+        rule: 'Required', message: 'Name required', path: ['name']));
   }
   if (email == null || email.isEmpty) {
-    errors.add(ValidationError(rule: 'Required', message: 'Email required', path: ['email']));
+    errors.add(ValidationError(
+        rule: 'Required', message: 'Email required', path: ['email']));
   }
   // refine: email must contain name
-  if (name != null && email != null && email.isNotEmpty && name.isNotEmpty && !email.contains(name)) {
-    errors.add(ValidationError(rule: 'Refine', message: 'Email must contain name', path: ['email']));
+  if (name != null &&
+      email != null &&
+      email.isNotEmpty &&
+      name.isNotEmpty &&
+      !email.contains(name)) {
+    errors.add(ValidationError(
+        rule: 'Refine', message: 'Email must contain name', path: ['email']));
   }
   return ValidasiResult(errors: errors, isValid: errors.isEmpty);
 }
 
-Future<ValidasiResult<_Model>> _asyncFormValidator(ValidasiFormController<_Model> ctrl) async {
+Future<ValidasiResult<_Model>> _asyncFormValidator(
+    ValidasiFormController<_Model> ctrl) async {
   return _formValidator(ctrl);
 }
 
 ValidasiFormController<_Model> _makeController({
-  FutureOr<ValidasiResult<_Model>> Function(ValidasiFormController<_Model>)? formValidator,
+  FutureOr<ValidasiResult<_Model>> Function(ValidasiFormController<_Model>)?
+      formValidator,
 }) {
   return ValidasiFormController<_Model>(
     assembler: (ctrl) => _Model(
@@ -145,7 +160,9 @@ void main() {
     test('empty/unknown path errors go to formErrors', () {
       final controller = _makeController(formValidator: (ctrl) {
         return ValidasiResult(
-          errors: [ValidationError(rule: 'Custom', message: 'Form-level error')],
+          errors: [
+            ValidationError(rule: 'Custom', message: 'Form-level error')
+          ],
           isValid: false,
         );
       });
@@ -280,7 +297,9 @@ void main() {
       controller.register(nameField, initialValue: 'hello');
 
       String? captured;
-      controller.submit((model) { captured = model.name; })();
+      controller.submit((model) {
+        captured = model.name;
+      })();
 
       expect(captured, 'hello');
     });

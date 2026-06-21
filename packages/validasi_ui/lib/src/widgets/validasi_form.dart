@@ -11,7 +11,8 @@ class ValidasiForm<T> extends StatefulWidget {
   final Widget Function(BuildContext context, SubmitHandler<T> submit) builder;
   final ValidasiFormController<T>? controller;
   final T Function(ValidasiFormController<T>) assembler;
-  final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)? formValidator;
+  final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?
+      formValidator;
   final ValidationMode mode;
   final ReValidationMode reValidateMode;
   final T? initialValues;

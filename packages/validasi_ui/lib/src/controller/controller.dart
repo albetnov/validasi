@@ -14,7 +14,8 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   final _subscriptions = <ValidasiField<T, dynamic>, List<void Function()>>{};
   final _formSignals = ValidasiFormSignals();
   final T Function(ValidasiFormController<T>) assembler;
-  final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)? formValidator;
+  final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?
+      formValidator;
 
   ValidasiFormController({
     required this.assembler,

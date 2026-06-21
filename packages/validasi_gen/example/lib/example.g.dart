@@ -333,11 +333,9 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
       return const ValidasiResult(errors: [], isValid: true);
     }
     final $errors = <ValidationError>[];
-    for (
-      var $previousCarsIndex = 0;
-      $previousCarsIndex < value.length;
-      $previousCarsIndex++
-    ) {
+    for (var $previousCarsIndex = 0;
+        $previousCarsIndex < value.length;
+        $previousCarsIndex++) {
       final $previousCarsItem = value[$previousCarsIndex];
       final $previousCarsResult = $previousCarsItem.validate();
       if (!$previousCarsResult.isValid) {
@@ -360,11 +358,9 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
       return const ValidasiResult(errors: [], isValid: true);
     }
     final $errors = <ValidationError>[];
-    for (
-      var $previousCarsIndex = 0;
-      $previousCarsIndex < value.length;
-      $previousCarsIndex++
-    ) {
+    for (var $previousCarsIndex = 0;
+        $previousCarsIndex < value.length;
+        $previousCarsIndex++) {
       final $previousCarsItem = value[$previousCarsIndex];
       final $previousCarsResult = await $previousCarsItem.validateAsync();
       if (!$previousCarsResult.isValid) {
@@ -500,11 +496,9 @@ extension $UserValidasi on User {
       }
     }
     // Field: previousCars (nested Car)
-    for (
-      var $previousCarsIndex = 0;
-      $previousCarsIndex < previousCars.length;
-      $previousCarsIndex++
-    ) {
+    for (var $previousCarsIndex = 0;
+        $previousCarsIndex < previousCars.length;
+        $previousCarsIndex++) {
       final $previousCarsItem = previousCars[$previousCarsIndex];
       final $previousCarsItemResult = await $previousCarsItem.validateAsync();
       if (!$previousCarsItemResult.isValid) {
