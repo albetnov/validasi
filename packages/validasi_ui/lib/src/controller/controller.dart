@@ -76,16 +76,44 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
 
   T? _initialModel;
 
-  bool get isSubmitted => _formSignals.isSubmitted;
-  bool get isLoading => _formSignals.isLoading;
-  bool get isDirty => _formSignals.isDirty;
-  bool get isPristine => !_formSignals.isDirty;
-  bool get isTouched => _formSignals.isTouched;
-  List<FieldErrors> get fieldErrors => _formSignals.fieldErrors;
-  List<ValidationError> get formErrors => _formSignals.formErrors;
+  bool get isSubmitted {
+    _throwIfDisposed();
+    return _formSignals.isSubmitted;
+  }
+
+  bool get isLoading {
+    _throwIfDisposed();
+    return _formSignals.isLoading;
+  }
+
+  bool get isDirty {
+    _throwIfDisposed();
+    return _formSignals.isDirty;
+  }
+
+  bool get isPristine {
+    _throwIfDisposed();
+    return !_formSignals.isDirty;
+  }
+
+  bool get isTouched {
+    _throwIfDisposed();
+    return _formSignals.isTouched;
+  }
+
+  List<FieldErrors> get fieldErrors {
+    _throwIfDisposed();
+    return _formSignals.fieldErrors;
+  }
+
+  List<ValidationError> get formErrors {
+    _throwIfDisposed();
+    return _formSignals.formErrors;
+  }
 
   @override
   ValidasiFieldSignals<V> getFieldController<V>(ValidasiField<T, V> field) {
+    _throwIfDisposed();
     if (!_fields.containsKey(field)) {
       register(field);
     }
@@ -93,11 +121,13 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void markSubmitted() {
+    _throwIfDisposed();
     _formSignals.isSubmitted = true;
     notifyListeners();
   }
 
   VoidCallback submit(void Function(T) onSubmit) {
+    _throwIfDisposed();
     return () {
       if (!validate()) {
         markSubmitted();
@@ -108,6 +138,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   Future<void> Function() submitAsync(void Function(T) onSubmit) {
+    _throwIfDisposed();
     return () async {
       if (!await validateAsync()) {
         markSubmitted();
@@ -118,6 +149,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void register<V>(ValidasiField<T, V> field, {V? initialValue}) {
+    _throwIfDisposed();
     if (_fields.containsKey(field)) return;
     V? initial;
     if (_initialModel != null) {
@@ -144,6 +176,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void setInitialValues(T model) {
+    _throwIfDisposed();
     for (final state in _asyncValidators.values) {
       state.cancel();
     }
@@ -162,6 +195,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
 
   @override
   V? getValue<V>(ValidasiField<T, V> field) {
+    _throwIfDisposed();
     final structure =
         _objectArrayStructures[field as ValidasiField<T, dynamic>];
     if (structure != null) {
@@ -171,6 +205,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void setValue<V>(ValidasiField<T, V> field, V? value) {
+    _throwIfDisposed();
     final fc = getFieldController(field);
     if (fc.disabled) return;
     fc.value = value;
@@ -213,10 +248,23 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     _fieldsByName.remove(field.name);
     _arrayItemFields.remove(field);
     _arrayItemParents.remove(field);
+    if (!_disposed) {
+      _formSignals.isDirty =
+          _fields.values.any((f) => !f.disabled && f.isDirty.value);
+      _formSignals.isTouched =
+          _fields.values.any((f) => !f.disabled && f.touched);
+    }
   }
 
   void unregister<V>(ValidasiField<T, V> field) {
-    _unregister(field as ValidasiField<T, dynamic>);
+    _throwIfDisposed();
+    final key = field as ValidasiField<T, dynamic>;
+    for (final name in _fieldsByName.keys.toList()) {
+      if (name.startsWith('${key.name}[')) {
+        _unregister(_fieldsByName[name]!);
+      }
+    }
+    _unregister(key);
     _formSignals.syncFieldErrors(_fields);
     notifyListeners();
   }
@@ -262,11 +310,13 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     ValidasiField<T, List<V>> field,
     int index,
   ) {
+    _throwIfDisposed();
     final name = '${field.name}[$index]';
     return _fieldsByName[name] as ValidasiField<T, V>?;
   }
 
   int getArrayItemCount(ValidasiField<T, dynamic> field) {
+    _throwIfDisposed();
     final fc = _fields[field];
     if (fc == null) return 0;
     final list = fc.value;
@@ -279,6 +329,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     int index,
     String fieldName,
   ) {
+    _throwIfDisposed();
     final name = '${field.name}[$index].$fieldName';
     return _fieldsByName[name] as ValidasiField<T, SubV>?;
   }
@@ -290,6 +341,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     dynamic Function(ValidasiFormController<T>, int)? reconstructItem,
     List<dynamic> Function(ValidasiFormController<T>)? reconstructAll,
   }) {
+    _throwIfDisposed();
     final key = field as ValidasiField<T, dynamic>;
     if (indexedFields != null &&
         reconstructItem != null &&
@@ -315,6 +367,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     dynamic Function(ValidasiFormController<T>, int)? reconstructItem,
     List<dynamic> Function(ValidasiFormController<T>)? reconstructAll,
   }) {
+    _throwIfDisposed();
     final key = field as ValidasiField<T, dynamic>;
     if (indexedFields != null &&
         reconstructItem != null &&
@@ -335,6 +388,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void removeArrayItem<V>(ValidasiField<T, List<V>> field, int index) {
+    _throwIfDisposed();
     final parentFc = getFieldController<List<V>>(field);
     final list = <V>[...parentFc.value ?? <V>[]];
     if (index < 0 || index >= list.length) return;
@@ -345,6 +399,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void swapArrayItems<V>(ValidasiField<T, List<V>> field, int i, int j) {
+    _throwIfDisposed();
     final parentFc = getFieldController<List<V>>(field);
     final list = <V>[...parentFc.value ?? <V>[]];
     if (i < 0 || i >= list.length || j < 0 || j >= list.length) return;
@@ -357,6 +412,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void setFieldDisabled<V>(ValidasiField<T, V> field, bool disabled) {
+    _throwIfDisposed();
     final fc = getFieldController(field);
     if (fc.disabled == disabled) return;
     fc.disabled = disabled;
@@ -373,6 +429,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     Future<String?> Function(V?)? validator, {
     Duration debounce = const Duration(milliseconds: 300),
   }) {
+    _throwIfDisposed();
     if (validator == null) {
       _asyncValidators.remove(field)?.cancel();
       final fc = _fields[field];
@@ -392,6 +449,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   Future<void> triggerAsyncValidation<V>(ValidasiField<T, V> field) async {
+    _throwIfDisposed();
     final state = _asyncValidators[field];
     if (state == null || state.validator == null) return;
     final fc = _fields[field];
@@ -420,8 +478,10 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     });
   }
 
-  List<FieldError> getErrors<V>(ValidasiField<T, V> field) =>
-      getFieldController(field).errors;
+  List<FieldError> getErrors<V>(ValidasiField<T, V> field) {
+    _throwIfDisposed();
+    return getFieldController(field).errors;
+  }
 
   void _applyErrors(
     ValidasiField<T, dynamic> field,
@@ -460,13 +520,18 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     }
   }
 
-  bool isFieldDirty<V>(ValidasiField<T, V> field) =>
-      getFieldController(field).isDirty.value;
+  bool isFieldDirty<V>(ValidasiField<T, V> field) {
+    _throwIfDisposed();
+    return getFieldController(field).isDirty.value;
+  }
 
-  bool isFieldTouched<V>(ValidasiField<T, V> field) =>
-      getFieldController(field).touched;
+  bool isFieldTouched<V>(ValidasiField<T, V> field) {
+    _throwIfDisposed();
+    return getFieldController(field).touched;
+  }
 
   bool validateField<V>(ValidasiField<T, V> field) {
+    _throwIfDisposed();
     final fc = getFieldController(field);
     if (fc.disabled) return true;
     final result = field.validate(fc.value);
@@ -477,6 +542,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   bool validate() {
+    _throwIfDisposed();
     if (formValidator != null) {
       final resultOrFuture = formValidator!(this);
       if (resultOrFuture is Future<ValidasiResult<T>>) {
@@ -503,6 +569,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   Future<bool> validateAsync() async {
+    _throwIfDisposed();
     if (formValidator != null) {
       final result = await formValidator!(this);
       _distributeFormErrors(result.errors);
@@ -520,26 +587,32 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
     return isValid;
   }
 
-  bool get isValid =>
-      _fields.values.every((fc) => fc.disabled || fc.isValid.value);
+  bool get isValid {
+    _throwIfDisposed();
+    return _fields.values.every((fc) => fc.disabled || fc.isValid.value);
+  }
 
-  Map<ValidasiField<T, dynamic>, dynamic> getValues() => Map.unmodifiable(
-        Map.fromEntries(
-          _fields.entries
-              .where(
-                (e) => !_arrayItemFields.contains(e.key) && !e.value.disabled,
-              )
-              .map((e) => MapEntry(
-                    e.key,
-                    _objectArrayStructures.containsKey(e.key)
-                        ? getValue(e.key)
-                        : e.value.value,
-                  )),
-        ),
-      );
+  Map<ValidasiField<T, dynamic>, dynamic> getValues() {
+    _throwIfDisposed();
+    return Map.unmodifiable(
+      Map.fromEntries(
+        _fields.entries
+            .where(
+              (e) => !_arrayItemFields.contains(e.key) && !e.value.disabled,
+            )
+            .map((e) => MapEntry(
+                  e.key,
+                  _objectArrayStructures.containsKey(e.key)
+                      ? getValue(e.key)
+                      : e.value.value,
+                )),
+      ),
+    );
+  }
 
   void setError<V>(ValidasiField<T, V> field, String message,
       {String rule = 'Manual', bool overwrite = true}) {
+    _throwIfDisposed();
     final fc = _fields[field];
     if (fc == null || fc.disabled) return;
     if (!overwrite && fc.syncErrors.isNotEmpty) return;
@@ -551,6 +624,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void clearErrors<V>(ValidasiField<T, V> field) {
+    _throwIfDisposed();
     final fc = _fields[field];
     if (fc == null || fc.disabled) return;
     fc.updateErrors([]);
@@ -560,6 +634,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void clearAllErrors() {
+    _throwIfDisposed();
     for (final fc in _fields.values) {
       fc.updateErrors([]);
       fc.setAsyncError(null);
@@ -570,6 +645,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   void reset() {
+    _throwIfDisposed();
     for (final state in _asyncValidators.values) {
       state.cancel();
     }
@@ -588,7 +664,25 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
   }
 
   @override
+  void notifyListeners() {
+    if (_disposed) return;
+    super.notifyListeners();
+  }
+
+  bool _disposed = false;
+
+  void _throwIfDisposed() {
+    if (_disposed) {
+      throw StateError(
+        'Cannot use a disposed ValidasiFormController. '
+        'The form controller has been disposed and can no longer be accessed.',
+      );
+    }
+  }
+
+  @override
   void dispose() {
+    _disposed = true;
     for (final state in _asyncValidators.values) {
       state.cancel();
     }
