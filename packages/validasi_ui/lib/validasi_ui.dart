@@ -1,3 +1,6 @@
+export 'src/controller/array_field_names.dart';
+export 'src/controller/array_registry.dart';
+export 'src/controller/async_coordinator.dart';
 export 'src/controller/controller.dart';
 export 'src/controller/indexed_field.dart';
 export 'src/models/error.dart';
