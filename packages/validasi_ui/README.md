@@ -1,8 +1,8 @@
 # Validasi UI
 
-Headless form management for Flutter, built on top of [`validasi`](../validasi). Brings the React Hook Form–style controller + builder pattern to Flutter, using [signals](https://pub.dev/packages/signals) for fine-grained reactivity.
+Headless form management for Flutter, built on top of [`validasi`](https://pub.dev/packages/validasi). Brings the React Hook Form–style controller + builder pattern to Flutter, using [signals](https://pub.dev/packages/signals) for fine-grained reactivity.
 
-> Development release - API subject to change. Feedback welcome!
+> **Experimental** — API subject to change. Feedback and contributions are welcome!
 
 [Repository](https://github.com/albetnov/validasi) | [Documentation](https://albetnov.github.io/validasi)
 

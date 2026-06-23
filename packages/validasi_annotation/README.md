@@ -1,6 +1,6 @@
 # validasi_annotation
 
-Annotations for [Validasi](https://github.com/albetnov/validasi) code generation.
+Annotations for [Validasi](https://pub.dev/packages/validasi) code generation.
 
 ## Annotations
 

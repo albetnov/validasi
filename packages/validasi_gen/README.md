@@ -1,6 +1,8 @@
-# `validasi_gen`
+# `validasi_gen` (experimental)
 
-Code generator for [Validasi](https://github.com/albetnov/validasi). Turns `@ValidateClass()` and `@Validate(...)` annotations on a Dart model into a typed `XFields<V>` hierarchy, a `validate()` / `validateAsync()` extension, and (optionally) a form-aware `validateForm_X(ctrl)`.
+> **Experimental** — API subject to change. Feedback and contributions are welcome!
+
+Code generator for [Validasi](https://pub.dev/packages/validasi). Turns `@ValidateClass()` and `@Validate(...)` annotations on a Dart model into a typed `XFields<V>` hierarchy, a `validate()` / `validateAsync()` extension, and (optionally) a form-aware `validateForm_X(ctrl)`.
 
 ## Quick start
 
@@ -8,12 +10,12 @@ Code generator for [Validasi](https://github.com/albetnov/validasi). Turns `@Val
 
 ```yaml
 dependencies:
-  validasi: ^1.0.0-dev.5
-  validasi_annotation: ^0.2.0-dev.1
+  validasi: ^1.0.0-rc.1
+  validasi_annotation: ^0.1.0-dev.2
 
 dev_dependencies:
   build_runner: ^2.4.0
-  validasi_gen: ^0.1.0-dev.1
+  validasi_gen: ^0.1.0-dev.2
 ```
 
 Source model:

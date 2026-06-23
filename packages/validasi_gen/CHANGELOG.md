@@ -1,3 +1,13 @@
+## 0.1.0-dev.2
+
+- Add cross-field validation support with `validateFields` and related methods.
+- Add async validation support with `validateAsync` methods in generated code.
+- Add `@RefineFn` annotation with `FailFn`, remove old `@Refine`/`@RefineAsync`.
+- Prevent nested fields from being processed in `generateFromForm` method.
+- Refactor field generation and validation logic; improve codegen formatting.
+- Add support for indexed fields in validation framework.
+- Update docs and improve generated code formatting.
+
 ## 0.1.0-dev.1
 
 - Initial development release.
