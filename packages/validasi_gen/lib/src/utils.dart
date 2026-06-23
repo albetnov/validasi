@@ -56,3 +56,16 @@ bool? boolOption(Map<String, dynamic>? config, String key) {
 String escapeDartString(String value) {
   return "'${value.replaceAll("\\", "\\\\").replaceAll("'", "\\'").replaceAll("\n", "\\n").replaceAll("\$", "\\\$")}'";
 }
+
+String literalForConstant(ConstantReader reader) {
+  final type = reader.objectValue.type;
+  if (reader.isNull) return 'null';
+  if (type == null) return 'null';
+  if (type.isDartCoreBool) return reader.boolValue.toString();
+  if (type.isDartCoreInt) return reader.intValue.toString();
+  if (type.isDartCoreDouble) return reader.doubleValue.toString();
+  if (type.isDartCoreString) return escapeDartString(reader.stringValue);
+  throw InvalidGenerationSourceError(
+    'Unsupported config field type: ${type.getDisplayString()}',
+  );
+}

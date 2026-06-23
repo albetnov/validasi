@@ -7,3 +7,6 @@ export 'src/rules/common/async_inline.dart';
 export 'src/rules/min_length.dart';
 export 'src/rules/max_length.dart';
 export 'src/rules/one_of.dart';
+export 'src/rules/custom_rule.dart';
+export 'src/rules/async_custom_rule.dart';
+export 'src/rules/inline.dart';

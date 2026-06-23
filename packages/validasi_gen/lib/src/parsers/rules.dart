@@ -212,5 +212,22 @@ RuleInfo _parseRule(ConstantReader rule) {
   final gen = ruleGens[name];
   if (gen != null) return gen.parse(rule);
 
+  if (typeElement is ClassElement) {
+    final baseName = _customBaseName(typeElement);
+    if (baseName != null) {
+      return ruleGens[baseName]!.parse(rule);
+    }
+  }
+
   return RuleInfo(name, const {}, message, isUnknown: true);
+}
+
+String? _customBaseName(ClassElement element) {
+  for (final supertype in element.allSupertypes) {
+    final name = supertype.element.name;
+    if (name == 'CustomRule' || name == 'AsyncCustomRule') {
+      return name;
+    }
+  }
+  return null;
 }

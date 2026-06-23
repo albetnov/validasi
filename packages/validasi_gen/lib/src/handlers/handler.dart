@@ -10,6 +10,19 @@ DartType? typeArgOf(ConstantReader rule) {
   return null;
 }
 
+DartType? typeArgOfBase(ConstantReader rule, String baseName) {
+  final type = rule.objectValue.type;
+  if (type is InterfaceType) {
+    for (final supertype in type.allSupertypes) {
+      if (supertype.element.name == baseName &&
+          supertype.typeArguments.isNotEmpty) {
+        return supertype.typeArguments.first;
+      }
+    }
+  }
+  return null;
+}
+
 class RuleInfo {
   final String name;
   final Map<String, Object?> params;
@@ -37,6 +50,7 @@ abstract class RuleGen {
   String check(RuleInfo info, String fieldName);
   String defaultMessage(RuleInfo info, [String context = '']);
   String? details(RuleInfo info);
+  String? asyncCall(RuleInfo info, String fieldName) => null;
 
   void validateType(DartType? typeArg, FieldElement field) {}
 }

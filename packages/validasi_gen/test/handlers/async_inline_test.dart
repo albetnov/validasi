@@ -58,6 +58,17 @@ void main() {
       expect(gen.details(info), isNull);
     });
 
+    test('asyncCall generates correct call expression', () {
+      final info = RuleInfo('AsyncInline', const {}, null,
+          isAsync: true, functionName: '_check');
+      expect(gen.asyncCall(info, 'value'), equals('_check(value)'));
+    });
+
+    test('asyncCall falls back to _unknown', () {
+      final info = RuleInfo('AsyncInline', const {}, null, isAsync: true);
+      expect(gen.asyncCall(info, 'value'), equals('_unknown(value)'));
+    });
+
     group('parse', () {
       late LibraryElement library;
 
@@ -85,6 +96,7 @@ void main() {
         expect(info.isAsync, isTrue);
         expect(info.functionName, equals('_check'));
         expect(info.params['customName'], equals('async_inline'));
+        expect(info.params['runOnNull'], isTrue);
       });
 
       test('respects custom rule name', () {

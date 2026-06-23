@@ -39,12 +39,15 @@ class FieldRuleSnippets {
       final gen = ruleGens[rule.name];
       if (gen == null) continue;
 
-      if (rule.name == 'AsyncInline') {
-        _emitAsyncInlineBlock(
+      final asyncCallExpr = gen.asyncCall(rule, accessor);
+      if (asyncCallExpr != null) {
+        _emitAsyncBlock(
           buf,
           rule,
+          gen,
           accessor,
           pathExpr,
+          asyncCallExpr,
           indent: indent,
         );
         continue;
@@ -58,23 +61,26 @@ class FieldRuleSnippets {
     }
   }
 
-  void _emitAsyncInlineBlock(
+  void _emitAsyncBlock(
     StringBuffer buf,
     RuleInfo rule,
+    RuleGen gen,
     String accessor,
-    String pathExpr, {
+    String pathExpr,
+    String asyncCall, {
     required String indent,
   }) {
-    final fn = rule.functionName ?? '_unknown';
-    final customName = (rule.params['customName'] as String?) ?? 'async_inline';
-    final message = rule.message ?? 'Validation failed';
+    final runOnNull = rule.params['runOnNull'] as bool? ?? false;
+    final guard = runOnNull ? '' : '$accessor != null && ';
+    final errorRuleName = _errorRuleName(rule);
+    final message = rule.message ?? gen.defaultMessage(rule);
     final msgLiteral = _msg(rule, message);
 
     buf.writeln('$indent try {');
-    buf.writeln('$indent   if (!await $fn($accessor)) {');
+    buf.writeln('$indent   if ($guard!await $asyncCall) {');
     buf.writeln('$indent     \$errors.add(');
     buf.writeln('$indent       ValidationError(');
-    buf.writeln("$indent         rule: '$customName',");
+    buf.writeln("$indent         rule: '$errorRuleName',");
     buf.writeln('$indent         message: $msgLiteral,');
     buf.writeln('$indent         path: $pathExpr,');
     buf.writeln('$indent       ),');
@@ -83,7 +89,7 @@ class FieldRuleSnippets {
     buf.writeln('$indent } catch (e) {');
     buf.writeln('$indent   \$errors.add(');
     buf.writeln('$indent     ValidationError(');
-    buf.writeln("$indent       rule: '$customName',");
+    buf.writeln("$indent       rule: '$errorRuleName',");
     buf.writeln("$indent       message: e.toString(),");
     buf.writeln('$indent       path: $pathExpr,');
     buf.writeln('$indent     ),');
@@ -103,10 +109,11 @@ class FieldRuleSnippets {
         ? _msg(rule, gen.defaultMessage(rule, context))
         : _msg(rule, 'Field is required');
     final details = gen?.details(rule);
+    final errorRuleName = _errorRuleName(rule);
 
     buf.writeln('$indent \$errors.add(');
     buf.writeln('$indent   ValidationError(');
-    buf.writeln("$indent     rule: '${rule.name}',");
+    buf.writeln("$indent     rule: '$errorRuleName',");
     buf.writeln('$indent     message: $message,');
     if (details != null) {
       buf.writeln('$indent     details: $details,');
@@ -114,6 +121,12 @@ class FieldRuleSnippets {
     buf.writeln('$indent     path: $pathExpr,');
     buf.writeln('$indent   ),');
     buf.writeln('$indent );');
+  }
+
+  static String _errorRuleName(RuleInfo rule) {
+    return (rule.params['ruleName'] as String?) ??
+        (rule.params['customName'] as String?) ??
+        rule.name;
   }
 
   String _msg(RuleInfo rule, String defaultMsg) {

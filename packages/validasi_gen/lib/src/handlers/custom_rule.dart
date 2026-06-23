@@ -1,0 +1,135 @@
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
+import 'package:source_gen/source_gen.dart';
+import 'package:validasi_gen/src/handlers/handler.dart';
+import 'package:validasi_gen/src/utils.dart';
+
+class CustomRuleGen extends RuleGen {
+  @override
+  String get name => 'CustomRule';
+
+  @override
+  RuleInfo parse(ConstantReader rule) {
+    final type = rule.objectValue.type;
+    final typeElement = type!.element as ClassElement;
+    final ruleName = rule.read('name').stringValue;
+    final message = rule.peek('message')?.stringValue;
+    final runOnNull = rule.peek('runOnNull')?.boolValue ?? false;
+    final typeArg = typeArgOfBase(rule, 'CustomRule');
+
+    final checkMethod = _findStaticCheck(typeElement);
+    if (checkMethod == null) {
+      throw InvalidGenerationSourceError(
+        'CustomRule subclass must define a static check method: '
+        'static bool check(T? value, {required ...})',
+        element: typeElement,
+      );
+    }
+
+    _validateCheckFirstParam(checkMethod);
+    _validateCheckReturn(checkMethod, false);
+
+    final config = <String, String>{};
+    final paramNames = <String>[];
+    final userFields = typeElement.fields
+        .where((f) => f.enclosingElement == typeElement)
+        .toList();
+    final userFieldNames = userFields.map((f) => f.name).toSet();
+
+    for (var i = 1; i < checkMethod.formalParameters.length; i++) {
+      final p = checkMethod.formalParameters[i];
+      if (!p.isNamed) {
+        throw InvalidGenerationSourceError(
+          'Config parameters of check(...) must be named',
+          element: checkMethod,
+        );
+      }
+      final pName = p.name!;
+      if (!userFieldNames.contains(pName)) {
+        throw InvalidGenerationSourceError(
+          "No field '$pName' found on the rule class. "
+          'Config parameters must match field names.',
+          element: checkMethod,
+        );
+      }
+      final fieldReader = rule.read(pName);
+      config[pName] = literalForConstant(fieldReader);
+      paramNames.add(pName);
+    }
+
+    return RuleInfo(
+      'CustomRule',
+      {
+        'ruleName': ruleName,
+        'className': typeElement.name!,
+        'runOnNull': runOnNull,
+        'config': config,
+        'paramNames': paramNames,
+      },
+      message,
+      typeArg: typeArg,
+    );
+  }
+
+  @override
+  String check(RuleInfo info, String fieldName) {
+    final className = info.params['className'] as String;
+    final runOnNull = info.params['runOnNull'] as bool? ?? false;
+    final config = (info.params['config'] as Map?)?.cast<String, String>() ??
+        <String, String>{};
+    final paramNames =
+        (info.params['paramNames'] as List?)?.cast<String>() ?? <String>[];
+
+    final args = StringBuffer();
+    for (final name in paramNames) {
+      args.write(', $name: ${config[name]}');
+    }
+
+    final call = '$className.check($fieldName$args)';
+    if (runOnNull) {
+      return '!$call';
+    }
+    return '$fieldName != null && !$call';
+  }
+
+  @override
+  String defaultMessage(RuleInfo info, [String context = '']) {
+    final ruleName = info.params['ruleName'] as String? ?? '';
+    return '$ruleName: validation failed.';
+  }
+
+  @override
+  String? details(RuleInfo info) => null;
+
+  @override
+  void validateType(DartType? typeArg, FieldElement field) {}
+
+  static MethodElement? _findStaticCheck(ClassElement cls) {
+    for (final method in cls.methods) {
+      if (method.name == 'check' && method.isStatic) return method;
+    }
+    return null;
+  }
+
+  static void _validateCheckFirstParam(MethodElement method) {
+    final params = method.formalParameters;
+    if (params.isEmpty || params.first.isNamed) {
+      throw InvalidGenerationSourceError(
+        'The first parameter of check(...) must be a positional parameter '
+        'accepting the value to validate.',
+        element: method,
+      );
+    }
+  }
+
+  static void _validateCheckReturn(MethodElement method, bool async) {
+    final returnType = method.returnType;
+    if (async) return;
+    if (!returnType.isDartCoreBool) {
+      throw InvalidGenerationSourceError(
+        'check(...) must return bool, got ${returnType.getDisplayString()}',
+        element: method,
+      );
+    }
+  }
+}

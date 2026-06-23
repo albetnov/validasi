@@ -2,6 +2,7 @@ import 'package:test/test.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 
 List<dynamic> _dummyValidator(dynamic get) => [];
+bool _syncCheck(dynamic value) => true;
 
 void main() {
   group('ValidateClass', () {
@@ -97,6 +98,46 @@ void main() {
       final r = AsyncInline(_dummyValidator, message: 'Custom');
       expect(r.message, 'Custom');
     });
+
+    test('CustomRule defaults', () {
+      const r = _CustomRuleImpl(name: 'test');
+      expect(r.name, 'test');
+      expect(r.message, isNull);
+      expect(r.runOnNull, isFalse);
+    });
+
+    test('CustomRule with message', () {
+      const r = _CustomRuleImpl(name: 'test', message: 'Custom');
+      expect(r.message, 'Custom');
+    });
+
+    test('CustomRule with runOnNull', () {
+      const r = _CustomRuleImpl(name: 'test', runOnNull: true);
+      expect(r.runOnNull, isTrue);
+    });
+
+    test('AsyncCustomRule defaults', () {
+      const r = _AsyncCustomRuleImpl(name: 'test');
+      expect(r.name, 'test');
+      expect(r.message, isNull);
+      expect(r.runOnNull, isFalse);
+    });
+
+    test('Inline defaults', () {
+      const r = Inline(_syncCheck);
+      expect(r.name, 'inline');
+      expect(r.message, isNull);
+      expect(r.runOnNull, isFalse);
+      expect(r.validator, isNotNull);
+    });
+
+    test('Inline with custom name and message', () {
+      const r = Inline(_syncCheck,
+          name: 'custom', message: 'Bad value', runOnNull: true);
+      expect(r.name, 'custom');
+      expect(r.message, 'Bad value');
+      expect(r.runOnNull, isTrue);
+    });
   });
 
   group('ValidasiKey', () {
@@ -109,4 +150,18 @@ void main() {
 
 class _TestKey extends ValidasiKey<String> {
   const _TestKey();
+}
+
+class _CustomRuleImpl extends CustomRule<String> {
+  const _CustomRuleImpl({
+    required super.name,
+    super.message,
+    super.runOnNull,
+  });
+}
+
+class _AsyncCustomRuleImpl extends AsyncCustomRule<String> {
+  const _AsyncCustomRuleImpl({
+    required super.name,
+  });
 }
