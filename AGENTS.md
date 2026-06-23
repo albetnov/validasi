@@ -339,6 +339,28 @@ import 'src/rules/string/min_length.dart' as string_min_len;
 import 'src/rules/iterable/min_length.dart' as iterable_min_len;
 ```
 
+## Version Bumping Rules
+
+When bumping `validasi` core version, update all dependants:
+
+| Package | Dependency on validasi |
+|---------|----------------------|
+| `validasi_annotation` | Runtime dependency (re-exports `ValidasiKey`) |
+| `validasi_ui` | Runtime dependency |
+| `validasi_gen` | Dev dependency |
+| `validasi_gen/example` | Path dependency (no version constraint) |
+| `validasi_ui/example` | Path dependency (no version constraint) |
+
+**Steps:**
+1. Bump `packages/validasi/pubspec.yaml` version and update `CHANGELOG.md`.
+2. Bump `packages/validasi_annotation/pubspec.yaml` version and dependency constraint; update `CHANGELOG.md`.
+3. Bump `packages/validasi_ui/pubspec.yaml` version and dependency constraint; update `CHANGELOG.md`.
+4. Update `packages/validasi_gen/pubspec.yaml` dev dependency constraint (no version bump needed — dev deps don't affect consumers).
+5. Run `dart run melos run analyze` and `dart run melos run format:fix`.
+
+**Codegen experimental types** (like `ValidasiKey<T>`) marked `@experimental` in `validasi` core.
+These are for generated code use only — avoid referencing them directly in application code.
+
 ## Code Style
 
 - Follow `package:lints/recommended.yaml`

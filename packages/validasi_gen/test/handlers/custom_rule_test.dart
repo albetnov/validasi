@@ -208,8 +208,7 @@ void main() {
         expect(info.params['ruleName'], equals('isEmail'));
         expect(info.params['className'], equals('IsEmail'));
         expect(info.params['runOnNull'], isFalse);
-        expect(info.params['config'],
-            containsPair('domain', "'example.com'"));
+        expect(info.params['config'], containsPair('domain', "'example.com'"));
         expect(info.params['paramNames'], ['domain']);
         expect(info.message, isNull);
         expect(info.isAsync, isFalse);

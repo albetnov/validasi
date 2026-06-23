@@ -194,8 +194,7 @@ void main() {
           'minLength': '8',
           'requireSpecial': 'true',
         });
-        expect(info.params['paramNames'],
-            ['minLength', 'requireSpecial']);
+        expect(info.params['paramNames'], ['minLength', 'requireSpecial']);
       });
     });
   });

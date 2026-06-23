@@ -1,3 +1,7 @@
+## 0.1.0-dev.2
+
+- Updated `validasi` dependency to `^1.0.0-rc.2`.
+
 ## 0.1.0-dev.1
 
 - Add `ValidasiFormController` with field signal management, dirty/touched state, migration/swap support.

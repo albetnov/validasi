@@ -5,15 +5,15 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 class IsEmail extends CustomRule<String> {
   final String domain;
 
-  const IsEmail(this.domain, {String? message, super.runOnNull})
-      : super(name: 'isEmail', message: message);
+  const IsEmail(this.domain, {super.message, super.runOnNull})
+      : super(name: 'isEmail');
 
   static bool check(String? value, {required String domain}) =>
       value != null && value.endsWith(domain);
 }
 
 class NonEmpty extends CustomRule<String> {
-  const NonEmpty({String? message}) : super(name: 'nonEmpty', message: message);
+  const NonEmpty({super.message}) : super(name: 'nonEmpty');
 
   static bool check(String? value) => value != null && value.isNotEmpty;
 }
@@ -21,8 +21,8 @@ class NonEmpty extends CustomRule<String> {
 class ValidatePassword extends AsyncCustomRule<String> {
   final int minLength;
 
-  const ValidatePassword(this.minLength, {String? message})
-      : super(name: 'validatePassword', message: message);
+  const ValidatePassword(this.minLength, {super.message})
+      : super(name: 'validatePassword');
 
   static Future<bool> check(String? value, {required int minLength}) async =>
       value != null && value.length >= minLength;
