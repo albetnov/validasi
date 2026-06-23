@@ -36,3 +36,6 @@ jobs:
 
       - name: Run tests
         run: dart run melos run test
+
+      - name: Run tests for validasi_ui package
+        run: dart run melos run test:ui
