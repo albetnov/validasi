@@ -106,7 +106,7 @@ Add Validasi to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  validasi: ^1.0.0-dev.0
+  validasi: ^1.0.0-rc.1
 ```
 
 Then run:

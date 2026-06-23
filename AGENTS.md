@@ -13,6 +13,9 @@
 | Package | Purpose |
 |---------|---------|
 | `validasi` | Core validation library |
+| `validasi_annotation` | Annotations and core contracts (`ValidasiKey`, `@ValidateClass`) |
+| `validasi_gen` | Code generator for compile-time validation |
+| `validasi_ui` | Headless form management for Flutter |
 | `validasi_mcp` | MCP integration |
 
 ## Commands
@@ -30,6 +33,12 @@ dart run melos run test
 
 # Run tests for validasi package only
 dart run melos run test:validasi
+
+# Run tests for validasi_gen package only
+dart run melos run test:gen
+
+# Run tests for validasi_ui package only (Flutter)
+dart run melos run test:ui
 
 # Run tests for validasi_mcp package only
 dart run melos run test:mcp
@@ -63,6 +72,14 @@ dart run melos run analyze
 dart run melos run format:fix
 ```
 
+Note: `dart run melos run analyze` runs on all workspace packages. With Flutter SDK installed, `dart analyze` can handle Flutter packages too — no need for `--ignore` flags.
+
+```bash
+cd packages/validasi_ui && flutter analyze
+```
+
+**Do not commit `packages/validasi_ui/roadmap.md`** — this file is untracked and should remain so. It documents internal planning and is not part of the published package.
+
 **When docs change (`docs/` directory):**
 
 The MCP server fetches docs from production (`https://albetnov.github.io/validasi`).
@@ -90,9 +107,13 @@ LOCAL_DOCS=http://localhost:4173/validasi dart run melos run test:mcp
 - **`AsyncRule<T>`** (`lib/src/engine/rule.dart`): Base class for inherently async rules; throws on sync `apply()`
 - **`ValidationState`** (`lib/src/engine/state.dart`): Collects errors during validation
 - **`ValidationError`** (`lib/src/engine/error.dart`): Represents a validation failure
+- **`ValidasiResult<T>`** (`lib/src/engine/result.dart`): Result of a validation run
 - **`ValidasiEngine<T, TInput>`**: Runs rules and returns `ValidasiResult<T>`; exposes `validate()` and `validateAsync()`
 - **`Validasi`**: Schema builder (`Validasi.string()`, `Validasi.list()`, etc.)
 - **`Rules`**: Factory for all built-in rules
+- **`ValidasiKey<T>`** (`validasi_annotation`): Marker for generated field keys
+- **`FieldDescriptor<T, V>`** (`validasi`): Field name + extractor interface
+- **`ValidasiField<T, V>`** (`validasi`): `FieldDescriptor` with validation capability
 
 ### Rule Pattern
 
@@ -277,6 +298,38 @@ Current rules in `lib/src/rules/map/`:
 
 All map rules extend `Rule<Map<String, T>>`.
 
+### Generated Field Classes
+
+When `@ValidateClass(generateFields: true)` is used, `validasi_gen` emits a sealed field class hierarchy:
+
+```dart
+sealed class UserFields<V> extends ValidasiKey<User> implements ValidasiField<User, V> {
+  static const UserFields<String> name = UserNameField();
+  static const UserFields<int> age = UserAgeField();
+}
+```
+
+Each leaf class implements `name`, `extract(owner)`, and `validate(value)`.
+
+### `validasi_ui` Architecture
+
+- **`ValidasiFormController<T>`** (`lib/src/controller.dart`): `ChangeNotifier` keyed by `ValidasiField<T, V>`
+- **`ValidasiForm<T>`** (`lib/src/form.dart`): `InheritedWidget` scope providing `ValidasiFormController<T>`
+- **`ValidasiFormField<T, V>`** (`lib/src/form_field.dart`): Binds a `ValidasiField<T, V>` to a builder
+- **`ValidasiFieldState<V>`** (`lib/src/field_state.dart`): Typed value, errors, `onChanged`, `validate`
+
+```dart
+ValidasiForm<User>(
+  child: ValidasiFormField<User, String>(
+    field: UserFields.name,
+    builder: (context, state) => TextField(
+      onChanged: state.onChanged,
+      decoration: InputDecoration(errorText: state.errorText),
+    ),
+  ),
+)
+```
+
 ## Import Prefixes
 
 When two rules share a name (e.g., `MinLength` for string and iterable), use import prefixes in `rules.dart`:
@@ -285,6 +338,28 @@ When two rules share a name (e.g., `MinLength` for string and iterable), use imp
 import 'src/rules/string/min_length.dart' as string_min_len;
 import 'src/rules/iterable/min_length.dart' as iterable_min_len;
 ```
+
+## Version Bumping Rules
+
+When bumping `validasi` core version, update all dependants:
+
+| Package | Dependency on validasi |
+|---------|----------------------|
+| `validasi_annotation` | Runtime dependency (re-exports `ValidasiKey`) |
+| `validasi_ui` | Runtime dependency |
+| `validasi_gen` | Dev dependency |
+| `validasi_gen/example` | Path dependency (no version constraint) |
+| `validasi_ui/example` | Path dependency (no version constraint) |
+
+**Steps:**
+1. Bump `packages/validasi/pubspec.yaml` version and update `CHANGELOG.md`.
+2. Bump `packages/validasi_annotation/pubspec.yaml` version and dependency constraint; update `CHANGELOG.md`.
+3. Bump `packages/validasi_ui/pubspec.yaml` version and dependency constraint; update `CHANGELOG.md`.
+4. Update `packages/validasi_gen/pubspec.yaml` dev dependency constraint (no version bump needed — dev deps don't affect consumers).
+5. Run `dart run melos run analyze` and `dart run melos run format:fix`.
+
+**Codegen experimental types** (like `ValidasiKey<T>`) marked `@experimental` in `validasi` core.
+These are for generated code use only — avoid referencing them directly in application code.
 
 ## Code Style
 

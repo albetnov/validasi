@@ -1,0 +1,10 @@
+builders:
+  validasi:
+    import: "package:validasi_gen/src/builder.dart"
+    builder_factories:
+      - validasiBuilder
+    build_extensions:
+      ".dart":
+        - ".g.dart"
+    auto_apply: dependents
+    build_to: source

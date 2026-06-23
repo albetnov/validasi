@@ -119,6 +119,13 @@ export default defineConfig({
           items: [
             { text: 'MCP Server', link: '/guide/mcp-server' }
           ]
+        },
+        {
+          text: 'Companion Packages',
+          items: [
+            { text: 'Code Generation', link: '/guide/code-generation' },
+            { text: 'Form Management', link: '/guide/form-management' }
+          ]
         }
       ]
     },

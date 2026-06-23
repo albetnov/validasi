@@ -1,0 +1,27 @@
+name: validasi_ui
+description: Headless form management for Flutter, bridging Validasi schemas to UI.
+version: 0.1.0-dev.2
+repository: https://github.com/albetnov/validasi
+homepage: https://albetnov.github.io/validasi
+
+topics: 
+  - validation
+  - flutter
+  - form-management
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  signals: ^7.1.0
+  validasi: ^1.0.0-rc.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  test: ^1.31.0

@@ -1,3 +1,11 @@
+## 1.0.0-rc.2
+
+### Added
+
+- `ValidasiKey<T>` is now available from `package:validasi/validasi.dart` (marked `@experimental`).
+  This type bridges the code generation layer and runtime form management. Prefer using the
+  generated sealed field classes over referencing `ValidasiKey` directly.
+
 ## 1.0.0-rc.1
 
 ### Added
