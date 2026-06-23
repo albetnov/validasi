@@ -34,8 +34,5 @@ jobs:
       - name: Analyze all packages
         run: dart run melos run analyze
 
-      - name: Analyze Flutter packages
-        run: cd packages/validasi_ui && flutter analyze
-
       - name: Run tests
         run: dart run melos run test
