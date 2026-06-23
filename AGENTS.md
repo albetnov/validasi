@@ -72,7 +72,7 @@ dart run melos run analyze
 dart run melos run format:fix
 ```
 
-Note: `dart run melos run analyze` only covers pure-Dart packages (`validasi`, `validasi_annotation`, `validasi_gen`, `validasi_gen/example`, `validasi_mcp`). The `validasi_ui` package requires Flutter — run its analysis separately:
+Note: `dart run melos run analyze` runs on all workspace packages. With Flutter SDK installed, `dart analyze` can handle Flutter packages too — no need for `--ignore` flags.
 
 ```bash
 cd packages/validasi_ui && flutter analyze
