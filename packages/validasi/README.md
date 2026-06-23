@@ -16,7 +16,7 @@ To use this package, add `validasi` as a dependency in your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  validasi: 1.0.0-dev.x
+  validasi: ^1.0.0-rc.1
 ```
 
 > Check the [pub.dev page](https://pub.dev/packages/validasi/versions) for the latest pre-release version.

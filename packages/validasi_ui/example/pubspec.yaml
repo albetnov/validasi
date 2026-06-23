@@ -1,0 +1,25 @@
+name: validasi_ui_example
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  validasi:
+    path: ../../validasi
+  validasi_annotation:
+    path: ../../validasi_annotation
+  validasi_ui:
+    path: ../
+
+dev_dependencies:
+  build_runner: ^2.4.12
+  flutter_lints: ^6.0.0
+  validasi_gen:
+    path: ../../validasi_gen
