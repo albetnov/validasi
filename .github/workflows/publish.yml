@@ -42,10 +42,8 @@ jobs:
           fi
 
       - name: Install root dependencies
+        working-directory: ${{ steps.package.outputs.directory }}
         run: dart pub get
-
-      - name: Bootstrap workspace
-        run: dart run melos bootstrap
 
       - name: Publish package
         working-directory: ${{ steps.package.outputs.directory }}
