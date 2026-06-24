@@ -41,6 +41,7 @@ jobs:
         with:
           version: 2026.6.12
           install_args: "aube@1.23.0"      
+      - run: mise use aube@1.23.0
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
