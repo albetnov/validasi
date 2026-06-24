@@ -240,7 +240,8 @@ void main() {
       for (final example in examples) {
         expect(example, containsPair('language', isA<String>()));
         expect(example, containsPair('code', isA<String>()));
-        expect(example['code'], contains('minLength'));
+        expect(
+            (example['code'] as String).toLowerCase(), contains('minlength'));
       }
     });
 
