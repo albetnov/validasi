@@ -1,3 +1,16 @@
+## 0.1.0-dev.3
+
+### Breaking Changes
+
+- `ValidasiForm` and `ValidasiFormController` no longer accept `assembler`. Use `schema`
+  (`ValidasiSchema<T>`) instead. Generated schemas are exposed as `<ClassName>Fields.schema`.
+
+### Added
+
+- `ValidasiFormController<T>` now implements `ValidasiFieldReader<T>`.
+- `ValidasiTextFormField<T>` convenience widget for `String` fields.
+- `ValidasiParsedTextFormField<T, V>` convenience widget for fields parsed from `String` to `V`.
+
 ## 0.1.0-dev.2
 
 - Updated `validasi` dependency to `^1.0.0-rc.2`.

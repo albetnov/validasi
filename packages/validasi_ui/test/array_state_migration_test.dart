@@ -76,8 +76,16 @@ List<dynamic> _reconstructAll(ValidasiFormController<String> ctrl) {
   return result;
 }
 
+const _emptyStringSchema = _EmptyStringSchema();
+
+class _EmptyStringSchema extends ValidasiSchema<String> {
+  const _EmptyStringSchema();
+  @override
+  String allocate(ValidasiFieldReader<String> reader) => '';
+}
+
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(assembler: (_) => '');
+  return ValidasiFormController<String>(schema: _emptyStringSchema);
 }
 
 ValidasiFormController<String> _makeControllerWith(int count) {

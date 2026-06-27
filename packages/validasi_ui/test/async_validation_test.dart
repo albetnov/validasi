@@ -24,10 +24,17 @@ class _TestKey extends ValidasiField<String, String> {
   }
 }
 
+const _stringSchema = _StringSchema();
+
+class _StringSchema extends ValidasiSchema<String> {
+  const _StringSchema();
+  @override
+  String allocate(ValidasiFieldReader<String> reader) =>
+      reader.getValue(const _TestKey()) ?? '';
+}
+
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(
-    assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
-  );
+  return ValidasiFormController<String>(schema: _stringSchema);
 }
 
 void main() {

@@ -15,7 +15,9 @@ import 'package:validasi_ui/src/signals/form_signals.dart';
 
 part 'context.dart';
 
-class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
+class ValidasiFormController<T> extends ChangeNotifier
+    with WatchMixin<T>
+    implements ValidasiFieldReader<T> {
   // ── Internal state (only accessed by [ValidasiControllerContext]) ──
 
   final _fields = <ValidasiField<T, dynamic>, ValidasiFieldSignals>{};
@@ -34,12 +36,12 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
 
   // ── Configuration ──
 
-  final T Function(ValidasiFormController<T>) assembler;
+  final ValidasiSchema<T> schema;
   final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?
       formValidator;
 
   ValidasiFormController({
-    required this.assembler,
+    required this.schema,
     this.formValidator,
   }) {
     final ctx = ValidasiControllerContext<T>._(this);
@@ -110,7 +112,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
         markSubmitted();
         return;
       }
-      onSubmit(assembler(this));
+      onSubmit(schema.allocate(this));
     };
   }
 
@@ -121,7 +123,7 @@ class ValidasiFormController<T> extends ChangeNotifier with WatchMixin<T> {
         markSubmitted();
         return;
       }
-      onSubmit(assembler(this));
+      onSubmit(schema.allocate(this));
     };
   }
 

@@ -6,6 +6,8 @@ sealed class UserFields<V> extends ValidasiKey<User>
     implements ValidasiField<User, V> {
   const UserFields._();
 
+  static const ValidasiSchema<User> schema = _UserSchema();
+
   static const UserFields<String> name = UserNameField();
 
   static const UserFields<String> email = UserEmailField();
@@ -29,6 +31,15 @@ class UserNameField extends UserFields<String> {
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(
+        ValidationError(
+          rule: 'Required',
+          message: 'Field is required',
+          path: [name],
+        ),
+      );
+    }
     if (value != null && value.length < 2) {
       $errors.add(
         ValidationError(
@@ -77,6 +88,15 @@ class UserEmailField extends UserFields<String> {
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(
+        ValidationError(
+          rule: 'Required',
+          message: 'Field is required',
+          path: [name],
+        ),
+      );
+    }
     if (value != null && value.length < 3) {
       $errors.add(
         ValidationError(
@@ -125,6 +145,15 @@ class UserAgeField extends UserFields<int> {
   @override
   ValidasiResult<int> validate(int? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(
+        ValidationError(
+          rule: 'Required',
+          message: 'Field is required',
+          path: [name],
+        ),
+      );
+    }
     if (value != null && value.length < 1) {
       $errors.add(
         ValidationError(
@@ -147,19 +176,24 @@ class UserAgeField extends UserFields<int> {
   }
 }
 
-User assemble_User(ValidasiFormController<User> ctrl) {
-  return User(
-    name: ctrl.getValue(UserFields.name) as String,
-    email: ctrl.getValue(UserFields.email) as String,
-    age: ctrl.getValue(UserFields.age) as int,
-  );
+class _UserSchema extends ValidasiSchema<User> {
+  const _UserSchema();
+
+  @override
+  User allocate(ValidasiFieldReader<User> reader) {
+    return User(
+      name: reader.getValue(UserFields.name) as String,
+      email: reader.getValue(UserFields.email) as String,
+      age: reader.getValue(UserFields.age) as int,
+    );
+  }
 }
 
 extension $UserValidasi on User {
   ValidasiResult<User> validate() {
     final $errors = <ValidationError>[];
     // Field: name
-    if (name != null && name.length < 2) {
+    if (name.length < 2) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -169,7 +203,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-    if (name != null && name.length > 100) {
+    if (name.length > 100) {
       $errors.add(
         ValidationError(
           rule: 'MaxLength',
@@ -180,7 +214,7 @@ extension $UserValidasi on User {
       );
     }
     // Field: email
-    if (email != null && email.length < 3) {
+    if (email.length < 3) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -190,7 +224,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-    if (email != null && email.length > 100) {
+    if (email.length > 100) {
       $errors.add(
         ValidationError(
           rule: 'MaxLength',
@@ -201,7 +235,7 @@ extension $UserValidasi on User {
       );
     }
     // Field: age
-    if (age != null && age.length < 1) {
+    if (age.length < 1) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -230,7 +264,7 @@ extension $UserValidasi on User {
   Future<ValidasiResult<User>> validateAsync() async {
     final $errors = <ValidationError>[];
     // Field: name
-    if (name != null && name.length < 2) {
+    if (name.length < 2) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -240,7 +274,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-    if (name != null && name.length > 100) {
+    if (name.length > 100) {
       $errors.add(
         ValidationError(
           rule: 'MaxLength',
@@ -251,7 +285,7 @@ extension $UserValidasi on User {
       );
     }
     // Field: email
-    if (email != null && email.length < 3) {
+    if (email.length < 3) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -261,7 +295,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-    if (email != null && email.length > 100) {
+    if (email.length > 100) {
       $errors.add(
         ValidationError(
           rule: 'MaxLength',
@@ -272,7 +306,7 @@ extension $UserValidasi on User {
       );
     }
     // Field: age
-    if (age != null && age.length < 1) {
+    if (age.length < 1) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',

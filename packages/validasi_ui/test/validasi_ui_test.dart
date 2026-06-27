@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:validasi_ui/validasi_ui.dart';
-import 'package:validasi_ui/validasi.dart';
+import 'package:validasi/validasi.dart';
 
 class _TestKey extends ValidasiField<String, String> {
   const _TestKey() : super();
@@ -22,11 +22,20 @@ class _TestKey extends ValidasiField<String, String> {
   }
 }
 
+const _stringSchema = _StringSchema();
+
+class _StringSchema extends ValidasiSchema<String> {
+  const _StringSchema();
+  @override
+  String allocate(ValidasiFieldReader<String> reader) =>
+      reader.getValue(const _TestKey()) ?? '';
+}
+
 void main() {
   group('ValidasiFormController', () {
     test('getValue and setValue are type-safe', () {
       final controller = ValidasiFormController<String>(
-        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+        schema: _stringSchema,
       );
       const field = _TestKey();
 
@@ -44,7 +53,7 @@ void main() {
 
     test('validateField runs the generated validator', () {
       final controller = ValidasiFormController<String>(
-        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+        schema: _stringSchema,
       );
       const field = _TestKey();
 
@@ -59,7 +68,7 @@ void main() {
 
     test('validate runs all registered fields', () {
       final controller = ValidasiFormController<String>(
-        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+        schema: _stringSchema,
       );
       const field = _TestKey();
 
@@ -72,7 +81,7 @@ void main() {
 
     test('getValues returns unmodifiable map of all field values', () {
       final controller = ValidasiFormController<String>(
-        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+        schema: _stringSchema,
       );
       const field = _TestKey();
 
@@ -90,7 +99,7 @@ void main() {
 
     test('submit runs onSubmit with assembled model when valid', () {
       final controller = ValidasiFormController<String>(
-        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+        schema: _stringSchema,
       );
       const field = _TestKey();
 
@@ -107,7 +116,7 @@ void main() {
 
     test('submit marks submitted and skips callback when invalid', () {
       final controller = ValidasiFormController<String>(
-        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+        schema: _stringSchema,
       );
       const field = _TestKey();
 
@@ -124,7 +133,7 @@ void main() {
 
     test('isValid reflects field validity', () {
       final controller = ValidasiFormController<String>(
-        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+        schema: _stringSchema,
       );
       const field = _TestKey();
 

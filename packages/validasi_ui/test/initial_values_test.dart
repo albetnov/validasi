@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:validasi_ui/validasi_ui.dart';
-import 'package:validasi_ui/validasi.dart';
+import 'package:validasi/validasi.dart';
 
 class _TestModel {
   final String name;
@@ -50,13 +50,19 @@ class _EmailField extends ValidasiField<_TestModel, String> {
   }
 }
 
+const _testModelSchema = _TestModelSchema();
+
+class _TestModelSchema extends ValidasiSchema<_TestModel> {
+  const _TestModelSchema();
+  @override
+  _TestModel allocate(ValidasiFieldReader<_TestModel> reader) => _TestModel(
+        name: reader.getValue(const _NameField()) ?? '',
+        email: reader.getValue(const _EmailField()) ?? '',
+      );
+}
+
 ValidasiFormController<_TestModel> _makeController() {
-  return ValidasiFormController<_TestModel>(
-    assembler: (ctrl) => _TestModel(
-      name: ctrl.getValue(const _NameField()) ?? '',
-      email: ctrl.getValue(const _EmailField()) ?? '',
-    ),
-  );
+  return ValidasiFormController<_TestModel>(schema: _testModelSchema);
 }
 
 Widget _buildForm({
@@ -67,10 +73,7 @@ Widget _buildForm({
     home: Scaffold(
       body: ValidasiForm<_TestModel>(
         controller: controller,
-        assembler: (ctrl) => _TestModel(
-          name: ctrl.getValue(const _NameField()) ?? '',
-          email: ctrl.getValue(const _EmailField()) ?? '',
-        ),
+        schema: _testModelSchema,
         initialValues: initialValues,
         builder: (context, submit) => Column(
           children: [

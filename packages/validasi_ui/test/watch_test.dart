@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:validasi_ui/validasi_ui.dart';
-import 'package:validasi_ui/validasi.dart';
+import 'package:validasi/validasi.dart';
 
 class _StringKey extends ValidasiField<String, String> {
   const _StringKey(this._name);
@@ -18,10 +18,17 @@ class _StringKey extends ValidasiField<String, String> {
       ValidasiResult.success(value ?? '');
 }
 
+const _stringSchema = _StringSchema();
+
+class _StringSchema extends ValidasiSchema<String> {
+  const _StringSchema();
+  @override
+  String allocate(ValidasiFieldReader<String> reader) =>
+      reader.getValue(const _StringKey('v')) ?? '';
+}
+
 ValidasiFormController<String> _newController() =>
-    ValidasiFormController<String>(
-      assembler: (c) => c.getValue(const _StringKey('v')) ?? '',
-    );
+    ValidasiFormController<String>(schema: _stringSchema);
 
 void main() {
   group('watchValue', () {
@@ -138,7 +145,7 @@ void main() {
         MaterialApp(
           home: ValidasiForm<String>(
             controller: controller,
-            assembler: (c) => c.getValue(a) ?? '',
+            schema: _stringSchema,
             builder: (context, submit) => ValidasiWatch.form<String>(
               builder: (context, c) {
                 final s = c.watch<String, String>([a, b], (values) {
@@ -178,7 +185,7 @@ void main() {
         MaterialApp(
           home: ValidasiForm<String>(
             controller: controller,
-            assembler: (c) => c.getValue(field) ?? '',
+            schema: _stringSchema,
             builder: (context, submit) => Scaffold(
               body: ValidasiWatch.field<String, String>(
                 field: field,
@@ -213,7 +220,7 @@ void main() {
         MaterialApp(
           home: ValidasiForm<String>(
             controller: controller,
-            assembler: (c) => c.getValue(watched) ?? '',
+            schema: _stringSchema,
             builder: (context, submit) => Scaffold(
               body: ValidasiWatch.field<String, String>(
                 field: watched,

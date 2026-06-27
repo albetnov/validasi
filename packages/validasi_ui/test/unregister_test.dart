@@ -76,10 +76,16 @@ List<dynamic> _reconstructAll(ValidasiFormController<String> ctrl) {
   return result;
 }
 
+const _emptyStringSchema = _EmptyStringSchema();
+
+class _EmptyStringSchema extends ValidasiSchema<String> {
+  const _EmptyStringSchema();
+  @override
+  String allocate(ValidasiFieldReader<String> reader) => '';
+}
+
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(
-    assembler: (ctrl) => '',
-  );
+  return ValidasiFormController<String>(schema: _emptyStringSchema);
 }
 
 void main() {
@@ -495,7 +501,7 @@ void main() {
         MaterialApp(
           home: ValidasiForm<String>(
             controller: controller,
-            assembler: (c) => '',
+            schema: _emptyStringSchema,
             shouldUnregister: false,
             builder: (context, submit) => Scaffold(
               body: Column(
@@ -520,7 +526,7 @@ void main() {
         MaterialApp(
           home: ValidasiForm<String>(
             controller: controller,
-            assembler: (c) => '',
+            schema: _emptyStringSchema,
             shouldUnregister: false,
             builder: (context, submit) => Scaffold(
               body: Column(
@@ -550,7 +556,7 @@ void main() {
         MaterialApp(
           home: ValidasiForm<String>(
             controller: controller,
-            assembler: (c) => '',
+            schema: _emptyStringSchema,
             shouldUnregister: true,
             builder: (context, submit) => Scaffold(
               body: Column(
@@ -580,7 +586,7 @@ void main() {
         MaterialApp(
           home: ValidasiForm<String>(
             controller: controller,
-            assembler: (c) => '',
+            schema: _emptyStringSchema,
             shouldUnregister: true,
             builder: (context, submit) => Scaffold(
               body: Column(
