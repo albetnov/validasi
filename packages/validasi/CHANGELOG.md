@@ -1,3 +1,11 @@
+## 1.0.0-rc.3
+
+### Added
+
+- `ValidasiFieldReader<T>` abstraction for reading field values without depending on Flutter.
+- `ValidasiSchema<T>` abstraction with an explicit `allocate(ValidasiFieldReader<T>)` method for
+  building typed models from form field values.
+
 ## 1.0.0-rc.2
 
 ### Added
