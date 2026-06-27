@@ -9,13 +9,13 @@ void main() {
     test('construct with defaults', () {
       const a = ValidateClass();
       expect(a.generateFields, isNull);
-      expect(a.generateAssemble, isNull);
+      expect(a.generateSchema, isNull);
     });
 
     test('construct with explicit values', () {
-      const a = ValidateClass(generateFields: true, generateAssemble: false);
+      const a = ValidateClass(generateFields: true, generateSchema: false);
       expect(a.generateFields, isTrue);
-      expect(a.generateAssemble, isFalse);
+      expect(a.generateSchema, isFalse);
     });
   });
 
