@@ -72,7 +72,7 @@ class CustomRuleGen extends RuleGen {
   }
 
   @override
-  String check(RuleInfo info, String fieldName) {
+  String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final className = info.params['className'] as String;
     final runOnNull = info.params['runOnNull'] as bool? ?? false;
     final config = (info.params['config'] as Map?)?.cast<String, String>() ??
@@ -86,7 +86,7 @@ class CustomRuleGen extends RuleGen {
     }
 
     final call = '$className.check($fieldName$args)';
-    if (runOnNull) {
+    if (!nullable || runOnNull) {
       return '!$call';
     }
     return '$fieldName != null && !$call';

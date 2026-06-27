@@ -76,7 +76,7 @@ class AsyncCustomRuleGen extends RuleGen {
   }
 
   @override
-  String check(RuleInfo info, String fieldName) {
+  String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     return 'false';
   }
 

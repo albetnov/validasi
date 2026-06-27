@@ -1,6 +1,7 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:validasi_gen/src/generators/field_snippets.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
+import 'package:validasi_gen/src/utils.dart';
 
 const _snippets = FieldRuleSnippets();
 
@@ -119,49 +120,63 @@ String _buildLeafClass(
 void _addLeafValidate(ClassBuilder c, String valueType, FieldRules ctx) {
   final nullableType = valueType.endsWith('?') ? valueType : '$valueType?';
 
+  final buf = StringBuffer();
+
   if (ctx.hasAsyncRule) {
-    c.methods.add(Method((m) {
-      m.name = 'validate';
-      m.returns = refer('ValidasiResult<$valueType>');
-      m.annotations.add(refer('override'));
-      m.requiredParameters.add(Parameter((p) {
-        p.name = 'value';
-        p.type = refer(nullableType);
-      }));
-      m.body = Code(
-          "throw StateError('Async rules cannot be used with validate(). Use validateAsync() instead.');");
-    }));
+    // For async-only fields, sync validate() can still report Required errors.
+    if (ctx.isRequired) {
+      buf.writeln('if (value == null) {');
+      buf.writeln('  return ValidasiResult(');
+      buf.writeln("    errors: [ValidationError(");
+      buf.writeln("      rule: 'Required',");
+      buf.writeln('      message: ${escapeDartString(_msgForRequired(ctx))},');
+      buf.writeln('      path: [name],');
+      buf.writeln('    )],');
+      buf.writeln('    isValid: false,');
+      buf.writeln('  );');
+      buf.writeln('}');
+    }
+    buf.writeln(
+        "throw StateError('Async rules cannot be used with validate(). Use validateAsync() instead.');");
   } else {
-    final buf = StringBuffer();
     buf.writeln('final \$errors = <ValidationError>[];');
     final innerBuf = StringBuffer();
     _snippets.emitInline(innerBuf, ctx,
-        indent: '', accessor: 'value', pathExpr: '[name]');
+        indent: '',
+        accessor: 'value',
+        pathExpr: '[name]',
+        requiredCheck: true,
+        nullable: true);
     buf.write(innerBuf);
     buf.writeln('if (\$errors.isNotEmpty) {');
     buf.writeln('return ValidasiResult(errors: \$errors, isValid: false);');
     buf.writeln('}');
     buf.writeln(
         'return ValidasiResult(errors: const [], isValid: true, data: value);');
-
-    c.methods.add(Method((m) {
-      m.name = 'validate';
-      m.returns = refer('ValidasiResult<$valueType>');
-      m.annotations.add(refer('override'));
-      m.requiredParameters.add(Parameter((p) {
-        p.name = 'value';
-        p.type = refer(nullableType);
-      }));
-      m.body = Code(buf.toString());
-    }));
   }
+
+  c.methods.add(Method((m) {
+    m.name = 'validate';
+    m.returns = refer('ValidasiResult<$valueType>');
+    m.annotations.add(refer('override'));
+    m.requiredParameters.add(Parameter((p) {
+      p.name = 'value';
+      p.type = refer(nullableType);
+    }));
+    m.body = Code(buf.toString());
+  }));
 
   final asyncBuf = StringBuffer();
   if (ctx.hasAsyncRule) {
     asyncBuf.writeln('final \$errors = <ValidationError>[];');
     final innerBuf = StringBuffer();
     _snippets.emitInline(innerBuf, ctx,
-        indent: '', accessor: 'value', pathExpr: '[name]', async: true);
+        indent: '',
+        accessor: 'value',
+        pathExpr: '[name]',
+        async: true,
+        requiredCheck: true,
+        nullable: true);
     asyncBuf.write(innerBuf);
     asyncBuf.writeln('if (\$errors.isNotEmpty) {');
     asyncBuf
@@ -199,6 +214,7 @@ void _addNestedValidate(ClassBuilder c, String valueType, FieldRules ctx) {
     'validate',
     'ValidasiResult<$valueType>',
     nullableType,
+    ctx,
     isIterable,
     indexVar,
     itemVar,
@@ -210,6 +226,7 @@ void _addNestedValidate(ClassBuilder c, String valueType, FieldRules ctx) {
     'validateAsync',
     'Future<ValidasiResult<$valueType>>',
     nullableType,
+    ctx,
     isIterable,
     indexVar,
     itemVar,
@@ -223,6 +240,7 @@ Method _buildNestedMethod(
   String methodName,
   String returnType,
   String nullableType,
+  FieldRules ctx,
   bool isIterable,
   String indexVar,
   String itemVar,
@@ -234,9 +252,24 @@ Method _buildNestedMethod(
   final awaitKw = isAsync ? 'await ' : '';
 
   final buf = StringBuffer();
-  buf.writeln('if (value == null) {');
-  buf.writeln('return const ValidasiResult(errors: [], isValid: true);');
-  buf.writeln('}');
+
+  if (ctx.isRequired) {
+    final message = _msgForRequired(ctx);
+    buf.writeln('if (value == null) {');
+    buf.writeln('  return ValidasiResult(');
+    buf.writeln("    errors: [ValidationError(");
+    buf.writeln("      rule: 'Required',");
+    buf.writeln('      message: ${escapeDartString(message)},');
+    buf.writeln('      path: [name],');
+    buf.writeln('    )],');
+    buf.writeln('    isValid: false,');
+    buf.writeln('  );');
+    buf.writeln('}');
+  } else {
+    buf.writeln('if (value == null) {');
+    buf.writeln('return const ValidasiResult(errors: [], isValid: true);');
+    buf.writeln('}');
+  }
 
   if (!isIterable) {
     buf.writeln('final $resultVar = ${awaitKw}value.$validateMethod();');
@@ -409,6 +442,11 @@ Method _buildReconstructAllMethod(
     }));
     m.body = Code(body.toString());
   });
+}
+
+String _msgForRequired(FieldRules ctx) {
+  final raw = ctx.requiredMessage ?? 'Field is required';
+  return raw.replaceAll('\$field', ctx.field.name ?? 'field');
 }
 
 String _capitalize(String name) {

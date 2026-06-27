@@ -131,6 +131,10 @@ void _generateFieldBody(
   }
 
   final fieldName = ctx.field.name!;
+  // Accessor is the field directly (e.g. `email`). Non-null when the declared
+  // type is non-nullable. When the accessor is provably non-null, we skip the
+  // `!= null &&` guard and don't emit a Required check (dead code).
+  final nullable = !ctx.isTypeRequired;
   buf.writeln('// Field: $fieldName');
   _snippets.emitInline(
     buf,
@@ -139,6 +143,8 @@ void _generateFieldBody(
     accessor: fieldName,
     pathExpr: "['$fieldName']",
     async: isAsync,
+    requiredCheck: false,
+    nullable: nullable,
   );
 }
 

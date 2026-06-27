@@ -37,10 +37,11 @@ class OneOfGen extends RuleGen {
   }
 
   @override
-  String check(RuleInfo info, String fieldName) {
+  String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final options = info.params['options'] as List<String>;
     final items = options.map(escapeDartString).join(', ');
-    return '$fieldName != null && ![$items].contains($fieldName)';
+    final guard = nullable ? '$fieldName != null && ' : '';
+    return '$guard![$items].contains($fieldName)';
   }
 
   @override

@@ -14,7 +14,7 @@ class TestModel {
   final String name;
 
   @Validate.string([MinLength(5)])
-  final String bio;
+  final String? bio;
 
   @Validate.string([Nullable()])
   final String? nickname;
@@ -27,7 +27,7 @@ class TestModel {
 
   const TestModel({
     required this.name,
-    required this.bio,
+    this.bio,
     this.nickname,
     required this.alias,
     required this.age,

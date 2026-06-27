@@ -28,11 +28,11 @@ class InlineGen extends RuleGen {
   }
 
   @override
-  String check(RuleInfo info, String fieldName) {
+  String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final fn = info.functionName ?? '_unknown';
     final runOnNull = info.params['runOnNull'] as bool? ?? false;
 
-    if (runOnNull) {
+    if (!nullable || runOnNull) {
       return '!$fn($fieldName)';
     }
     return '$fieldName != null && !$fn($fieldName)';

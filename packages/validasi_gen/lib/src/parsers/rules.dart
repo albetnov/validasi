@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -64,6 +65,27 @@ class FieldRules {
   bool get hasAsyncRule => rules.any((r) => r.isAsync);
 
   String get dartTypeDisplay => field.type.getDisplayString();
+
+  /// True when the Dart type itself enforces non-null (e.g. `String`, not `String?`).
+  /// Returns false for `dynamic` and `Object?` since nullability can't be reliably inferred.
+  bool get isTypeRequired {
+    final t = field.type;
+    if (t is DynamicType) return false;
+    if (t.isDartCoreObject && t.nullabilitySuffix != NullabilitySuffix.none) {
+      return false;
+    }
+    return t.nullabilitySuffix == NullabilitySuffix.none;
+  }
+
+  /// True when the field is required — either inferred from type or explicitly via `@Required`.
+  bool get isRequired =>
+      isTypeRequired || rules.any((r) => r.name == 'Required');
+
+  /// Custom message from an explicit `@Required(...)` annotation, if present.
+  String? get requiredMessage {
+    final r = rules.where((r) => r.name == 'Required');
+    return r.isNotEmpty ? r.first.message : null;
+  }
 }
 
 class RefineParamInfo {

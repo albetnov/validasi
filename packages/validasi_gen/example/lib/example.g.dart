@@ -37,6 +37,15 @@ class UserEmailField extends UserFields<String> {
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(
+        ValidationError(
+          rule: 'Required',
+          message: 'Field is required',
+          path: [name],
+        ),
+      );
+    }
     if (value != null && value.length < 3) {
       $errors.add(
         ValidationError(
@@ -84,6 +93,18 @@ class UserUsernameField extends UserFields<String> {
 
   @override
   ValidasiResult<String> validate(String? value) {
+    if (value == null) {
+      return ValidasiResult(
+        errors: [
+          ValidationError(
+            rule: 'Required',
+            message: 'Field is required',
+            path: [name],
+          ),
+        ],
+        isValid: false,
+      );
+    }
     throw StateError(
       'Async rules cannot be used with validate(). Use validateAsync() instead.',
     );
@@ -92,6 +113,15 @@ class UserUsernameField extends UserFields<String> {
   @override
   Future<ValidasiResult<String>> validateAsync(String? value) async {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(
+        ValidationError(
+          rule: 'Required',
+          message: 'Field is required',
+          path: [name],
+        ),
+      );
+    }
     if (value != null && value.length < 3) {
       $errors.add(
         ValidationError(
@@ -154,6 +184,15 @@ class UserConfirmEmailField extends UserFields<String> {
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(
+        ValidationError(
+          rule: 'Required',
+          message: 'Field is required',
+          path: [name],
+        ),
+      );
+    }
     if (value != null && value.length < 3) {
       $errors.add(
         ValidationError(
@@ -202,6 +241,15 @@ class UserTagsField extends UserFields<List<String>> {
   @override
   ValidasiResult<List<String>> validate(List<String>? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(
+        ValidationError(
+          rule: 'Required',
+          message: 'Field is required',
+          path: [name],
+        ),
+      );
+    }
     if (value != null && value.length < 1) {
       $errors.add(
         ValidationError(
@@ -242,7 +290,16 @@ class UserCarField extends UserFields<Car> {
   @override
   ValidasiResult<Car> validate(Car? value) {
     if (value == null) {
-      return const ValidasiResult(errors: [], isValid: true);
+      return ValidasiResult(
+        errors: [
+          ValidationError(
+            rule: 'Required',
+            message: 'Field is required',
+            path: [name],
+          ),
+        ],
+        isValid: false,
+      );
     }
     final $carResult = value.validate();
     if (!$carResult.isValid) {
@@ -257,7 +314,16 @@ class UserCarField extends UserFields<Car> {
   @override
   Future<ValidasiResult<Car>> validateAsync(Car? value) async {
     if (value == null) {
-      return const ValidasiResult(errors: [], isValid: true);
+      return ValidasiResult(
+        errors: [
+          ValidationError(
+            rule: 'Required',
+            message: 'Field is required',
+            path: [name],
+          ),
+        ],
+        isValid: false,
+      );
     }
     final $carResult = await value.validateAsync();
     if (!$carResult.isValid) {
@@ -330,7 +396,16 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
   @override
   ValidasiResult<List<Car>> validate(List<Car>? value) {
     if (value == null) {
-      return const ValidasiResult(errors: [], isValid: true);
+      return ValidasiResult(
+        errors: [
+          ValidationError(
+            rule: 'Required',
+            message: 'Field is required',
+            path: [name],
+          ),
+        ],
+        isValid: false,
+      );
     }
     final $errors = <ValidationError>[];
     for (var $previousCarsIndex = 0;
@@ -355,7 +430,16 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
   @override
   Future<ValidasiResult<List<Car>>> validateAsync(List<Car>? value) async {
     if (value == null) {
-      return const ValidasiResult(errors: [], isValid: true);
+      return ValidasiResult(
+        errors: [
+          ValidationError(
+            rule: 'Required',
+            message: 'Field is required',
+            path: [name],
+          ),
+        ],
+        isValid: false,
+      );
     }
     final $errors = <ValidationError>[];
     for (var $previousCarsIndex = 0;
@@ -388,7 +472,7 @@ extension $UserValidasi on User {
   Future<ValidasiResult<User>> validateAsync() async {
     final $errors = <ValidationError>[];
     // Field: email
-    if (email != null && email.length < 3) {
+    if (email.length < 3) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -398,7 +482,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-    if (email != null && email.length > 100) {
+    if (email.length > 100) {
       $errors.add(
         ValidationError(
           rule: 'MaxLength',
@@ -409,7 +493,7 @@ extension $UserValidasi on User {
       );
     }
     // Field: username
-    if (username != null && username.length < 3) {
+    if (username.length < 3) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -419,7 +503,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-    if (username != null && username.length > 100) {
+    if (username.length > 100) {
       $errors.add(
         ValidationError(
           rule: 'MaxLength',
@@ -449,7 +533,7 @@ extension $UserValidasi on User {
       );
     }
     // Field: confirmEmail
-    if (confirmEmail != null && confirmEmail.length < 3) {
+    if (confirmEmail.length < 3) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -459,7 +543,7 @@ extension $UserValidasi on User {
         ),
       );
     }
-    if (confirmEmail != null && confirmEmail.length > 100) {
+    if (confirmEmail.length > 100) {
       $errors.add(
         ValidationError(
           rule: 'MaxLength',
@@ -470,7 +554,7 @@ extension $UserValidasi on User {
       );
     }
     // Field: tags
-    if (tags != null && tags.length < 1) {
+    if (tags.length < 1) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -559,6 +643,15 @@ class CarMakeField extends CarFields<String> {
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(
+        ValidationError(
+          rule: 'Required',
+          message: 'Field is required',
+          path: [name],
+        ),
+      );
+    }
     if (value != null && value.length < 2) {
       $errors.add(
         ValidationError(
@@ -597,6 +690,15 @@ class CarModelField extends CarFields<String> {
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(
+        ValidationError(
+          rule: 'Required',
+          message: 'Field is required',
+          path: [name],
+        ),
+      );
+    }
     if (value != null && value.length < 2) {
       $errors.add(
         ValidationError(
@@ -623,7 +725,7 @@ extension $CarValidasi on Car {
   ValidasiResult<Car> validate() {
     final $errors = <ValidationError>[];
     // Field: make
-    if (make != null && make.length < 2) {
+    if (make.length < 2) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -634,7 +736,7 @@ extension $CarValidasi on Car {
       );
     }
     // Field: model
-    if (model != null && model.length < 2) {
+    if (model.length < 2) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -653,7 +755,7 @@ extension $CarValidasi on Car {
   Future<ValidasiResult<Car>> validateAsync() async {
     final $errors = <ValidationError>[];
     // Field: make
-    if (make != null && make.length < 2) {
+    if (make.length < 2) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -664,7 +766,7 @@ extension $CarValidasi on Car {
       );
     }
     // Field: model
-    if (model != null && model.length < 2) {
+    if (model.length < 2) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -693,7 +795,7 @@ extension $InternalFooValidasi on InternalFoo {
   ValidasiResult<InternalFoo> validate() {
     final $errors = <ValidationError>[];
     // Field: code
-    if (code != null && code.length < 1) {
+    if (code.length < 1) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',
@@ -712,7 +814,7 @@ extension $InternalFooValidasi on InternalFoo {
   Future<ValidasiResult<InternalFoo>> validateAsync() async {
     final $errors = <ValidationError>[];
     // Field: code
-    if (code != null && code.length < 1) {
+    if (code.length < 1) {
       $errors.add(
         ValidationError(
           rule: 'MinLength',

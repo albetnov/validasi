@@ -36,9 +36,10 @@ class MaxLengthGen extends RuleGen {
   }
 
   @override
-  String check(RuleInfo info, String fieldName) {
+  String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final length = info.params['length'] as int;
-    return '$fieldName != null && $fieldName.length > $length';
+    final guard = nullable ? '$fieldName != null && ' : '';
+    return '$guard$fieldName.length > $length';
   }
 
   @override

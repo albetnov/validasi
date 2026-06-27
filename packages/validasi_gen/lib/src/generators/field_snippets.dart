@@ -12,20 +12,28 @@ class FieldRuleSnippets {
     required String accessor,
     required String pathExpr,
     bool async = false,
+    bool requiredCheck = true,
+    bool nullable = true,
   }) {
-    final hasRequired = ctx.rules.any((r) => r.name == 'Required');
-    final rules = ctx.rules.where((r) => r.name != 'Nullable').toList();
     final context = ctx.context;
 
-    if (hasRequired) {
-      final rule = rules.firstWhere((r) => r.name == 'Required');
+    // Type-driven required check (also covers explicit @Required)
+    if (requiredCheck && ctx.isRequired) {
+      final rawMessage = ctx.requiredMessage ?? 'Field is required';
+      final message =
+          rawMessage.replaceAll('\$field', ctx.field.name ?? 'field');
       buf.writeln('$indent if ($accessor == null) {');
-      _emitError(buf, rule, pathExpr, null,
-          context: context, indent: '$indent   ');
+      buf.writeln('$indent   \$errors.add(');
+      buf.writeln('$indent     ValidationError(');
+      buf.writeln("$indent       rule: 'Required',");
+      buf.writeln('$indent       message: ${escapeDartString(message)},');
+      buf.writeln('$indent       path: $pathExpr,');
+      buf.writeln('$indent     ),');
+      buf.writeln('$indent   );');
       buf.writeln('$indent }');
     }
 
-    for (final rule in rules) {
+    for (final rule in ctx.rules) {
       if (rule.isUnknown ||
           rule.name == 'Required' ||
           rule.name == 'Nullable') {
@@ -49,11 +57,12 @@ class FieldRuleSnippets {
           pathExpr,
           asyncCallExpr,
           indent: indent,
+          nullable: nullable,
         );
         continue;
       }
 
-      final check = gen.check(rule, accessor);
+      final check = gen.check(rule, accessor, nullable: nullable);
       buf.writeln('$indent if ($check) {');
       _emitError(buf, rule, pathExpr, gen,
           context: context, indent: '$indent   ');
@@ -69,9 +78,10 @@ class FieldRuleSnippets {
     String pathExpr,
     String asyncCall, {
     required String indent,
+    bool nullable = true,
   }) {
     final runOnNull = rule.params['runOnNull'] as bool? ?? false;
-    final guard = runOnNull ? '' : '$accessor != null && ';
+    final guard = (runOnNull || !nullable) ? '' : '$accessor != null && ';
     final errorRuleName = _errorRuleName(rule);
     final message = rule.message ?? gen.defaultMessage(rule);
     final msgLiteral = _msg(rule, message);

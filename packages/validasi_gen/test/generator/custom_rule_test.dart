@@ -16,7 +16,7 @@ Future<void> main() async {
       expect(
         output,
         contains(
-          "email != null && !IsEmail.check(email, domain: 'example.com')",
+          "!IsEmail.check(email, domain: 'example.com')",
         ),
       );
     });
@@ -24,7 +24,7 @@ Future<void> main() async {
     test('generates NonEmpty check without config params', () {
       expect(
         output,
-        contains('email != null && !NonEmpty.check(email)'),
+        contains('!NonEmpty.check(email)'),
       );
     });
 
@@ -73,7 +73,7 @@ Future<void> main() async {
     test('generates Inline function call with runOnNull false', () {
       expect(
         output,
-        contains('label != null && !_isEmail(label)'),
+        contains('!_isEmail(label)'),
       );
     });
 
