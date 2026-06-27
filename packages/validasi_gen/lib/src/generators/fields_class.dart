@@ -11,6 +11,7 @@ String generateFieldsClass(
   String className,
   List<FieldRules> fields, {
   bool generateIndexedFields = false,
+  bool generateSchema = false,
 }) {
   final fieldsClassName = '${className}Fields';
   final leafClassNames = <String, String>{};
@@ -25,6 +26,16 @@ String generateFieldsClass(
       con.name = '_';
       con.constant = true;
     }));
+
+    if (generateSchema) {
+      c.fields.add(Field((f) {
+        f.name = 'schema';
+        f.modifier = FieldModifier.constant;
+        f.static = true;
+        f.type = refer('ValidasiSchema<$className>');
+        f.assignment = refer('_${className}Schema').call([]).code;
+      }));
+    }
 
     for (final ctx in fields) {
       final fieldName = ctx.field.name!;

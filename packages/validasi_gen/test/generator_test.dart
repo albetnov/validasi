@@ -9,11 +9,17 @@ void main() {
     test('detects @ValidateClass annotated classes', () {
       final generator = ValidasiGenerator();
       expect(generator.generateFieldsDefault, isTrue);
+      expect(generator.generateSchemaDefault, isTrue);
     });
 
     test('respects generateFieldsDefault option', () {
       final generator = ValidasiGenerator(generateFieldsDefault: false);
       expect(generator.generateFieldsDefault, isFalse);
+    });
+
+    test('respects generateSchemaDefault option', () {
+      final generator = ValidasiGenerator(generateSchemaDefault: false);
+      expect(generator.generateSchemaDefault, isFalse);
     });
   });
 

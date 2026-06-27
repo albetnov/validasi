@@ -66,6 +66,15 @@ class UserEmailField extends UserFields<String> {
         ),
       );
     }
+    if (value != null && !NoSpaces.check(value)) {
+      $errors.add(
+        ValidationError(
+          rule: 'noSpaces',
+          message: 'noSpaces: validation failed.',
+          path: [name],
+        ),
+      );
+    }
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }
@@ -488,6 +497,15 @@ extension $UserValidasi on User {
           rule: 'MaxLength',
           message: 'Maximum length is 100 characters',
           details: {'length': '100'},
+          path: ['email'],
+        ),
+      );
+    }
+    if (!NoSpaces.check(email)) {
+      $errors.add(
+        ValidationError(
+          rule: 'noSpaces',
+          message: 'noSpaces: validation failed.',
           path: ['email'],
         ),
       );

@@ -1,3 +1,17 @@
+## 0.1.0-dev.3
+
+### Breaking Changes
+
+- `generateAssemble` build option and `@ValidateClass(generateAssemble: ...)` are renamed to
+  `generateSchema`.
+- Generated top-level `assemble_<ClassName>()` functions are removed. Generated schemas are now
+  exposed as `<ClassName>Fields.schema` (`ValidasiSchema<ClassName>`).
+
+### Added
+
+- Emit a private `_<ClassName>Schema` class implementing `ValidasiSchema<ClassName>` with an explicit
+  `allocate(ValidasiFieldReader<ClassName>)` method.
+
 ## 0.1.0-dev.2
 
 - Add cross-field validation support with `validateFields` and related methods.

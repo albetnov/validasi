@@ -5,9 +5,18 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 part 'example.g.dart';
 
-@ValidateClass(generateAssemble: false)
+// Custom rule example — define a class extending CustomRule<T>,
+// with a static bool check(T? value, {required ...}) method.
+class NoSpaces extends CustomRule<String> {
+  const NoSpaces({String? message, super.runOnNull})
+      : super(name: 'noSpaces', message: message);
+
+  static bool check(String? value) => value == null || !value.contains(' ');
+}
+
+@ValidateClass(generateSchema: false)
 class User {
-  @Validate.string([MinLength(3), MaxLength(100)])
+  @Validate.string([MinLength(3), MaxLength(100), NoSpaces()])
   final String email;
 
   @Validate.string(
@@ -48,7 +57,7 @@ class User {
   }
 }
 
-@ValidateClass(generateAssemble: false)
+@ValidateClass(generateSchema: false)
 class Car {
   @Validate.string([MinLength(2)])
   final String make;

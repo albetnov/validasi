@@ -50,9 +50,14 @@ Future<void> main() async {
       expect(output, contains("rule: 'MaxLength'"));
     });
 
-    test('generates assemble function', () {
-      expect(output, contains('Simple assemble_Simple('));
-      expect(output, contains('ctrl.getValue(SimpleFields.name) as String,'));
+    test('generates schema', () {
+      expect(
+          output,
+          contains(
+              'static const ValidasiSchema<Simple> schema = _SimpleSchema();'));
+      expect(output,
+          contains('class _SimpleSchema extends ValidasiSchema<Simple>'));
+      expect(output, contains('reader.getValue(SimpleFields.name) as String,'));
     });
 
     test('generates validate extension', () {

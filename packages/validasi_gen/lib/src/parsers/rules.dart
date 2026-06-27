@@ -32,14 +32,14 @@ bool? readGenerateIndexedFieldsOverride(ClassElement cls) {
   return null;
 }
 
-bool? readGenerateAssembleOverride(ClassElement cls) {
+bool? readGenerateSchemaOverride(ClassElement cls) {
   for (final meta in cls.metadata.annotations) {
     final element = meta.element;
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'ValidateClass') {
       final constant = meta.computeConstantValue();
       if (constant == null) return null;
-      return ConstantReader(constant).peek('generateAssemble')?.boolValue;
+      return ConstantReader(constant).peek('generateSchema')?.boolValue;
     }
   }
   return null;

@@ -12,13 +12,13 @@ import 'package:validasi_gen/src/utils.dart';
 class ValidasiGenerator extends Generator {
   ValidasiGenerator({
     this.generateFieldsDefault = true,
-    this.generateAssembleDefault = true,
+    this.generateSchemaDefault = true,
     this.generateValidateFormDefault = false,
     this.generateIndexedFieldsDefault = false,
   });
 
   final bool generateFieldsDefault;
-  final bool generateAssembleDefault;
+  final bool generateSchemaDefault;
   final bool generateValidateFormDefault;
   final bool generateIndexedFieldsDefault;
 
@@ -41,8 +41,8 @@ class ValidasiGenerator extends Generator {
 
       final generateFields =
           readGenerateFieldsOverride(cls) ?? generateFieldsDefault;
-      final generateAssemble =
-          readGenerateAssembleOverride(cls) ?? generateAssembleDefault;
+      final generateSchema =
+          readGenerateSchemaOverride(cls) ?? generateSchemaDefault;
       final generateIndexedFields = readGenerateIndexedFieldsOverride(cls) ??
           generateIndexedFieldsDefault;
       final refines = extractRefineMethods(cls);
@@ -54,9 +54,10 @@ class ValidasiGenerator extends Generator {
           cls.name!,
           fields,
           generateIndexedFields: generateIndexedFields,
+          generateSchema: generateSchema,
         ));
-        if (generateAssemble) {
-          buffer.write(generateFromForm(cls.name!, fields));
+        if (generateSchema) {
+          buffer.write(generateSchemaClass(cls.name!, fields));
         }
       }
 

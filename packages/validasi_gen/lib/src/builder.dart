@@ -26,15 +26,15 @@ class _ValidasiBuilder implements Builder {
     final library = await buildStep.inputLibrary;
     final generateFieldsDefault =
         boolOption(options.config, 'generateFields') ?? true;
-    final generateAssembleDefault =
-        boolOption(options.config, 'generateAssemble') ?? true;
+    final generateSchemaDefault =
+        boolOption(options.config, 'generateSchema') ?? true;
     final generateValidateFormDefault =
         boolOption(options.config, 'generateValidateForm') ?? false;
     final generateIndexedFieldsDefault =
         boolOption(options.config, 'generateIndexedFields') ?? false;
     final output = ValidasiGenerator(
       generateFieldsDefault: generateFieldsDefault,
-      generateAssembleDefault: generateAssembleDefault,
+      generateSchemaDefault: generateSchemaDefault,
       generateValidateFormDefault: generateValidateFormDefault,
       generateIndexedFieldsDefault: generateIndexedFieldsDefault,
     ).generate(

@@ -28,14 +28,21 @@ Future<void> main() async {
       expect(output, contains('class RegistrationConfirmEmailField extends'));
     });
 
-    test('generates assemble function', () {
-      expect(output, contains('Registration assemble_Registration('));
-      expect(output,
-          contains('ctrl.getValue(RegistrationFields.email) as String,'));
+    test('generates schema', () {
       expect(
           output,
           contains(
-              'ctrl.getValue(RegistrationFields.confirmEmail) as String,'));
+              'static const ValidasiSchema<Registration> schema = _RegistrationSchema();'));
+      expect(
+          output,
+          contains(
+              'class _RegistrationSchema extends ValidasiSchema<Registration>'));
+      expect(output,
+          contains('reader.getValue(RegistrationFields.email) as String,'));
+      expect(
+          output,
+          contains(
+              'reader.getValue(RegistrationFields.confirmEmail) as String,'));
     });
 
     test('generates validate extension', () {
