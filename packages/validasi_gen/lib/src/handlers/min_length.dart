@@ -52,7 +52,32 @@ class MinLengthGen extends RuleGen {
   }
 
   @override
-  String? details(RuleInfo info) {
-    return "{'length': '${info.params['length']}'}";
+  String emitError(RuleInfo info, String pathExpr, String messageArg,
+      [String context = '']) {
+    final length = info.params['length'] as int;
+    if (context == 'iterable') {
+      return '_Errors.itMinLength($pathExpr, $length$messageArg)';
+    }
+    return '_Errors.minLength($pathExpr, $length$messageArg)';
   }
+
+  @override
+  Map<String, String> get helperMethods => {
+        'minLength':
+            "static ValidationError minLength(List<String> path, int length, {String? message}) =>\n"
+                '      ValidationError(\n'
+                "        rule: 'MinLength',\n"
+                "        message: message ?? 'Minimum length is \$length characters',\n"
+                "        details: {'length': '\$length'},\n"
+                '        path: path,\n'
+                '      );',
+        'itMinLength':
+            "static ValidationError itMinLength(List<String> path, int length, {String? message}) =>\n"
+                '      ValidationError(\n'
+                "        rule: 'MinLength',\n"
+                "        message: message ?? 'List must have at least \$length items',\n"
+                "        details: {'length': '\$length'},\n"
+                '        path: path,\n'
+                '      );',
+      };
 }

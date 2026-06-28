@@ -103,10 +103,30 @@ class AsyncCustomRuleGen extends RuleGen {
   }
 
   @override
-  String? details(RuleInfo info) => null;
+  void validateType(DartType? typeArg, FieldElement field) {}
 
   @override
-  void validateType(DartType? typeArg, FieldElement field) {}
+  String emitError(RuleInfo info, String pathExpr, String messageArg,
+      [String context = '']) {
+    final ruleName = _errorRuleName(info);
+    final message = info.message != null
+        ? escapeDartString(info.message!)
+        : escapeDartString(defaultMessage(info, context));
+    return "_Errors.inline($pathExpr, '$ruleName', $message)";
+  }
+
+  @override
+  Map<String, String> get helperMethods => {
+        'inline':
+            "static ValidationError inline(List<String> path, String rule, String message) =>\n"
+                '      ValidationError(rule: rule, message: message, path: path);',
+      };
+
+  static String _errorRuleName(RuleInfo rule) {
+    return (rule.params['ruleName'] as String?) ??
+        (rule.params['customName'] as String?) ??
+        rule.name;
+  }
 
   static MethodElement? _findStaticCheck(ClassElement cls) {
     for (final method in cls.methods) {

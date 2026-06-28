@@ -133,15 +133,38 @@ void main() {
       });
     });
 
-    group('details', () {
-      test('returns null', () {
+    group('emitError', () {
+      test('generates inline error call', () {
         final info = RuleInfo(
           'AsyncCustomRule',
           {'ruleName': 'test'},
           null,
           isAsync: true,
         );
-        expect(gen.details(info), isNull);
+        final call = gen.emitError(info, "['field']", '');
+        expect(
+            call,
+            equals(
+                "_Errors.inline(['field'], 'test', 'test: validation failed.')"));
+      });
+
+      test('includes custom message', () {
+        final info = RuleInfo(
+          'AsyncCustomRule',
+          {'ruleName': 'test'},
+          'Async error',
+          isAsync: true,
+        );
+        final call =
+            gen.emitError(info, "['field']", ", message: 'Async error'");
+        expect(
+            call, equals("_Errors.inline(['field'], 'test', 'Async error')"));
+      });
+    });
+
+    group('helperMethods', () {
+      test('provides inline helper', () {
+        expect(gen.helperMethods.keys, contains('inline'));
       });
     });
 

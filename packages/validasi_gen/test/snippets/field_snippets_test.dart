@@ -70,11 +70,11 @@ void main() {
       );
       final output = buf.toString();
 
-      expect(output, contains("rule: 'Required'"));
-      expect(output, contains("rule: 'MinLength'"));
+      expect(output, contains("_Errors.required("));
+      expect(output, contains("_Errors.minLength("));
 
-      final requiredIdx = output.indexOf("rule: 'Required'");
-      final minLengthIdx = output.indexOf("rule: 'MinLength'");
+      final requiredIdx = output.indexOf("_Errors.required(");
+      final minLengthIdx = output.indexOf("_Errors.minLength(");
       expect(requiredIdx, lessThan(minLengthIdx));
     });
 
@@ -91,8 +91,8 @@ void main() {
       final output = buf.toString();
 
       expect(output, contains('if (val != null && val.length < 5)'));
-      expect(output, contains("rule: 'MinLength'"));
-      expect(output, isNot(contains("rule: 'Required'")));
+      expect(output, contains("_Errors.minLength("));
+      expect(output, isNot(contains("_Errors.required(")));
     });
 
     test('skips Nullable rules', () {
@@ -139,7 +139,7 @@ void main() {
       );
       final output = buf.toString();
 
-      expect(output, contains("details: {'length': '5'}"));
+      expect(output, contains("_Errors.minLength([name], 5"));
     });
 
     test('handles Required without other rules', () {
@@ -154,8 +154,7 @@ void main() {
       );
       final output = buf.toString();
 
-      expect(output, contains("rule: 'Required'"));
-      expect(output, contains("'Field is required'"));
+      expect(output, contains("_Errors.required("));
       expect(output, contains('if (value == null)'));
     });
   });

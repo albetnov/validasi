@@ -1,5 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:validasi_gen/src/generators/field_snippets.dart';
+import 'package:validasi_gen/src/handlers/required.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 import 'package:validasi_gen/src/utils.dart';
 
@@ -104,7 +105,8 @@ String _buildLeafClass(
       m.type = MethodType.getter;
       m.returns = refer('String');
       m.annotations.add(refer('override'));
-      m.body = Code("return '$fieldName';");
+      m.lambda = true;
+      m.body = Code("'$fieldName'");
     }));
 
     c.methods.add(Method((m) {
@@ -115,7 +117,8 @@ String _buildLeafClass(
         p.name = 'owner';
         p.type = refer(className);
       }));
-      m.body = Code('return owner.$fieldName;');
+      m.lambda = true;
+      m.body = Code('owner.$fieldName');
     }));
 
     if (ctx.isNested) {
@@ -136,15 +139,10 @@ void _addLeafValidate(ClassBuilder c, String valueType, FieldRules ctx) {
   if (ctx.hasAsyncRule) {
     // For async-only fields, sync validate() can still report Required errors.
     if (ctx.isRequired) {
+      final message = _msgForRequired(ctx);
       buf.writeln('if (value == null) {');
-      buf.writeln('  return ValidasiResult(');
-      buf.writeln("    errors: [ValidationError(");
-      buf.writeln("      rule: 'Required',");
-      buf.writeln('      message: ${escapeDartString(_msgForRequired(ctx))},');
-      buf.writeln('      path: [name],');
-      buf.writeln('    )],');
-      buf.writeln('    isValid: false,');
-      buf.writeln('  );');
+      buf.writeln(
+          '  return _Result.invalidSingle(${const RequiredHelper().emitError('[name]', ', message: ${escapeDartString(message)}')});');
       buf.writeln('}');
     }
     buf.writeln(
@@ -159,11 +157,7 @@ void _addLeafValidate(ClassBuilder c, String valueType, FieldRules ctx) {
         requiredCheck: true,
         nullable: true);
     buf.write(innerBuf);
-    buf.writeln('if (\$errors.isNotEmpty) {');
-    buf.writeln('return ValidasiResult(errors: \$errors, isValid: false);');
-    buf.writeln('}');
-    buf.writeln(
-        'return ValidasiResult(errors: const [], isValid: true, data: value);');
+    buf.writeln('return _Result.from(\$errors, value);');
   }
 
   c.methods.add(Method((m) {
@@ -189,12 +183,7 @@ void _addLeafValidate(ClassBuilder c, String valueType, FieldRules ctx) {
         requiredCheck: true,
         nullable: true);
     asyncBuf.write(innerBuf);
-    asyncBuf.writeln('if (\$errors.isNotEmpty) {');
-    asyncBuf
-        .writeln('return ValidasiResult(errors: \$errors, isValid: false);');
-    asyncBuf.writeln('}');
-    asyncBuf.writeln(
-        'return ValidasiResult(errors: const [], isValid: true, data: value);');
+    asyncBuf.writeln('return _Result.from(\$errors, value);');
   } else {
     asyncBuf.writeln('return validate(value);');
   }
@@ -267,14 +256,8 @@ Method _buildNestedMethod(
   if (ctx.isRequired) {
     final message = _msgForRequired(ctx);
     buf.writeln('if (value == null) {');
-    buf.writeln('  return ValidasiResult(');
-    buf.writeln("    errors: [ValidationError(");
-    buf.writeln("      rule: 'Required',");
-    buf.writeln('      message: ${escapeDartString(message)},');
-    buf.writeln('      path: [name],');
-    buf.writeln('    )],');
-    buf.writeln('    isValid: false,');
-    buf.writeln('  );');
+    buf.writeln(
+        '  return _Result.invalidSingle(${const RequiredHelper().emitError('[name]', ', message: ${escapeDartString(message)}')});');
     buf.writeln('}');
   } else {
     buf.writeln('if (value == null) {');
@@ -304,11 +287,7 @@ Method _buildNestedMethod(
         '\$errors.addAll($resultVar.errors.map((e) => e..prefix("\$name[\${$indexVar}]")));');
     buf.writeln('}');
     buf.writeln('}');
-    buf.writeln('if (\$errors.isNotEmpty) {');
-    buf.writeln('return ValidasiResult(errors: \$errors, isValid: false);');
-    buf.writeln('}');
-    buf.writeln(
-        'return ValidasiResult(errors: const [], isValid: true, data: value);');
+    buf.writeln('return _Result.from(\$errors, value);');
   }
 
   return Method((m) {

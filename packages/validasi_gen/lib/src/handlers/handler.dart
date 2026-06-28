@@ -49,8 +49,17 @@ abstract class RuleGen {
   RuleInfo parse(ConstantReader rule);
   String check(RuleInfo info, String fieldName, {bool nullable = true});
   String defaultMessage(RuleInfo info, [String context = '']);
-  String? details(RuleInfo info);
   String? asyncCall(RuleInfo info, String fieldName) => null;
+
+  /// Returns the Dart expression for the error call, e.g.
+  /// `_Errors.minLength(path, 3, message: '...')`.
+  /// [messageArg] is pre-formatted with leading `, message:` when non-empty.
+  String emitError(RuleInfo info, String pathExpr, String messageArg,
+      [String context = '']);
+
+  /// Map of helper method name to its source code (body of a static method
+  /// in the generated `_Errors` class).
+  Map<String, String> get helperMethods;
 
   void validateType(DartType? typeArg, FieldElement field) {}
 }

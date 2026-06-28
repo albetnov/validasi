@@ -169,14 +169,35 @@ void main() {
       });
     });
 
-    group('details', () {
-      test('returns null', () {
+    group('emitError', () {
+      test('generates inline error call', () {
         final info = RuleInfo(
           'CustomRule',
           {'ruleName': 'test'},
           null,
         );
-        expect(gen.details(info), isNull);
+        final call = gen.emitError(info, "['field']", '');
+        expect(
+            call,
+            equals(
+                "_Errors.inline(['field'], 'test', 'test: validation failed.')"));
+      });
+
+      test('includes custom message', () {
+        final info = RuleInfo(
+          'CustomRule',
+          {'ruleName': 'test'},
+          'Custom msg',
+        );
+        final call =
+            gen.emitError(info, "['field']", ", message: 'Custom msg'");
+        expect(call, equals("_Errors.inline(['field'], 'test', 'Custom msg')"));
+      });
+    });
+
+    group('helperMethods', () {
+      test('provides inline helper', () {
+        expect(gen.helperMethods.keys, contains('inline'));
       });
     });
 

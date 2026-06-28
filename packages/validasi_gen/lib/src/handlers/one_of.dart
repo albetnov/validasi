@@ -51,5 +51,23 @@ class OneOfGen extends RuleGen {
   }
 
   @override
-  String? details(RuleInfo info) => null;
+  String emitError(RuleInfo info, String pathExpr, String messageArg,
+      [String context = '']) {
+    final options = info.params['options'] as List<String>;
+    final optionsExpr =
+        '[${options.map((o) => escapeDartString(o)).join(', ')}]';
+    return '_Errors.oneOf($pathExpr, $optionsExpr$messageArg)';
+  }
+
+  @override
+  Map<String, String> get helperMethods => {
+        'oneOf':
+            "static ValidationError oneOf(List<String> path, List<String> options, {String? message}) =>\n"
+                '      ValidationError(\n'
+                "        rule: 'OneOf',\n"
+                "        message: message ?? 'Value must be one of: \${options.join(\", \")}',\n"
+                "        details: {'options': '\${options.join(\",\")}'},\n"
+                '        path: path,\n'
+                '      );',
+      };
 }

@@ -122,15 +122,36 @@ void main() {
       });
     });
 
-    group('details', () {
-      test('returns null', () {
+    group('emitError', () {
+      test('generates correct error call', () {
         final info = RuleInfo(
             'OneOf',
             {
-              'options': ['a', 'b']
+              'options': ['a', 'b', 'c']
             },
             null);
-        expect(gen.details(info), isNull);
+        final call = gen.emitError(info, "['field']", '');
+        expect(call, equals("_Errors.oneOf(['field'], ['a', 'b', 'c'])"));
+      });
+
+      test('includes custom message', () {
+        final info = RuleInfo(
+            'OneOf',
+            {
+              'options': ['x', 'y']
+            },
+            'Bad value');
+        final call = gen.emitError(info, "['field']", ", message: 'Bad value'");
+        expect(
+            call,
+            equals(
+                "_Errors.oneOf(['field'], ['x', 'y'], message: 'Bad value')"));
+      });
+    });
+
+    group('helperMethods', () {
+      test('provides oneOf helper', () {
+        expect(gen.helperMethods.keys, contains('oneOf'));
       });
     });
   });

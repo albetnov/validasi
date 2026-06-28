@@ -45,9 +45,9 @@ Future<void> main() async {
 
     test('generates validate with MinLength and MaxLength checks', () {
       expect(output, contains('if (value != null && value.length < 2)'));
-      expect(output, contains("rule: 'MinLength'"));
+      expect(output, contains("_Errors.minLength("));
       expect(output, contains('if (value != null && value.length > 50)'));
-      expect(output, contains("rule: 'MaxLength'"));
+      expect(output, contains("_Errors.maxLength("));
     });
 
     test('generates schema', () {
@@ -97,7 +97,7 @@ Future<void> main() async {
     });
 
     test('generates iterable message for iterable context', () {
-      expect(output, contains('List must have at least 1 items'));
+      expect(output, contains('List must have at least'));
     });
   });
 }

@@ -29,8 +29,8 @@ Future<void> main() async {
     });
 
     test('uses custom rule name in error rule field', () {
-      expect(output, contains("rule: 'isEmail'"));
-      expect(output, contains("rule: 'nonEmpty'"));
+      expect(output, contains("'isEmail'"));
+      expect(output, contains("'nonEmpty'"));
     });
 
     test('uses default message format for custom rules', () {
@@ -40,7 +40,7 @@ Future<void> main() async {
 
     test('preserves built-in rule behaviour alongside custom rules', () {
       expect(output, contains('if (value != null && value.length < 2)'));
-      expect(output, contains("rule: 'MinLength'"));
+      expect(output, contains("_Errors.itMinLength("));
     });
 
     test('generates sealed fields class for CustomRuleModel', () {
@@ -78,7 +78,7 @@ Future<void> main() async {
     });
 
     test('generates error rule name from Inline name param', () {
-      expect(output, contains("rule: 'positive'"));
+      expect(output, contains("'positive'"));
     });
 
     test('generates default message for Inline', () {
@@ -111,7 +111,7 @@ Future<void> main() async {
     });
 
     test('uses rule name in error rule field', () {
-      expect(output, contains("rule: 'validatePassword'"));
+      expect(output, contains("'validatePassword'"));
     });
 
     test('uses default message format for async custom rules', () {
@@ -119,8 +119,8 @@ Future<void> main() async {
     });
 
     test('emits error on catch', () {
-      expect(output, contains("rule: 'validatePassword'"));
-      expect(output, contains('message: e.toString()'));
+      expect(output, contains("'validatePassword'"));
+      expect(output, contains('e.toString()'));
     });
 
     test('throws on sync validate when async custom rules exist', () {

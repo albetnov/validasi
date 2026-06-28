@@ -52,10 +52,18 @@ void main() {
       expect(gen.defaultMessage(info), equals('Validation failed'));
     });
 
-    test('details is null', () {
+    test('emitError generates inline error call', () {
       final info = RuleInfo('AsyncInline', const {}, null,
           isAsync: true, functionName: '_fn');
-      expect(gen.details(info), isNull);
+      final call = gen.emitError(info, "['name']", '');
+      expect(
+          call,
+          equals(
+              "_Errors.inline(['name'], 'AsyncInline', 'Validation failed')"));
+    });
+
+    test('helperMethods provides inline helper', () {
+      expect(gen.helperMethods.keys, contains('inline'));
     });
 
     test('asyncCall generates correct call expression', () {

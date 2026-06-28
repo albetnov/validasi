@@ -127,10 +127,36 @@ void main() {
       });
     });
 
-    group('details', () {
-      test('returns null', () {
-        final info = RuleInfo('Inline', {}, null);
-        expect(gen.details(info), isNull);
+    group('emitError', () {
+      test('generates inline error call with custom name', () {
+        final info = RuleInfo(
+          'Inline',
+          {'customName': 'isEmail'},
+          null,
+        );
+        final call = gen.emitError(info, "['email']", '');
+        expect(
+            call,
+            equals(
+                "_Errors.inline(['email'], 'isEmail', 'isEmail: validation failed.')"));
+      });
+
+      test('includes custom message', () {
+        final info = RuleInfo(
+          'Inline',
+          {'customName': 'isEmail'},
+          'Custom error',
+        );
+        final call =
+            gen.emitError(info, "['email']", ", message: 'Custom error'");
+        expect(call,
+            equals("_Errors.inline(['email'], 'isEmail', 'Custom error')"));
+      });
+    });
+
+    group('helperMethods', () {
+      test('provides inline helper', () {
+        expect(gen.helperMethods.keys, contains('inline'));
       });
     });
 

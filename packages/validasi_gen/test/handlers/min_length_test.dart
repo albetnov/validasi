@@ -43,12 +43,31 @@ void main() {
       });
     });
 
-    group('details', () {
-      test('returns JSON with length', () {
+    group('emitError', () {
+      test('generates string error call', () {
         final info = RuleInfo('MinLength', {'length': 5}, null);
-        final details = gen.details(info);
+        final call = gen.emitError(info, "['name']", '');
+        expect(call, equals("_Errors.minLength(['name'], 5)"));
+      });
 
-        expect(details, equals("{'length': '5'}"));
+      test('generates iterable error call', () {
+        final info = RuleInfo('MinLength', {'length': 3}, null);
+        final call = gen.emitError(info, "['items']", '', 'iterable');
+        expect(call, equals("_Errors.itMinLength(['items'], 3)"));
+      });
+
+      test('includes custom message', () {
+        final info = RuleInfo('MinLength', {'length': 5}, 'Too short');
+        final call = gen.emitError(info, "['name']", ", message: 'Too short'");
+        expect(call,
+            equals("_Errors.minLength(['name'], 5, message: 'Too short')"));
+      });
+    });
+
+    group('helperMethods', () {
+      test('provides minLength and itMinLength helpers', () {
+        expect(
+            gen.helperMethods.keys, containsAll(['minLength', 'itMinLength']));
       });
     });
   });

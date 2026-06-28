@@ -1,4 +1,5 @@
 import 'package:validasi_gen/src/handlers.dart';
+import 'package:validasi_gen/src/handlers/required.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 import 'package:validasi_gen/src/utils.dart';
 
@@ -21,15 +22,14 @@ class FieldRuleSnippets {
     if (requiredCheck && ctx.isRequired) {
       final rawMessage = ctx.requiredMessage ?? 'Field is required';
       final message =
-          rawMessage.replaceAll('\$field', ctx.field.name ?? 'field');
+          rawMessage.replaceAll(r'$field', ctx.field.name ?? 'field');
+      final messageArg = ctx.requiredMessage != null
+          ? ', message: ${escapeDartString(message)}'
+          : '';
+      final rdIndent = indent.isEmpty ? '  ' : '$indent    ';
       buf.writeln('$indent if ($accessor == null) {');
-      buf.writeln('$indent   \$errors.add(');
-      buf.writeln('$indent     ValidationError(');
-      buf.writeln("$indent       rule: 'Required',");
-      buf.writeln('$indent       message: ${escapeDartString(message)},');
-      buf.writeln('$indent       path: $pathExpr,');
-      buf.writeln('$indent     ),');
-      buf.writeln('$indent   );');
+      buf.writeln(
+          '$rdIndent \$errors.add(${const RequiredHelper().emitError(pathExpr, messageArg)});');
       buf.writeln('$indent }');
     }
 
@@ -63,9 +63,12 @@ class FieldRuleSnippets {
       }
 
       final check = gen.check(rule, accessor, nullable: nullable);
+      final messageArg = rule.message != null
+          ? ', message: ${escapeDartString(rule.message!)}'
+          : '';
+      final errorCall = gen.emitError(rule, pathExpr, messageArg, context);
       buf.writeln('$indent if ($check) {');
-      _emitError(buf, rule, pathExpr, gen,
-          context: context, indent: '$indent   ');
+      buf.writeln('$indent   \$errors.add($errorCall);');
       buf.writeln('$indent }');
     }
   }
@@ -82,67 +85,24 @@ class FieldRuleSnippets {
   }) {
     final runOnNull = rule.params['runOnNull'] as bool? ?? false;
     final guard = (runOnNull || !nullable) ? '' : '$accessor != null && ';
-    final errorRuleName = _errorRuleName(rule);
-    final message = rule.message ?? gen.defaultMessage(rule);
-    final msgLiteral = _msg(rule, message);
+    final messageArg = rule.message != null
+        ? ', message: ${escapeDartString(rule.message!)}'
+        : '';
+    final errorCall = gen.emitError(rule, pathExpr, messageArg);
 
     buf.writeln('$indent try {');
     buf.writeln('$indent   if ($guard!await $asyncCall) {');
-    buf.writeln('$indent     \$errors.add(');
-    buf.writeln('$indent       ValidationError(');
-    buf.writeln("$indent         rule: '$errorRuleName',");
-    buf.writeln('$indent         message: $msgLiteral,');
-    buf.writeln('$indent         path: $pathExpr,');
-    buf.writeln('$indent       ),');
-    buf.writeln('$indent     );');
+    buf.writeln('$indent     \$errors.add($errorCall);');
     buf.writeln('$indent   }');
     buf.writeln('$indent } catch (e) {');
-    buf.writeln('$indent   \$errors.add(');
-    buf.writeln('$indent     ValidationError(');
-    buf.writeln("$indent       rule: '$errorRuleName',");
-    buf.writeln("$indent       message: e.toString(),");
-    buf.writeln('$indent       path: $pathExpr,');
-    buf.writeln('$indent     ),');
-    buf.writeln('$indent   );');
+    buf.writeln(
+        '$indent   \$errors.add(_Errors.inline($pathExpr, \'${_errorRuleName(rule)}\', e.toString()));');
     buf.writeln('$indent }');
-  }
-
-  void _emitError(
-    StringBuffer buf,
-    RuleInfo rule,
-    String pathExpr,
-    RuleGen? gen, {
-    String context = '',
-    required String indent,
-  }) {
-    final message = gen != null
-        ? _msg(rule, gen.defaultMessage(rule, context))
-        : _msg(rule, 'Field is required');
-    final details = gen?.details(rule);
-    final errorRuleName = _errorRuleName(rule);
-
-    buf.writeln('$indent \$errors.add(');
-    buf.writeln('$indent   ValidationError(');
-    buf.writeln("$indent     rule: '$errorRuleName',");
-    buf.writeln('$indent     message: $message,');
-    if (details != null) {
-      buf.writeln('$indent     details: $details,');
-    }
-    buf.writeln('$indent     path: $pathExpr,');
-    buf.writeln('$indent   ),');
-    buf.writeln('$indent );');
   }
 
   static String _errorRuleName(RuleInfo rule) {
     return (rule.params['ruleName'] as String?) ??
         (rule.params['customName'] as String?) ??
         rule.name;
-  }
-
-  String _msg(RuleInfo rule, String defaultMsg) {
-    if (rule.message != null && rule.message!.isNotEmpty) {
-      return escapeDartString(rule.message!);
-    }
-    return escapeDartString(defaultMsg);
   }
 }

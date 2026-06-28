@@ -52,7 +52,32 @@ class MaxLengthGen extends RuleGen {
   }
 
   @override
-  String? details(RuleInfo info) {
-    return "{'length': '${info.params['length']}'}";
+  String emitError(RuleInfo info, String pathExpr, String messageArg,
+      [String context = '']) {
+    final length = info.params['length'] as int;
+    if (context == 'iterable') {
+      return '_Errors.itMaxLength($pathExpr, $length$messageArg)';
+    }
+    return '_Errors.maxLength($pathExpr, $length$messageArg)';
   }
+
+  @override
+  Map<String, String> get helperMethods => {
+        'maxLength':
+            "static ValidationError maxLength(List<String> path, int length, {String? message}) =>\n"
+                '      ValidationError(\n'
+                "        rule: 'MaxLength',\n"
+                "        message: message ?? 'Maximum length is \$length characters',\n"
+                "        details: {'length': '\$length'},\n"
+                '        path: path,\n'
+                '      );',
+        'itMaxLength':
+            "static ValidationError itMaxLength(List<String> path, int length, {String? message}) =>\n"
+                '      ValidationError(\n'
+                "        rule: 'MaxLength',\n"
+                "        message: message ?? 'List must have at most \$length items',\n"
+                "        details: {'length': '\$length'},\n"
+                '        path: path,\n'
+                '      );',
+      };
 }

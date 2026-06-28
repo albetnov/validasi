@@ -41,7 +41,7 @@ Future<void> main() async {
       expect(output, contains('try {'));
       expect(output, contains('await _asyncCheck(value)'));
       expect(output, contains('} catch (e) {'));
-      expect(output, contains("rule: 'async_inline'"));
+      expect(output, contains("_Errors.inline([name], 'async_inline'"));
     });
 
     test('sync rules still emit MinLength check in validateAsync', () {

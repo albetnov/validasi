@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:validasi_gen/src/handlers/handler.dart';
+import 'package:validasi_gen/src/utils.dart';
 
 class InlineGen extends RuleGen {
   @override
@@ -45,8 +46,28 @@ class InlineGen extends RuleGen {
   }
 
   @override
-  String? details(RuleInfo info) => null;
+  String emitError(RuleInfo info, String pathExpr, String messageArg,
+      [String context = '']) {
+    final ruleName = _errorRuleName(info);
+    final message = info.message != null
+        ? escapeDartString(info.message!)
+        : escapeDartString(defaultMessage(info, context));
+    return "_Errors.inline($pathExpr, '$ruleName', $message)";
+  }
+
+  @override
+  Map<String, String> get helperMethods => {
+        'inline':
+            "static ValidationError inline(List<String> path, String rule, String message) =>\n"
+                '      ValidationError(rule: rule, message: message, path: path);',
+      };
 
   @override
   void validateType(DartType? typeArg, FieldElement field) {}
+
+  static String _errorRuleName(RuleInfo rule) {
+    return (rule.params['ruleName'] as String?) ??
+        (rule.params['customName'] as String?) ??
+        rule.name;
+  }
 }

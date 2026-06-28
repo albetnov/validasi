@@ -3,9 +3,12 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'package:validasi_gen/src/generators/cross_fields.dart';
+import 'package:validasi_gen/src/generators/error_helpers.dart';
 import 'package:validasi_gen/src/generators/extension.dart';
 import 'package:validasi_gen/src/generators/fields_class.dart';
 import 'package:validasi_gen/src/generators/form_validator.dart';
+import 'package:validasi_gen/src/handlers.dart';
+import 'package:validasi_gen/src/handlers/required.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 import 'package:validasi_gen/src/utils.dart';
 
@@ -71,6 +74,17 @@ class ValidasiGenerator extends Generator {
       if (shouldEmitValidateForm) {
         buffer.write(generateValidateForm(cls.name!, fields, refines: refines));
       }
+    }
+
+    if (validateClasses.isNotEmpty) {
+      final source = buffer.toString();
+      final usedHelpers = _scanUsedHelpers(source);
+      if (usedHelpers.isNotEmpty) {
+        buffer.writeln();
+        buffer.write(_generateErrorHelpers(usedHelpers));
+      }
+      buffer.writeln();
+      buffer.write(generateResultHelper());
     }
 
     return buffer.toString();
@@ -143,5 +157,46 @@ class ValidasiGenerator extends Generator {
     inStack.remove(node);
     path.removeLast();
     return false;
+  }
+
+  /// Builds a registry of all helper method names to their source code.
+  static Map<String, String> get _helperRegistry {
+    final registry = <String, String>{};
+    for (final gen in ruleGens.values) {
+      registry.addAll(gen.helperMethods);
+    }
+    registry.addAll(RequiredHelper.helperMethods);
+    return registry;
+  }
+
+  /// Scans the generated source for `_Errors.<name>(` patterns and returns
+  /// the set of used helper names.
+  static Set<String> _scanUsedHelpers(String source) {
+    final registry = _helperRegistry;
+    final used = <String>{};
+    final pattern = RegExp(r'_Errors\.(\w+)\(');
+    for (final match in pattern.allMatches(source)) {
+      final name = match.group(1)!;
+      if (registry.containsKey(name)) {
+        used.add(name);
+      }
+    }
+    return used;
+  }
+
+  /// Generates the `_Errors` class with only the used helper methods.
+  static String _generateErrorHelpers(Set<String> usedNames) {
+    final registry = _helperRegistry;
+    final buf = StringBuffer();
+    buf.writeln('abstract final class _Errors {');
+    for (final name in usedNames) {
+      final methodSource = registry[name];
+      if (methodSource != null) {
+        buf.writeln('  $methodSource');
+        buf.writeln();
+      }
+    }
+    buf.writeln('}');
+    return buf.toString();
   }
 }
