@@ -217,6 +217,14 @@ class ValidasiFormController<T> extends ChangeNotifier
 
   void setValue<V>(ValidasiField<T, V> field, V? value) {
     _throwIfDisposed();
+    assert(
+      // Runtime guard for values passed as `dynamic` or `Object`,
+      // where the static type system can't enforce the concrete type.
+      value == null || value is V, // ignore: unnecessary_type_check
+      'Type mismatch for field "${field.name}": '
+      'expected $V, got ${value.runtimeType}. '
+      'This is a developer error — check the onChanged callback or parser.',
+    );
     final fc = getFieldController(field);
     if (fc.disabled) return;
     fc.value = value;

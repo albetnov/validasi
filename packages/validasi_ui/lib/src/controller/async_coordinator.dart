@@ -59,7 +59,9 @@ class ValidasiAsyncCoordinator<T> {
       field,
       () => _AsyncValidatorState(),
     );
-    state.validator = (value) => validator(value as V?);
+    // Safe ternary for values passed as `dynamic` or `Object`;
+    // if the value doesn't match V, pass null instead of throwing.
+    state.validator = (value) => validator(value is V ? value : null);
     state.debounce = debounce;
   }
 
