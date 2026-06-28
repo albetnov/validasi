@@ -11,13 +11,16 @@ import '../benchmarks/hasfields_comparison_benchmark.dart';
 void main(List<String> args) {
   BenchmarkRegistry.register('string', () => StringBenchmark());
   BenchmarkRegistry.register('number', () => NumberBenchmark());
-  BenchmarkRegistry.register('string_transform', () => StringTransformBenchmark());
+  BenchmarkRegistry.register(
+      'string_transform', () => StringTransformBenchmark());
   BenchmarkRegistry.register('list', () => ListBenchmark());
   BenchmarkRegistry.register('map', () => MapBenchmark());
   BenchmarkRegistry.register('nested_map', () => NestedMapBenchmark());
   BenchmarkRegistry.register('preprocess', () => PreprocessBenchmark());
-  BenchmarkRegistry.register('fieldrules_vs_engine', () => FieldRulesBenchmark());
-  BenchmarkRegistry.register('engine_vs_fieldrules', () => EngineHasFieldsBenchmark());
+  BenchmarkRegistry.register(
+      'fieldrules_vs_engine', () => FieldRulesBenchmark());
+  BenchmarkRegistry.register(
+      'engine_vs_fieldrules', () => EngineHasFieldsBenchmark());
 
   if (args.contains('--list') || args.contains('-l')) {
     print('Available benchmarks:');

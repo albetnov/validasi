@@ -30,7 +30,9 @@ class NestedMapBenchmark extends BenchmarkBase {
       ]),
     }),
     Rules.map.conditionalField<dynamic>('profile', (ctx, value) {
-      if (ctx.has('profile') && ctx.get<int>('age') != null && ctx.get<int>('age')! < 18) {
+      if (ctx.has('profile') &&
+          ctx.get<int>('age') != null &&
+          ctx.get<int>('age')! < 18) {
         return 'Must be 18 or older';
       }
       return null;
