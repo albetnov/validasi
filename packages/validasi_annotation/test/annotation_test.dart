@@ -35,6 +35,11 @@ void main() {
       expect(a.rules, hasLength(1));
     });
 
+    test('typed constructor', () {
+      const a = Validate<int>([Required()]);
+      expect(a.rules, hasLength(1));
+    });
+
     test('nullable constructor arg', () {
       const a = Validate(null);
       expect(a.rules, isNull);

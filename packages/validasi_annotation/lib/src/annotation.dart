@@ -21,7 +21,7 @@ class ValidateClass {
   final bool? generateIndexedFields;
 }
 
-class Validate {
+class Validate<T> {
   final List<Rule>? rules;
 
   const Validate(this.rules);
