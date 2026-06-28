@@ -13,7 +13,7 @@ class OneOfGen extends RuleGen {
     final optionsList = rule.read('options').listValue;
     final options = <String>[];
     for (final o in optionsList) {
-      options.add(ConstantReader(o).stringValue);
+      options.add(_literalForOption(ConstantReader(o)));
     }
     return RuleInfo(
       'OneOf',
@@ -23,46 +23,55 @@ class OneOfGen extends RuleGen {
     );
   }
 
-  @override
-  void validateType(DartType? typeArg, FieldElement field) {
-    if (typeArg == null || typeArg is DynamicType || typeArg.isDartCoreObject) {
-      return;
+  String _literalForOption(ConstantReader reader) {
+    final type = reader.objectValue.type;
+    if (reader.isNull) return 'null';
+    if (type == null) return 'null';
+    if (type.isDartCoreString) return escapeDartString(reader.stringValue);
+    if (type.isDartCoreInt) return reader.intValue.toString();
+    if (type.isDartCoreDouble) return reader.doubleValue.toString();
+    if (type.isDartCoreBool) return reader.boolValue.toString();
+    if (type is InterfaceType && type.element is EnumElement) {
+      return reader.revive().accessor;
     }
-    if (typeArg.isDartCoreString) return;
-    throw InvalidGenerationSourceError(
-      "OneOf does not support type '${typeArg.getDisplayString()}'. "
-      "Supported: String",
-      element: field,
-    );
+    return escapeDartString(reader.objectValue.toString());
   }
+
+  @override
+  void validateType(DartType? typeArg, FieldElement field) {}
 
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final options = info.params['options'] as List<String>;
-    final items = options.map(escapeDartString).join(', ');
+    final items = options.join(', ');
     final guard = nullable ? '$fieldName != null && ' : '';
     return '$guard![$items].contains($fieldName)';
   }
 
   @override
   String defaultMessage(RuleInfo info, [String context = '']) {
-    final options = (info.params['options'] as List<String>).join(', ');
-    return 'Value must be one of: $options';
+    final options = info.params['options'] as List<String>;
+    final display = options.map((o) {
+      if (o.startsWith("'")) {
+        return o.substring(1, o.length - 1);
+      }
+      return o;
+    }).join(', ');
+    return 'Value must be one of: $display';
   }
 
   @override
   String emitError(RuleInfo info, String pathExpr, String messageArg,
       [String context = '']) {
     final options = info.params['options'] as List<String>;
-    final optionsExpr =
-        '[${options.map((o) => escapeDartString(o)).join(', ')}]';
+    final optionsExpr = '[${options.join(', ')}]';
     return '_Errors.oneOf($pathExpr, $optionsExpr$messageArg)';
   }
 
   @override
   Map<String, String> get helperMethods => {
         'oneOf':
-            "static ValidationError oneOf(List<String> path, List<String> options, {String? message}) =>\n"
+            "static ValidationError oneOf(List<String> path, List<Object?> options, {String? message}) =>\n"
                 '      ValidationError(\n'
                 "        rule: 'OneOf',\n"
                 "        message: message ?? 'Value must be one of: \${options.join(\", \")}',\n"

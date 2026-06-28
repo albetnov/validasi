@@ -108,12 +108,9 @@ void main() {
       expect(() => OneOfGen().validateType(field.type, field), returnsNormally);
     });
 
-    test('throws for int', () {
+    test('accepts int', () {
       final field = _fieldOf(library.getClass('OneOfIntModel')!, 'code');
-      expect(
-        () => OneOfGen().validateType(field.type, field),
-        throwsA(isA<InvalidGenerationSourceError>()),
-      );
+      expect(() => OneOfGen().validateType(field.type, field), returnsNormally);
     });
   });
 }
