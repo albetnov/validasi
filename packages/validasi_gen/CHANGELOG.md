@@ -6,11 +6,27 @@
   `generateSchema`.
 - Generated top-level `assemble_<ClassName>()` functions are removed. Generated schemas are now
   exposed as `<ClassName>Fields.schema` (`ValidasiSchema<ClassName>`).
+- Handler infrastructure migrated from `typeArg` (`DartType?`) to `FieldContext` enum
+  (`string`, `iterable`, `generic`). Custom handlers need to implement `supportedContexts`.
 
 ### Added
 
-- Emit a private `_<ClassName>Schema` class implementing `ValidasiSchema<ClassName>` with an explicit
+- `CustomRuleGen` and `AsyncCustomRuleGen` — generate custom validation rules from `@CustomRule`
+  and `@AsyncCustomRule` annotations.
+- `InlineGen` — generate inline validation functions from `@Inline` annotations.
+- Non-string type support in `OneOf` handler (int, double, bool, enum types).
+- `emitError` and `helperMethods` to `RuleGen` interface for centralized error emission.
+- Private `_<ClassName>Schema` class implementing `ValidasiSchema<ClassName>` with an explicit
   `allocate(ValidasiFieldReader<ClassName>)` method.
+- Custom rule example in the validasi_gen example app.
+- Any validation generation tests covering Inline, OneOf, CustomRule with enum, int, and async types.
+
+### Changed
+
+- Rules parser computes `FieldContext` from `Validate<T>` type argument instead of named
+  constructor names (`Validate.string`, `Validate.iterable`).
+- All handlers updated to use `FieldContext` instead of raw `DartType?` for type dispatch.
+- Error emission refactored into centralized `_Errors` helpers across all handlers.
 
 ## 0.1.0-dev.2
 

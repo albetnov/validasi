@@ -2,14 +2,27 @@
 
 ### Breaking Changes
 
-- `ValidasiForm` and `ValidasiFormController` no longer accept `assembler`. Use `schema`
-  (`ValidasiSchema<T>`) instead. Generated schemas are exposed as `<ClassName>Fields.schema`.
+- `ValidasiTextFormField<T>` and `ValidasiParsedTextFormField<T, V>` are **removed**.
+  Replaced by `ValidasiTextField<T, V>` + `ValidasiTextController`.
+  Migration: replace `ValidasiTextFormField(field: ..., decoration: ...)` with
+  `ValidasiTextField<T, String>(field: ..., builder: ...)`. See README for details.
 
 ### Added
 
-- `ValidasiFormController<T>` now implements `ValidasiFieldReader<T>`.
-- `ValidasiTextFormField<T>` convenience widget for `String` fields.
-- `ValidasiParsedTextFormField<T, V>` convenience widget for fields parsed from `String` to `V`.
+- `ValidasiSchema<T>` integration: form controller and fields now work with `ValidasiSchema`
+  and `ValidasiFieldReader` abstractions from validasi core.
+- `ValidasiTextField<T, V>` — wraps `ValidasiFormField` with automatic
+  `TextEditingController` lifecycle and form-value sync. Accepts an optional
+  `ValidasiTextController` for programmatic control (clear, selection, etc.).
+  Builder receives `(context, state, controller)` with zero `TextField`-API coupling.
+- `ValidasiTextController` — a `TextEditingController` subclass for use with
+  `ValidasiTextField`.
+
+### Fixed
+
+- Async coordinator: use safe ternary instead of unchecked cast for values passed as
+  `dynamic`/`Object`.
+- Controller `setValue`: add assert to catch type mismatches at runtime.
 
 ## 0.1.0-dev.2
 

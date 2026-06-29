@@ -3,6 +3,13 @@
 ### Breaking Changes
 
 - `@ValidateClass()` parameter `generateAssemble` is renamed to `generateSchema`.
+- `Validate` is now generic: use `Validate<T>([...])` instead of `Validate.string(...)` or
+  `Validate.iterable(...)`.
+- `rules` parameter in `Validate` is now required (use empty list `[]` for no rules).
+
+### Added
+
+- `@CustomRule`, `@AsyncCustomRule`, and `@Inline` annotations for custom code generation rules.
 
 ## 0.1.0-dev.2
 
