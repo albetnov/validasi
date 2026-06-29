@@ -48,14 +48,14 @@ bool? readGenerateSchemaOverride(ClassElement cls) {
 class FieldRules {
   final FieldElement field;
   final List<RuleInfo> rules;
-  final String context;
+  final FieldContext context;
   final String? nestedClassName;
   final bool isNestedIterable;
 
   FieldRules(
     this.field,
     this.rules, {
-    this.context = '',
+    this.context = FieldContext.generic,
     this.nestedClassName,
     this.isNestedIterable = false,
   });
@@ -195,14 +195,21 @@ bool _isAsyncMethod(MethodElement method) {
   return display.startsWith('Future<');
 }
 
-(List<RuleInfo>, String)? _extractRules(FieldElement field) {
+(List<RuleInfo>, FieldContext)? _extractRules(FieldElement field) {
   for (final meta in field.metadata.annotations) {
     final element = meta.element;
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'Validate') {
-      final context = element.name!;
       final constant = meta.computeConstantValue();
       if (constant == null) return null;
+
+      final validateType = constant.type;
+      final context = fieldContextFromType(
+        validateType is ParameterizedType &&
+                validateType.typeArguments.isNotEmpty
+            ? validateType.typeArguments.first
+            : null,
+      );
 
       final reader = ConstantReader(constant);
       final rulesReader = reader.read('rules');
@@ -213,7 +220,7 @@ bool _isAsyncMethod(MethodElement method) {
         final ruleReader = ConstantReader(dartObj);
         final rule = _parseRule(ruleReader);
         final gen = ruleGens[rule.name];
-        if (gen != null) gen.validateType(rule.typeArg, field);
+        if (gen != null) gen.validateType(context, field);
         return rule;
       }).toList();
       return (rules, context);
