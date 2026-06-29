@@ -176,6 +176,77 @@ Binds a `ValidasiField<T, V>` to a builder. Each instance rebuilds only when its
 | `debounceDuration` | Debounce for async validation (default: 300ms) |
 | `shouldUnregister` | Override form-level `shouldUnregister` for this field |
 
+### `ValidasiTextField<T, V>`
+
+Convenience wrapper around `ValidasiFormField` that manages a `TextEditingController` lifecycle and keeps it in sync with the form value. Unlike a plain `ValidasiFormField`, this widget handles the controller plumbing so you focus on building the UI.
+
+```dart
+ValidasiTextField<User, String>(
+  field: UserFields.name,
+  builder: (context, state, ctrl) => TextField(
+    controller: ctrl,
+    onChanged: state.onChanged,
+    decoration: InputDecoration(
+      labelText: 'Name',
+      errorText: state.errorText,
+    ),
+  ),
+)
+```
+
+| Parameter | Description |
+|---|---|
+| `field` | The `ValidasiField` to bind |
+| `builder` | `Widget Function(BuildContext, ValidasiFieldState<V>, ValidasiTextController)` — receives the field state and a pre-synced controller |
+| `controller` | Optional. Pass your own `ValidasiTextController` for programmatic access (`clear()`, `selection`, etc.) |
+| `mode`, `reValidateMode`, `disabled`, `validator`, `debounceDuration`, `shouldUnregister` | Same as `ValidasiFormField` |
+
+When `controller` is omitted, one is created internally and disposed with the widget. Pass one in when you need external control.
+
+For non-`String` fields, wire parsing in the builder:
+
+```dart
+ValidasiTextField<User, int>(
+  field: UserFields.age,
+  builder: (context, state, ctrl) => TextField(
+    controller: ctrl,
+    onChanged: (raw) => state.onChanged(int.tryParse(raw)),
+    keyboardType: TextInputType.number,
+    decoration: InputDecoration(errorText: state.errorText),
+  ),
+)
+```
+
+### `ValidasiTextController`
+
+A `TextEditingController` subclass that serves as the bridge between your `TextField` and the `ValidasiFormController`. Use it with `ValidasiTextField` for programmatic control:
+
+```dart
+class _MyPage extends StatefulWidget { ... }
+class _MyPageState extends State<_MyPage> {
+  final _nameCtrl = ValidasiTextController();
+
+  void _clearName() {
+    _nameCtrl.clear();
+  }
+
+  void dispose() {
+    _nameCtrl.dispose();
+    super.dispose();
+  }
+
+  Widget build(context) => ValidasiTextField<User, String>(
+    field: UserFields.name,
+    controller: _nameCtrl,
+    builder: (context, state, ctrl) => TextField(
+      controller: ctrl,
+      onChanged: state.onChanged,
+      decoration: InputDecoration(errorText: state.errorText),
+    ),
+  );
+}
+```
+
 ### `ValidasiFieldState<V>`
 
 What your builder receives.
@@ -456,6 +527,8 @@ lib/
     widgets/
       validasi_form.dart        # ValidasiForm + _FormScope (InheritedWidget)
       validasi_form_field.dart  # ValidasiFormField (field builder widget)
+      validasi_text_controller.dart  # ValidasiTextController (TextEditingController subclass)
+      validasi_text_form_field.dart  # ValidasiTextField (controller lifecycle wrapper)
       validasi_watch.dart       # ValidasiWatch, ValidasiWatchForm, ValidasiWatchField
     signals/
       field_signals.dart        # ValidasiFieldSignals — per-field reactive state
