@@ -10,6 +10,6 @@ export 'src/signals/field_signals.dart';
 export 'src/signals/form_signals.dart';
 export 'src/widgets/validasi_form.dart';
 export 'src/widgets/validasi_form_field.dart';
-export 'src/widgets/validasi_parsed_text_form_field.dart';
+export 'src/widgets/validasi_text_controller.dart';
 export 'src/widgets/validasi_text_form_field.dart';
 export 'src/widgets/validasi_watch.dart';

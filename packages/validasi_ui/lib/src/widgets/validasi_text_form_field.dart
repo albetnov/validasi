@@ -1,37 +1,29 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:validasi/validasi.dart';
 import 'package:validasi_ui/src/models/validation_mode.dart';
+import 'package:validasi_ui/src/models/field_state.dart';
 import 'package:validasi_ui/src/widgets/validasi_form_field.dart';
+import 'package:validasi_ui/src/widgets/validasi_text_controller.dart';
 
-/// A convenience widget for editing a `String` field with a [TextField].
-class ValidasiTextFormField<T> extends StatefulWidget {
-  final ValidasiField<T, String> field;
-  final InputDecoration? decoration;
-  final TextInputType? keyboardType;
-  final bool obscureText;
-  final int? maxLines;
-  final int? minLines;
-  final int? maxLength;
-  final TextInputAction? textInputAction;
-  final bool disabled;
+class ValidasiTextField<T, V> extends StatefulWidget {
+  final ValidasiField<T, V> field;
+  final ValidasiTextController? controller;
+  final Widget Function(
+      BuildContext, ValidasiFieldState<V>, ValidasiTextController) builder;
   final ValidationMode? mode;
   final ReValidationMode? reValidateMode;
-  final Future<String?> Function(String?)? validator;
+  final bool disabled;
+  final Future<String?> Function(V?)? validator;
   final Duration debounceDuration;
   final bool? shouldUnregister;
 
-  const ValidasiTextFormField({
+  const ValidasiTextField({
     required this.field,
-    this.decoration,
-    this.keyboardType,
-    this.obscureText = false,
-    this.maxLines = 1,
-    this.minLines,
-    this.maxLength,
-    this.textInputAction,
-    this.disabled = false,
+    required this.builder,
+    this.controller,
     this.mode,
     this.reValidateMode,
+    this.disabled = false,
     this.validator,
     this.debounceDuration = const Duration(milliseconds: 300),
     this.shouldUnregister,
@@ -39,55 +31,48 @@ class ValidasiTextFormField<T> extends StatefulWidget {
   });
 
   @override
-  State<ValidasiTextFormField<T>> createState() =>
-      _ValidasiTextFormFieldState<T>();
+  State<ValidasiTextField<T, V>> createState() =>
+      _ValidasiTextFieldState<T, V>();
 }
 
-class _ValidasiTextFormFieldState<T> extends State<ValidasiTextFormField<T>> {
-  late final TextEditingController _controller;
+class _ValidasiTextFieldState<T, V> extends State<ValidasiTextField<T, V>> {
+  late final ValidasiTextController _controller;
+  bool _ownsController = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller = widget.controller ?? ValidasiTextController();
+    _ownsController = widget.controller == null;
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (_ownsController) _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ValidasiFormField<T, String>(
+    return ValidasiFormField<T, V>(
       field: widget.field,
-      disabled: widget.disabled,
       mode: widget.mode,
       reValidateMode: widget.reValidateMode,
+      disabled: widget.disabled,
       validator: widget.validator,
       debounceDuration: widget.debounceDuration,
       shouldUnregister: widget.shouldUnregister,
       builder: (context, state) {
-        final text = state.value ?? '';
-        if (_controller.text != text) {
-          _controller.text = text;
-        }
-
-        return TextField(
-          controller: _controller,
-          onChanged: state.onChanged,
-          decoration: widget.decoration?.copyWith(errorText: state.errorText) ??
-              InputDecoration(errorText: state.errorText),
-          keyboardType: widget.keyboardType,
-          obscureText: widget.obscureText,
-          maxLines: widget.maxLines,
-          minLines: widget.minLines,
-          maxLength: widget.maxLength,
-          textInputAction: widget.textInputAction,
-          enabled: !widget.disabled,
-        );
+        _syncTo(state.value);
+        return widget.builder(context, state, _controller);
       },
     );
+  }
+
+  void _syncTo(V? value) {
+    final str = value?.toString() ?? '';
+    if (_controller.text != str) {
+      _controller.text = str;
+    }
   }
 }
