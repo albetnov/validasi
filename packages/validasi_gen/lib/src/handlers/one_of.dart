@@ -19,7 +19,6 @@ class OneOfGen extends RuleGen {
       'OneOf',
       {'options': options},
       rule.peek('message')?.stringValue,
-      typeArg: typeArgOf(rule),
     );
   }
 
@@ -38,9 +37,6 @@ class OneOfGen extends RuleGen {
   }
 
   @override
-  void validateType(DartType? typeArg, FieldElement field) {}
-
-  @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final options = info.params['options'] as List<String>;
     final items = options.join(', ');
@@ -49,7 +45,8 @@ class OneOfGen extends RuleGen {
   }
 
   @override
-  String defaultMessage(RuleInfo info, [String context = '']) {
+  String defaultMessage(RuleInfo info,
+      [FieldContext context = FieldContext.string]) {
     final options = info.params['options'] as List<String>;
     final display = options.map((o) {
       if (o.startsWith("'")) {
@@ -62,7 +59,7 @@ class OneOfGen extends RuleGen {
 
   @override
   String emitError(RuleInfo info, String pathExpr, String messageArg,
-      [String context = '']) {
+      [FieldContext context = FieldContext.string]) {
     final options = info.params['options'] as List<String>;
     final optionsExpr = '[${options.join(', ')}]';
     return '_Errors.oneOf($pathExpr, $optionsExpr$messageArg)';

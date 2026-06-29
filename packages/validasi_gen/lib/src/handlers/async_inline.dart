@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:validasi_gen/src/handlers/handler.dart';
 import 'package:validasi_gen/src/utils.dart';
@@ -39,13 +38,14 @@ class AsyncInlineGen extends RuleGen {
   }
 
   @override
-  String defaultMessage(RuleInfo info, [String context = '']) {
+  String defaultMessage(RuleInfo info,
+      [FieldContext context = FieldContext.string]) {
     return 'Validation failed';
   }
 
   @override
   String emitError(RuleInfo info, String pathExpr, String messageArg,
-      [String context = '']) {
+      [FieldContext context = FieldContext.string]) {
     final ruleName = _errorRuleName(info);
     final message = info.message != null
         ? escapeDartString(info.message!)
@@ -61,7 +61,7 @@ class AsyncInlineGen extends RuleGen {
       };
 
   @override
-  void validateType(DartType? typeArg, FieldElement field) {}
+  void validateType(FieldContext context, FieldElement field) {}
 
   static String _errorRuleName(RuleInfo rule) {
     return (rule.params['ruleName'] as String?) ??

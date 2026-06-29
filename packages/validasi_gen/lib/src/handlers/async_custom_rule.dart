@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:validasi_gen/src/handlers/handler.dart';
 import 'package:validasi_gen/src/utils.dart';
@@ -18,7 +17,6 @@ class AsyncCustomRuleGen extends RuleGen {
     final ruleName = rule.read('name').stringValue;
     final message = rule.peek('message')?.stringValue;
     final runOnNull = rule.peek('runOnNull')?.boolValue ?? false;
-    final typeArg = typeArgOfBase(rule, 'AsyncCustomRule');
 
     final checkMethod = _findStaticCheck(typeElement);
     if (checkMethod == null) {
@@ -71,7 +69,6 @@ class AsyncCustomRuleGen extends RuleGen {
       },
       message,
       isAsync: true,
-      typeArg: typeArg,
     );
   }
 
@@ -97,17 +94,18 @@ class AsyncCustomRuleGen extends RuleGen {
   }
 
   @override
-  String defaultMessage(RuleInfo info, [String context = '']) {
+  String defaultMessage(RuleInfo info,
+      [FieldContext context = FieldContext.string]) {
     final ruleName = info.params['ruleName'] as String? ?? '';
     return '$ruleName: validation failed.';
   }
 
   @override
-  void validateType(DartType? typeArg, FieldElement field) {}
+  void validateType(FieldContext context, FieldElement field) {}
 
   @override
   String emitError(RuleInfo info, String pathExpr, String messageArg,
-      [String context = '']) {
+      [FieldContext context = FieldContext.string]) {
     final ruleName = _errorRuleName(info);
     final message = info.message != null
         ? escapeDartString(info.message!)
