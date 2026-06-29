@@ -22,13 +22,9 @@ class ValidateClass {
 }
 
 class Validate<T> {
-  final List<Rule>? rules;
+  final List<Rule<T>> rules;
 
   const Validate(this.rules);
-
-  const Validate.string(List<Rule<String>> this.rules);
-
-  const Validate.iterable(List<Rule<Iterable>> this.rules);
 }
 
 class RefineFn {

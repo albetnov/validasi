@@ -25,13 +25,13 @@ void main() {
       expect(a.rules, hasLength(1));
     });
 
-    test('string constructor', () {
-      const a = Validate.string([MinLength(3)]);
+    test('string typed constructor', () {
+      const a = Validate<String>([MinLength(3)]);
       expect(a.rules, hasLength(1));
     });
 
-    test('iterable constructor', () {
-      const a = Validate.iterable([MaxLength(10)]);
+    test('iterable typed constructor', () {
+      const a = Validate<List<String>>([MaxLength(10)]);
       expect(a.rules, hasLength(1));
     });
 
@@ -40,9 +40,9 @@ void main() {
       expect(a.rules, hasLength(1));
     });
 
-    test('nullable constructor arg', () {
-      const a = Validate(null);
-      expect(a.rules, isNull);
+    test('empty rules list', () {
+      const a = Validate<String>([]);
+      expect(a.rules, isEmpty);
     });
   });
 
