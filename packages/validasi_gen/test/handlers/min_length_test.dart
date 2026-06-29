@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
 
+import 'package:validasi_gen/src/handlers.dart';
 import 'package:validasi_gen/src/handlers/handler.dart';
 import 'package:validasi_gen/src/handlers/min_length.dart';
 
@@ -37,7 +38,7 @@ void main() {
 
       test('returns iterable message for iterable context', () {
         final info = RuleInfo('MinLength', {'length': 3}, null);
-        final msg = gen.defaultMessage(info, 'iterable');
+        final msg = gen.defaultMessage(info, FieldContext.iterable);
 
         expect(msg, equals('List must have at least 3 items'));
       });
@@ -52,7 +53,8 @@ void main() {
 
       test('generates iterable error call', () {
         final info = RuleInfo('MinLength', {'length': 3}, null);
-        final call = gen.emitError(info, "['items']", '', 'iterable');
+        final call =
+            gen.emitError(info, "['items']", '', FieldContext.iterable);
         expect(call, equals("_Errors.itMinLength(['items'], 3)"));
       });
 

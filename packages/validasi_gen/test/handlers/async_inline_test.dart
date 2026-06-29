@@ -11,7 +11,7 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
 class AsyncModel {
-  @Validate.string([AsyncInline(_check)])
+  @Validate<String>([AsyncInline(_check)])
   final String name;
 
   const AsyncModel({required this.name});
@@ -19,7 +19,7 @@ class AsyncModel {
 
 @ValidateClass()
 class CustomNameModel {
-  @Validate.string([AsyncInline(_ok, name: 'custom_rule')])
+  @Validate<String>([AsyncInline(_ok, name: 'custom_rule')])
   final String name2;
   const CustomNameModel({required this.name2});
 }

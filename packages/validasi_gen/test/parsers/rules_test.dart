@@ -3,6 +3,7 @@ import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
+import 'package:validasi_gen/src/handlers.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 
 const _source = r'''
@@ -10,10 +11,10 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
 class BasicModel {
-  @Validate.string([MinLength(3), MaxLength(100)])
+  @Validate<String>([MinLength(3), MaxLength(100)])
   final String email;
 
-  @Validate.iterable([MinLength(1)])
+  @Validate<List<String>>([MinLength(1)])
   final List<String> tags;
 
   final String nickname;
@@ -27,7 +28,7 @@ class BasicModel {
 
 @ValidateClass(generateFields: false)
 class NoFieldsModel {
-  @Validate.string([MinLength(1)])
+  @Validate<String>([MinLength(1)])
   final String code;
 
   const NoFieldsModel({required this.code});
@@ -35,7 +36,7 @@ class NoFieldsModel {
 
 @ValidateClass(generateFields: true)
 class ExplicitFieldsModel {
-  @Validate.string([MinLength(2)])
+  @Validate<String>([MinLength(2)])
   final String name;
 
   const ExplicitFieldsModel({required this.name});
@@ -75,7 +76,7 @@ void main() {
       expect(emailField.rules, hasLength(2));
       expect(emailField.rules.map((r) => r.name),
           containsAll(['MinLength', 'MaxLength']));
-      expect(emailField.context, equals('string'));
+      expect(emailField.context, equals(FieldContext.string));
     });
 
     test('parses iterable context', () {
@@ -85,7 +86,7 @@ void main() {
 
       expect(tagsField.rules, hasLength(1));
       expect(tagsField.rules.first.name, equals('MinLength'));
-      expect(tagsField.context, equals('iterable'));
+      expect(tagsField.context, equals(FieldContext.iterable));
     });
 
     test('non-annotated fields are excluded from result', () {

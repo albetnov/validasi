@@ -15,7 +15,7 @@ bool _isNotEmpty(String? value) => value != null && value.isNotEmpty;
 
 @ValidateClass()
 class InlineModel {
-  @Validate.string([Inline(_isEmail, name: 'isEmail')])
+  @Validate<String>([Inline(_isEmail, name: 'isEmail')])
   final String email;
 
   const InlineModel({required this.email});
@@ -23,7 +23,7 @@ class InlineModel {
 
 @ValidateClass()
 class DefaultNameModel {
-  @Validate.string([Inline(_isNotEmpty)])
+  @Validate<String>([Inline(_isNotEmpty)])
   final String text;
 
   const DefaultNameModel({required this.text});
@@ -31,7 +31,7 @@ class DefaultNameModel {
 
 @ValidateClass()
 class RunOnNullModel {
-  @Validate.string([Inline(_isEmail, name: 'checkNull', runOnNull: true)])
+  @Validate<String>([Inline(_isEmail, name: 'checkNull', runOnNull: true)])
   final String value;
 
   const RunOnNullModel({required this.value});

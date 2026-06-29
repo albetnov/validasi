@@ -10,19 +10,19 @@ const _source = r'''
 import 'package:validasi_annotation/validasi_annotation.dart';
 
 class TestModel {
-  @Validate.string([Required(), MinLength(3)])
+  @Validate<String>([Required(), MinLength(3)])
   final String name;
 
-  @Validate.string([MinLength(5)])
+  @Validate<String>([MinLength(5)])
   final String? bio;
 
-  @Validate.string([Nullable()])
+  @Validate<String>([Nullable()])
   final String? nickname;
 
-  @Validate.string([MinLength(2, message: 'Custom msg')])
+  @Validate<String>([MinLength(2, message: 'Custom msg')])
   final String alias;
 
-  @Validate([Required()])
+  @Validate<int>([Required()])
   final int age;
 
   const TestModel({

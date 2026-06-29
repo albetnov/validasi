@@ -10,10 +10,10 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
 class Login {
-  @Validate.string([MinLength(3)])
+  @Validate<String>([MinLength(3)])
   final String username;
 
-  @Validate.string([MinLength(1)])
+  @Validate<String>([MinLength(1)])
   final String password;
 
   const Login({required this.username, required this.password});

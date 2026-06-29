@@ -2,10 +2,10 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
 class Registration {
-  @Validate.string([MinLength(3)])
+  @Validate<String>([MinLength(3)])
   final String email;
 
-  @Validate.string([MinLength(3)])
+  @Validate<String>([MinLength(3)])
   final String confirmEmail;
 
   final String? notes;
@@ -19,7 +19,7 @@ class Registration {
 
 @ValidateClass()
 class SimpleCross {
-  @Validate.string([MinLength(2)])
+  @Validate<String>([MinLength(2)])
   final String name;
   const SimpleCross({required this.name});
 }

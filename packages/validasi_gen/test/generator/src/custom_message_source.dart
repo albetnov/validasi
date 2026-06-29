@@ -2,7 +2,7 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
 class CustomMsgModel {
-  @Validate.string([
+  @Validate<String>([
     MinLength(3, message: 'Name too short'),
     MaxLength(50, message: 'Name too long'),
   ])
@@ -13,7 +13,7 @@ class CustomMsgModel {
 
 @ValidateClass()
 class OneOfCustomMsgModel {
-  @Validate.string([
+  @Validate<String>([
     OneOf(['red', 'green', 'blue'], message: 'Must be a valid color')
   ])
   final String color;

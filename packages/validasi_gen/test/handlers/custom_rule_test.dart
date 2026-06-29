@@ -34,7 +34,7 @@ class RunOnNullRule extends CustomRule<String> {
 
 @ValidateClass()
 class Model {
-  @Validate.string([IsEmail('example.com')])
+  @Validate<String>([IsEmail('example.com')])
   final String email;
 
   const Model({required this.email});
@@ -42,7 +42,7 @@ class Model {
 
 @ValidateClass()
 class EmptyModel {
-  @Validate.string([IsEmpty()])
+  @Validate<String>([IsEmpty()])
   final String name2;
 
   const EmptyModel({required this.name2});
@@ -50,7 +50,7 @@ class EmptyModel {
 
 @ValidateClass()
 class NullModel {
-  @Validate.string([RunOnNullRule()])
+  @Validate<String>([RunOnNullRule()])
   final String name3;
 
   const NullModel({required this.name3});
