@@ -1,4 +1,5 @@
-export 'handlers/handler.dart';
+export 'handlers/handler.dart'
+    show RuleGen, RuleInfo, FieldContext, fieldContextFromType;
 
 import 'package:validasi_gen/src/handlers/handler.dart';
 import 'package:validasi_gen/src/handlers/min_length.dart';
