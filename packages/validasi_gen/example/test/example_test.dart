@@ -323,9 +323,10 @@ void main() {
       expect(r.errors.first.rule, equals('MaxLength'));
     });
 
-    test('standalone field validate passes on null (no rules fail)', () {
+    test('standalone field validate fails on null (required by type)', () {
       final r = UserFields.email.validate(null);
-      expect(r.isValid, isTrue);
+      expect(r.isValid, isFalse);
+      expect(r.errors.single.rule, equals('Required'));
     });
 
     test('instance-driven validateField extracts and validates', () {
@@ -405,9 +406,10 @@ void main() {
       expect(r.errors.single.path, equals(['previousCars[0]', 'make']));
     });
 
-    test('iterable nested key passes when value is null', () {
+    test('iterable nested key fails when value is null (required by type)', () {
       final r = UserFields.previousCars.validate(null);
-      expect(r.isValid, isTrue);
+      expect(r.isValid, isFalse);
+      expect(r.errors.single.rule, equals('Required'));
     });
 
     test('sealed switch is exhaustive over UserFields', () {

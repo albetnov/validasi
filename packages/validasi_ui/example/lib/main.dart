@@ -26,17 +26,18 @@ class UserFormPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('User Form')),
-      body: ValidasiForm<User>(
-        assembler: assemble_User,
+      body: ValidasiForm(
+        schema: UserFields.schema,
         builder: (context, submit) => Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               const UserSummary(),
               const SizedBox(height: 16),
-              ValidasiFormField<User, String>(
+              ValidasiTextField<User, String>(
                 field: UserFields.name,
-                builder: (context, state) => TextField(
+                builder: (context, state, ctrl) => TextField(
+                  controller: ctrl,
                   onChanged: state.onChanged,
                   decoration: InputDecoration(
                     labelText: 'Name',
@@ -45,9 +46,10 @@ class UserFormPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              ValidasiFormField<User, String>(
+              ValidasiTextField<User, String>(
                 field: UserFields.email,
-                builder: (context, state) => TextField(
+                builder: (context, state, ctrl) => TextField(
+                  controller: ctrl,
                   onChanged: state.onChanged,
                   decoration: InputDecoration(
                     labelText: 'Email',
@@ -56,9 +58,10 @@ class UserFormPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              ValidasiFormField<User, int>(
+              ValidasiTextField<User, int>(
                 field: UserFields.age,
-                builder: (context, state) => TextField(
+                builder: (context, state, ctrl) => TextField(
+                  controller: ctrl,
                   onChanged: (raw) => state.onChanged(int.tryParse(raw)),
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(

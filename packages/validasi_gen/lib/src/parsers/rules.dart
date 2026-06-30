@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -31,14 +32,14 @@ bool? readGenerateIndexedFieldsOverride(ClassElement cls) {
   return null;
 }
 
-bool? readGenerateAssembleOverride(ClassElement cls) {
+bool? readGenerateSchemaOverride(ClassElement cls) {
   for (final meta in cls.metadata.annotations) {
     final element = meta.element;
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'ValidateClass') {
       final constant = meta.computeConstantValue();
       if (constant == null) return null;
-      return ConstantReader(constant).peek('generateAssemble')?.boolValue;
+      return ConstantReader(constant).peek('generateSchema')?.boolValue;
     }
   }
   return null;
@@ -47,14 +48,14 @@ bool? readGenerateAssembleOverride(ClassElement cls) {
 class FieldRules {
   final FieldElement field;
   final List<RuleInfo> rules;
-  final String context;
+  final FieldContext context;
   final String? nestedClassName;
   final bool isNestedIterable;
 
   FieldRules(
     this.field,
     this.rules, {
-    this.context = '',
+    this.context = FieldContext.generic,
     this.nestedClassName,
     this.isNestedIterable = false,
   });
@@ -64,6 +65,27 @@ class FieldRules {
   bool get hasAsyncRule => rules.any((r) => r.isAsync);
 
   String get dartTypeDisplay => field.type.getDisplayString();
+
+  /// True when the Dart type itself enforces non-null (e.g. `String`, not `String?`).
+  /// Returns false for `dynamic` and `Object?` since nullability can't be reliably inferred.
+  bool get isTypeRequired {
+    final t = field.type;
+    if (t is DynamicType) return false;
+    if (t.isDartCoreObject && t.nullabilitySuffix != NullabilitySuffix.none) {
+      return false;
+    }
+    return t.nullabilitySuffix == NullabilitySuffix.none;
+  }
+
+  /// True when the field is required — either inferred from type or explicitly via `@Required`.
+  bool get isRequired =>
+      isTypeRequired || rules.any((r) => r.name == 'Required');
+
+  /// Custom message from an explicit `@Required(...)` annotation, if present.
+  String? get requiredMessage {
+    final r = rules.where((r) => r.name == 'Required');
+    return r.isNotEmpty ? r.first.message : null;
+  }
 }
 
 class RefineParamInfo {
@@ -173,14 +195,21 @@ bool _isAsyncMethod(MethodElement method) {
   return display.startsWith('Future<');
 }
 
-(List<RuleInfo>, String)? _extractRules(FieldElement field) {
+(List<RuleInfo>, FieldContext)? _extractRules(FieldElement field) {
   for (final meta in field.metadata.annotations) {
     final element = meta.element;
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'Validate') {
-      final context = element.name!;
       final constant = meta.computeConstantValue();
       if (constant == null) return null;
+
+      final validateType = constant.type;
+      final context = fieldContextFromType(
+        validateType is ParameterizedType &&
+                validateType.typeArguments.isNotEmpty
+            ? validateType.typeArguments.first
+            : null,
+      );
 
       final reader = ConstantReader(constant);
       final rulesReader = reader.read('rules');
@@ -191,7 +220,7 @@ bool _isAsyncMethod(MethodElement method) {
         final ruleReader = ConstantReader(dartObj);
         final rule = _parseRule(ruleReader);
         final gen = ruleGens[rule.name];
-        if (gen != null) gen.validateType(rule.typeArg, field);
+        if (gen != null) gen.validateType(context, field);
         return rule;
       }).toList();
       return (rules, context);

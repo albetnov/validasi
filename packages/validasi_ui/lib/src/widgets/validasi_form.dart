@@ -10,7 +10,7 @@ typedef SubmitHandler<T> = VoidCallback Function(void Function(T) onSubmit);
 class ValidasiForm<T> extends StatefulWidget {
   final Widget Function(BuildContext context, SubmitHandler<T> submit) builder;
   final ValidasiFormController<T>? controller;
-  final T Function(ValidasiFormController<T>) assembler;
+  final ValidasiSchema<T> schema;
   final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?
       formValidator;
   final ValidationMode mode;
@@ -20,7 +20,7 @@ class ValidasiForm<T> extends StatefulWidget {
 
   const ValidasiForm({
     required this.builder,
-    required this.assembler,
+    required this.schema,
     this.controller,
     this.formValidator,
     this.mode = ValidationMode.onSubmit,
@@ -63,7 +63,7 @@ class _FormState<T> extends State<ValidasiForm<T>> {
     super.initState();
     _controller = widget.controller ??
         ValidasiFormController<T>(
-          assembler: widget.assembler,
+          schema: widget.schema,
           formValidator: widget.formValidator,
         );
     if (widget.initialValues != null) {

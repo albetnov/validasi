@@ -17,8 +17,15 @@ Future<void> main() async {
       expect(output, contains('static const WithFieldsFields<String> name'));
     });
 
-    test('generates assemble function', () {
-      expect(output, contains('WithFields assemble_WithFields('));
+    test('generates schema', () {
+      expect(
+          output,
+          contains(
+              'static const ValidasiSchema<WithFields> schema = _WithFieldsSchema();'));
+      expect(
+          output,
+          contains(
+              'class _WithFieldsSchema extends ValidasiSchema<WithFields>'));
     });
 
     test('generates validateField in extension', () {
@@ -48,8 +55,9 @@ Future<void> main() async {
       expect(output, isNot(contains('WithoutFieldsFields<')));
     });
 
-    test('does not generate assemble function', () {
-      expect(output, isNot(contains('assemble_WithoutFields')));
+    test('does not generate schema', () {
+      expect(output, isNot(contains('ValidasiSchema<WithoutFields>')));
+      expect(output, isNot(contains('_WithoutFieldsSchema')));
     });
 
     test('does not generate validateField for WithoutFields', () {

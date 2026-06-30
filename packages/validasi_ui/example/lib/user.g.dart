@@ -6,6 +6,8 @@ sealed class UserFields<V> extends ValidasiKey<User>
     implements ValidasiField<User, V> {
   const UserFields._();
 
+  static const ValidasiSchema<User> schema = _UserSchema();
+
   static const UserFields<String> name = UserNameField();
 
   static const UserFields<String> email = UserEmailField();
@@ -17,42 +19,24 @@ class UserNameField extends UserFields<String> {
   const UserNameField() : super._();
 
   @override
-  String get name {
-    return 'name';
-  }
+  String get name => 'name';
 
   @override
-  String extract(User owner) {
-    return owner.name;
-  }
+  String extract(User owner) => owner.name;
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(_Errors.required([name]));
+    }
     if (value != null && value.length < 2) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 2 characters',
-          details: {'length': '2'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.minLength([name], 2));
     }
     if (value != null && value.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.maxLength([name], 100));
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 
   @override
@@ -65,42 +49,24 @@ class UserEmailField extends UserFields<String> {
   const UserEmailField() : super._();
 
   @override
-  String get name {
-    return 'email';
-  }
+  String get name => 'email';
 
   @override
-  String extract(User owner) {
-    return owner.email;
-  }
+  String extract(User owner) => owner.email;
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(_Errors.required([name]));
+    }
     if (value != null && value.length < 3) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 3 characters',
-          details: {'length': '3'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.minLength([name], 3));
     }
     if (value != null && value.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.maxLength([name], 100));
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 
   @override
@@ -113,32 +79,21 @@ class UserAgeField extends UserFields<int> {
   const UserAgeField() : super._();
 
   @override
-  String get name {
-    return 'age';
-  }
+  String get name => 'age';
 
   @override
-  int extract(User owner) {
-    return owner.age;
-  }
+  int extract(User owner) => owner.age;
 
   @override
   ValidasiResult<int> validate(int? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(_Errors.required([name]));
+    }
     if (value != null && value.length < 1) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 1 characters',
-          details: {'length': '1'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.minLength([name], 1));
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 
   @override
@@ -147,69 +102,39 @@ class UserAgeField extends UserFields<int> {
   }
 }
 
-User assemble_User(ValidasiFormController<User> ctrl) {
-  return User(
-    name: ctrl.getValue(UserFields.name) as String,
-    email: ctrl.getValue(UserFields.email) as String,
-    age: ctrl.getValue(UserFields.age) as int,
-  );
+class _UserSchema extends ValidasiSchema<User> {
+  const _UserSchema();
+
+  @override
+  User allocate(ValidasiFieldReader<User> reader) {
+    return User(
+      name: reader.getValue(UserFields.name) as String,
+      email: reader.getValue(UserFields.email) as String,
+      age: reader.getValue(UserFields.age) as int,
+    );
+  }
 }
 
 extension $UserValidasi on User {
   ValidasiResult<User> validate() {
     final $errors = <ValidationError>[];
     // Field: name
-    if (name != null && name.length < 2) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 2 characters',
-          details: {'length': '2'},
-          path: ['name'],
-        ),
-      );
+    if (name.length < 2) {
+      $errors.add(_Errors.minLength(['name'], 2));
     }
-    if (name != null && name.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: ['name'],
-        ),
-      );
+    if (name.length > 100) {
+      $errors.add(_Errors.maxLength(['name'], 100));
     }
     // Field: email
-    if (email != null && email.length < 3) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 3 characters',
-          details: {'length': '3'},
-          path: ['email'],
-        ),
-      );
+    if (email.length < 3) {
+      $errors.add(_Errors.minLength(['email'], 3));
     }
-    if (email != null && email.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: ['email'],
-        ),
-      );
+    if (email.length > 100) {
+      $errors.add(_Errors.maxLength(['email'], 100));
     }
     // Field: age
-    if (age != null && age.length < 1) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 1 characters',
-          details: {'length': '1'},
-          path: ['age'],
-        ),
-      );
+    if (age.length < 1) {
+      $errors.add(_Errors.minLength(['age'], 1));
     }
     final $fail = ({required String message, List<String> path = const []}) {
       $errors.add(
@@ -230,57 +155,22 @@ extension $UserValidasi on User {
   Future<ValidasiResult<User>> validateAsync() async {
     final $errors = <ValidationError>[];
     // Field: name
-    if (name != null && name.length < 2) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 2 characters',
-          details: {'length': '2'},
-          path: ['name'],
-        ),
-      );
+    if (name.length < 2) {
+      $errors.add(_Errors.minLength(['name'], 2));
     }
-    if (name != null && name.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: ['name'],
-        ),
-      );
+    if (name.length > 100) {
+      $errors.add(_Errors.maxLength(['name'], 100));
     }
     // Field: email
-    if (email != null && email.length < 3) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 3 characters',
-          details: {'length': '3'},
-          path: ['email'],
-        ),
-      );
+    if (email.length < 3) {
+      $errors.add(_Errors.minLength(['email'], 3));
     }
-    if (email != null && email.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: ['email'],
-        ),
-      );
+    if (email.length > 100) {
+      $errors.add(_Errors.maxLength(['email'], 100));
     }
     // Field: age
-    if (age != null && age.length < 1) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 1 characters',
-          details: {'length': '1'},
-          path: ['age'],
-        ),
-      );
+    if (age.length < 1) {
+      $errors.add(_Errors.minLength(['age'], 1));
     }
     final $fail = ({required String message, List<String> path = const []}) {
       $errors.add(
@@ -305,4 +195,47 @@ extension $UserValidasi on User {
   Future<ValidasiResult<V>> validateFieldAsync<V>(UserFields<V> field) async {
     return field.validateAsync(field.extract(this));
   }
+}
+
+abstract final class _Errors {
+  static ValidationError required(List<String> path, {String? message}) =>
+      ValidationError(
+        rule: 'Required',
+        message: message ?? 'Field is required',
+        path: path,
+      );
+
+  static ValidationError minLength(
+    List<String> path,
+    int length, {
+    String? message,
+  }) =>
+      ValidationError(
+        rule: 'MinLength',
+        message: message ?? 'Minimum length is $length characters',
+        details: {'length': '$length'},
+        path: path,
+      );
+
+  static ValidationError maxLength(
+    List<String> path,
+    int length, {
+    String? message,
+  }) =>
+      ValidationError(
+        rule: 'MaxLength',
+        message: message ?? 'Maximum length is $length characters',
+        details: {'length': '$length'},
+        path: path,
+      );
+}
+
+abstract final class _Result {
+  static ValidasiResult<T> from<T>(List<ValidationError> errors, T? value) =>
+      errors.isEmpty
+          ? ValidasiResult(errors: const [], isValid: true, data: value)
+          : ValidasiResult(errors: errors, isValid: false);
+
+  static ValidasiResult<T> invalidSingle<T>(ValidationError error) =>
+      ValidasiResult(errors: [error], isValid: false);
 }

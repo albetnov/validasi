@@ -74,9 +74,18 @@ const _itemsField = _ItemsField();
 const _orderNoteField = _OrderNoteField();
 const _referralField = _ReferralField();
 
+const _orderFormSchema = _OrderFormSchema();
+
+class _OrderFormSchema extends ValidasiSchema<_OrderForm> {
+  const _OrderFormSchema();
+  @override
+  _OrderForm allocate(ValidasiFieldReader<_OrderForm> reader) =>
+      const _OrderForm();
+}
+
 ValidasiFormController<_OrderForm> _createController({int itemCount = 50}) {
   final ctrl = ValidasiFormController<_OrderForm>(
-    assembler: (_) => const _OrderForm(),
+    schema: _orderFormSchema,
   );
 
   for (var i = 0; i < itemCount; i++) {

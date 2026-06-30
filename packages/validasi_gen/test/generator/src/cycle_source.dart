@@ -2,7 +2,7 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
 class NodeA {
-  @Validate.string([MinLength(2)])
+  @Validate<String>([MinLength(2)])
   final String name;
 
   final NodeB child;
@@ -12,7 +12,7 @@ class NodeA {
 
 @ValidateClass()
 class NodeB {
-  @Validate.string([MinLength(2)])
+  @Validate<String>([MinLength(2)])
   final String label;
 
   final NodeA parent;

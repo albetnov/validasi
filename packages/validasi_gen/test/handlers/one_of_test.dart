@@ -16,7 +16,7 @@ void main() {
         final info = RuleInfo(
             'OneOf',
             {
-              'options': ['a', 'b', 'c']
+              'options': ["'a'", "'b'", "'c'"]
             },
             null);
         final condition = gen.check(info, 'fieldName');
@@ -27,11 +27,11 @@ void main() {
         );
       });
 
-      test('escapes single quotes in options', () {
+      test('handles single-quoted options', () {
         final info = RuleInfo(
             'OneOf',
             {
-              'options': ["it's", "don't"]
+              'options': ["'it\\'s'", "'don\\'t'"]
             },
             null);
         final condition = gen.check(info, 'fieldName');
@@ -44,11 +44,11 @@ void main() {
         );
       });
 
-      test('escapes backslashes in options', () {
+      test('handles unquoted non-string options', () {
         final info = RuleInfo(
             'OneOf',
             {
-              'options': ['path\\to\\file']
+              'options': ['Role.admin', 'Role.user']
             },
             null);
         final condition = gen.check(info, 'fieldName');
@@ -56,52 +56,33 @@ void main() {
         expect(
           condition,
           equals(
-            "fieldName != null && !['path\\\\to\\\\file'].contains(fieldName)",
+            'fieldName != null && ![Role.admin, Role.user].contains(fieldName)',
           ),
         );
       });
 
-      test('escapes newlines in options', () {
+      test('handles numeric options', () {
         final info = RuleInfo(
             'OneOf',
             {
-              'options': ['line1\nline2']
+              'options': ['42', '100']
             },
             null);
         final condition = gen.check(info, 'fieldName');
 
         expect(
           condition,
-          equals(
-            "fieldName != null && !['line1\\nline2'].contains(fieldName)",
-          ),
-        );
-      });
-
-      test('escapes dollar signs in options', () {
-        final info = RuleInfo(
-            'OneOf',
-            {
-              'options': ['price\$100']
-            },
-            null);
-        final condition = gen.check(info, 'fieldName');
-
-        expect(
-          condition,
-          equals(
-            r"fieldName != null && !['price\$100'].contains(fieldName)",
-          ),
+          equals('fieldName != null && ![42, 100].contains(fieldName)'),
         );
       });
     });
 
     group('defaultMessage', () {
-      test('formats options correctly', () {
+      test('formats string options correctly', () {
         final info = RuleInfo(
             'OneOf',
             {
-              'options': ['red', 'green', 'blue']
+              'options': ["'red'", "'green'", "'blue'"]
             },
             null);
         final msg = gen.defaultMessage(info);
@@ -109,28 +90,49 @@ void main() {
         expect(msg, equals('Value must be one of: red, green, blue'));
       });
 
-      test('handles single option', () {
+      test('formats enum options correctly', () {
         final info = RuleInfo(
             'OneOf',
             {
-              'options': ['only']
+              'options': ['Role.admin', 'Role.user']
             },
             null);
         final msg = gen.defaultMessage(info);
 
-        expect(msg, equals('Value must be one of: only'));
+        expect(msg, equals('Value must be one of: Role.admin, Role.user'));
       });
     });
 
-    group('details', () {
-      test('returns null', () {
+    group('emitError', () {
+      test('generates correct error call', () {
         final info = RuleInfo(
             'OneOf',
             {
-              'options': ['a', 'b']
+              'options': ["'a'", "'b'", "'c'"]
             },
             null);
-        expect(gen.details(info), isNull);
+        final call = gen.emitError(info, "['field']", '');
+        expect(call, equals("_Errors.oneOf(['field'], ['a', 'b', 'c'])"));
+      });
+
+      test('includes custom message', () {
+        final info = RuleInfo(
+            'OneOf',
+            {
+              'options': ["'x'", "'y'"]
+            },
+            'Bad value');
+        final call = gen.emitError(info, "['field']", ", message: 'Bad value'");
+        expect(
+            call,
+            equals(
+                "_Errors.oneOf(['field'], ['x', 'y'], message: 'Bad value')"));
+      });
+    });
+
+    group('helperMethods', () {
+      test('provides oneOf helper', () {
+        expect(gen.helperMethods.keys, contains('oneOf'));
       });
     });
   });

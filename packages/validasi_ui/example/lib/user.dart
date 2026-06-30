@@ -5,13 +5,15 @@ part 'user.g.dart';
 
 @ValidateClass(generateFields: true)
 class User {
-  @Validate.string([MinLength(2), MaxLength(100)])
+  @Validate<String>([MinLength(2), MaxLength(100)])
   final String name;
 
-  @Validate.string([MinLength(3), MaxLength(100)])
+  @Validate<String>([MinLength(3), MaxLength(100)])
   final String email;
 
-  @Validate([MinLength(1)])
+  @Validate<int>([
+    OneOf<int>([1, 2, 3])
+  ])
   final int age;
 
   const User({

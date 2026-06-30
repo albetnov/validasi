@@ -11,7 +11,7 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
 class AsyncModel {
-  @Validate.string([AsyncInline(_check)])
+  @Validate<String>([AsyncInline(_check)])
   final String name;
 
   const AsyncModel({required this.name});
@@ -19,7 +19,7 @@ class AsyncModel {
 
 @ValidateClass()
 class CustomNameModel {
-  @Validate.string([AsyncInline(_ok, name: 'custom_rule')])
+  @Validate<String>([AsyncInline(_ok, name: 'custom_rule')])
   final String name2;
   const CustomNameModel({required this.name2});
 }
@@ -52,10 +52,18 @@ void main() {
       expect(gen.defaultMessage(info), equals('Validation failed'));
     });
 
-    test('details is null', () {
+    test('emitError generates inline error call', () {
       final info = RuleInfo('AsyncInline', const {}, null,
           isAsync: true, functionName: '_fn');
-      expect(gen.details(info), isNull);
+      final call = gen.emitError(info, "['name']", '');
+      expect(
+          call,
+          equals(
+              "_Errors.inline(['name'], 'AsyncInline', 'Validation failed')"));
+    });
+
+    test('helperMethods provides inline helper', () {
+      expect(gen.helperMethods.keys, contains('inline'));
     });
 
     test('asyncCall generates correct call expression', () {

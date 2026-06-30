@@ -25,42 +25,29 @@ class UserEmailField extends UserFields<String> {
   const UserEmailField() : super._();
 
   @override
-  String get name {
-    return 'email';
-  }
+  String get name => 'email';
 
   @override
-  String extract(User owner) {
-    return owner.email;
-  }
+  String extract(User owner) => owner.email;
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(_Errors.required([name]));
+    }
     if (value != null && value.length < 3) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 3 characters',
-          details: {'length': '3'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.minLength([name], 3));
     }
     if (value != null && value.length > 100) {
+      $errors.add(_Errors.maxLength([name], 100));
+    }
+    if (value != null && !NoSpaces.check(value)) {
       $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: [name],
-        ),
+        _Errors.inline([name], 'noSpaces', 'noSpaces: validation failed.'),
       );
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 
   @override
@@ -73,17 +60,18 @@ class UserUsernameField extends UserFields<String> {
   const UserUsernameField() : super._();
 
   @override
-  String get name {
-    return 'username';
-  }
+  String get name => 'username';
 
   @override
-  String extract(User owner) {
-    return owner.username;
-  }
+  String extract(User owner) => owner.username;
 
   @override
   ValidasiResult<String> validate(String? value) {
+    if (value == null) {
+      return _Result.invalidSingle(
+        _Errors.required([name], message: 'Field is required'),
+      );
+    }
     throw StateError(
       'Async rules cannot be used with validate(). Use validateAsync() instead.',
     );
@@ -92,49 +80,25 @@ class UserUsernameField extends UserFields<String> {
   @override
   Future<ValidasiResult<String>> validateAsync(String? value) async {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(_Errors.required([name]));
+    }
     if (value != null && value.length < 3) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 3 characters',
-          details: {'length': '3'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.minLength([name], 3));
     }
     if (value != null && value.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.maxLength([name], 100));
     }
     try {
       if (!await _checkUsernameAvailable(value)) {
         $errors.add(
-          ValidationError(
-            rule: 'async_inline',
-            message: 'Validation failed',
-            path: [name],
-          ),
+          _Errors.inline([name], 'async_inline', 'Validation failed'),
         );
       }
     } catch (e) {
-      $errors.add(
-        ValidationError(
-          rule: 'async_inline',
-          message: e.toString(),
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.inline([name], 'async_inline', e.toString()));
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 }
 
@@ -142,42 +106,24 @@ class UserConfirmEmailField extends UserFields<String> {
   const UserConfirmEmailField() : super._();
 
   @override
-  String get name {
-    return 'confirmEmail';
-  }
+  String get name => 'confirmEmail';
 
   @override
-  String extract(User owner) {
-    return owner.confirmEmail;
-  }
+  String extract(User owner) => owner.confirmEmail;
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(_Errors.required([name]));
+    }
     if (value != null && value.length < 3) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 3 characters',
-          details: {'length': '3'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.minLength([name], 3));
     }
     if (value != null && value.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.maxLength([name], 100));
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 
   @override
@@ -190,32 +136,21 @@ class UserTagsField extends UserFields<List<String>> {
   const UserTagsField() : super._();
 
   @override
-  String get name {
-    return 'tags';
-  }
+  String get name => 'tags';
 
   @override
-  List<String> extract(User owner) {
-    return owner.tags;
-  }
+  List<String> extract(User owner) => owner.tags;
 
   @override
   ValidasiResult<List<String>> validate(List<String>? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(_Errors.required([name]));
+    }
     if (value != null && value.length < 1) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'List must have at least 1 items',
-          details: {'length': '1'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.itMinLength([name], 1));
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 
   @override
@@ -230,19 +165,17 @@ class UserCarField extends UserFields<Car> {
   const UserCarField() : super._();
 
   @override
-  String get name {
-    return 'car';
-  }
+  String get name => 'car';
 
   @override
-  Car extract(User owner) {
-    return owner.car;
-  }
+  Car extract(User owner) => owner.car;
 
   @override
   ValidasiResult<Car> validate(Car? value) {
     if (value == null) {
-      return const ValidasiResult(errors: [], isValid: true);
+      return _Result.invalidSingle(
+        _Errors.required([name], message: 'Field is required'),
+      );
     }
     final $carResult = value.validate();
     if (!$carResult.isValid) {
@@ -257,7 +190,9 @@ class UserCarField extends UserFields<Car> {
   @override
   Future<ValidasiResult<Car>> validateAsync(Car? value) async {
     if (value == null) {
-      return const ValidasiResult(errors: [], isValid: true);
+      return _Result.invalidSingle(
+        _Errors.required([name], message: 'Field is required'),
+      );
     }
     final $carResult = await value.validateAsync();
     if (!$carResult.isValid) {
@@ -274,14 +209,10 @@ class UserSpareCarField extends UserFields<Car?> {
   const UserSpareCarField() : super._();
 
   @override
-  String get name {
-    return 'spareCar';
-  }
+  String get name => 'spareCar';
 
   @override
-  Car? extract(User owner) {
-    return owner.spareCar;
-  }
+  Car? extract(User owner) => owner.spareCar;
 
   @override
   ValidasiResult<Car?> validate(Car? value) {
@@ -318,19 +249,17 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
   const UserPreviousCarsField() : super._();
 
   @override
-  String get name {
-    return 'previousCars';
-  }
+  String get name => 'previousCars';
 
   @override
-  List<Car> extract(User owner) {
-    return owner.previousCars;
-  }
+  List<Car> extract(User owner) => owner.previousCars;
 
   @override
   ValidasiResult<List<Car>> validate(List<Car>? value) {
     if (value == null) {
-      return const ValidasiResult(errors: [], isValid: true);
+      return _Result.invalidSingle(
+        _Errors.required([name], message: 'Field is required'),
+      );
     }
     final $errors = <ValidationError>[];
     for (var $previousCarsIndex = 0;
@@ -346,16 +275,15 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
         );
       }
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 
   @override
   Future<ValidasiResult<List<Car>>> validateAsync(List<Car>? value) async {
     if (value == null) {
-      return const ValidasiResult(errors: [], isValid: true);
+      return _Result.invalidSingle(
+        _Errors.required([name], message: 'Field is required'),
+      );
     }
     final $errors = <ValidationError>[];
     for (var $previousCarsIndex = 0;
@@ -371,10 +299,7 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
         );
       }
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 }
 
@@ -388,97 +313,43 @@ extension $UserValidasi on User {
   Future<ValidasiResult<User>> validateAsync() async {
     final $errors = <ValidationError>[];
     // Field: email
-    if (email != null && email.length < 3) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 3 characters',
-          details: {'length': '3'},
-          path: ['email'],
-        ),
-      );
+    if (email.length < 3) {
+      $errors.add(_Errors.minLength(['email'], 3));
     }
-    if (email != null && email.length > 100) {
+    if (email.length > 100) {
+      $errors.add(_Errors.maxLength(['email'], 100));
+    }
+    if (!NoSpaces.check(email)) {
       $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: ['email'],
-        ),
+        _Errors.inline(['email'], 'noSpaces', 'noSpaces: validation failed.'),
       );
     }
     // Field: username
-    if (username != null && username.length < 3) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 3 characters',
-          details: {'length': '3'},
-          path: ['username'],
-        ),
-      );
+    if (username.length < 3) {
+      $errors.add(_Errors.minLength(['username'], 3));
     }
-    if (username != null && username.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: ['username'],
-        ),
-      );
+    if (username.length > 100) {
+      $errors.add(_Errors.maxLength(['username'], 100));
     }
     try {
       if (!await _checkUsernameAvailable(username)) {
         $errors.add(
-          ValidationError(
-            rule: 'async_inline',
-            message: 'Validation failed',
-            path: ['username'],
-          ),
+          _Errors.inline(['username'], 'async_inline', 'Validation failed'),
         );
       }
     } catch (e) {
-      $errors.add(
-        ValidationError(
-          rule: 'async_inline',
-          message: e.toString(),
-          path: ['username'],
-        ),
-      );
+      $errors.add(_Errors.inline(['username'], 'async_inline', e.toString()));
     }
     // Field: confirmEmail
-    if (confirmEmail != null && confirmEmail.length < 3) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 3 characters',
-          details: {'length': '3'},
-          path: ['confirmEmail'],
-        ),
-      );
+    if (confirmEmail.length < 3) {
+      $errors.add(_Errors.minLength(['confirmEmail'], 3));
     }
-    if (confirmEmail != null && confirmEmail.length > 100) {
-      $errors.add(
-        ValidationError(
-          rule: 'MaxLength',
-          message: 'Maximum length is 100 characters',
-          details: {'length': '100'},
-          path: ['confirmEmail'],
-        ),
-      );
+    if (confirmEmail.length > 100) {
+      $errors.add(_Errors.maxLength(['confirmEmail'], 100));
     }
     // Field: tags
-    if (tags != null && tags.length < 1) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'List must have at least 1 items',
-          details: {'length': '1'},
-          path: ['tags'],
-        ),
-      );
+    if (tags.length < 1) {
+      $errors.add(_Errors.itMinLength(['tags'], 1));
     }
     // Field: car (nested Car)
     final $carResult = await car.validateAsync();
@@ -547,32 +418,21 @@ class CarMakeField extends CarFields<String> {
   const CarMakeField() : super._();
 
   @override
-  String get name {
-    return 'make';
-  }
+  String get name => 'make';
 
   @override
-  String extract(Car owner) {
-    return owner.make;
-  }
+  String extract(Car owner) => owner.make;
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(_Errors.required([name]));
+    }
     if (value != null && value.length < 2) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 2 characters',
-          details: {'length': '2'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.minLength([name], 2));
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 
   @override
@@ -585,32 +445,21 @@ class CarModelField extends CarFields<String> {
   const CarModelField() : super._();
 
   @override
-  String get name {
-    return 'model';
-  }
+  String get name => 'model';
 
   @override
-  String extract(Car owner) {
-    return owner.model;
-  }
+  String extract(Car owner) => owner.model;
 
   @override
   ValidasiResult<String> validate(String? value) {
     final $errors = <ValidationError>[];
+    if (value == null) {
+      $errors.add(_Errors.required([name]));
+    }
     if (value != null && value.length < 2) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 2 characters',
-          details: {'length': '2'},
-          path: [name],
-        ),
-      );
+      $errors.add(_Errors.minLength([name], 2));
     }
-    if ($errors.isNotEmpty) {
-      return ValidasiResult(errors: $errors, isValid: false);
-    }
-    return ValidasiResult(errors: const [], isValid: true, data: value);
+    return _Result.from($errors, value);
   }
 
   @override
@@ -623,26 +472,12 @@ extension $CarValidasi on Car {
   ValidasiResult<Car> validate() {
     final $errors = <ValidationError>[];
     // Field: make
-    if (make != null && make.length < 2) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 2 characters',
-          details: {'length': '2'},
-          path: ['make'],
-        ),
-      );
+    if (make.length < 2) {
+      $errors.add(_Errors.minLength(['make'], 2));
     }
     // Field: model
-    if (model != null && model.length < 2) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 2 characters',
-          details: {'length': '2'},
-          path: ['model'],
-        ),
-      );
+    if (model.length < 2) {
+      $errors.add(_Errors.minLength(['model'], 2));
     }
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
@@ -653,26 +488,12 @@ extension $CarValidasi on Car {
   Future<ValidasiResult<Car>> validateAsync() async {
     final $errors = <ValidationError>[];
     // Field: make
-    if (make != null && make.length < 2) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 2 characters',
-          details: {'length': '2'},
-          path: ['make'],
-        ),
-      );
+    if (make.length < 2) {
+      $errors.add(_Errors.minLength(['make'], 2));
     }
     // Field: model
-    if (model != null && model.length < 2) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 2 characters',
-          details: {'length': '2'},
-          path: ['model'],
-        ),
-      );
+    if (model.length < 2) {
+      $errors.add(_Errors.minLength(['model'], 2));
     }
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
@@ -693,15 +514,8 @@ extension $InternalFooValidasi on InternalFoo {
   ValidasiResult<InternalFoo> validate() {
     final $errors = <ValidationError>[];
     // Field: code
-    if (code != null && code.length < 1) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 1 characters',
-          details: {'length': '1'},
-          path: ['code'],
-        ),
-      );
+    if (code.length < 1) {
+      $errors.add(_Errors.minLength(['code'], 1));
     }
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
@@ -712,19 +526,74 @@ extension $InternalFooValidasi on InternalFoo {
   Future<ValidasiResult<InternalFoo>> validateAsync() async {
     final $errors = <ValidationError>[];
     // Field: code
-    if (code != null && code.length < 1) {
-      $errors.add(
-        ValidationError(
-          rule: 'MinLength',
-          message: 'Minimum length is 1 characters',
-          details: {'length': '1'},
-          path: ['code'],
-        ),
-      );
+    if (code.length < 1) {
+      $errors.add(_Errors.minLength(['code'], 1));
     }
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }
     return ValidasiResult(errors: const [], isValid: true, data: this);
   }
+}
+
+abstract final class _Errors {
+  static ValidationError required(List<String> path, {String? message}) =>
+      ValidationError(
+        rule: 'Required',
+        message: message ?? 'Field is required',
+        path: path,
+      );
+
+  static ValidationError minLength(
+    List<String> path,
+    int length, {
+    String? message,
+  }) =>
+      ValidationError(
+        rule: 'MinLength',
+        message: message ?? 'Minimum length is $length characters',
+        details: {'length': '$length'},
+        path: path,
+      );
+
+  static ValidationError maxLength(
+    List<String> path,
+    int length, {
+    String? message,
+  }) =>
+      ValidationError(
+        rule: 'MaxLength',
+        message: message ?? 'Maximum length is $length characters',
+        details: {'length': '$length'},
+        path: path,
+      );
+
+  static ValidationError inline(
+    List<String> path,
+    String rule,
+    String message,
+  ) =>
+      ValidationError(rule: rule, message: message, path: path);
+
+  static ValidationError itMinLength(
+    List<String> path,
+    int length, {
+    String? message,
+  }) =>
+      ValidationError(
+        rule: 'MinLength',
+        message: message ?? 'List must have at least $length items',
+        details: {'length': '$length'},
+        path: path,
+      );
+}
+
+abstract final class _Result {
+  static ValidasiResult<T> from<T>(List<ValidationError> errors, T? value) =>
+      errors.isEmpty
+          ? ValidasiResult(errors: const [], isValid: true, data: value)
+          : ValidasiResult(errors: errors, isValid: false);
+
+  static ValidasiResult<T> invalidSingle<T>(ValidationError error) =>
+      ValidasiResult(errors: [error], isValid: false);
 }

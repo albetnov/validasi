@@ -20,7 +20,9 @@ String generateValidateForm(
   for (final ctx in fields) {
     final name = ctx.field.name!;
     final type = ctx.field.type.getDisplayString();
-    formAccessors[name] = 'ctrl.getValue($fieldsClassName.$name) as $type';
+    final nullableType = type.endsWith('?') ? type : '$type?';
+    formAccessors[name] =
+        'ctrl.getValue($fieldsClassName.$name) as $nullableType';
   }
 
   final fn = Method((m) {

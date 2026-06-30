@@ -3,12 +3,15 @@ import 'package:validasi_annotation/src/base.dart';
 class ValidateClass {
   const ValidateClass({
     this.generateFields,
-    this.generateAssemble,
+    this.generateSchema,
     this.generateIndexedFields,
   });
 
   final bool? generateFields;
-  final bool? generateAssemble;
+
+  /// When true, generates a `ValidasiSchema<T>` for this class and exposes
+  /// it as `<ClassName>Fields.schema`.
+  final bool? generateSchema;
 
   /// When true, generates `indexedFields<FormType>`, `reconstructItem`,
   /// and `reconstructAll` static methods on the sealed field class.
@@ -18,14 +21,10 @@ class ValidateClass {
   final bool? generateIndexedFields;
 }
 
-class Validate {
-  final List<Rule>? rules;
+class Validate<T> {
+  final List<Rule<T>> rules;
 
   const Validate(this.rules);
-
-  const Validate.string(List<Rule<String>> this.rules);
-
-  const Validate.iterable(List<Rule<Iterable>> this.rules);
 }
 
 class RefineFn {

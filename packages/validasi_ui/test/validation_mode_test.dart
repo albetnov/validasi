@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:validasi_ui/validasi_ui.dart';
-import 'package:validasi_ui/validasi.dart';
+import 'package:validasi/validasi.dart';
 
 class _TestKey extends ValidasiField<String, String> {
   const _TestKey() : super();
@@ -23,10 +23,17 @@ class _TestKey extends ValidasiField<String, String> {
   }
 }
 
+const _stringSchema = _StringSchema();
+
+class _StringSchema extends ValidasiSchema<String> {
+  const _StringSchema();
+  @override
+  String allocate(ValidasiFieldReader<String> reader) =>
+      reader.getValue(const _TestKey()) ?? '';
+}
+
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(
-    assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
-  );
+  return ValidasiFormController<String>(schema: _stringSchema);
 }
 
 Widget _buildForm({
@@ -41,7 +48,7 @@ Widget _buildForm({
     home: Scaffold(
       body: ValidasiForm<String>(
         controller: controller,
-        assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+        schema: _stringSchema,
         mode: mode,
         reValidateMode: reValidateMode,
         builder: (context, submit) => Column(
@@ -169,7 +176,7 @@ void main() {
           home: Scaffold(
             body: ValidasiForm<String>(
               controller: controller,
-              assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+              schema: _stringSchema,
               mode: ValidationMode.onBlur,
               builder: (context, submit) => Column(
                 children: [
@@ -290,7 +297,7 @@ void main() {
           home: Scaffold(
             body: ValidasiForm<String>(
               controller: controller,
-              assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+              schema: _stringSchema,
               mode: ValidationMode.onSubmit,
               reValidateMode: ReValidationMode.onBlur,
               builder: (context, submit) => Column(
@@ -391,7 +398,7 @@ void main() {
           home: Scaffold(
             body: ValidasiForm<String>(
               controller: controller,
-              assembler: (ctrl) => ctrl.getValue(const _TestKey()) ?? '',
+              schema: _stringSchema,
               builder: (context, submit) => ValidasiFormField<String, String>(
                 field: const _TestKey(),
                 builder: (context, state) {

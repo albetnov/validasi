@@ -34,7 +34,7 @@ class RunOnNullRule extends CustomRule<String> {
 
 @ValidateClass()
 class Model {
-  @Validate.string([IsEmail('example.com')])
+  @Validate<String>([IsEmail('example.com')])
   final String email;
 
   const Model({required this.email});
@@ -42,7 +42,7 @@ class Model {
 
 @ValidateClass()
 class EmptyModel {
-  @Validate.string([IsEmpty()])
+  @Validate<String>([IsEmpty()])
   final String name2;
 
   const EmptyModel({required this.name2});
@@ -50,7 +50,7 @@ class EmptyModel {
 
 @ValidateClass()
 class NullModel {
-  @Validate.string([RunOnNullRule()])
+  @Validate<String>([RunOnNullRule()])
   final String name3;
 
   const NullModel({required this.name3});
@@ -169,14 +169,35 @@ void main() {
       });
     });
 
-    group('details', () {
-      test('returns null', () {
+    group('emitError', () {
+      test('generates inline error call', () {
         final info = RuleInfo(
           'CustomRule',
           {'ruleName': 'test'},
           null,
         );
-        expect(gen.details(info), isNull);
+        final call = gen.emitError(info, "['field']", '');
+        expect(
+            call,
+            equals(
+                "_Errors.inline(['field'], 'test', 'test: validation failed.')"));
+      });
+
+      test('includes custom message', () {
+        final info = RuleInfo(
+          'CustomRule',
+          {'ruleName': 'test'},
+          'Custom msg',
+        );
+        final call =
+            gen.emitError(info, "['field']", ", message: 'Custom msg'");
+        expect(call, equals("_Errors.inline(['field'], 'test', 'Custom msg')"));
+      });
+    });
+
+    group('helperMethods', () {
+      test('provides inline helper', () {
+        expect(gen.helperMethods.keys, contains('inline'));
       });
     });
 

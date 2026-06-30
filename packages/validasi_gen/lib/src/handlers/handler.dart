@@ -2,25 +2,18 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
-DartType? typeArgOf(ConstantReader rule) {
-  final type = rule.objectValue.type;
-  if (type is ParameterizedType && type.typeArguments.isNotEmpty) {
-    return type.typeArguments.first;
-  }
-  return null;
-}
+enum FieldContext { string, iterable, generic }
 
-DartType? typeArgOfBase(ConstantReader rule, String baseName) {
-  final type = rule.objectValue.type;
+FieldContext fieldContextFromType(DartType? type) {
+  if (type == null) return FieldContext.generic;
+  if (type.isDartCoreString) return FieldContext.string;
   if (type is InterfaceType) {
-    for (final supertype in type.allSupertypes) {
-      if (supertype.element.name == baseName &&
-          supertype.typeArguments.isNotEmpty) {
-        return supertype.typeArguments.first;
-      }
+    final name = type.element.name;
+    if (name == 'Iterable' || name == 'List' || name == 'Set') {
+      return FieldContext.iterable;
     }
   }
-  return null;
+  return FieldContext.generic;
 }
 
 class RuleInfo {
@@ -28,7 +21,6 @@ class RuleInfo {
   final Map<String, Object?> params;
   final String? message;
   final bool isUnknown;
-  final DartType? typeArg;
   final bool isAsync;
   final String? functionName;
   RuleInfo(
@@ -36,7 +28,6 @@ class RuleInfo {
     this.params,
     this.message, {
     this.isUnknown = false,
-    this.typeArg,
     this.isAsync = false,
     this.functionName,
   });
@@ -47,10 +38,22 @@ abstract class RuleGen {
   bool get isAsync => false;
   String get name;
   RuleInfo parse(ConstantReader rule);
-  String check(RuleInfo info, String fieldName);
-  String defaultMessage(RuleInfo info, [String context = '']);
-  String? details(RuleInfo info);
+  String check(RuleInfo info, String fieldName, {bool nullable = true});
+  String defaultMessage(RuleInfo info,
+      [FieldContext context = FieldContext.string]);
   String? asyncCall(RuleInfo info, String fieldName) => null;
 
-  void validateType(DartType? typeArg, FieldElement field) {}
+  /// Returns the Dart expression for the error call, e.g.
+  /// `_Errors.minLength(path, 3, message: '...')`.
+  /// [messageArg] is pre-formatted with leading `, message:` when non-empty.
+  String emitError(RuleInfo info, String pathExpr, String messageArg,
+      [FieldContext context = FieldContext.string]);
+
+  /// Map of helper method name to its source code (body of a static method
+  /// in the generated `_Errors` class).
+  Map<String, String> get helperMethods;
+
+  Set<FieldContext> get supportedContexts => {FieldContext.generic};
+
+  void validateType(FieldContext context, FieldElement field) {}
 }

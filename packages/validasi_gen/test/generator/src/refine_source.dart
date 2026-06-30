@@ -2,10 +2,10 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
 class Registration {
-  @Validate.string([MinLength(3)])
+  @Validate<String>([MinLength(3)])
   final String name;
 
-  @Validate.string([MinLength(3)])
+  @Validate<String>([MinLength(3)])
   final String email;
 
   const Registration({required this.name, required this.email});

@@ -45,6 +45,17 @@ class _EmailField extends ValidasiField<_Model, String> {
   }
 }
 
+const _modelSchema = _ModelSchema();
+
+class _ModelSchema extends ValidasiSchema<_Model> {
+  const _ModelSchema();
+  @override
+  _Model allocate(ValidasiFieldReader<_Model> reader) => _Model(
+        name: reader.getValue(const _NameField()) ?? '',
+        email: reader.getValue(const _EmailField()) ?? '',
+      );
+}
+
 ValidasiResult<_Model> _formValidator(ValidasiFormController<_Model> ctrl) {
   final errors = <ValidationError>[];
   final name = ctrl.getValue(const _NameField());
@@ -79,10 +90,7 @@ ValidasiFormController<_Model> _makeController({
       formValidator,
 }) {
   return ValidasiFormController<_Model>(
-    assembler: (ctrl) => _Model(
-      name: ctrl.getValue(const _NameField()) ?? '',
-      email: ctrl.getValue(const _EmailField()) ?? '',
-    ),
+    schema: _modelSchema,
     formValidator: formValidator,
   );
 }
@@ -125,10 +133,7 @@ void main() {
 
     test('clears previous field errors before distributing', () {
       final controller = ValidasiFormController<_Model>(
-        assembler: (ctrl) => _Model(
-          name: ctrl.getValue(const _NameField()) ?? '',
-          email: ctrl.getValue(const _EmailField()) ?? '',
-        ),
+        schema: _modelSchema,
         formValidator: _formValidator,
       );
       const nameField = _NameField();
@@ -245,7 +250,7 @@ void main() {
 
     test('clearAllErrors clears all fields and formErrors', () {
       final controller = ValidasiFormController<_Model>(
-        assembler: (ctrl) => const _Model(name: 'x', email: 'y'),
+        schema: _modelSchema,
         formValidator: (ctrl) {
           return ValidasiResult(
             errors: [ValidationError(rule: 'Custom', message: 'Form error')],

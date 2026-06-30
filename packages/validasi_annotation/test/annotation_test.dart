@@ -9,13 +9,13 @@ void main() {
     test('construct with defaults', () {
       const a = ValidateClass();
       expect(a.generateFields, isNull);
-      expect(a.generateAssemble, isNull);
+      expect(a.generateSchema, isNull);
     });
 
     test('construct with explicit values', () {
-      const a = ValidateClass(generateFields: true, generateAssemble: false);
+      const a = ValidateClass(generateFields: true, generateSchema: false);
       expect(a.generateFields, isTrue);
-      expect(a.generateAssemble, isFalse);
+      expect(a.generateSchema, isFalse);
     });
   });
 
@@ -25,19 +25,24 @@ void main() {
       expect(a.rules, hasLength(1));
     });
 
-    test('string constructor', () {
-      const a = Validate.string([MinLength(3)]);
+    test('string typed constructor', () {
+      const a = Validate<String>([MinLength(3)]);
       expect(a.rules, hasLength(1));
     });
 
-    test('iterable constructor', () {
-      const a = Validate.iterable([MaxLength(10)]);
+    test('iterable typed constructor', () {
+      const a = Validate<List<String>>([MaxLength(10)]);
       expect(a.rules, hasLength(1));
     });
 
-    test('nullable constructor arg', () {
-      const a = Validate(null);
-      expect(a.rules, isNull);
+    test('typed constructor', () {
+      const a = Validate<int>([Required()]);
+      expect(a.rules, hasLength(1));
+    });
+
+    test('empty rules list', () {
+      const a = Validate<String>([]);
+      expect(a.rules, isEmpty);
     });
   });
 

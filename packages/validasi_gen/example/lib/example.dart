@@ -5,19 +5,34 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 part 'example.g.dart';
 
-@ValidateClass(generateAssemble: false)
+// Custom rule example — define a class extending CustomRule<T>,
+// with a static bool check(T? value, {required ...}) method.
+class NoSpaces extends CustomRule<String> {
+  const NoSpaces({String? message, super.runOnNull})
+      : super(name: 'noSpaces', message: message);
+
+  static bool check(String? value) => value == null || !value.contains(' ');
+}
+
+class CustomDataClass {
+  final int id;
+
+  const CustomDataClass({required this.id});
+}
+
+@ValidateClass(generateSchema: false)
 class User {
-  @Validate.string([MinLength(3), MaxLength(100)])
+  @Validate<String>([MinLength(3), MaxLength(100), NoSpaces()])
   final String email;
 
-  @Validate.string(
+  @Validate<String>(
       [MinLength(3), MaxLength(100), AsyncInline(_checkUsernameAvailable)])
   final String username;
 
-  @Validate.string([MinLength(3), MaxLength(100)])
+  @Validate<String>([MinLength(3), MaxLength(100)])
   final String confirmEmail;
 
-  @Validate.iterable([MinLength(1)])
+  @Validate<List<String>>([MinLength(1)])
   final List<String> tags;
 
   final Car car;
@@ -25,6 +40,9 @@ class User {
   final Car? spareCar;
 
   final List<Car> previousCars;
+
+  @Validate<CustomDataClass?>([Required(), Inline(_validateCustomClass)])
+  final CustomDataClass? customData;
 
   const User({
     required this.email,
@@ -34,7 +52,16 @@ class User {
     required this.car,
     this.spareCar,
     required this.previousCars,
+    this.customData,
   });
+
+  static bool _validateCustomClass(dynamic value) {
+    if (value is! CustomDataClass) {
+      return false;
+    }
+
+    return value.id > 0;
+  }
 
   @RefineFn(dependsOn: ['email', 'confirmEmail'])
   void emailMatchesConfirm(
@@ -48,12 +75,12 @@ class User {
   }
 }
 
-@ValidateClass(generateAssemble: false)
+@ValidateClass(generateSchema: false)
 class Car {
-  @Validate.string([MinLength(2)])
+  @Validate<String>([MinLength(2)])
   final String make;
 
-  @Validate.string([
+  @Validate<String>([
     MinLength(2),
   ])
   final String model;
@@ -63,7 +90,7 @@ class Car {
 
 @ValidateClass(generateFields: false)
 class InternalFoo {
-  @Validate.string([MinLength(1)])
+  @Validate<String>([MinLength(1)])
   final String code;
 
   const InternalFoo({required this.code});

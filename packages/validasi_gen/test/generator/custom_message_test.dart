@@ -23,8 +23,8 @@ Future<void> main() async {
     });
 
     test('still includes rule name and details', () {
-      expect(output, contains("rule: 'MinLength'"));
-      expect(output, contains("details: {'length': '3'}"));
+      expect(output, contains("_Errors.minLength("));
+      expect(output, contains("_Errors.minLength([name], 3"));
     });
 
     test('uses custom message for OneOf', () {

@@ -45,14 +45,19 @@ Future<void> main() async {
 
     test('generates validate with MinLength and MaxLength checks', () {
       expect(output, contains('if (value != null && value.length < 2)'));
-      expect(output, contains("rule: 'MinLength'"));
+      expect(output, contains("_Errors.minLength("));
       expect(output, contains('if (value != null && value.length > 50)'));
-      expect(output, contains("rule: 'MaxLength'"));
+      expect(output, contains("_Errors.maxLength("));
     });
 
-    test('generates assemble function', () {
-      expect(output, contains('Simple assemble_Simple('));
-      expect(output, contains('ctrl.getValue(SimpleFields.name) as String,'));
+    test('generates schema', () {
+      expect(
+          output,
+          contains(
+              'static const ValidasiSchema<Simple> schema = _SimpleSchema();'));
+      expect(output,
+          contains('class _SimpleSchema extends ValidasiSchema<Simple>'));
+      expect(output, contains('reader.getValue(SimpleFields.name) as String,'));
     });
 
     test('generates validate extension', () {
@@ -92,7 +97,7 @@ Future<void> main() async {
     });
 
     test('generates iterable message for iterable context', () {
-      expect(output, contains('List must have at least 1 items'));
+      expect(output, contains('List must have at least'));
     });
   });
 }

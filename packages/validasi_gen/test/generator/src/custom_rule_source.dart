@@ -32,10 +32,10 @@ bool _isEmail(String? value) => value?.contains('@') ?? false;
 
 @ValidateClass()
 class CustomRuleModel {
-  @Validate.string([NonEmpty(), IsEmail('example.com')])
+  @Validate<String>([NonEmpty(), IsEmail('example.com')])
   final String email;
 
-  @Validate.iterable([MinLength(2)])
+  @Validate<List<String>>([MinLength(2)])
   final List<String> items;
 
   const CustomRuleModel({required this.email, required this.items});
@@ -43,7 +43,7 @@ class CustomRuleModel {
 
 @ValidateClass()
 class InlineModel {
-  @Validate.string([Inline(_isEmail, name: 'positive')])
+  @Validate<String>([Inline(_isEmail, name: 'positive')])
   final String label;
 
   final String note;
@@ -53,7 +53,7 @@ class InlineModel {
 
 @ValidateClass()
 class AsyncCustomModel {
-  @Validate.string([ValidatePassword(8)])
+  @Validate<String>([ValidatePassword(8)])
   final String password;
 
   const AsyncCustomModel({required this.password});

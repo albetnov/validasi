@@ -17,17 +17,23 @@ class _TestKey extends ValidasiField<String, String> {
       ValidasiResult.success(value ?? '');
 }
 
+const _emptyStringSchema = _EmptyStringSchema();
+
+class _EmptyStringSchema extends ValidasiSchema<String> {
+  const _EmptyStringSchema();
+  @override
+  String allocate(ValidasiFieldReader<String> reader) => '';
+}
+
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(
-    assembler: (ctrl) => '',
-  );
+  return ValidasiFormController<String>(schema: _emptyStringSchema);
 }
 
 void main() {
   group('foot-gun: validate() with async formValidator', () {
     test('throws StateError with clear message', () {
       final controller = ValidasiFormController<String>(
-        assembler: (ctrl) => '',
+        schema: _emptyStringSchema,
         formValidator: (ctrl) async => ValidasiResult(
           errors: [],
           isValid: true,
@@ -48,7 +54,7 @@ void main() {
 
     test('validateField works regardless of formValidator', () {
       final controller = ValidasiFormController<String>(
-        assembler: (ctrl) => '',
+        schema: _emptyStringSchema,
         formValidator: (ctrl) async =>
             const ValidasiResult(errors: [], isValid: true),
       );

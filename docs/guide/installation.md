@@ -4,24 +4,15 @@ Get Validasi up and running in your Dart or Flutter project.
 
 ## Add Dependency
 
-Add `validasi` as a dependency in your `pubspec.yaml` file:
+```bash
+# Dart projects
+dart pub add validasi
 
-```yaml
-dependencies:
-  validasi: ^1.0.0-rc.1
+# Flutter projects
+flutter pub add validasi
 ```
 
 > Check the [pub.dev page](https://pub.dev/packages/validasi/versions) for the latest pre-release version.
-
-Or use the command line:
-
-```bash
-# For Dart projects
-dart pub add validasi
-
-# For Flutter projects
-flutter pub add validasi
-```
 
 ## Import the Library
 
