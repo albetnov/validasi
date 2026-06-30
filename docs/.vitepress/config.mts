@@ -28,9 +28,8 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/getting-started' },
-      { text: 'Examples', link: '/examples/string-validation' },
       {
-        text: 'v1.0.0-dev',
+        text: 'v1.0.0-rc',
         items: [
           { text: 'v1 Documentation (Current)', link: '/guide/getting-started' },
           { text: 'v0 Documentation', link: '/v0/' }
@@ -115,16 +114,34 @@ export default defineConfig({
           ]
         },
         {
-          text: 'Integration',
-          items: [
-            { text: 'MCP Server', link: '/guide/mcp-server' }
-          ]
-        },
-        {
           text: 'Companion Packages',
+          collapsed: false,
           items: [
-            { text: 'Code Generation', link: '/guide/code-generation' },
-            { text: 'Form Management', link: '/guide/form-management' }
+            { text: 'Overview', link: '/companion/overview' },
+            { text: 'Annotations', link: '/companion/annotation' },
+            {
+              text: 'Code Generation',
+              collapsed: true,
+              items: [
+                { text: 'Overview', link: '/companion/generator/overview' },
+                { text: 'Standalone (Dart-only)', link: '/companion/generator/standalone' },
+                { text: 'With Form Management', link: '/companion/generator/with-ui' },
+                { text: 'Configuration', link: '/companion/generator/configuration' },
+                { text: 'Cross-field & Async', link: '/companion/generator/cross-field' },
+              ]
+            },
+            {
+              text: 'Form Management',
+              collapsed: true,
+              items: [
+                { text: 'Overview', link: '/companion/form-management/overview' },
+                { text: 'With Codegen', link: '/companion/form-management/with-codegen' },
+                { text: 'Without Codegen', link: '/companion/form-management/without-codegen' },
+                { text: 'Widgets', link: '/companion/form-management/widgets' },
+                { text: 'Controller & Signals', link: '/companion/form-management/controller' },
+              ]
+            },
+            { text: 'MCP Server', link: '/companion/mcp-server' },
           ]
         }
       ]
