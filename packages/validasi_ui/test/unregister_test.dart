@@ -85,7 +85,7 @@ class _EmptyStringSchema extends ValidasiSchema<String> {
 }
 
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(schema: _emptyStringSchema);
+  return ValidasiFormController(schema: _emptyStringSchema);
 }
 
 void main() {
@@ -499,14 +499,14 @@ void main() {
       // First mount with shouldUnregister: false
       await tester.pumpWidget(
         MaterialApp(
-          home: ValidasiForm<String>(
+          home: ValidasiForm(
             controller: controller,
             schema: _emptyStringSchema,
             shouldUnregister: false,
             builder: (context, submit) => Scaffold(
               body: Column(
                 children: [
-                  ValidasiFormField<String, String>(
+                  ValidasiFormField(
                     field: field,
                     builder: (context, state) =>
                         TextField(onChanged: state.onChanged),
@@ -524,14 +524,14 @@ void main() {
       // Remount with a fresh form widget — should reuse same controller
       await tester.pumpWidget(
         MaterialApp(
-          home: ValidasiForm<String>(
+          home: ValidasiForm(
             controller: controller,
             schema: _emptyStringSchema,
             shouldUnregister: false,
             builder: (context, submit) => Scaffold(
               body: Column(
                 children: [
-                  ValidasiFormField<String, String>(
+                  ValidasiFormField(
                     field: field,
                     builder: (context, state) =>
                         TextField(onChanged: state.onChanged),
@@ -554,19 +554,19 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: ValidasiForm<String>(
+          home: ValidasiForm(
             controller: controller,
             schema: _emptyStringSchema,
             shouldUnregister: true,
             builder: (context, submit) => Scaffold(
               body: Column(
                 children: [
-                  ValidasiFormField<String, String>(
+                  ValidasiFormField(
                     field: stickyField,
                     shouldUnregister: false,
                     builder: (c, s) => TextField(onChanged: s.onChanged),
                   ),
-                  ValidasiFormField<String, String>(
+                  ValidasiFormField(
                     field: cleanupField,
                     shouldUnregister: true,
                     builder: (c, s) => TextField(onChanged: s.onChanged),
@@ -584,14 +584,14 @@ void main() {
       // Remount
       await tester.pumpWidget(
         MaterialApp(
-          home: ValidasiForm<String>(
+          home: ValidasiForm(
             controller: controller,
             schema: _emptyStringSchema,
             shouldUnregister: true,
             builder: (context, submit) => Scaffold(
               body: Column(
                 children: [
-                  ValidasiFormField<String, String>(
+                  ValidasiFormField(
                     field: stickyField,
                     shouldUnregister: false,
                     builder: (c, s) => TextField(onChanged: s.onChanged),

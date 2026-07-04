@@ -33,7 +33,7 @@ class _StringSchema extends ValidasiSchema<String> {
 }
 
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(schema: _stringSchema);
+  return ValidasiFormController(schema: _stringSchema);
 }
 
 Widget _buildForm({
@@ -46,14 +46,14 @@ Widget _buildForm({
 }) {
   return MaterialApp(
     home: Scaffold(
-      body: ValidasiForm<String>(
+      body: ValidasiForm(
         controller: controller,
         schema: _stringSchema,
         mode: mode,
         reValidateMode: reValidateMode,
         builder: (context, submit) => Column(
           children: [
-            ValidasiFormField<String, String>(
+            ValidasiFormField(
               field: const _TestKey(),
               mode: fieldMode,
               reValidateMode: fieldReValidateMode,
@@ -174,13 +174,13 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: ValidasiForm<String>(
+            body: ValidasiForm(
               controller: controller,
               schema: _stringSchema,
               mode: ValidationMode.onBlur,
               builder: (context, submit) => Column(
                 children: [
-                  ValidasiFormField<String, String>(
+                  ValidasiFormField(
                     field: const _TestKey(),
                     builder: (context, state) {
                       return Focus(
@@ -295,14 +295,14 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: ValidasiForm<String>(
+            body: ValidasiForm(
               controller: controller,
               schema: _stringSchema,
               mode: ValidationMode.onSubmit,
               reValidateMode: ReValidationMode.onBlur,
               builder: (context, submit) => Column(
                 children: [
-                  ValidasiFormField<String, String>(
+                  ValidasiFormField(
                     field: const _TestKey(),
                     builder: (context, state) {
                       return Focus(
@@ -396,10 +396,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: ValidasiForm<String>(
+            body: ValidasiForm(
               controller: controller,
               schema: _stringSchema,
-              builder: (context, submit) => ValidasiFormField<String, String>(
+              builder: (context, submit) => ValidasiFormField(
                 field: const _TestKey(),
                 builder: (context, state) {
                   capturedState = state;

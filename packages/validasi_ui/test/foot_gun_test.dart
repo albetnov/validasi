@@ -26,13 +26,13 @@ class _EmptyStringSchema extends ValidasiSchema<String> {
 }
 
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(schema: _emptyStringSchema);
+  return ValidasiFormController(schema: _emptyStringSchema);
 }
 
 void main() {
   group('foot-gun: validate() with async formValidator', () {
     test('throws StateError with clear message', () {
-      final controller = ValidasiFormController<String>(
+      final controller = ValidasiFormController(
         schema: _emptyStringSchema,
         formValidator: (ctrl) async => ValidasiResult(
           errors: [],
@@ -53,7 +53,7 @@ void main() {
     });
 
     test('validateField works regardless of formValidator', () {
-      final controller = ValidasiFormController<String>(
+      final controller = ValidasiFormController(
         schema: _emptyStringSchema,
         formValidator: (ctrl) async =>
             const ValidasiResult(errors: [], isValid: true),

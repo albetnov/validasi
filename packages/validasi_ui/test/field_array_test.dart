@@ -112,7 +112,7 @@ class _EmptyStringSchema extends ValidasiSchema<String> {
 }
 
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(schema: _emptyStringSchema);
+  return ValidasiFormController(schema: _emptyStringSchema);
 }
 
 void main() {

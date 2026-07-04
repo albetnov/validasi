@@ -34,7 +34,7 @@ class _StringSchema extends ValidasiSchema<String> {
 }
 
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(schema: _stringSchema);
+  return ValidasiFormController(schema: _stringSchema);
 }
 
 void main() {
@@ -196,7 +196,7 @@ void main() {
           debounce: Duration.zero,
         );
 
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
         await controller.triggerAsyncValidation(field);
         await Future<void>.delayed(Duration.zero);
 
@@ -257,7 +257,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
 
         expect(
-          controller.getFieldController<String>(field).isValidating,
+          controller.getFieldController(field).isValidating,
           isTrue,
         );
 
@@ -265,7 +265,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
 
         expect(
-          controller.getFieldController<String>(field).isValidating,
+          controller.getFieldController(field).isValidating,
           isFalse,
         );
       });
@@ -350,11 +350,10 @@ void main() {
 
         controller.triggerAsyncValidation(field);
         await Future<void>.delayed(Duration.zero);
-        expect(controller.getFieldController<String>(field).isValidating, true);
+        expect(controller.getFieldController(field).isValidating, true);
 
         controller.setInitialValues('second');
-        expect(
-            controller.getFieldController<String>(field).isValidating, false);
+        expect(controller.getFieldController(field).isValidating, false);
 
         completer.complete('Error');
         await Future<void>.delayed(Duration.zero);
