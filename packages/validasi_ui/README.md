@@ -69,6 +69,8 @@ This produces `user.g.dart` containing the `UserFields<V>` hierarchy, `assemble_
 
 ## Quick start
 
+Generic type arguments (`<T>`, `<T, V>`) are **inferred** from the field or schema you pass — you rarely need to spell them out.
+
 ```dart
 // main.dart
 import 'package:flutter/material.dart';
@@ -82,13 +84,13 @@ class UserFormPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('User Form')),
-      body: ValidasiForm<User>(
-        assembler: assemble_User,
+      body: ValidasiForm(
+        schema: UserFields.schema,
         builder: (context, submit) => Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              ValidasiFormField<User, String>(
+              ValidasiFormField(
                 field: UserFields.name,
                 builder: (context, state) => TextField(
                   onChanged: state.onChanged,
@@ -98,7 +100,7 @@ class UserFormPage extends StatelessWidget {
                   ),
                 ),
               ),
-              ValidasiFormField<User, String>(
+              ValidasiFormField(
                 field: UserFields.email,
                 builder: (context, state) => TextField(
                   onChanged: state.onChanged,
@@ -108,7 +110,7 @@ class UserFormPage extends StatelessWidget {
                   ),
                 ),
               ),
-              ValidasiFormField<User, int>(
+              ValidasiFormField(
                 field: UserFields.age,
                 builder: (context, state) => TextField(
                   onChanged: (raw) => state.onChanged(int.tryParse(raw)),
@@ -147,7 +149,7 @@ A full working example lives in [`example/`](./example) — `dart run` it from `
 
 ### `ValidasiForm<T>`
 
-The root widget. Provides an `InheritedWidget` scope for descendant `ValidasiFormField`s.
+The root widget. Provides an `InheritedWidget` scope for descendant `ValidasiFormField`s. `T` is inferred from the `schema` argument.
 
 | Parameter | Description |
 |---|---|
@@ -163,7 +165,7 @@ The root widget. Provides an `InheritedWidget` scope for descendant `ValidasiFor
 
 ### `ValidasiFormField<T, V>`
 
-Binds a `ValidasiField<T, V>` to a builder. Each instance rebuilds only when its own signals change.
+Binds a `ValidasiField<T, V>` to a builder. Both `T` and `V` are inferred from the `field` argument — you only need to spell them when the field's type is lost (e.g. dynamic). Each instance rebuilds only when its own signals change.
 
 | Parameter | Description |
 |---|---|---|
@@ -206,7 +208,7 @@ When `controller` is omitted, one is created internally and disposed with the wi
 For non-`String` fields, wire parsing in the builder:
 
 ```dart
-ValidasiTextField<User, int>(
+ValidasiTextField(
   field: UserFields.age,
   builder: (context, state, ctrl) => TextField(
     controller: ctrl,
@@ -235,7 +237,7 @@ class _MyPageState extends State<_MyPage> {
     super.dispose();
   }
 
-  Widget build(context) => ValidasiTextField<User, String>(
+  Widget build(context) => ValidasiTextField(
     field: UserFields.name,
     controller: _nameCtrl,
     builder: (context, state, ctrl) => TextField(
@@ -270,7 +272,7 @@ What your builder receives.
 
 ### `ValidasiFormController<T>`
 
-For external/imperative control. Lives on `ValidasiForm.of<T>(context)`.
+For external/imperative control. Lives on `ValidasiForm.of<T>(context)`. Methods that accept a `ValidasiField<T, V>` infer their `<V>` generic from the field argument — you don't need to spell it out at call sites.
 
 | Member | Description |
 |---|---|
@@ -341,12 +343,13 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  final _controller = ValidasiFormController<User>(assembler: assemble_User);
+  final _controller = ValidasiFormController(schema: UserFields.schema);
 
   @override
   Widget build(BuildContext context) {
-    return ValidasiForm<User>(
+    return ValidasiForm(
       controller: _controller,
+      schema: UserFields.schema,
       builder: (context, submit) => YourForm(submit: submit),
     );
   }
@@ -407,7 +410,7 @@ final list = controller.getValue(field) ?? [];
 for (int i = 0; i < list.length; i++) {
   final itemField = controller.getArrayItemField(field, i)!;
   // Use itemField with ValidasiFormField
-  ValidasiFormField<MyForm, String>(
+  ValidasiFormField(
     field: itemField,
     builder: (context, state) => TextField(
       onChanged: state.onChanged,
@@ -436,7 +439,7 @@ Each indexed field has `name = 'parentName[0].name'`, delegates `validate()` to 
 Pass an async validator to `ValidasiFormField` for server-side checks (e.g. email uniqueness):
 
 ```dart
-ValidasiFormField<User, String>(
+ValidasiFormField(
   field: UserFields.email,
   validator: (email) async {
     if (email == null) return null;
