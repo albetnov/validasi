@@ -140,16 +140,27 @@ class ValidasiFormController<T> extends ChangeNotifier
     _fields[field] = fc;
     _fieldsByName[field.name] = field;
 
+    _formSignals.isDirty =
+        _fields.values.any((f) => !f.disabled && f.isDirty.value);
+    _formSignals.isTouched =
+        _fields.values.any((f) => !f.disabled && f.touched);
+
     _subscriptions[field] = [
       fc.isDirty.subscribe((dirty) {
-        _formSignals.isDirty =
+        final newIsDirty =
             _fields.values.any((f) => !f.disabled && f.isDirty.value);
-        notifyListeners();
+        if (_formSignals.isDirty != newIsDirty) {
+          _formSignals.isDirty = newIsDirty;
+          notifyListeners();
+        }
       }),
       fc.touchedSignal.subscribe((touched) {
-        _formSignals.isTouched =
+        final newIsTouched =
             _fields.values.any((f) => !f.disabled && f.touched);
-        notifyListeners();
+        if (_formSignals.isTouched != newIsTouched) {
+          _formSignals.isTouched = newIsTouched;
+          notifyListeners();
+        }
       }),
     ];
   }
