@@ -3,6 +3,7 @@ library;
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:signals/signals.dart';
 import 'package:validasi/validasi.dart';
 import 'package:validasi_ui/src/controller/array_field_names.dart';
@@ -24,6 +25,15 @@ class ValidasiFormController<T> extends ChangeNotifier
   final _fieldsByName = <String, ValidasiField<T, dynamic>>{};
   final _formSignals = ValidasiFormSignals();
   bool _isBatching = false;
+
+  final _trackedFields = <ValidasiField<T, dynamic>>{};
+  final _presentThisFrame = <ValidasiField<T, dynamic>>{};
+  bool _reconcileScheduled = false;
+
+  /// Set of fields whose widget was disposed (pure data handoff from
+  /// ValidasiFormFieldState.dispose). Written during the locked build phase
+  /// (dispose), read during post-frame reconcile.
+  final removedFields = <ValidasiField<T, dynamic>>{};
 
   // ── Coordinators ──
 
@@ -97,6 +107,54 @@ class ValidasiFormController<T> extends ChangeNotifier
       register(field);
     }
     return _fields[field] as ValidasiFieldSignals<V>;
+  }
+
+  void markFieldTracked(ValidasiField<T, dynamic> field) {
+    if (_disposed) return;
+    _trackedFields.add(field);
+    _presentThisFrame.add(field);
+    _scheduleReconcile();
+  }
+
+  void untrackField(ValidasiField<T, dynamic> field) {
+    if (_disposed) return;
+    _trackedFields.remove(field);
+  }
+
+  void _scheduleReconcile() {
+    if (_reconcileScheduled || _disposed) return;
+    _reconcileScheduled = true;
+    SchedulerBinding.instance.addPostFrameCallback((_) => _reconcilePresence());
+  }
+
+  void _reconcilePresence() {
+    _reconcileScheduled = false;
+    if (_disposed) return;
+
+    if (removedFields.isNotEmpty) {
+      _isBatching = true;
+      try {
+        for (final f in removedFields.toList()) {
+          // Skip fields re-mounted this frame (same-frame recycle).
+          if (_presentThisFrame.contains(f)) continue;
+          if (_trackedFields.contains(f)) {
+            unregister(f);
+            _trackedFields.remove(f);
+          }
+        }
+      } finally {
+        _isBatching = false;
+      }
+      removedFields.clear();
+      syncFieldErrors();
+      notifyListeners();
+    }
+
+    _presentThisFrame.clear();
+
+    if (_trackedFields.isNotEmpty) {
+      _scheduleReconcile();
+    }
   }
 
   void markSubmitted() {
@@ -188,6 +246,9 @@ class ValidasiFormController<T> extends ChangeNotifier
   void unregister<V>(ValidasiField<T, V> field) {
     _throwIfDisposed();
     final key = field as ValidasiField<T, dynamic>;
+    _trackedFields.remove(key);
+    _presentThisFrame.remove(key);
+    removedFields.remove(key);
     _arrayRegistry.unregisterSubFields(key);
     unregisterField(key);
     syncFieldErrors();
@@ -567,6 +628,10 @@ class ValidasiFormController<T> extends ChangeNotifier
   @override
   void dispose() {
     _disposed = true;
+    _trackedFields.clear();
+    _presentThisFrame.clear();
+    removedFields.clear();
+    _reconcileScheduled = false;
     _asyncCoordinator.cancelAll();
     _arrayRegistry.clear();
     for (final field in _fields.keys.toList()) {

@@ -29,6 +29,7 @@ class ValidasiFieldSignals<V> {
   late final ReadonlySignal<bool> isDirty;
   late final ReadonlySignal<bool> isValid;
   ReadonlySignal<bool> get touchedSignal => _touched;
+  Signal<List<FieldError>> get errorsSignal => _errors;
   ReadonlySignal<bool> get disabledSignal => _disabled;
   ReadonlySignal<bool> get isValidatingSignal => _isValidating;
 
