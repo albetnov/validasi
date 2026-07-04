@@ -66,7 +66,7 @@ class UserFormPage extends StatelessWidget {
             children: [
               const UserSummary(),
               const SizedBox(height: 16),
-              ValidasiTextField<User, String>(
+              ValidasiTextField(
                 field: UserFields.name,
                 builder: (context, state, ctrl) => TextField(
                   controller: ctrl,
@@ -78,7 +78,7 @@ class UserFormPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              ValidasiTextField<User, String>(
+              ValidasiTextField(
                 field: UserFields.email,
                 builder: (context, state, ctrl) => TextField(
                   controller: ctrl,
@@ -90,7 +90,7 @@ class UserFormPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              ValidasiTextField<User, int>(
+              ValidasiTextField(
                 field: UserFields.age,
                 builder: (context, state, ctrl) => TextField(
                   controller: ctrl,
