@@ -66,26 +66,40 @@ class UserFormPage extends StatelessWidget {
             children: [
               const UserSummary(),
               const SizedBox(height: 16),
-              ValidasiTextFormField(
+              ValidasiTextField<User, String>(
                 field: UserFields.name,
-                decoration: InputDecoration(
-                  labelText: 'Name',
+                builder: (context, state, ctrl) => TextField(
+                  controller: ctrl,
+                  onChanged: state.onChanged,
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                    errorText: state.errorText,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              ValidasiTextFormField(
+              ValidasiTextField<User, String>(
                 field: UserFields.email,
-                decoration: InputDecoration(
-                  labelText: 'Email',
+                builder: (context, state, ctrl) => TextField(
+                  controller: ctrl,
+                  onChanged: state.onChanged,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    errorText: state.errorText,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              ValidasiParsedTextFormField(
+              ValidasiTextField<User, int>(
                 field: UserFields.age,
-                parser: int.tryParse,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Age',
+                builder: (context, state, ctrl) => TextField(
+                  controller: ctrl,
+                  onChanged: (raw) => state.onChanged(int.tryParse(raw)),
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Age',
+                    errorText: state.errorText,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),

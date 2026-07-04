@@ -4,7 +4,7 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 @ValidateClass()
 class AsyncModel {
-  @Validate.string([MinLength(3), AsyncInline(_asyncCheck)])
+  @Validate<String>([MinLength(3), AsyncInline(_asyncCheck)])
   final String name;
 
   final String confirmName;

@@ -34,7 +34,7 @@ class ValidatePassword extends AsyncCustomRule<String> {
 
 @ValidateClass()
 class Model {
-  @Validate.string([UniqueEmail()])
+  @Validate<String>([UniqueEmail()])
   final String email;
 
   const Model({required this.email});
@@ -42,7 +42,7 @@ class Model {
 
 @ValidateClass()
 class ParamModel {
-  @Validate.string([ValidatePassword(8, true)])
+  @Validate<String>([ValidatePassword(8, true)])
   final String password;
 
   const ParamModel({required this.password});

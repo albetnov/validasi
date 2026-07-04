@@ -339,6 +339,8 @@ import 'src/rules/string/min_length.dart' as string_min_len;
 import 'src/rules/iterable/min_length.dart' as iterable_min_len;
 ```
 
+> **Important:** AI agents must **never** increment package versions or update CHANGELOG files. Version bumps and changelog updates are done manually by maintainers to avoid confusion and ensure proper release coordination.
+
 ## Version Bumping Rules
 
 When bumping `validasi` core version, update all dependants:
