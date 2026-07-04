@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:validasi_ui/validasi_ui.dart';
+import 'conditional_form_page.dart';
 import 'user.dart';
 import 'user_summary.dart';
 
@@ -14,7 +15,38 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Validasi UI Example',
-      home: const UserFormPage(),
+      home: const ExampleMenuPage(),
+    );
+  }
+}
+
+class ExampleMenuPage extends StatelessWidget {
+  const ExampleMenuPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Validasi UI Examples')),
+      body: ListView(
+        children: [
+          ListTile(
+            title: const Text('User Form'),
+            subtitle: const Text('Basic registration form'),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const UserFormPage()),
+            ),
+          ),
+          ListTile(
+            title: const Text('Conditional Form'),
+            subtitle: const Text(
+              'ValidasiWatch.form as ancestor of ValidasiFormField',
+            ),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ConditionalFormPage()),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
