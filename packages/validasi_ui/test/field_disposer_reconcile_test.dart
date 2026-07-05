@@ -69,12 +69,14 @@ Widget _buildFormWithWatch({
   required ValidasiFormController<String> controller,
   required Widget Function(BuildContext, ValidasiFormController<String>)
       watchBuilder,
+  bool shouldUnregister = true,
 }) {
   return MaterialApp(
     home: Scaffold(
       body: ValidasiForm(
         controller: controller,
         schema: _emptyStringSchema,
+        shouldUnregister: shouldUnregister,
         builder: (context, submit) => ValidasiWatch.form(
           controller: controller,
           builder: watchBuilder,

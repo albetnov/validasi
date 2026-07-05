@@ -73,6 +73,7 @@ void main() {
           home: Scaffold(
             body: ValidasiForm(
               schema: _formSchema,
+              shouldUnregister: true,
               builder: (context, submit) =>
                   ValidasiWatch.form<Map<String, dynamic>>(
                 builder: (context, c) => Column(
@@ -108,6 +109,7 @@ void main() {
           home: Scaffold(
             body: ValidasiForm(
               schema: _formSchema,
+              shouldUnregister: true,
               builder: (context, submit) =>
                   ValidasiWatch.form<Map<String, dynamic>>(
                 builder: (context, c) => Column(
@@ -163,6 +165,7 @@ void main() {
           home: Scaffold(
             body: ValidasiForm(
               schema: _formSchema,
+              shouldUnregister: true,
               builder: (context, submit) =>
                   ValidasiWatch.form<Map<String, dynamic>>(
                 builder: (context, c) => ValueListenableBuilder(
@@ -217,6 +220,7 @@ void main() {
           home: Scaffold(
             body: ValidasiForm(
               schema: _formSchema,
+              shouldUnregister: true,
               builder: (context, submit) => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -246,6 +250,7 @@ void main() {
           home: Scaffold(
             body: ValidasiForm(
               schema: _formSchema,
+              shouldUnregister: true,
               builder: (context, submit) => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -296,6 +301,7 @@ void main() {
           home: Scaffold(
             body: ValidasiForm(
               schema: _formSchema,
+              shouldUnregister: true,
               builder: (context, submit) => ValueListenableBuilder(
                 valueListenable: showField,
                 builder: (_, show, __) => Column(
