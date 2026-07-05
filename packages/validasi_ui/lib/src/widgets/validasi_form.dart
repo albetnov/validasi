@@ -26,7 +26,7 @@ class ValidasiForm<T> extends StatefulWidget {
     this.mode = ValidationMode.onSubmit,
     this.reValidateMode = ReValidationMode.onChange,
     this.initialValues,
-    this.shouldUnregister = true,
+    this.shouldUnregister = false,
     super.key,
   });
 

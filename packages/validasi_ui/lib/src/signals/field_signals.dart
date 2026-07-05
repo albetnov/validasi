@@ -33,21 +33,48 @@ class ValidasiFieldSignals<V> {
   ReadonlySignal<bool> get disabledSignal => _disabled;
   ReadonlySignal<bool> get isValidatingSignal => _isValidating;
 
-  V? get value => _value.value;
-  set value(V? v) => _value.value = v;
+  V? get value {
+    _throwIfDisposed();
+    return _value.value;
+  }
+
+  set value(V? v) {
+    if (_disposed) return;
+    _value.value = v;
+  }
+
   ReadonlySignal<V?> get valueSignal => _value;
 
-  List<FieldError> get syncErrors => _errors.value;
-  List<FieldError> get errors => [
-        ..._errors.value,
-        if (_asyncError.value != null) _asyncError.value!,
-      ];
-  void updateErrors(List<FieldError> errors) => _errors.value = errors;
+  List<FieldError> get syncErrors {
+    _throwIfDisposed();
+    return _errors.value;
+  }
 
-  bool get isValidating => _isValidating.value;
-  set isValidating(bool v) => _isValidating.value = v;
+  List<FieldError> get errors {
+    _throwIfDisposed();
+    return [
+      ..._errors.value,
+      if (_asyncError.value != null) _asyncError.value!,
+    ];
+  }
+
+  void updateErrors(List<FieldError> errors) {
+    if (_disposed) return;
+    _errors.value = errors;
+  }
+
+  bool get isValidating {
+    _throwIfDisposed();
+    return _isValidating.value;
+  }
+
+  set isValidating(bool v) {
+    if (_disposed) return;
+    _isValidating.value = v;
+  }
 
   void setAsyncError(String? message) {
+    if (_disposed) return;
     if (message != null) {
       _asyncError.value = FieldValidationError(
         ValidationError(rule: 'async', message: message),
@@ -57,18 +84,34 @@ class ValidasiFieldSignals<V> {
     }
   }
 
-  bool get touched => _touched.value;
-  void markTouched() => _touched.value = true;
+  bool get touched {
+    _throwIfDisposed();
+    return _touched.value;
+  }
+
+  void markTouched() {
+    if (_disposed) return;
+    _touched.value = true;
+  }
 
   void setInitialValue(V? v) {
+    if (_disposed) return;
     _initialValue.value = v;
     _value.value = v;
   }
 
-  bool get disabled => _disabled.value;
-  set disabled(bool v) => _disabled.value = v;
+  bool get disabled {
+    _throwIfDisposed();
+    return _disabled.value;
+  }
+
+  set disabled(bool v) {
+    if (_disposed) return;
+    _disabled.value = v;
+  }
 
   void reset() {
+    if (_disposed) return;
     _value.value = _initialValue.value;
     _errors.value = [];
     _touched.value = false;
@@ -78,6 +121,7 @@ class ValidasiFieldSignals<V> {
   }
 
   void migrateFrom(ValidasiFieldSignals<V> other) {
+    if (_disposed) return;
     _value.value = other._value.value;
     _initialValue.value = other._initialValue.value;
     _errors.value = List<FieldError>.of(other._errors.value);
@@ -88,6 +132,7 @@ class ValidasiFieldSignals<V> {
   }
 
   void swapSignalsWith(ValidasiFieldSignals<V> other) {
+    if (_disposed) return;
     final tmpVal = _value.value;
     final tmpInit = _initialValue.value;
     final tmpErr = List<FieldError>.of(_errors.value);
@@ -113,7 +158,22 @@ class ValidasiFieldSignals<V> {
     other._asyncError.value = tmpAsync;
   }
 
+  bool _disposed = false;
+
+  void _throwIfDisposed() {
+    if (!_disposed) return;
+    throw StateError(
+      'Field "${field.name}" was unregistered/evicted but a widget still '
+      'references its signal. The field may have been conditionally removed '
+      'from the widget tree. If this is intentional, ensure the referencing '
+      'widget is also removed/remounted when the field is evicted, or use '
+      'ValidasiWatch.form instead of ValidasiWatch.field for fields that '
+      'may be conditionally rendered.',
+    );
+  }
+
   void dispose() {
+    _disposed = true;
     _value.dispose();
     _initialValue.dispose();
     _errors.dispose();

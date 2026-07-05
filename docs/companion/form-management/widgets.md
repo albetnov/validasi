@@ -11,7 +11,7 @@ ValidasiForm(
   mode: ValidationMode.onSubmit,
   reValidateMode: ReValidationMode.onChange,
   initialValues: null,
-  shouldUnregister: true,
+  shouldUnregister: false,
   controller: myController,       // optional — pass your own
   formValidator: myFormValidator,  // optional — custom form-level validation
   builder: (context, submit) {
@@ -35,7 +35,7 @@ ValidasiForm(
 | `mode` | `ValidationMode` | `onSubmit` | When fields first validate |
 | `reValidateMode` | `ReValidationMode` | `onChange` | How fields re-validate after first validation |
 | `initialValues` | `T?` | `null` | Seed initial values for all registered fields |
-| `shouldUnregister` | `bool` | `true` | Auto-unregister fields on widget unmount |
+| `shouldUnregister` | `bool` | `false` | Preserve field state (value, errors, dirty/touched) across mount/unmount cycles. Set to `true` to auto-unregister on widget unmount |
 
 ### Static helpers
 

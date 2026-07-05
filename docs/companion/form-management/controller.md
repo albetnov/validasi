@@ -118,7 +118,8 @@ controller.setFieldDisabled(UserFields.age, false);
 ```
 
 Fields auto-register via `ValidasiFormField` / `ValidasiTextField` widgets.
-When `shouldUnregister: true` (default), they auto-unregister on widget unmount.
+When `shouldUnregister: false` (default), field state persists across mount/unmount.
+Set `shouldUnregister: true` on `ValidasiForm` or per-field to auto-unregister.
 
 ## Async validators (inline)
 

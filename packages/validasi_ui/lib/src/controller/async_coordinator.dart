@@ -93,7 +93,9 @@ class ValidasiAsyncCoordinator<T> {
         if (version != state.version) return;
         _ctx.notifyListeners();
       } finally {
-        fc.isValidating = false;
+        if (version == state.version) {
+          fc.isValidating = false;
+        }
       }
     });
   }

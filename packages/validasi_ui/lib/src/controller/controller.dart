@@ -16,6 +16,14 @@ import 'package:validasi_ui/src/signals/form_signals.dart';
 
 part 'context.dart';
 
+bool _fieldErrorsEqual(List<FieldError> a, List<FieldError> b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i].rule != b[i].rule || a[i].message != b[i].message) return false;
+  }
+  return true;
+}
+
 class ValidasiFormController<T> extends ChangeNotifier
     with WatchMixin<T>
     implements ValidasiFieldReader<T> {
@@ -265,11 +273,13 @@ class ValidasiFormController<T> extends ChangeNotifier
     _throwIfDisposed();
     _asyncCoordinator.cancelAll();
     _initialModel = model;
-    for (final entry in _fields.entries) {
-      entry.value.setInitialValue(entry.key.extract(model));
-      entry.value.isValidating = false;
-      entry.value.setAsyncError(null);
-    }
+    batch(() {
+      for (final entry in _fields.entries) {
+        entry.value.setInitialValue(entry.key.extract(model));
+        entry.value.isValidating = false;
+        entry.value.setAsyncError(null);
+      }
+    });
     _arrayRegistry.rebuildAllArrayItems();
     syncFieldErrors();
     notifyListeners();
@@ -437,35 +447,49 @@ class ValidasiFormController<T> extends ChangeNotifier
   ) {
     final fc = _fields[field]!;
     if (fc.disabled) return;
-    fc.updateErrors([
-      ...errors.map((e) => FieldValidationError(e)),
-    ]);
+    final newErrors = errors.map((e) => FieldValidationError(e)).toList();
+    if (_fieldErrorsEqual(fc.syncErrors, newErrors)) return;
+    fc.updateErrors(newErrors);
   }
 
   void _distributeFormErrors(List<ValidationError> errors) {
     final byPath = groupErrorsByPath(errors);
-    for (final fc in _fields.values) {
-      if (!fc.disabled) fc.updateErrors([]);
-    }
-    _formSignals.formErrors = [];
-    for (final entry in byPath.entries) {
-      final fieldName = entry.key;
-      if (fieldName.isEmpty) {
-        _formSignals.formErrors = entry.value;
-        continue;
-      }
-      final field = _fieldsByName[fieldName];
-      if (field != null) {
-        final fc = _fields[field];
-        if (fc != null && !fc.disabled) {
-          fc.updateErrors([
-            ...entry.value.map((e) => FieldValidationError(e)),
-          ]);
+    final affected = byPath.keys.toSet();
+
+    batch(() {
+      // Clear fields that had errors but are not in the new error set
+      for (final entry in _fields.entries) {
+        if (entry.value.disabled) continue;
+        final fieldName = entry.key.name;
+        if (!affected.contains(fieldName) &&
+            entry.value.syncErrors.isNotEmpty) {
+          entry.value.updateErrors([]);
         }
-      } else {
-        _formSignals.formErrors = entry.value;
       }
-    }
+
+      _formSignals.formErrors = [];
+
+      for (final entry in byPath.entries) {
+        final fieldName = entry.key;
+        if (fieldName.isEmpty) {
+          _formSignals.formErrors = entry.value;
+          continue;
+        }
+        final field = _fieldsByName[fieldName];
+        if (field != null) {
+          final fc = _fields[field];
+          if (fc != null && !fc.disabled) {
+            final newErrors =
+                entry.value.map((e) => FieldValidationError(e)).toList();
+            if (!_fieldErrorsEqual(fc.syncErrors, newErrors)) {
+              fc.updateErrors(newErrors);
+            }
+          }
+        } else {
+          _formSignals.formErrors = entry.value;
+        }
+      }
+    });
   }
 
   bool isFieldDirty<V>(ValidasiField<T, V> field) {
@@ -584,10 +608,12 @@ class ValidasiFormController<T> extends ChangeNotifier
 
   void clearAllErrors() {
     _throwIfDisposed();
-    for (final fc in _fields.values) {
-      fc.updateErrors([]);
-      fc.setAsyncError(null);
-    }
+    batch(() {
+      for (final fc in _fields.values) {
+        fc.updateErrors([]);
+        fc.setAsyncError(null);
+      }
+    });
     _formSignals.formErrors = [];
     syncFieldErrors();
     notifyListeners();

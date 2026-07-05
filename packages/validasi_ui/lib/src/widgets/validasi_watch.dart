@@ -42,7 +42,6 @@ class ValidasiWatchField<T, V> extends StatelessWidget {
     final controller = _controller ?? ValidasiForm.of<T>(context);
     final fc = controller.getFieldController<V>(field);
     return SignalBuilder(
-      dependencies: [fc.valueSignal],
       builder: (context) => builder(context, fc.value),
     );
   }
