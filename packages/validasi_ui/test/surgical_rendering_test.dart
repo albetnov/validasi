@@ -108,15 +108,17 @@ void main() {
         ),
       );
 
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       controller.setValue(const _Field('a'), 'updated');
       await tester.pump();
 
-      print('\n=== B1: setValue on field A ===');
-      print('  a: ${counters['a']!.delta} rebuild(s)');
-      print('  b: ${counters['b']!.delta} rebuild(s)');
-      print('  c: ${counters['c']!.delta} rebuild(s)');
+      debugPrint('\n=== B1: setValue on field A ===');
+      debugPrint('  a: ${counters['a']!.delta} rebuild(s)');
+      debugPrint('  b: ${counters['b']!.delta} rebuild(s)');
+      debugPrint('  c: ${counters['c']!.delta} rebuild(s)');
 
       // a's value signal changed -> a's SignalBuilder rebuilds
       // b and c untouched -> should be 0
@@ -167,9 +169,9 @@ void main() {
       controller.setValue(const _Field('b'), 'changed');
       await tester.pump();
 
-      print('\n=== B2: ValidasiWatch.field on A, change B ===');
-      print('  watch a: ${watchBuilds - initialWatch} rebuild(s)');
-      print('  field b: ${fieldBuilds - initialField} rebuild(s)');
+      debugPrint('\n=== B2: ValidasiWatch.field on A, change B ===');
+      debugPrint('  watch a: ${watchBuilds - initialWatch} rebuild(s)');
+      debugPrint('  field b: ${fieldBuilds - initialField} rebuild(s)');
     });
 
     // B3: ValidasiWatch.form rebuilds on ANY change (by design)
@@ -215,9 +217,9 @@ void main() {
       controller.setValue(const _Field('a'), 'x');
       await tester.pump();
 
-      print('\n=== B3: ValidasiWatch.form + field A, change A ===');
-      print('  formWatch: ${formWatchBuilds - initialForm} rebuild(s)');
-      print('  field a:   $fieldBuilds rebuild(s)');
+      debugPrint('\n=== B3: ValidasiWatch.form + field A, change A ===');
+      debugPrint('  formWatch: ${formWatchBuilds - initialForm} rebuild(s)');
+      debugPrint('  field a:   $fieldBuilds rebuild(s)');
     });
 
     // B4: multiple independent setValues — each triggers only its own builder
@@ -254,26 +256,30 @@ void main() {
         ),
       );
 
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       // Change A only
       controller.setValue(const _Field('a'), '1');
       await tester.pump();
       final afterA = {for (final k in counters.keys) k: counters[k]!.delta};
 
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       // Change B only
       controller.setValue(const _Field('b'), '2');
       await tester.pump();
       final afterB = {for (final k in counters.keys) k: counters[k]!.delta};
 
-      print('\n=== B4: sequential setValues ===');
-      print(
+      debugPrint('\n=== B4: sequential setValues ===');
+      debugPrint(
           '  After change A: a=${afterA['a']}, b=${afterA['b']}, c=${afterA['c']}');
-      print(
+      debugPrint(
           '  After change B: a=${afterB['a']}, b=${afterB['b']}, c=${afterB['c']}');
-      print('  Ideal: only changed field rebuilds (1), others 0');
+      debugPrint('  Ideal: only changed field rebuilds (1), others 0');
     });
 
     // B5: disabled field onChanged does not trigger rebuilds
@@ -310,8 +316,8 @@ void main() {
       controller.setValue(const _Field('a'), 'x');
       await tester.pump();
 
-      print('\n=== B5: disabled field setValue ===');
-      print('  disabled field: $disabledFieldBuilds rebuild(s)');
+      debugPrint('\n=== B5: disabled field setValue ===');
+      debugPrint('  disabled field: $disabledFieldBuilds rebuild(s)');
     });
 
     // B6: validateField on one field rebuilds only that field
@@ -355,15 +361,17 @@ void main() {
       controller.setValue(const _Field('a'), '');
       await tester.pump();
 
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       controller.validateField(const _Field('a'));
       await tester.pump();
 
-      print('\n=== B6: validateField on A ===');
-      print('  a: ${counters['a']!.delta} rebuild(s)');
-      print('  b: ${counters['b']!.delta} rebuild(s)');
-      print('  Ideal: only a rebuilds (1), b stays at 0');
+      debugPrint('\n=== B6: validateField on A ===');
+      debugPrint('  a: ${counters['a']!.delta} rebuild(s)');
+      debugPrint('  b: ${counters['b']!.delta} rebuild(s)');
+      debugPrint('  Ideal: only a rebuilds (1), b stays at 0');
     });
 
     // B7: onChanged + onChange mode - only changed field validates
@@ -412,16 +420,18 @@ void main() {
       );
 
       // Get the first TextField and enter text
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       final textFields = find.byType(TextField);
       await tester.enterText(textFields.first, 'hello');
       await tester.pump();
 
-      print('\n=== B7: onChange mode, type in field A ===');
-      print('  a: ${counters['a']!.delta} rebuild(s)');
-      print('  b: ${counters['b']!.delta} rebuild(s)');
-      print('  Ideal: only a rebuilds (value + validation), b stays at 0');
+      debugPrint('\n=== B7: onChange mode, type in field A ===');
+      debugPrint('  a: ${counters['a']!.delta} rebuild(s)');
+      debugPrint('  b: ${counters['b']!.delta} rebuild(s)');
+      debugPrint('  Ideal: only a rebuilds (value + validation), b stays at 0');
     });
 
     // B8: submit triggers validate() — measure all fields
@@ -469,16 +479,19 @@ void main() {
       controller.setValue(const _Field('b'), 'y');
       await tester.pump();
 
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       // Press submit -> validate() called
       await tester.tap(find.text('Submit'));
       await tester.pump();
 
-      print('\n=== B8: submit triggers validate() ===');
-      print('  a: ${counters['a']!.delta} rebuild(s)');
-      print('  b: ${counters['b']!.delta} rebuild(s)');
-      print('  Ideal: field a and b both get _applyErrors (even if valid)');
+      debugPrint('\n=== B8: submit triggers validate() ===');
+      debugPrint('  a: ${counters['a']!.delta} rebuild(s)');
+      debugPrint('  b: ${counters['b']!.delta} rebuild(s)');
+      debugPrint(
+          '  Ideal: field a and b both get _applyErrors (even if valid)');
     });
   });
 }

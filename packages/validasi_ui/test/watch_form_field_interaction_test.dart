@@ -95,10 +95,11 @@ void main() {
       controller.setValue(_roleField, 'admin');
       await tester.pump();
 
-      print('\n=== E1: change watched field (role) ===');
-      print('  watch (role): ${watchCounter.delta} rebuild(s)');
-      print('  field (token): ${fieldCounter.delta} rebuild(s)');
-      print('  Expected: watch rebuilds (1), field stays 0 (not affected)');
+      debugPrint('\n=== E1: change watched field (role) ===');
+      debugPrint('  watch (role): ${watchCounter.delta} rebuild(s)');
+      debugPrint('  field (token): ${fieldCounter.delta} rebuild(s)');
+      debugPrint(
+          '  Expected: watch rebuilds (1), field stays 0 (not affected)');
     });
 
     // E2: ValidasiWatch.form as ancestor with conditional field
@@ -240,10 +241,10 @@ void main() {
       await tester.tap(find.text('set_token'));
       await tester.pump();
 
-      print('\n=== E4: change token via tap ===');
-      print('  roleWatch: ${roleWatchCounter.delta} rebuild(s)');
-      print('  tokenWatch: ${tokenWatchCounter.delta} rebuild(s)');
-      print('  Expected: tokenWatch rebuilds (1), roleWatch stays 0');
+      debugPrint('\n=== E4: change token via tap ===');
+      debugPrint('  roleWatch: ${roleWatchCounter.delta} rebuild(s)');
+      debugPrint('  tokenWatch: ${tokenWatchCounter.delta} rebuild(s)');
+      debugPrint('  Expected: tokenWatch rebuilds (1), roleWatch stays 0');
     });
 
     // E5: ValidasiWatch.field with async validation
@@ -292,13 +293,14 @@ void main() {
       controller.setValue(_tokenField, 'bad');
       await tester.pump();
 
-      print('\n=== E5: watch field during async validation ===');
-      print('  watch rebuilds after setValue: ${watchCounter.delta}');
+      debugPrint('\n=== E5: watch field during async validation ===');
+      debugPrint('  watch rebuilds after setValue: ${watchCounter.delta}');
 
       await controller.triggerAsyncValidation(_tokenField);
       await tester.pump(const Duration(milliseconds: 100));
 
-      print('  watch rebuilds after async completes: ${watchCounter.delta}');
+      debugPrint(
+          '  watch rebuilds after async completes: ${watchCounter.delta}');
     });
 
     // E6: Watch + FormField + eviction cycle

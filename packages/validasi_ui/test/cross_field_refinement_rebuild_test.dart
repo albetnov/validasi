@@ -161,14 +161,16 @@ void main() {
       controller.setValue(const _Field('d'), 'good');
       await tester.pump();
 
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       controller.validate();
       await tester.pump();
 
-      print('\n=== A1: ALL valid, refine returns 0 errors ===');
+      debugPrint('\n=== A1: ALL valid, refine returns 0 errors ===');
       for (final f in fields) {
-        print('  ${f.name}: ${counters[f]!.delta} rebuild(s)');
+        debugPrint('  ${f.name}: ${counters[f]!.delta} rebuild(s)');
       }
 
       // Ideal: 0 rebuilds for all fields (nothing changed)
@@ -217,7 +219,9 @@ void main() {
       controller.setValue(const _Field('d'), 'good');
       await tester.pump();
 
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       controller.validate();
       await tester.pump();
@@ -227,14 +231,14 @@ void main() {
       final dc = counters[fields[2]]!.delta;
       final dd = counters[fields[3]]!.delta;
 
-      print('\n=== A2: refine errors on a,b — valid c,d ===');
-      print('  a (error added): $da rebuild(s)');
-      print('  b (error added): $db rebuild(s)');
-      print('  c (no error):    $dc rebuild(s)');
-      print('  d (no error):    $dd rebuild(s)');
-      print('  ---');
-      print('  Ideal (batch):   a=1, b=1, c=0, d=0');
-      print('  Actual (no batch): all 4 get updateErrors([]) first');
+      debugPrint('\n=== A2: refine errors on a,b — valid c,d ===');
+      debugPrint('  a (error added): $da rebuild(s)');
+      debugPrint('  b (error added): $db rebuild(s)');
+      debugPrint('  c (no error):    $dc rebuild(s)');
+      debugPrint('  d (no error):    $dd rebuild(s)');
+      debugPrint('  ---');
+      debugPrint('  Ideal (batch):   a=1, b=1, c=0, d=0');
+      debugPrint('  Actual (no batch): all 4 get updateErrors([]) first');
     });
 
     testWidgets('A3: per-field validate() WITH batch — baseline comparison',
@@ -247,7 +251,9 @@ void main() {
       ];
 
       final counters = <_Field, _BuildCounter>{};
-      for (final f in fields) counters[f] = _BuildCounter();
+      for (final f in fields) {
+        counters[f] = _BuildCounter();
+      }
 
       final controller = ValidasiFormController<_Model>(schema: _schema);
 
@@ -280,7 +286,9 @@ void main() {
       controller.setValue(const _Field('c'), '');
       await tester.pump();
 
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       // per-field path uses batch() internally
       controller.validate();
@@ -291,13 +299,13 @@ void main() {
       final dc = counters[fields[2]]!.delta;
       final dd = counters[fields[3]]!.delta;
 
-      print('\n=== A3: per-field validate() WITH batch ===');
-      print('  a (valid):        $da rebuild(s)');
-      print('  b (empty invalid): $db rebuild(s)');
-      print('  c (empty invalid): $dc rebuild(s)');
-      print('  d (valid):        $dd rebuild(s)');
-      print('  ---');
-      print('  Expected (batch): only b, c rebuild (1 each)');
+      debugPrint('\n=== A3: per-field validate() WITH batch ===');
+      debugPrint('  a (valid):        $da rebuild(s)');
+      debugPrint('  b (empty invalid): $db rebuild(s)');
+      debugPrint('  c (empty invalid): $dc rebuild(s)');
+      debugPrint('  d (valid):        $dd rebuild(s)');
+      debugPrint('  ---');
+      debugPrint('  Expected (batch): only b, c rebuild (1 each)');
     });
 
     testWidgets('A4: first validate sets errors, second validate clears some',
@@ -337,7 +345,9 @@ void main() {
       controller.setValue(const _Field('b'), '');
       controller.setValue(const _Field('c'), '');
       await tester.pump();
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       // First validate: errors on a and b
       controller.validate();
@@ -347,13 +357,17 @@ void main() {
         for (final f in fields) f.name: counters[f]!.delta,
       };
 
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       // Second validate: fix a, but a and b still get errors? No, a='trigger' still
       // Actually let's change a to non-trigger
       controller.setValue(const _Field('a'), 'ok');
       await tester.pump();
-      for (final c in counters.values) c.reset();
+      for (final c in counters.values) {
+        c.reset();
+      }
 
       controller.validate();
       await tester.pump();
@@ -362,13 +376,13 @@ void main() {
         for (final f in fields) f.name: counters[f]!.delta,
       };
 
-      print('\n=== A4: first validate (errors on a,b) ===');
+      debugPrint('\n=== A4: first validate (errors on a,b) ===');
       for (final entry in afterFirst.entries) {
-        print('  ${entry.key}: ${entry.value} rebuild(s)');
+        debugPrint('  ${entry.key}: ${entry.value} rebuild(s)');
       }
-      print('\n=== A4: second validate (a fixed, no errors) ===');
+      debugPrint('\n=== A4: second validate (a fixed, no errors) ===');
       for (final entry in afterSecond.entries) {
-        print('  ${entry.key}: ${entry.value} rebuild(s)');
+        debugPrint('  ${entry.key}: ${entry.value} rebuild(s)');
       }
     });
   });
