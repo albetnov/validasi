@@ -59,14 +59,14 @@ class UserFormPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('User Form')),
-      body: ValidasiForm<User>(
+      body: ValidasiForm(
         schema: UserFields.schema,
         builder: (context, submit) => Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               // Text field with auto TextEditingController
-              ValidasiTextField<User, String>(
+              ValidasiTextField(
                 field: UserFields.name,
                 builder: (context, state, controller) => TextField(
                   controller: controller,
@@ -77,7 +77,7 @@ class UserFormPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              ValidasiTextField<User, String>(
+              ValidasiTextField(
                 field: UserFields.email,
                 builder: (context, state, controller) => TextField(
                   controller: controller,
@@ -89,7 +89,7 @@ class UserFormPage extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               // Non-string field — parse manually
-              ValidasiFormField<User, int>(
+              ValidasiFormField(
                 field: UserFields.age,
                 builder: (context, state) => TextField(
                   onChanged: (raw) => state.onChanged(int.tryParse(raw)),
@@ -182,7 +182,7 @@ controller automatically runs async validation when the field is validated. The
 builder receives `state.isValidating` to show a spinner:
 
 ```dart
-ValidasiTextField<User, String>(
+ValidasiTextField(
   field: UserFields.email,
   builder: (context, state, controller) => TextField(
     controller: controller,

@@ -61,3 +61,29 @@ flutter pub add dev:build_runner dev:validasi_gen
 1. **[With Codegen](/companion/form-management/with-codegen)** (recommended) — annotate your model with `@ValidateClass`, run `build_runner`, use generated `XFields` and `schema`.
 
 2. **[Without Codegen](/companion/form-management/without-codegen)** — define `FieldDescriptor` and `ValidasiField` manually. No annotations, no build_runner.
+
+## Best Practices
+
+### Field identity & `shouldUnregister`
+
+`shouldUnregister` defaults to `false` — field state (value, errors, dirty/touched)
+persists across mount/unmount cycles. This matches the behavior of most form libraries.
+
+When a field has `shouldUnregister: false`:
+- The signal stays alive after the widget unmounts
+- Re-mounting the same `const` field instance reuses the existing signal
+- The signal is only cleaned up when the controller is disposed
+
+**Anti-pattern:** Avoid swapping through **different** `ValidasiField` instances for
+the same logical field (e.g., constructing a new field on every build with a
+different `name`). Each unique instance accumulates a signal that lives until
+controller disposal. Instead:
+
+```dart
+// ✅ Good — const field, reused across mount/unmount
+const nameField = _NameField();
+ValidasiFormField(field: nameField, ...)
+
+// ❌ Bad — new instance every build, accumulates signals
+ValidasiFormField(field: _NameField(), ...)
+```

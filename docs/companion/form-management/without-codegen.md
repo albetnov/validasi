@@ -54,11 +54,11 @@ final userSchema = ValidasiSchema<User>(
 ## Form widget
 
 ```dart
-ValidasiForm<User>(
+ValidasiForm(
   schema: userSchema,
   builder: (context, submit) => Column(
     children: [
-      ValidasiFormField<User, String>(
+      ValidasiFormField(
         field: nameField,
         builder: (context, state) => TextField(
           onChanged: state.onChanged,
@@ -68,7 +68,7 @@ ValidasiForm<User>(
           ),
         ),
       ),
-      ValidasiFormField<User, String>(
+      ValidasiFormField(
         field: emailField,
         builder: (context, state) => TextField(
           onChanged: state.onChanged,
@@ -92,7 +92,7 @@ ValidasiForm<User>(
 ## Using ValidasiTextField manually
 
 ```dart
-ValidasiTextField<User, String>(
+ValidasiTextField(
   field: nameField,
   builder: (context, state, controller) => TextField(
     controller: controller,

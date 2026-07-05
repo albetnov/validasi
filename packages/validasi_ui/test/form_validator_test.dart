@@ -89,7 +89,7 @@ ValidasiFormController<_Model> _makeController({
   FutureOr<ValidasiResult<_Model>> Function(ValidasiFormController<_Model>)?
       formValidator,
 }) {
-  return ValidasiFormController<_Model>(
+  return ValidasiFormController(
     schema: _modelSchema,
     formValidator: formValidator,
   );
@@ -132,7 +132,7 @@ void main() {
     });
 
     test('clears previous field errors before distributing', () {
-      final controller = ValidasiFormController<_Model>(
+      final controller = ValidasiFormController(
         schema: _modelSchema,
         formValidator: _formValidator,
       );
@@ -249,7 +249,7 @@ void main() {
     });
 
     test('clearAllErrors clears all fields and formErrors', () {
-      final controller = ValidasiFormController<_Model>(
+      final controller = ValidasiFormController(
         schema: _modelSchema,
         formValidator: (ctrl) {
           return ValidasiResult(

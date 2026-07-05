@@ -11,7 +11,7 @@ field values, errors, dirty/touched state, and runs validation. It implements
 final controller = ValidasiForm.of<User>(context);
 
 // Create your own (pass to ValidasiForm via `controller:` param)
-final controller = ValidasiFormController<User>(schema: UserFields.schema);
+final controller = ValidasiFormController(schema: UserFields.schema);
 ```
 
 ## State
@@ -118,14 +118,15 @@ controller.setFieldDisabled(UserFields.age, false);
 ```
 
 Fields auto-register via `ValidasiFormField` / `ValidasiTextField` widgets.
-When `shouldUnregister: true` (default), they auto-unregister on widget unmount.
+When `shouldUnregister: false` (default), field state persists across mount/unmount.
+Set `shouldUnregister: true` on `ValidasiForm` or per-field to auto-unregister.
 
 ## Async validators (inline)
 
 Register async validation without touching the model's annotations:
 
 ```dart
-controller.setFieldValidator<User, String>(
+controller.setFieldValidator(
   UserFields.email,
   (email) async {
     if (email == null || email.isEmpty) return null;

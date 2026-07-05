@@ -111,13 +111,13 @@ class UserFormPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('User Form')),
-      body: ValidasiForm<User>(
+      body: ValidasiForm(
         schema: UserFields.schema,
         builder: (context, submit) => Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              ValidasiTextField<User, String>(
+              ValidasiTextField(
                 field: UserFields.name,
                 builder: (context, state, controller) => TextField(
                   controller: controller,
@@ -128,7 +128,7 @@ class UserFormPage extends StatelessWidget {
                   ),
                 ),
               ),
-              ValidasiTextField<User, String>(
+              ValidasiTextField(
                 field: UserFields.email,
                 builder: (context, state, controller) => TextField(
                   controller: controller,
@@ -139,7 +139,7 @@ class UserFormPage extends StatelessWidget {
                   ),
                 ),
               ),
-              ValidasiFormField<User, int>(
+              ValidasiFormField(
                 field: UserFields.age,
                 builder: (context, state) => TextField(
                   onChanged: (raw) => state.onChanged(int.tryParse(raw)),

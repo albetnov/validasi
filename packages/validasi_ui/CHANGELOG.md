@@ -1,28 +1,34 @@
-## 0.1.0-dev.3
+## 0.1.0-dev.4
 
 ### Breaking Changes
 
-- `ValidasiTextFormField<T>` and `ValidasiParsedTextFormField<T, V>` are **removed**.
-  Replaced by `ValidasiTextField<T, V>` + `ValidasiTextController`.
-  Migration: replace `ValidasiTextFormField(field: ..., decoration: ...)` with
-  `ValidasiTextField<T, String>(field: ..., builder: ...)`. See README for details.
+- `shouldUnregister` default changed from `true` to `false`. Field state (value, errors,
+  dirty/touched) now persists across mount/unmount cycles by default. Set
+  `shouldUnregister: true` on `ValidasiForm` or per-field to restore the old behavior.
 
 ### Added
 
-- `ValidasiSchema<T>` integration: form controller and fields now work with `ValidasiSchema`
-  and `ValidasiFieldReader` abstractions from validasi core.
-- `ValidasiTextField<T, V>` — wraps `ValidasiFormField` with automatic
-  `TextEditingController` lifecycle and form-value sync. Accepts an optional
-  `ValidasiTextController` for programmatic control (clear, selection, etc.).
-  Builder receives `(context, state, controller)` with zero `TextField`-API coupling.
-- `ValidasiTextController` — a `TextEditingController` subclass for use with
-  `ValidasiTextField`.
+- New comprehensive E2E tests: cross-field refinement rebuild cost, surgical rendering
+  isolation, resource leak detection, behavior mismatch verification, and watch + form
+  field interaction.
+- `ValidasiFieldSignals` disposed-signal detection: read getters now throw a descriptive
+  `StateError` with migration guidance when accessed after disposal.
 
 ### Fixed
 
-- Async coordinator: use safe ternary instead of unchecked cast for values passed as
-  `dynamic`/`Object`.
-- Controller `setValue`: add assert to catch type mismatches at runtime.
+- Async coordinator: `finally` block no longer writes `isValidating = false` to disposed
+  signals (version check guard).
+- Async coordinator: guard against timer firing after field unregister (disposed-signal
+  check on all signal setters).
+- `validate()`: only rebuilds widgets for fields whose error state actually changed
+  (added `_fieldErrorsEqual` comparison in `_applyErrors`).
+- `_distributeFormErrors`: now wraps writes in `batch()` and only clears fields that
+  previously had errors but aren't in the new error set — preventing unnecessary
+  SignalBuilder notifications.
+- `clearAllErrors()` and `setInitialValues()`: wrapped in `batch()` for consistent
+  signal notification batching.
+- `ValidasiWatch.field`: removed redundant `SignalBuilder.dependencies` (auto-detection
+  via `onSignalRead` is sufficient).
 
 ## 0.1.0-dev.2
 

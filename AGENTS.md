@@ -315,12 +315,12 @@ Each leaf class implements `name`, `extract(owner)`, and `validate(value)`.
 
 - **`ValidasiFormController<T>`** (`lib/src/controller.dart`): `ChangeNotifier` keyed by `ValidasiField<T, V>`
 - **`ValidasiForm<T>`** (`lib/src/form.dart`): `InheritedWidget` scope providing `ValidasiFormController<T>`
-- **`ValidasiFormField<T, V>`** (`lib/src/form_field.dart`): Binds a `ValidasiField<T, V>` to a builder
-- **`ValidasiFieldState<V>`** (`lib/src/field_state.dart`): Typed value, errors, `onChanged`, `validate`
+- **`ValidasiFormField<T, V>`** (`lib/src/form_field.dart`): Binds a `ValidasiField<T, V>` to a builder. `T` and `V` are inferred from the `field` argument. Wraps the child in a `_FieldDisposer` that tracks mount/unmount via a deferred post-frame reconcile (no synchronous `notifyListeners` during `finalizeTree`).
 
 ```dart
-ValidasiForm<User>(
-  child: ValidasiFormField<User, String>(
+ValidasiForm(
+  schema: UserFields.schema,
+  builder: (context, submit) => ValidasiFormField(
     field: UserFields.name,
     builder: (context, state) => TextField(
       onChanged: state.onChanged,

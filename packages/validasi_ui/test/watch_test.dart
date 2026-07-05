@@ -28,7 +28,7 @@ class _StringSchema extends ValidasiSchema<String> {
 }
 
 ValidasiFormController<String> _newController() =>
-    ValidasiFormController<String>(schema: _stringSchema);
+    ValidasiFormController(schema: _stringSchema);
 
 void main() {
   group('watchValue', () {
@@ -36,7 +36,7 @@ void main() {
       final controller = _newController();
       const field = _StringKey('name');
 
-      final s = controller.watchValue<String>(field);
+      final s = controller.watchValue(field);
       expect(s.value, isNull);
 
       controller.setValue(field, 'hello');
@@ -52,8 +52,8 @@ void main() {
       final controller = _newController();
       const field = _StringKey('auto');
 
-      controller.watchValue<String>(field);
-      expect(controller.getFieldController<String>(field).value, isNull);
+      controller.watchValue(field);
+      expect(controller.getFieldController(field).value, isNull);
 
       controller.setValue(field, 'x');
       expect(controller.getValue(field), 'x');
@@ -65,8 +65,8 @@ void main() {
       final controller = _newController();
       const field = _StringKey('shared');
 
-      final a = controller.watchValue<String>(field);
-      final b = controller.watchValue<String>(field);
+      final a = controller.watchValue(field);
+      final b = controller.watchValue(field);
       expect(identical(a, b), isTrue);
 
       controller.dispose();
@@ -143,7 +143,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: ValidasiForm<String>(
+          home: ValidasiForm(
             controller: controller,
             schema: _stringSchema,
             builder: (context, submit) => ValidasiWatch.form<String>(
@@ -183,11 +183,11 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: ValidasiForm<String>(
+          home: ValidasiForm(
             controller: controller,
             schema: _stringSchema,
             builder: (context, submit) => Scaffold(
-              body: ValidasiWatch.field<String, String>(
+              body: ValidasiWatch.field(
                 field: field,
                 builder: (context, value) => Text('value=$value'),
               ),
@@ -218,11 +218,11 @@ void main() {
       var builds = 0;
       await tester.pumpWidget(
         MaterialApp(
-          home: ValidasiForm<String>(
+          home: ValidasiForm(
             controller: controller,
             schema: _stringSchema,
             builder: (context, submit) => Scaffold(
-              body: ValidasiWatch.field<String, String>(
+              body: ValidasiWatch.field(
                 field: watched,
                 builder: (context, value) {
                   builds++;
@@ -252,7 +252,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: ValidasiWatch.field<String, String>(
+            body: ValidasiWatch.field(
               field: _StringKey('x'),
               builder: (context, value) => const Text('nope'),
             ),

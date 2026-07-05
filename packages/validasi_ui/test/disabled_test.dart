@@ -69,7 +69,7 @@ class _StringSchema extends ValidasiSchema<String> {
 }
 
 ValidasiFormController<String> _makeController() {
-  return ValidasiFormController<String>(schema: _stringSchema);
+  return ValidasiFormController(schema: _stringSchema);
 }
 
 void main() {
@@ -80,7 +80,7 @@ void main() {
         const field = _TestKey();
 
         controller.register(field, initialValue: 'hello');
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
         controller.setValue(field, 'world');
 
         expect(controller.getValue(field), 'hello');
@@ -91,7 +91,7 @@ void main() {
         const field = _TestKey();
 
         controller.register(field);
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
         controller.validate();
 
         expect(controller.getErrors(field), isEmpty);
@@ -103,7 +103,7 @@ void main() {
         const field = _TestKey();
 
         controller.register(field);
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
         final result = controller.validateField(field);
 
         expect(result, isTrue);
@@ -117,7 +117,7 @@ void main() {
 
         controller.register(field, initialValue: 'hello');
         controller.register(second, initialValue: 'world');
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
 
         final values = controller.getValues();
         expect(values.length, 1);
@@ -130,7 +130,7 @@ void main() {
         const field = _TestKey();
 
         controller.register(field);
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
         controller.setError(field, 'Manual error');
 
         expect(controller.getErrors(field), isEmpty);
@@ -144,7 +144,7 @@ void main() {
         controller.validate();
         expect(controller.getErrors(field).length, 1);
 
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
         controller.clearErrors(field);
 
         expect(controller.getErrors(field).length, 1);
@@ -157,7 +157,7 @@ void main() {
 
         controller.register(field, initialValue: 'hello');
         controller.register(second, initialValue: 'world');
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
 
         controller.setValue(second, 'changed');
         expect(controller.isDirty, isTrue);
@@ -169,7 +169,7 @@ void main() {
         const field = _TestKey();
 
         controller.register(field, initialValue: 'hello');
-        final fc = controller.getFieldController<String>(field);
+        final fc = controller.getFieldController(field);
         fc.disabled = true;
         fc.value = 'changed';
 
@@ -181,7 +181,7 @@ void main() {
         const field = _TestKey();
 
         controller.register(field);
-        final fc = controller.getFieldController<String>(field);
+        final fc = controller.getFieldController(field);
         fc.disabled = true;
         fc.markTouched();
 
@@ -196,7 +196,7 @@ void main() {
         controller.validate();
         expect(controller.isValid, isFalse);
 
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
         expect(controller.isValid, isTrue);
       });
 
@@ -205,7 +205,7 @@ void main() {
         const field = _AsyncKey();
 
         controller.register(field);
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
         final result = await controller.validateAsync();
 
         expect(result, isTrue);
@@ -217,7 +217,7 @@ void main() {
         const field = _TestKey();
 
         controller.register(field, initialValue: 'hello');
-        controller.getFieldController<String>(field).disabled = true;
+        controller.getFieldController(field).disabled = true;
 
         expect(controller.getValue(field), 'hello');
       });
@@ -233,10 +233,10 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: ValidasiForm<String>(
+              body: ValidasiForm(
                 controller: controller,
                 schema: _stringSchema,
-                builder: (context, submit) => ValidasiFormField<String, String>(
+                builder: (context, submit) => ValidasiFormField(
                   field: const _TestKey(),
                   disabled: true,
                   builder: (context, state) {
@@ -260,10 +260,10 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: ValidasiForm<String>(
+              body: ValidasiForm(
                 controller: controller,
                 schema: _stringSchema,
-                builder: (context, submit) => ValidasiFormField<String, String>(
+                builder: (context, submit) => ValidasiFormField(
                   field: field,
                   disabled: true,
                   builder: (context, state) {
@@ -291,10 +291,10 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: ValidasiForm<String>(
+              body: ValidasiForm(
                 controller: controller,
                 schema: _stringSchema,
-                builder: (context, submit) => ValidasiFormField<String, String>(
+                builder: (context, submit) => ValidasiFormField(
                   field: field,
                   disabled: false,
                   builder: (context, state) {
@@ -313,10 +313,10 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: ValidasiForm<String>(
+              body: ValidasiForm(
                 controller: controller,
                 schema: _stringSchema,
-                builder: (context, submit) => ValidasiFormField<String, String>(
+                builder: (context, submit) => ValidasiFormField(
                   field: field,
                   disabled: true,
                   builder: (context, state) {
@@ -337,9 +337,9 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: ValidasiForm<String>(
+              body: ValidasiForm(
                 schema: _stringSchema,
-                builder: (context, submit) => ValidasiFormField<String, String>(
+                builder: (context, submit) => ValidasiFormField(
                   field: const _TestKey(),
                   disabled: true,
                   builder: (context, state) {
@@ -361,9 +361,9 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: ValidasiForm<String>(
+              body: ValidasiForm(
                 schema: _stringSchema,
-                builder: (context, submit) => ValidasiFormField<String, String>(
+                builder: (context, submit) => ValidasiFormField(
                   field: const _TestKey(),
                   disabled: true,
                   builder: (context, state) {
@@ -385,9 +385,9 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: ValidasiForm<String>(
+              body: ValidasiForm(
                 schema: _stringSchema,
-                builder: (context, submit) => ValidasiFormField<String, String>(
+                builder: (context, submit) => ValidasiFormField(
                   field: const _TestKey(),
                   disabled: true,
                   builder: (context, state) {

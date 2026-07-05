@@ -49,9 +49,12 @@ class ValidasiAsyncCoordinator<T> {
       _asyncValidators.remove(field)?.cancel();
       final fc = _ctx.fieldSignal(field);
       if (fc != null) {
+        final hadAsyncError = fc.errors.length != fc.syncErrors.length;
         fc.setAsyncError(null);
         _ctx.syncFieldErrors();
-        _ctx.notifyListeners();
+        if (hadAsyncError) {
+          _ctx.notifyListeners();
+        }
       }
       return;
     }
@@ -90,7 +93,9 @@ class ValidasiAsyncCoordinator<T> {
         if (version != state.version) return;
         _ctx.notifyListeners();
       } finally {
-        fc.isValidating = false;
+        if (version == state.version) {
+          fc.isValidating = false;
+        }
       }
     });
   }

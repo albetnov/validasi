@@ -62,7 +62,7 @@ class _TestModelSchema extends ValidasiSchema<_TestModel> {
 }
 
 ValidasiFormController<_TestModel> _makeController() {
-  return ValidasiFormController<_TestModel>(schema: _testModelSchema);
+  return ValidasiFormController(schema: _testModelSchema);
 }
 
 Widget _buildForm({
@@ -71,13 +71,13 @@ Widget _buildForm({
 }) {
   return MaterialApp(
     home: Scaffold(
-      body: ValidasiForm<_TestModel>(
+      body: ValidasiForm(
         controller: controller,
         schema: _testModelSchema,
         initialValues: initialValues,
         builder: (context, submit) => Column(
           children: [
-            ValidasiFormField<_TestModel, String>(
+            ValidasiFormField(
               field: const _NameField(),
               builder: (context, state) => TextField(
                 controller: TextEditingController(text: state.value ?? '')
@@ -88,7 +88,7 @@ Widget _buildForm({
                 decoration: InputDecoration(errorText: state.errorText),
               ),
             ),
-            ValidasiFormField<_TestModel, String>(
+            ValidasiFormField(
               field: const _EmailField(),
               builder: (context, state) => TextField(
                 controller: TextEditingController(text: state.value ?? '')

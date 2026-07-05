@@ -3,6 +3,7 @@ library;
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:signals/signals.dart';
 import 'package:validasi/validasi.dart';
 import 'package:validasi_ui/src/controller/array_field_names.dart';
@@ -15,6 +16,14 @@ import 'package:validasi_ui/src/signals/form_signals.dart';
 
 part 'context.dart';
 
+bool _fieldErrorsEqual(List<FieldError> a, List<FieldError> b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i].rule != b[i].rule || a[i].message != b[i].message) return false;
+  }
+  return true;
+}
+
 class ValidasiFormController<T> extends ChangeNotifier
     with WatchMixin<T>
     implements ValidasiFieldReader<T> {
@@ -24,6 +33,15 @@ class ValidasiFormController<T> extends ChangeNotifier
   final _fieldsByName = <String, ValidasiField<T, dynamic>>{};
   final _formSignals = ValidasiFormSignals();
   bool _isBatching = false;
+
+  final _trackedFields = <ValidasiField<T, dynamic>>{};
+  final _presentThisFrame = <ValidasiField<T, dynamic>>{};
+  bool _reconcileScheduled = false;
+
+  /// Set of fields whose widget was disposed (pure data handoff from
+  /// ValidasiFormFieldState.dispose). Written during the locked build phase
+  /// (dispose), read during post-frame reconcile.
+  final removedFields = <ValidasiField<T, dynamic>>{};
 
   // ── Coordinators ──
 
@@ -99,6 +117,54 @@ class ValidasiFormController<T> extends ChangeNotifier
     return _fields[field] as ValidasiFieldSignals<V>;
   }
 
+  void markFieldTracked(ValidasiField<T, dynamic> field) {
+    if (_disposed) return;
+    _trackedFields.add(field);
+    _presentThisFrame.add(field);
+    _scheduleReconcile();
+  }
+
+  void untrackField(ValidasiField<T, dynamic> field) {
+    if (_disposed) return;
+    _trackedFields.remove(field);
+  }
+
+  void _scheduleReconcile() {
+    if (_reconcileScheduled || _disposed) return;
+    _reconcileScheduled = true;
+    SchedulerBinding.instance.addPostFrameCallback((_) => _reconcilePresence());
+  }
+
+  void _reconcilePresence() {
+    _reconcileScheduled = false;
+    if (_disposed) return;
+
+    if (removedFields.isNotEmpty) {
+      _isBatching = true;
+      try {
+        for (final f in removedFields.toList()) {
+          // Skip fields re-mounted this frame (same-frame recycle).
+          if (_presentThisFrame.contains(f)) continue;
+          if (_trackedFields.contains(f)) {
+            unregister(f);
+            _trackedFields.remove(f);
+          }
+        }
+      } finally {
+        _isBatching = false;
+      }
+      removedFields.clear();
+      syncFieldErrors();
+      notifyListeners();
+    }
+
+    _presentThisFrame.clear();
+
+    if (_trackedFields.isNotEmpty) {
+      _scheduleReconcile();
+    }
+  }
+
   void markSubmitted() {
     _throwIfDisposed();
     _formSignals.isSubmitted = true;
@@ -140,16 +206,27 @@ class ValidasiFormController<T> extends ChangeNotifier
     _fields[field] = fc;
     _fieldsByName[field.name] = field;
 
+    _formSignals.isDirty =
+        _fields.values.any((f) => !f.disabled && f.isDirty.value);
+    _formSignals.isTouched =
+        _fields.values.any((f) => !f.disabled && f.touched);
+
     _subscriptions[field] = [
       fc.isDirty.subscribe((dirty) {
-        _formSignals.isDirty =
+        final newIsDirty =
             _fields.values.any((f) => !f.disabled && f.isDirty.value);
-        notifyListeners();
+        if (_formSignals.isDirty != newIsDirty) {
+          _formSignals.isDirty = newIsDirty;
+          notifyListeners();
+        }
       }),
       fc.touchedSignal.subscribe((touched) {
-        _formSignals.isTouched =
+        final newIsTouched =
             _fields.values.any((f) => !f.disabled && f.touched);
-        notifyListeners();
+        if (_formSignals.isTouched != newIsTouched) {
+          _formSignals.isTouched = newIsTouched;
+          notifyListeners();
+        }
       }),
     ];
   }
@@ -177,6 +254,9 @@ class ValidasiFormController<T> extends ChangeNotifier
   void unregister<V>(ValidasiField<T, V> field) {
     _throwIfDisposed();
     final key = field as ValidasiField<T, dynamic>;
+    _trackedFields.remove(key);
+    _presentThisFrame.remove(key);
+    removedFields.remove(key);
     _arrayRegistry.unregisterSubFields(key);
     unregisterField(key);
     syncFieldErrors();
@@ -193,11 +273,13 @@ class ValidasiFormController<T> extends ChangeNotifier
     _throwIfDisposed();
     _asyncCoordinator.cancelAll();
     _initialModel = model;
-    for (final entry in _fields.entries) {
-      entry.value.setInitialValue(entry.key.extract(model));
-      entry.value.isValidating = false;
-      entry.value.setAsyncError(null);
-    }
+    batch(() {
+      for (final entry in _fields.entries) {
+        entry.value.setInitialValue(entry.key.extract(model));
+        entry.value.isValidating = false;
+        entry.value.setAsyncError(null);
+      }
+    });
     _arrayRegistry.rebuildAllArrayItems();
     syncFieldErrors();
     notifyListeners();
@@ -365,35 +447,49 @@ class ValidasiFormController<T> extends ChangeNotifier
   ) {
     final fc = _fields[field]!;
     if (fc.disabled) return;
-    fc.updateErrors([
-      ...errors.map((e) => FieldValidationError(e)),
-    ]);
+    final newErrors = errors.map((e) => FieldValidationError(e)).toList();
+    if (_fieldErrorsEqual(fc.syncErrors, newErrors)) return;
+    fc.updateErrors(newErrors);
   }
 
   void _distributeFormErrors(List<ValidationError> errors) {
     final byPath = groupErrorsByPath(errors);
-    for (final fc in _fields.values) {
-      if (!fc.disabled) fc.updateErrors([]);
-    }
-    _formSignals.formErrors = [];
-    for (final entry in byPath.entries) {
-      final fieldName = entry.key;
-      if (fieldName.isEmpty) {
-        _formSignals.formErrors = entry.value;
-        continue;
-      }
-      final field = _fieldsByName[fieldName];
-      if (field != null) {
-        final fc = _fields[field];
-        if (fc != null && !fc.disabled) {
-          fc.updateErrors([
-            ...entry.value.map((e) => FieldValidationError(e)),
-          ]);
+    final affected = byPath.keys.toSet();
+
+    batch(() {
+      // Clear fields that had errors but are not in the new error set
+      for (final entry in _fields.entries) {
+        if (entry.value.disabled) continue;
+        final fieldName = entry.key.name;
+        if (!affected.contains(fieldName) &&
+            entry.value.syncErrors.isNotEmpty) {
+          entry.value.updateErrors([]);
         }
-      } else {
-        _formSignals.formErrors = entry.value;
       }
-    }
+
+      _formSignals.formErrors = [];
+
+      for (final entry in byPath.entries) {
+        final fieldName = entry.key;
+        if (fieldName.isEmpty) {
+          _formSignals.formErrors = entry.value;
+          continue;
+        }
+        final field = _fieldsByName[fieldName];
+        if (field != null) {
+          final fc = _fields[field];
+          if (fc != null && !fc.disabled) {
+            final newErrors =
+                entry.value.map((e) => FieldValidationError(e)).toList();
+            if (!_fieldErrorsEqual(fc.syncErrors, newErrors)) {
+              fc.updateErrors(newErrors);
+            }
+          }
+        } else {
+          _formSignals.formErrors = entry.value;
+        }
+      }
+    });
   }
 
   bool isFieldDirty<V>(ValidasiField<T, V> field) {
@@ -512,10 +608,12 @@ class ValidasiFormController<T> extends ChangeNotifier
 
   void clearAllErrors() {
     _throwIfDisposed();
-    for (final fc in _fields.values) {
-      fc.updateErrors([]);
-      fc.setAsyncError(null);
-    }
+    batch(() {
+      for (final fc in _fields.values) {
+        fc.updateErrors([]);
+        fc.setAsyncError(null);
+      }
+    });
     _formSignals.formErrors = [];
     syncFieldErrors();
     notifyListeners();
@@ -556,6 +654,10 @@ class ValidasiFormController<T> extends ChangeNotifier
   @override
   void dispose() {
     _disposed = true;
+    _trackedFields.clear();
+    _presentThisFrame.clear();
+    removedFields.clear();
+    _reconcileScheduled = false;
     _asyncCoordinator.cancelAll();
     _arrayRegistry.clear();
     for (final field in _fields.keys.toList()) {

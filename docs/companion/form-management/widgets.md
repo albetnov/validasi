@@ -3,14 +3,15 @@
 ## `ValidasiForm<T>`
 
 The root form widget. Creates and scopes a `ValidasiFormController<T>` via `InheritedWidget`.
+`T` is inferred from the `schema` argument.
 
 ```dart
-ValidasiForm<User>(
+ValidasiForm(
   schema: UserFields.schema,
   mode: ValidationMode.onSubmit,
   reValidateMode: ReValidationMode.onChange,
   initialValues: null,
-  shouldUnregister: true,
+  shouldUnregister: false,
   controller: myController,       // optional — pass your own
   formValidator: myFormValidator,  // optional — custom form-level validation
   builder: (context, submit) {
@@ -34,7 +35,7 @@ ValidasiForm<User>(
 | `mode` | `ValidationMode` | `onSubmit` | When fields first validate |
 | `reValidateMode` | `ReValidationMode` | `onChange` | How fields re-validate after first validation |
 | `initialValues` | `T?` | `null` | Seed initial values for all registered fields |
-| `shouldUnregister` | `bool` | `true` | Auto-unregister fields on widget unmount |
+| `shouldUnregister` | `bool` | `false` | Preserve field state (value, errors, dirty/touched) across mount/unmount cycles. Set to `true` to auto-unregister on widget unmount |
 
 ### Static helpers
 
@@ -51,11 +52,12 @@ final unregister = ValidasiForm.shouldUnregisterOf<User>(context);
 
 ## `ValidasiFormField<T, V>`
 
-Binds a `ValidasiField<T, V>` to a builder function. Rebuilds only when its own
+Binds a `ValidasiField<T, V>` to a builder function. `T` and `V` are inferred
+from the `field` argument. Rebuilds only when its own
 signals change (fine-grained reactivity).
 
 ```dart
-ValidasiFormField<User, String>(
+ValidasiFormField(
   field: UserFields.name,
   mode: null,                    // override form's ValidationMode
   reValidateMode: null,          // override form's ReValidationMode
@@ -103,9 +105,10 @@ ValidasiFormField<User, String>(
 
 Convenience wrapper: `ValidasiFormField` + automatic `TextEditingController` management.
 Replaces the removed `ValidasiTextFormField` and `ValidasiParsedTextFormField`.
+`T` and `V` are inferred from the `field` argument.
 
 ```dart
-ValidasiTextField<User, String>(
+ValidasiTextField(
   field: UserFields.name,
   controller: myController,     // optional — auto-creates one if not provided
   builder: (context, state, controller) {
@@ -147,7 +150,7 @@ A trivial `TextEditingController` subclass for use with `ValidasiTextField`.
 ```dart
 final controller = ValidasiTextController(text: 'initial text');
 
-ValidasiTextField<User, String>(
+ValidasiTextField(
   field: UserFields.name,
   controller: controller,
   builder: (context, state, ctrl) => TextField(controller: ctrl),
@@ -167,8 +170,11 @@ Lightweight reactive watchers that rebuild when signals change. Use inside a `Va
 
 ### Watch the form controller
 
+When no `controller` is passed, `T` must be explicit (it can't be inferred from a builder closure alone). Pass `controller:` to avoid the explicit generic:
+
 ```dart
 ValidasiWatch.form<User>(
+  controller: myController,          // optional — when passed, <T> is inferred
   builder: (context, controller) {
     return Text('Form valid: ${controller.isValid}');
   },
@@ -180,7 +186,7 @@ Rebuilds whenever the controller notifies (dirty, touched, errors change).
 ### Watch a field value
 
 ```dart
-ValidasiWatch.field<User, String>(
+ValidasiWatch.field(
   field: UserFields.name,
   builder: (context, value) {
     return Text('Name length: ${value?.length ?? 0}');

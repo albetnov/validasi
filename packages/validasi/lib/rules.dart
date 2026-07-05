@@ -77,6 +77,7 @@ export 'src/rules/map/async_conditional_field.dart'
 export 'src/engine/rule.dart' show Rule, AsyncRule;
 export 'src/engine/result.dart' show ValidasiResult;
 export 'src/engine/error.dart' show ValidationError;
+export 'src/engine/state.dart' show ValidationState;
 
 final class Rules {
   const Rules._();
