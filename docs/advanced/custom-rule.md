@@ -21,9 +21,7 @@ Use `InlineRule` for quick, one-off validations. Create a custom rule when you n
 Every custom rule extends `Rule<T>` and implements the `apply` method:
 
 ```dart
-import 'package:validasi/src/engine/error.dart';
-import 'package:validasi/src/engine/rule.dart';
-import 'package:validasi/src/engine/state.dart';
+import 'package:validasi/validasi.dart';
 
 class MyCustomRule extends Rule<String> {
   const MyCustomRule({super.message});
@@ -229,9 +227,7 @@ class StopIfEmpty extends Rule<String> {
 Here's a comprehensive example demonstrating all concepts:
 
 ```dart
-import 'package:validasi/src/engine/error.dart';
-import 'package:validasi/src/engine/rule.dart';
-import 'package:validasi/src/engine/state.dart';
+import 'package:validasi/validasi.dart';
 
 class UrlRule extends Rule<String> {
   const UrlRule({
@@ -449,9 +445,7 @@ void main() {
 For rules that need async operations (e.g., database lookups), extend `AsyncRule<T>` instead:
 
 ```dart
-import 'package:validasi/src/engine/error.dart';
-import 'package:validasi/src/engine/rule.dart';
-import 'package:validasi/src/engine/state.dart';
+import 'package:validasi/validasi.dart';
 
 class UniqueEmailRule extends AsyncRule<String> {
   const UniqueEmailRule(this.userRepository, {super.message});

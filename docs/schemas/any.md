@@ -119,9 +119,7 @@ print(scoreSchema.validate(120).isValid); // false
 For reusable or more complex logic, create a custom rule class (documented separately) and use it with `Validasi.any<T>()`.
 
 ```dart
-import 'package:validasi/src/engine/error.dart';
-import 'package:validasi/src/engine/rule.dart';
-import 'package:validasi/src/engine/state.dart';
+import 'package:validasi/validasi.dart';
 
 class AdultAgeRule extends Rule<int> {
 	const AdultAgeRule({super.message});

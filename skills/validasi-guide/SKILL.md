@@ -25,12 +25,10 @@ import 'package:validasi/validasi.dart'; // Schema builders and engine
 import 'package:validasi/rules.dart';    // Rule factories
 ```
 
-For custom rules, also import the engine internals:
+For custom rules, import `validasi.dart` (which re-exports everything needed):
 
 ```dart
-import 'package:validasi/src/engine/error.dart';
-import 'package:validasi/src/engine/rule.dart';
-import 'package:validasi/src/engine/state.dart';
+import 'package:validasi/validasi.dart';
 ```
 
 ## The Validation Flow
