@@ -30,6 +30,26 @@
 - `ValidasiWatch.field`: removed redundant `SignalBuilder.dependencies` (auto-detection
   via `onSignalRead` is sufficient).
 
+## 0.1.0-dev.3
+
+### Breaking Changes
+
+- `ValidasiTextFormField<T>` and `ValidasiParsedTextFormField<T, V>` are **removed**.
+  Replaced by `ValidasiTextField<T, V>` + `ValidasiTextController`.
+  Migration: replace `ValidasiTextFormField(field: ..., decoration: ...)` with
+  `ValidasiTextField<T, String>(field: ..., builder: ...)`. See README for details.
+
+### Added
+
+- `ValidasiSchema<T>` integration: form controller and fields now work with `ValidasiSchema`
+  and `ValidasiFieldReader` abstractions from validasi core.
+- `ValidasiTextField<T, V>` — wraps `ValidasiFormField` with automatic
+  `TextEditingController` lifecycle and form-value sync. Accepts an optional
+  `ValidasiTextController` for programmatic control (clear, selection, etc.).
+  Builder receives `(context, state, controller)` with zero `TextField`-API coupling.
+- `ValidasiTextController` — a `TextEditingController` subclass for use with
+  `ValidasiTextField`.
+
 ## 0.1.0-dev.2
 
 - Updated `validasi` dependency to `^1.0.0-rc.2`.
