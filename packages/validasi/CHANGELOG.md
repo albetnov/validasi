@@ -1,3 +1,18 @@
+## 1.0.0-rc.4
+
+### Added
+
+- `ValidationState` is now publicly exported from `package:validasi/rules.dart`, making custom rule authoring possible without importing
+  `src/` internals.
+- `Rule<T>` and `AsyncRule<T>` are now publicly exported from `package:validasi/validasi.dart`
+  (previously only available via `package:validasi/rules.dart`).
+
+### Changed
+
+- Custom rules now only need `import 'package:validasi/validasi.dart';` instead of three
+  separate `src/engine/` imports. Updated all documentation and examples accordingly.
+Bumps rc.3 → rc.4 since it's a small additive change to the public API surface.
+
 ## 1.0.0-rc.3
 
 ### Added
