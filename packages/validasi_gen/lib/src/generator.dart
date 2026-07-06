@@ -2,6 +2,7 @@ import 'package:build/build.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
 
+import 'package:validasi_gen/src/generators/cross_field_sugar.dart';
 import 'package:validasi_gen/src/generators/cross_fields.dart';
 import 'package:validasi_gen/src/generators/error_helpers.dart';
 import 'package:validasi_gen/src/generators/extension.dart';
@@ -9,6 +10,7 @@ import 'package:validasi_gen/src/generators/fields_class.dart';
 import 'package:validasi_gen/src/generators/form_validator.dart';
 import 'package:validasi_gen/src/handlers.dart';
 import 'package:validasi_gen/src/handlers/required.dart';
+import 'package:validasi_gen/src/parsers/cross_field_rules.dart';
 import 'package:validasi_gen/src/parsers/rules.dart';
 import 'package:validasi_gen/src/utils.dart';
 
@@ -40,7 +42,11 @@ class ValidasiGenerator extends Generator {
 
     for (final cls in validateClasses.values) {
       final fields = extractValidateFields(cls, library);
-      if (fields.isEmpty) continue;
+      final refines = extractRefineMethods(cls);
+      final crossFieldInfos = extractCrossFieldRules(cls);
+      if (fields.isEmpty && refines.isEmpty && crossFieldInfos.isEmpty) {
+        continue;
+      }
 
       final generateFields =
           readGenerateFieldsOverride(cls) ?? generateFieldsDefault;
@@ -48,7 +54,12 @@ class ValidasiGenerator extends Generator {
           readGenerateSchemaOverride(cls) ?? generateSchemaDefault;
       final generateIndexedFields = readGenerateIndexedFieldsOverride(cls) ??
           generateIndexedFieldsDefault;
-      final refines = extractRefineMethods(cls);
+      final desugaredCrossField =
+          desugarCrossFieldRules(cls.name!, cls, crossFieldInfos);
+      final allRefines = [
+        ...refines,
+        ...desugaredCrossField.map((d) => d.refine),
+      ];
       final shouldEmitValidateForm =
           generateFields && generateValidateFormDefault;
 
@@ -68,11 +79,21 @@ class ValidasiGenerator extends Generator {
         cls.name!,
         fields,
         includeValidateField: generateFields,
-        refines: refines,
+        refines: allRefines,
+        allFieldNames: cls.fields
+            .where((f) => !f.isStatic)
+            .map((f) => f.name!)
+            .toList(),
       ));
 
       if (shouldEmitValidateForm) {
-        buffer.write(generateValidateForm(cls.name!, fields, refines: refines));
+        buffer
+            .write(generateValidateForm(cls.name!, fields, refines: allRefines));
+      }
+
+      if (desugaredCrossField.isNotEmpty) {
+        buffer.write(
+            generateCrossFieldHelperClass(cls.name!, desugaredCrossField));
       }
     }
 
