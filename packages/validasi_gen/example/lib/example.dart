@@ -32,8 +32,14 @@ class User {
   @Validate<String>([MinLength(3), MaxLength(100)])
   final String confirmEmail;
 
-  @Validate<List<String>>([MinLength(1)])
+  @Validate<List<String>>([MinLength(1), Unique()])
   final List<String> tags;
+
+  @Validate<String>([Email(), EndsWith('@example.com')])
+  final String workEmail;
+
+  @Validate<int>([Between(0, 150)])
+  final int age;
 
   final Car car;
 
@@ -49,6 +55,8 @@ class User {
     required this.username,
     required this.confirmEmail,
     required this.tags,
+    required this.workEmail,
+    required this.age,
     required this.car,
     this.spareCar,
     required this.previousCars,
