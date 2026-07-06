@@ -12,11 +12,11 @@ Future<void> main() async {
       );
     });
 
-    test('emits local \$fail closure in validate()', () {
+    test('emits a local, uniquely-named \$fail closure in validate()', () {
       expect(
         output,
         contains(
-          "final \$fail = ({required String message, List<String> path = const []}) {",
+          "\$fail_emailMustContainName = ({required String message, List<String> path = const []}) {",
         ),
       );
     });
@@ -25,7 +25,7 @@ Future<void> main() async {
       expect(
         output,
         contains(
-          'emailMustContainName(\$fail, name: name, email: email);',
+          'emailMustContainName(\$fail_emailMustContainName, name: name, email: email);',
         ),
       );
     });
@@ -34,7 +34,7 @@ Future<void> main() async {
       expect(
         output,
         contains(
-          'emailMustContainName(\$fail, name: name, email: email);',
+          'emailMustContainName(\$fail_emailMustContainName, name: name, email: email);',
         ),
       );
     });

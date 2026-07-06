@@ -100,12 +100,14 @@ class RefineMethodInfo {
   final List<String> dependsOn;
   final List<RefineParamInfo> parameters;
   final bool isAsync;
+  final String ruleName;
 
   const RefineMethodInfo({
     required this.methodName,
     required this.dependsOn,
     required this.parameters,
     required this.isAsync,
+    this.ruleName = 'Refine',
   });
 }
 

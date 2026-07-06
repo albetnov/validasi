@@ -21,7 +21,7 @@ class InlineGen extends RuleGen {
         'runOnNull': runOnNull,
       },
       message,
-      functionName: fn?.name,
+      functionName: qualifiedFunctionName(fn),
     );
   }
 

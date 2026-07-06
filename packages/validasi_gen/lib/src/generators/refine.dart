@@ -20,18 +20,28 @@ String emitRefineInvocation({
   String indent = '    ',
 }) {
   final accessors = _resolveAccessors(info, fieldAccessors, isFormContext);
-  final call = _buildCall(info, accessors, isFormContext);
+  // Each invocation gets its own uniquely-named `$fail` closure (derived from
+  // the method name) rather than sharing a single `$fail` — a method body can
+  // have multiple refines/cross-field rules, and each needs to tag errors
+  // with its own `ruleName` without colliding on a single declaration.
+  final failVar = _failVarName(info);
+  final call = _buildCall(info, accessors, isFormContext, failVar);
   final buf = StringBuffer();
-  buf.writeln('$indent final \$fail = '
+  buf.writeln('$indent final $failVar = '
       '({required String message, List<String> path = const []}) {');
   buf.writeln('$indent   \$errors.add(ValidationError(');
-  buf.writeln("$indent     rule: 'Refine',");
+  buf.writeln("$indent     rule: '${info.ruleName}',");
   buf.writeln('$indent     message: message,');
   buf.writeln('$indent     path: path.isEmpty ? null : path,');
   buf.writeln('$indent   ));');
   buf.writeln('$indent };');
   buf.writeln('$indent${isAsync ? 'await ' : ''}$call');
   return buf.toString();
+}
+
+String _failVarName(RefineMethodInfo info) {
+  final sanitized = info.methodName.replaceAll(RegExp(r'[^A-Za-z0-9]'), '_');
+  return '\$fail_$sanitized';
 }
 
 Map<String, String> _resolveAccessors(
@@ -61,6 +71,7 @@ String _buildCall(
   RefineMethodInfo info,
   Map<String, String> accessors,
   bool isFormContext,
+  String failVar,
 ) {
   final namedArgs =
       info.parameters.where((p) => accessors.containsKey(p.name)).map((p) {
@@ -69,7 +80,7 @@ String _buildCall(
   }).join(', ');
 
   if (namedArgs.isEmpty) {
-    return '${info.methodName}(\$fail);';
+    return '${info.methodName}($failVar);';
   }
-  return '${info.methodName}(\$fail, $namedArgs);';
+  return '${info.methodName}($failVar, $namedArgs);';
 }

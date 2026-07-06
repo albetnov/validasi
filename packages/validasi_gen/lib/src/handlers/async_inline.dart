@@ -22,7 +22,7 @@ class AsyncInlineGen extends RuleGen {
       },
       rule.peek('message')?.stringValue,
       isAsync: true,
-      functionName: fn?.name,
+      functionName: qualifiedFunctionName(fn),
     );
   }
 
