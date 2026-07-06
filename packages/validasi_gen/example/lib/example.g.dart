@@ -414,7 +414,7 @@ class UserCustomDataField extends UserFields<CustomDataClass?> {
     if (value == null) {
       $errors.add(_Errors.required([name]));
     }
-    if (value != null && !_validateCustomClass(value)) {
+    if (value != null && !User._validateCustomClass(value)) {
       $errors.add(
         _Errors.inline([name], 'inline', 'inline: validation failed.'),
       );
@@ -549,21 +549,26 @@ extension $UserValidasi on User {
       }
     }
     // Field: customData
-    if (customData != null && !_validateCustomClass(customData)) {
+    if (customData != null && !User._validateCustomClass(customData)) {
       $errors.add(
         _Errors.inline(['customData'], 'inline', 'inline: validation failed.'),
       );
     }
-    final $fail = ({required String message, List<String> path = const []}) {
-      $errors.add(
-        ValidationError(
-          rule: 'Refine',
-          message: message,
-          path: path.isEmpty ? null : path,
-        ),
-      );
-    };
-    emailMatchesConfirm($fail, email: email, confirmEmail: confirmEmail);
+    final $fail_emailMatchesConfirm =
+        ({required String message, List<String> path = const []}) {
+          $errors.add(
+            ValidationError(
+              rule: 'Refine',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
+    emailMatchesConfirm(
+      $fail_emailMatchesConfirm,
+      email: email,
+      confirmEmail: confirmEmail,
+    );
     if ($errors.isNotEmpty) {
       return ValidasiResult(errors: $errors, isValid: false);
     }
@@ -707,6 +712,108 @@ extension $InternalFooValidasi on InternalFoo {
       return ValidasiResult(errors: $errors, isValid: false);
     }
     return ValidasiResult(errors: const [], isValid: true, data: this);
+  }
+}
+
+extension $ContactInfoValidasi on ContactInfo {
+  ValidasiResult<ContactInfo> validate() {
+    final $errors = <ValidationError>[];
+    final $fail__ContactInfoCrossFieldRules_requiredAny_0 =
+        ({required String message, List<String> path = const []}) {
+          $errors.add(
+            ValidationError(
+              rule: 'RequiredAny',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
+    _ContactInfoCrossFieldRules.requiredAny_0(
+      $fail__ContactInfoCrossFieldRules_requiredAny_0,
+      email: email,
+      phone: phone,
+    );
+    final $fail__ContactInfoCrossFieldRules_matchesField_0 =
+        ({required String message, List<String> path = const []}) {
+          $errors.add(
+            ValidationError(
+              rule: 'MatchesField',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
+    _ContactInfoCrossFieldRules.matchesField_0(
+      $fail__ContactInfoCrossFieldRules_matchesField_0,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+    );
+    if ($errors.isNotEmpty) {
+      return ValidasiResult(errors: $errors, isValid: false);
+    }
+    return ValidasiResult(errors: const [], isValid: true, data: this);
+  }
+
+  Future<ValidasiResult<ContactInfo>> validateAsync() async {
+    final $errors = <ValidationError>[];
+    final $fail__ContactInfoCrossFieldRules_requiredAny_0 =
+        ({required String message, List<String> path = const []}) {
+          $errors.add(
+            ValidationError(
+              rule: 'RequiredAny',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
+    _ContactInfoCrossFieldRules.requiredAny_0(
+      $fail__ContactInfoCrossFieldRules_requiredAny_0,
+      email: email,
+      phone: phone,
+    );
+    final $fail__ContactInfoCrossFieldRules_matchesField_0 =
+        ({required String message, List<String> path = const []}) {
+          $errors.add(
+            ValidationError(
+              rule: 'MatchesField',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
+    _ContactInfoCrossFieldRules.matchesField_0(
+      $fail__ContactInfoCrossFieldRules_matchesField_0,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+    );
+    if ($errors.isNotEmpty) {
+      return ValidasiResult(errors: $errors, isValid: false);
+    }
+    return ValidasiResult(errors: const [], isValid: true, data: this);
+  }
+}
+
+abstract final class _ContactInfoCrossFieldRules {
+  static void requiredAny_0(FailFn fail, {Object? email, Object? phone}) {
+    final hasAny = email != null || phone != null;
+    if (!hasAny) {
+      fail(message: 'At least one of email, phone is required');
+    }
+  }
+
+  static void matchesField_0(
+    FailFn fail, {
+    Object? password,
+    Object? passwordConfirmation,
+  }) {
+    final hasField = password != null;
+    final hasMatches = passwordConfirmation != null;
+    if (hasField && hasMatches) {
+      final isEqual = password == passwordConfirmation;
+      if (!isEqual) {
+        fail(message: 'Field password must match passwordConfirmation');
+      }
+    }
   }
 }
 

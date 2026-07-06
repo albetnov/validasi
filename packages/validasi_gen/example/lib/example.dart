@@ -108,3 +108,20 @@ FutureOr<bool> _checkUsernameAvailable(String? value) async {
   await Future<void>.delayed(Duration.zero);
   return value != 'taken';
 }
+
+@ValidateClass(generateFields: false, generateSchema: false)
+@RequiredAny(['email', 'phone'])
+@MatchesField(field: 'password', matchesField: 'passwordConfirmation')
+class ContactInfo {
+  final String? email;
+  final String? phone;
+  final String? password;
+  final String? passwordConfirmation;
+
+  const ContactInfo({
+    this.email,
+    this.phone,
+    this.password,
+    this.passwordConfirmation,
+  });
+}
