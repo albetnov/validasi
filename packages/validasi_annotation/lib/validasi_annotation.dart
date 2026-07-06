@@ -41,3 +41,4 @@ export 'src/rules/not_contains.dart';
 export 'src/rules/equals.dart';
 export 'src/rules/not_equals.dart';
 export 'src/rules/having.dart';
+export 'src/rules/cross_field.dart';
