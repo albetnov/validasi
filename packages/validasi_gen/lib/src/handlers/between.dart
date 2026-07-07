@@ -26,8 +26,8 @@ class BetweenGen extends RuleGen {
   RuleInfo parse(ConstantReader rule) {
     final min = literalForConstant(rule.read('min'));
     final max = literalForConstant(rule.read('max'));
-    return RuleInfo('Between', {'min': min, 'max': max},
-        rule.peek('message')?.stringValue);
+    return RuleInfo(
+        'Between', {'min': min, 'max': max}, rule.peek('message')?.stringValue);
   }
 
   @override
@@ -35,7 +35,8 @@ class BetweenGen extends RuleGen {
     final min = info.params['min'];
     final max = info.params['max'];
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard($fieldName < $min || $fieldName > $max)';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard($expr < $min || $expr > $max)';
   }
 
   @override

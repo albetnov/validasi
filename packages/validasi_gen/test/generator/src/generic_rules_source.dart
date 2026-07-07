@@ -10,7 +10,9 @@ class GenericRulesModel {
   @Validate<String>([NotEquals('forbidden')])
   final String notEquals;
 
-  @Validate<Status>([Having([Status.active, Status.inactive])])
+  @Validate<Status>([
+    Having([Status.active, Status.inactive])
+  ])
   final Status status;
 
   const GenericRulesModel({

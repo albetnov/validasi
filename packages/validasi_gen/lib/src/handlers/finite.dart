@@ -28,7 +28,8 @@ class FiniteGen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard!$fieldName.isFinite';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard!$expr.isFinite';
   }
 
   @override

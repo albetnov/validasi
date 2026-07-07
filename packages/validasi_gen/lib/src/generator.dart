@@ -80,15 +80,13 @@ class ValidasiGenerator extends Generator {
         fields,
         includeValidateField: generateFields,
         refines: allRefines,
-        allFieldNames: cls.fields
-            .where((f) => !f.isStatic)
-            .map((f) => f.name!)
-            .toList(),
+        allFieldNames:
+            cls.fields.where((f) => !f.isStatic).map((f) => f.name!).toList(),
       ));
 
       if (shouldEmitValidateForm) {
-        buffer
-            .write(generateValidateForm(cls.name!, fields, refines: allRefines));
+        buffer.write(
+            generateValidateForm(cls.name!, fields, refines: allRefines));
       }
 
       if (desugaredCrossField.isNotEmpty) {

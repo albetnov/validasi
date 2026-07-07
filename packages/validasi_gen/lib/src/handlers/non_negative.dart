@@ -23,14 +23,14 @@ class NonNegativeGen extends RuleGen {
 
   @override
   RuleInfo parse(ConstantReader rule) {
-    return RuleInfo(
-        'NonNegative', const {}, rule.peek('message')?.stringValue);
+    return RuleInfo('NonNegative', const {}, rule.peek('message')?.stringValue);
   }
 
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName < 0';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr < 0';
   }
 
   @override

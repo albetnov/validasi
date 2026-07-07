@@ -25,14 +25,16 @@ class MoreThanGen extends RuleGen {
   @override
   RuleInfo parse(ConstantReader rule) {
     final min = literalForConstant(rule.read('min'));
-    return RuleInfo('MoreThan', {'min': min}, rule.peek('message')?.stringValue);
+    return RuleInfo(
+        'MoreThan', {'min': min}, rule.peek('message')?.stringValue);
   }
 
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final min = info.params['min'];
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName <= $min';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr <= $min';
   }
 
   @override

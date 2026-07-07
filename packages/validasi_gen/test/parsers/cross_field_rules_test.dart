@@ -66,13 +66,15 @@ void main() {
     expect(infos[1].fields, ['password', 'passwordConfirmation']);
   });
 
-  test('desugarCrossFieldRules produces a synthetic RefineMethodInfo per annotation',
+  test(
+      'desugarCrossFieldRules produces a synthetic RefineMethodInfo per annotation',
       () {
     final cls = library.getClass('Good')!;
     final infos = extractCrossFieldRules(cls);
     final desugared = desugarCrossFieldRules('Good', cls, infos);
     expect(desugared, hasLength(2));
-    expect(desugared[0].refine.methodName, '_GoodCrossFieldRules.requiredAny_0');
+    expect(
+        desugared[0].refine.methodName, '_GoodCrossFieldRules.requiredAny_0');
     expect(desugared[0].refine.ruleName, 'RequiredAny');
     expect(desugared[0].refine.dependsOn, ['email', 'phone']);
     expect(desugared[1].refine.methodName, '_GoodCrossFieldRules.dependsOn_0');
@@ -87,7 +89,8 @@ void main() {
     );
   });
 
-  test('desugarCrossFieldRules throws when two-field kinds repeat the same field',
+  test(
+      'desugarCrossFieldRules throws when two-field kinds repeat the same field',
       () {
     final cls = library.getClass('SameFieldTwice')!;
     final infos = extractCrossFieldRules(cls);
@@ -97,7 +100,8 @@ void main() {
     );
   });
 
-  test('desugarCrossFieldRules throws when a multi-field kind has fewer than 2 fields',
+  test(
+      'desugarCrossFieldRules throws when a multi-field kind has fewer than 2 fields',
       () {
     final cls = library.getClass('TooFewFields')!;
     final infos = extractCrossFieldRules(cls);

@@ -45,7 +45,7 @@ Future<void> main() async {
     });
 
     test('sync rules still emit MinLength check in validateAsync', () {
-      expect(output, contains('if (value != null && value.length < 3)'));
+      expect(output, contains('if (value != null && value!.length < 3)'));
     });
   });
 }

@@ -10,8 +10,8 @@ class EqualsGen extends RuleGen {
   @override
   RuleInfo parse(ConstantReader rule) {
     final expected = literalForConstant(rule.read('expected'));
-    return RuleInfo('Equals', {'expected': expected},
-        rule.peek('message')?.stringValue);
+    return RuleInfo(
+        'Equals', {'expected': expected}, rule.peek('message')?.stringValue);
   }
 
   @override

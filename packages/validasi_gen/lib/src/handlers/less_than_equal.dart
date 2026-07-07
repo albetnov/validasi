@@ -33,7 +33,8 @@ class LessThanEqualGen extends RuleGen {
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final max = info.params['max'];
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName > $max';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr > $max';
   }
 
   @override

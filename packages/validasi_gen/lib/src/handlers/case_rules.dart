@@ -28,7 +28,8 @@ class LowercaseGen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName != $fieldName.toLowerCase()';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr != $expr.toLowerCase()';
   }
 
   @override
@@ -79,7 +80,8 @@ class UppercaseGen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName != $fieldName.toUpperCase()';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr != $expr.toUpperCase()';
   }
 
   @override

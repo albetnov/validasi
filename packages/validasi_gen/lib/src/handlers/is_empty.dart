@@ -28,7 +28,8 @@ class IsEmptyGen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName.isNotEmpty';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr.isNotEmpty';
   }
 
   @override
@@ -79,7 +80,8 @@ class IsNotEmptyGen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName.isEmpty';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr.isEmpty';
   }
 
   @override

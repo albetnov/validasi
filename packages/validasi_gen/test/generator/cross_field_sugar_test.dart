@@ -13,9 +13,12 @@ Future<void> main() async {
     });
 
     test('generates the per-class cross-field helper class', () {
-      expect(output, contains('abstract final class _SignupFormCrossFieldRules'));
-      expect(output, contains('abstract final class _IdMigrationCrossFieldRules'));
-      expect(output, contains('abstract final class _DateRangeCrossFieldRules'));
+      expect(
+          output, contains('abstract final class _SignupFormCrossFieldRules'));
+      expect(
+          output, contains('abstract final class _IdMigrationCrossFieldRules'));
+      expect(
+          output, contains('abstract final class _DateRangeCrossFieldRules'));
     });
 
     test('DependsOn generates the presence-implies-presence check', () {
@@ -26,7 +29,8 @@ Future<void> main() async {
         ),
       );
       expect(output, contains('final hasField = password != null;'));
-      expect(output, contains('final hasDependency = passwordConfirmation != null;'));
+      expect(output,
+          contains('final hasDependency = passwordConfirmation != null;'));
       expect(output, contains('if (hasField && !hasDependency) {'));
     });
 
@@ -37,7 +41,8 @@ Future<void> main() async {
           'static void matchesField_0(FailFn fail, {Object? password, Object? passwordConfirmation}) {',
         ),
       );
-      expect(output, contains('final isEqual = password == passwordConfirmation;'));
+      expect(output,
+          contains('final isEqual = password == passwordConfirmation;'));
     });
 
     test('RequiredAny generates the at-least-one check', () {
@@ -47,7 +52,8 @@ Future<void> main() async {
           'static void requiredAny_0(FailFn fail, {Object? email, Object? phone}) {',
         ),
       );
-      expect(output, contains('final hasAny = email != null || phone != null;'));
+      expect(
+          output, contains('final hasAny = email != null || phone != null;'));
     });
 
     test('RequiredOneOf generates the exactly-one check', () {
@@ -67,7 +73,8 @@ Future<void> main() async {
           'static void requiredAll_0(FailFn fail, {Object? start, Object? end}) {',
         ),
       );
-      expect(output, contains('final anyPresent = start != null || end != null;'));
+      expect(
+          output, contains('final anyPresent = start != null || end != null;'));
     });
 
     test('MutuallyExclusive generates the not-both check', () {
@@ -99,10 +106,12 @@ Future<void> main() async {
           'password: password, passwordConfirmation: passwordConfirmation);',
         ),
       );
-      expect(output, contains('_SignupFormCrossFieldRules.dependsOn_0(\$fail_'));
+      expect(
+          output, contains('_SignupFormCrossFieldRules.dependsOn_0(\$fail_'));
     });
 
-    test('multiple cross-field rules on one class use distinct \$fail variables',
+    test(
+        'multiple cross-field rules on one class use distinct \$fail variables',
         () {
       // Regression test: emitRefineInvocation used to always declare a
       // literal `$fail`, so a class with 2+ cross-field rules (like
@@ -113,16 +122,19 @@ Future<void> main() async {
       expect(failDeclarations, greaterThanOrEqualTo(3));
     });
 
-    test('generates for a class with only cross-field sugar and no @Validate fields',
+    test(
+        'generates for a class with only cross-field sugar and no @Validate fields',
         () {
-      expect(output, contains('abstract final class _ContactOnlyCrossFieldRules'));
+      expect(
+          output, contains('abstract final class _ContactOnlyCrossFieldRules'));
       expect(
         output,
         contains(
           'static void requiredAny_0(FailFn fail, {Object? email, Object? phone}) {',
         ),
       );
-      expect(output, contains('extension \$ContactOnlyValidasi on ContactOnly'));
+      expect(
+          output, contains('extension \$ContactOnlyValidasi on ContactOnly'));
     });
   });
 }

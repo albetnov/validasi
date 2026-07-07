@@ -33,7 +33,8 @@ class MoreThanEqualGen extends RuleGen {
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final min = info.params['min'];
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName < $min';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr < $min';
   }
 
   @override

@@ -18,8 +18,8 @@ const _ipv6Pattern = r'^('
     r':((:[0-9a-fA-F]{1,4}){1,7}|:)'
     r')$';
 
-void _validateStringType(String name, FieldContext context,
-    FieldElement field, Set<FieldContext> supported) {
+void _validateStringType(String name, FieldContext context, FieldElement field,
+    Set<FieldContext> supported) {
   if (!supported.contains(context)) {
     throw InvalidGenerationSourceError(
       "$name is not supported on type '${field.type.getDisplayString()}'. "
@@ -48,7 +48,8 @@ class Ipv4Gen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard!RegExp(${escapeDartString(_ipv4Pattern)}).hasMatch($fieldName)';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard!RegExp(${escapeDartString(_ipv4Pattern)}).hasMatch($expr)';
   }
 
   @override
@@ -92,7 +93,8 @@ class Ipv6Gen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard!RegExp(${escapeDartString(_ipv6Pattern)}).hasMatch($fieldName)';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard!RegExp(${escapeDartString(_ipv6Pattern)}).hasMatch($expr)';
   }
 
   @override
@@ -136,8 +138,9 @@ class IpGen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard!RegExp(${escapeDartString(_ipv4Pattern)}).hasMatch($fieldName) && '
-        '!RegExp(${escapeDartString(_ipv6Pattern)}).hasMatch($fieldName)';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard!RegExp(${escapeDartString(_ipv4Pattern)}).hasMatch($expr) && '
+        '!RegExp(${escapeDartString(_ipv6Pattern)}).hasMatch($expr)';
   }
 
   @override
