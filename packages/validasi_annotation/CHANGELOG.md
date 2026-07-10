@@ -1,3 +1,28 @@
+## 0.1.0-dev.5
+
+### Added
+
+- Documentation comments for `@Required` and `@Nullable` annotations explaining auto-inference behavior
+
+### Changed
+
+- Cross-field validation methods must now be static (enforced via code generation)
+
+## 0.1.0-dev.4
+
+### Added
+
+- String validation annotations: `@Alpha`, `@Alphanumeric`, `@Numeric`, `@Lowercase`,
+  `@Uppercase`, `@StartsWith`, `@EndsWith`, `@Regex`, `@Ulid`, `@Uuid`, `@Url`,
+  `@Ip`, `@Ipv4`, `@Ipv6`, `@Email`, `@Contains`, `@NotContains`, `@ContainsAll`
+- Numeric validation annotations: `@Between`, `@LessThan`, `@LessThanEqual`,
+  `@MoreThan`, `@MoreThanEqual`, `@Negative`, `@NonNegative`, `@NonPositive`,
+  `@Positive`, `@Finite`
+- Iterable validation annotations: `@ExactLength`, `@IsEmpty`, `@IsNotEmpty`, `@Unique`
+- Generic validation annotations: `@Equals`, `@NotEquals`, `@Having`
+- Cross-field class-level annotations: `@RequiredAny`, `@RequiredOneOf`, `@RequiredAll`,
+  `@DependsOn`, `@MutuallyExclusive`, `@MatchesField`
+
 ## 0.1.0-dev.3
 
 ### Breaking Changes

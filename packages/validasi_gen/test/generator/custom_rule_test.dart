@@ -39,7 +39,7 @@ Future<void> main() async {
     });
 
     test('preserves built-in rule behaviour alongside custom rules', () {
-      expect(output, contains('if (value != null && value.length < 2)'));
+      expect(output, contains('if (value != null && value!.length < 2)'));
       expect(output, contains("_Errors.itMinLength("));
     });
 

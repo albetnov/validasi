@@ -16,7 +16,14 @@ class Login {
   @Validate<String>([MinLength(1)])
   final String password;
 
-  const Login({required this.username, required this.password});
+  @Validate<String?>([])
+  final String? nickname;
+
+  const Login({
+    required this.username,
+    required this.password,
+    this.nickname,
+  });
 }
 ''';
 
@@ -76,13 +83,47 @@ void main() {
       expect(
         output,
         contains(
-            "LoginFields.username.validate(ctrl.getValue(LoginFields.username))"),
+            "LoginFields.username.validate(ctrl.getValue<String>(LoginFields.username))"),
       );
       expect(
         output,
         contains(
             r"$errors.addAll($usernameResult.errors.map((e) => e..prefix('username')))"),
       );
+    });
+
+    test('nullable field getValue call carries the nullable type argument',
+        () async {
+      final output = await generateForSourceWithOption(
+        generateValidateForm: true,
+      );
+      expect(
+        output,
+        contains(
+            "LoginFields.nickname.validate(ctrl.getValue<String?>(LoginFields.nickname))"),
+      );
+    });
+
+    test('schema class auto-discovers the generated formValidator', () async {
+      final output = await generateForSourceWithOption(
+        generateValidateForm: true,
+      );
+      expect(
+        output,
+        contains('implements ValidasiFormValidatorSchema<Login>'),
+      );
+      expect(
+        output,
+        contains('get formValidator => validateForm_Login'),
+      );
+    });
+
+    test('schema class does not implement formValidator when disabled',
+        () async {
+      final output = await generateForSourceWithOption(
+        generateValidateForm: false,
+      );
+      expect(output, isNot(contains('ValidasiFormValidatorSchema')));
     });
   });
 }

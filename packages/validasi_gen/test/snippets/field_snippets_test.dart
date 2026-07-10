@@ -90,7 +90,7 @@ void main() {
       );
       final output = buf.toString();
 
-      expect(output, contains('if (val != null && val.length < 5)'));
+      expect(output, contains('if (val != null && val!.length < 5)'));
       expect(output, contains("_Errors.minLength("));
       expect(output, isNot(contains("_Errors.required(")));
     });

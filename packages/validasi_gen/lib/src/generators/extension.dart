@@ -13,6 +13,7 @@ String generateValidateExtension(
   List<FieldRules> fields, {
   bool includeValidateField = true,
   List<RefineMethodInfo> refines = const [],
+  List<String>? allFieldNames,
 }) {
   final fieldsClassName = '${className}Fields';
   final classHasAsync =
@@ -20,8 +21,12 @@ String generateValidateExtension(
 
   // Build a map of field name -> accessor expression for object-level context.
   // For object-level, the accessor is just the field name (e.g. `email`).
+  // Includes every field on the class (not just validated ones) since
+  // cross-field rules (`@RefineFn`/cross-field sugar) may reference a plain,
+  // unvalidated sibling field via `this.field`.
   final objectAccessors = <String, String>{
-    for (final ctx in fields) ctx.field.name!: ctx.field.name!,
+    for (final name in allFieldNames ?? fields.map((f) => f.field.name!))
+      name: name,
   };
 
   final ext = Extension((e) {

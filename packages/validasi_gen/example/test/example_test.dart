@@ -14,6 +14,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -28,6 +30,8 @@ void main() {
         username: 'validuser',
         confirmEmail: 'ab',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -46,6 +50,8 @@ void main() {
         username: 'validuser',
         confirmEmail: longEmail,
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -63,6 +69,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: [],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -81,6 +89,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['a', 'b'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -96,6 +106,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'T', model: 'Camry'),
         previousCars: [],
       );
@@ -112,6 +124,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'C'),
         previousCars: [],
       );
@@ -128,6 +142,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'T', model: 'C'),
         previousCars: [],
       );
@@ -149,6 +165,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         spareCar: null,
         previousCars: [],
@@ -163,6 +181,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         spareCar: Car(make: 'T', model: 'C'),
         previousCars: [],
@@ -185,6 +205,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -198,6 +220,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [
           Car(make: 'Honda', model: 'Civic'),
@@ -214,6 +238,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [
           Car(make: 'H', model: 'Civic'),
@@ -233,6 +259,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [
           Car(make: 'Honda', model: 'Civic'),
@@ -253,6 +281,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [
           Car(make: 'H', model: 'Civic'),
@@ -279,6 +309,8 @@ void main() {
         username: 'validuser',
         confirmEmail: 'ab',
         tags: [],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'T', model: 'Camry'),
         spareCar: Car(make: 'Toyota', model: 'C'),
         previousCars: [
@@ -335,6 +367,8 @@ void main() {
         username: 'validuser',
         confirmEmail: 'valid@example.com',
         tags: ['x'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: const [],
       );
@@ -349,6 +383,8 @@ void main() {
         username: 'okuser',
         confirmEmail: 'ok@ok.com',
         tags: ['x'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: const [],
       );
@@ -364,6 +400,8 @@ void main() {
         username: 'okuser',
         confirmEmail: 'ok@ok.com',
         tags: ['x'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'T', model: 'M'),
         previousCars: const [],
       );
@@ -398,6 +436,8 @@ void main() {
         username: 'okuser',
         confirmEmail: 'ok@ok.com',
         tags: ['x'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [Car(make: 'H', model: 'Civic')],
       );
@@ -418,14 +458,19 @@ void main() {
             UserUsernameField() => 'username',
             UserConfirmEmailField() => 'confirmEmail',
             UserTagsField() => 'tags',
+            UserWorkEmailField() => 'workEmail',
+            UserAgeField() => 'age',
             UserCarField() => 'car',
             UserSpareCarField() => 'spareCar',
             UserPreviousCarsField() => 'previousCars',
+            UserCustomDataField() => 'customData',
           };
       expect(label(UserFields.email), 'email');
       expect(label(UserFields.username), 'username');
       expect(label(UserFields.confirmEmail), 'confirmEmail');
       expect(label(UserFields.tags), 'tags');
+      expect(label(UserFields.workEmail), 'workEmail');
+      expect(label(UserFields.age), 'age');
       expect(label(UserFields.car), 'car');
       expect(label(UserFields.spareCar), 'spareCar');
       expect(label(UserFields.previousCars), 'previousCars');
@@ -449,6 +494,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -462,6 +509,8 @@ void main() {
         username: 'taken',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -480,6 +529,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -492,6 +543,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -536,6 +589,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'test@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );
@@ -549,6 +604,8 @@ void main() {
         username: 'testuser',
         confirmEmail: 'other@example.com',
         tags: ['dart'],
+        workEmail: 'user@example.com',
+        age: 30,
         car: Car(make: 'Toyota', model: 'Camry'),
         previousCars: [],
       );

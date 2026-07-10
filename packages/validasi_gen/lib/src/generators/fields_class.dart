@@ -44,7 +44,7 @@ String generateFieldsClass(
       leafClassNames[fieldName] = leafName;
       final staticType = ctx.dartTypeDisplay;
       c.fields.add(Field((f) {
-        f.name = fieldName;
+        f.name = ctx.accessorName;
         f.modifier = FieldModifier.constant;
         f.static = true;
         f.type = refer('$fieldsClassName<$staticType>');

@@ -1,3 +1,52 @@
+## 0.1.0-dev.6
+
+### Fixed
+
+- Null safety checks in validation handlers: handlers now use null assertion operators (`!`) where appropriate when nullable fields are checked, ensuring proper code generation for nullable field types
+
+## 0.1.0-dev.5
+
+### Added
+
+- Auto-discovery of `formValidator` methods in generated schema classes
+- Async validation support for individual fields with coordinated submit handling
+- Static method requirement enforcement for cross-field validation
+
+### Changed
+
+- Name collision prevention: static accessors and helper methods now suffixed with underscores
+- Enhanced type safety by adding type arguments to `getValue` calls
+
+## 0.1.0-dev.4
+
+### Added
+
+- Codegen handlers for all new validation annotations: string (Alpha, Alphanumeric,
+  Numeric, Lowercase, Uppercase, StartsWith, EndsWith, Regex, Ulid, Uuid, Url, Ip,
+  Ipv4, Ipv6, Email, Contains), numeric (Between, LessThan, LessThanEqual,
+  MoreThan, MoreThanEqual, Negative, NonNegative, NonPositive, Positive, Finite),
+  iterable (ExactLength, IsEmpty, IsNotEmpty, Unique, ContainsAll, NotContains),
+  and generic (Equals, NotEquals, Having)
+- Cross-field annotation codegen — class-level annotations (`@RequiredAny`,
+  `@RequiredOneOf`, `@RequiredAll`, `@DependsOn`, `@MutuallyExclusive`,
+  `@MatchesField`) desugar into synthetic emit-fn methods via
+  `CrossFieldSugarGenerator`
+- `CrossFieldRuleParser` for extracting cross-field rules from class-level annotations
+- All fields (not just validated ones) are included in the validate extension for
+  cross-field access
+
+### Changed
+
+- `RefineMethodInfo` now includes `ruleName` field for per-rule error tagging
+- Generated `$fail` closures use unique names per refine method to avoid collisions
+- Inline and async_inline handlers use `qualifiedFunctionName()` to correctly
+  qualify static method references
+
+### Fixed
+
+- Inline rule codegen now correctly qualifies static method names with the
+  enclosing class (e.g. `User._validateCustomClass` instead of `_validateCustomClass`)
+
 ## 0.1.0-dev.3
 
 ### Breaking Changes

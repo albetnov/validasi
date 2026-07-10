@@ -5,10 +5,25 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi_ui/src/controller/controller.dart';
 import 'package:validasi_ui/src/models/validation_mode.dart';
 
-typedef SubmitHandler<T> = VoidCallback Function(void Function(T) onSubmit);
+/// Callable submit handle passed to [ValidasiForm]'s builder.
+///
+/// `submit(onSubmit)` behaves exactly like the old sync-only
+/// `SubmitHandler<T>` function it replaces (Dart invokes a `call()`-defining
+/// class with function-call syntax), while `submit.async(onSubmit)` exposes
+/// the async submit path without growing the builder's parameter list.
+class ValidasiSubmit<T> {
+  final ValidasiFormController<T> _controller;
+  const ValidasiSubmit(this._controller);
+
+  VoidCallback call(void Function(T) onSubmit) => _controller.submit(onSubmit);
+
+  Future<void> Function() async(void Function(T) onSubmit) =>
+      _controller.submitAsync(onSubmit);
+}
 
 class ValidasiForm<T> extends StatefulWidget {
-  final Widget Function(BuildContext context, SubmitHandler<T> submit) builder;
+  final Widget Function(BuildContext context, ValidasiSubmit<T> submit)
+      builder;
   final ValidasiFormController<T>? controller;
   final ValidasiSchema<T> schema;
   final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?
@@ -84,7 +99,7 @@ class _FormState<T> extends State<ValidasiForm<T>> {
       mode: widget.mode,
       reValidateMode: widget.reValidateMode,
       shouldUnregister: widget.shouldUnregister,
-      child: widget.builder(context, _controller.submit),
+      child: widget.builder(context, ValidasiSubmit<T>(_controller)),
     );
   }
 }

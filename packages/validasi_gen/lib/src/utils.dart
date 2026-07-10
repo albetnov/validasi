@@ -57,6 +57,21 @@ String escapeDartString(String value) {
   return "'${value.replaceAll("\\", "\\\\").replaceAll("'", "\\'").replaceAll("\n", "\\n").replaceAll("\$", "\\\$")}'";
 }
 
+/// Returns the Dart expression that calls [fn] from generated code.
+///
+/// A top-level function can be called by its bare name, but a static method
+/// tear-off (e.g. a `static bool check(...)` on some class) must be qualified
+/// with its enclosing class name — bare `check(...)` from outside that class
+/// does not resolve, even though the reference is otherwise valid Dart.
+String? qualifiedFunctionName(ExecutableElement? fn) {
+  if (fn == null) return null;
+  final enclosing = fn.enclosingElement;
+  if (enclosing is ClassElement) {
+    return '${enclosing.name}.${fn.name}';
+  }
+  return fn.name;
+}
+
 String literalForConstant(ConstantReader reader) {
   final type = reader.objectValue.type;
   if (reader.isNull) return 'null';

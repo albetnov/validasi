@@ -89,17 +89,17 @@ class _FormFieldState<T, V> extends State<ValidasiFormField<T, V>> {
                   final effectiveReMode = widget.reValidateMode ?? formReMode;
                   if (isSubmitted) {
                     if (effectiveReMode == ReValidationMode.onChange) {
-                      controller.validateField<V>(widget.field);
+                      controller.validateFieldAsync<V>(widget.field);
                     }
                   } else {
                     final effectiveMode = widget.mode ?? formMode;
                     if (effectiveMode == ValidationMode.onChange) {
-                      controller.validateField<V>(widget.field);
+                      controller.validateFieldAsync<V>(widget.field);
                     }
                   }
                   controller.triggerAsyncValidation(widget.field);
                 },
-          validate: () => controller.validateField<V>(widget.field),
+          validate: () => controller.validateFieldAsync<V>(widget.field),
           onFocusChange: widget.disabled
               ? null
               : (hasFocus) {
@@ -110,13 +110,13 @@ class _FormFieldState<T, V> extends State<ValidasiFormField<T, V>> {
                     final effectiveReMode = widget.reValidateMode ?? formReMode;
                     if (isSubmitted) {
                       if (effectiveReMode == ReValidationMode.onBlur) {
-                        controller.validateField<V>(widget.field);
+                        controller.validateFieldAsync<V>(widget.field);
                       }
                       return;
                     }
                     final effectiveMode = widget.mode ?? formMode;
                     if (effectiveMode == ValidationMode.onBlur) {
-                      controller.validateField<V>(widget.field);
+                      controller.validateFieldAsync<V>(widget.field);
                     }
                   }
                 },

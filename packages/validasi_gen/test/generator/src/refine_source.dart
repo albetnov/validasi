@@ -11,7 +11,7 @@ class Registration {
   const Registration({required this.name, required this.email});
 
   @RefineFn(dependsOn: ['name', 'email'])
-  void emailMustContainName(
+  static void emailMustContainName(
     FailFn fail, {
     String? name,
     String? email,

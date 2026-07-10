@@ -22,7 +22,7 @@ String generateValidateForm(
     final type = ctx.field.type.getDisplayString();
     final nullableType = type.endsWith('?') ? type : '$type?';
     formAccessors[name] =
-        'ctrl.getValue($fieldsClassName.$name) as $nullableType';
+        'ctrl.getValue($fieldsClassName.${ctx.accessorName}) as $nullableType';
   }
 
   final fn = Method((m) {
@@ -102,13 +102,13 @@ void _generateFormFieldBody(
       if (isNullable) {
         final localVar = '\$${fieldName}Value';
         buf.writeln(
-            'final $localVar = ctrl.getValue($fieldsClassName.$fieldName) as List<${ctx.nestedClassName}>?;');
+            'final $localVar = ctrl.getValue($fieldsClassName.${ctx.accessorName}) as List<${ctx.nestedClassName}>?;');
         buf.writeln('if ($localVar != null) {');
         generateBody(localVar);
         buf.writeln('}');
       } else {
         buf.writeln(
-            'final ${'\$${fieldName}List'} = ctrl.getValue($fieldsClassName.$fieldName) as List<${ctx.nestedClassName}>;');
+            'final ${'\$${fieldName}List'} = ctrl.getValue($fieldsClassName.${ctx.accessorName}) as List<${ctx.nestedClassName}>;');
         generateBody('\$${fieldName}List');
       }
     } else {
@@ -117,7 +117,7 @@ void _generateFormFieldBody(
       if (isNullable) {
         final localVar = '\$${fieldName}Value';
         buf.writeln(
-            'final $localVar = ctrl.getValue($fieldsClassName.$fieldName) as ${ctx.nestedClassName}?;');
+            'final $localVar = ctrl.getValue($fieldsClassName.${ctx.accessorName}) as ${ctx.nestedClassName}?;');
         buf.writeln('if ($localVar != null) {');
         buf.writeln(
             'final $resultVar = $awaitKw$localVar.$validateCall($castCtrl);');
@@ -128,7 +128,7 @@ void _generateFormFieldBody(
         buf.writeln('}');
       } else {
         buf.writeln(
-            'final $resultVar = $awaitKw(ctrl.getValue($fieldsClassName.$fieldName) as ${ctx.nestedClassName}).$validateCall($castCtrl);');
+            'final $resultVar = $awaitKw(ctrl.getValue($fieldsClassName.${ctx.accessorName}) as ${ctx.nestedClassName}).$validateCall($castCtrl);');
         buf.writeln('if (!$resultVar.isValid) {');
         buf.writeln(
             '\$errors.addAll($resultVar.errors.map((e) => e..prefix(\'$fieldName\')));');
@@ -146,7 +146,7 @@ void _generateFormFieldBody(
   buf.writeln('// Field: $fieldName');
   buf.writeln('{');
   buf.writeln(
-      'final $resultVar = $awaitKw$fieldsClassName.$fieldName.$validateMethod(ctrl.getValue($fieldsClassName.$fieldName));');
+      'final $resultVar = $awaitKw$fieldsClassName.${ctx.accessorName}.$validateMethod(ctrl.getValue<${ctx.dartTypeDisplay}>($fieldsClassName.${ctx.accessorName}));');
   buf.writeln('if (!$resultVar.isValid) {');
   buf.writeln(
       '\$errors.addAll($resultVar.errors.map((e) => e..prefix(\'$fieldName\')));');

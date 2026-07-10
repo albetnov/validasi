@@ -24,6 +24,14 @@ bool _fieldErrorsEqual(List<FieldError> a, List<FieldError> b) {
   return true;
 }
 
+/// Implemented by a generated schema class when `generateValidateForm` is
+/// enabled, so [ValidasiFormController] can auto-discover the generated
+/// `validateForm_X` cross-field validator without it being passed explicitly.
+abstract interface class ValidasiFormValidatorSchema<T> {
+  FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)
+      get formValidator;
+}
+
 class ValidasiFormController<T> extends ChangeNotifier
     with WatchMixin<T>
     implements ValidasiFieldReader<T> {
@@ -60,8 +68,12 @@ class ValidasiFormController<T> extends ChangeNotifier
 
   ValidasiFormController({
     required this.schema,
-    this.formValidator,
-  }) {
+    FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?
+        formValidator,
+  }) : formValidator = formValidator ??
+            (schema is ValidasiFormValidatorSchema<T>
+                ? (schema as ValidasiFormValidatorSchema<T>).formValidator
+                : null) {
     final ctx = ValidasiControllerContext<T>._(this);
     _asyncCoordinator = ValidasiAsyncCoordinator<T>(ctx);
     _arrayRegistry = ValidasiArrayRegistry<T>(ctx, this);
@@ -507,6 +519,29 @@ class ValidasiFormController<T> extends ChangeNotifier
     final fc = getFieldController(field);
     if (fc.disabled) return true;
     final result = field.validate(fc.value);
+    _applyErrors(field, result.errors);
+    syncFieldErrors();
+    notifyListeners();
+    return result.isValid;
+  }
+
+  /// Async-safe, cross-field-aware counterpart to [validateField].
+  ///
+  /// Used internally for per-field revalidation triggers (onChange/onBlur),
+  /// where the caller can't know in advance whether the field's rules are
+  /// async or whether cross-field/refine rules depend on it. Falls back to
+  /// the full [formValidator] when one is set, since it already re-validates
+  /// every field's own rules plus cross-field rules together — the only way
+  /// to correctly revalidate a dependent field (e.g. confirmPassword when
+  /// password changes).
+  Future<bool> validateFieldAsync<V>(ValidasiField<T, V> field) async {
+    _throwIfDisposed();
+    final fc = getFieldController(field);
+    if (fc.disabled) return true;
+    if (formValidator != null) {
+      return validateAsync();
+    }
+    final result = await field.validateAsync(fc.value);
     _applyErrors(field, result.errors);
     syncFieldErrors();
     notifyListeners();

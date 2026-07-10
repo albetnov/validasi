@@ -5,8 +5,9 @@ DartEmitter get _emitter => DartEmitter(allocator: Allocator.none);
 
 String generateSchemaClass(
   String className,
-  List<FieldRules> allFields,
-) {
+  List<FieldRules> allFields, {
+  bool implementFormValidator = false,
+}) {
   final fieldsClassName = '${className}Fields';
   final schemaClassName = '_${className}Schema';
 
@@ -17,13 +18,16 @@ String generateSchemaClass(
     final fieldName = f.field.name!;
     final typeName = f.dartTypeDisplay;
     body.writeln(
-        '$fieldName: reader.getValue($fieldsClassName.$fieldName) as $typeName,');
+        '$fieldName: reader.getValue($fieldsClassName.${f.accessorName}) as $typeName,');
   }
   body.write(');');
 
   final schemaClass = Class((c) {
     c.name = schemaClassName;
     c.extend = refer('ValidasiSchema<$className>');
+    if (implementFormValidator) {
+      c.implements.add(refer('ValidasiFormValidatorSchema<$className>'));
+    }
     c.constructors.add(Constructor((con) {
       con.constant = true;
     }));
@@ -38,6 +42,16 @@ String generateSchemaClass(
       }));
       m.body = Code(body.toString());
     }));
+
+    if (implementFormValidator) {
+      c.methods.add(Method((m) {
+        m.name = 'formValidator';
+        m.type = MethodType.getter;
+        m.annotations.add(refer('override'));
+        m.lambda = true;
+        m.body = refer('validateForm_$className').code;
+      }));
+    }
   });
 
   final buf = StringBuffer();

@@ -32,8 +32,14 @@ class User {
   @Validate<String>([MinLength(3), MaxLength(100)])
   final String confirmEmail;
 
-  @Validate<List<String>>([MinLength(1)])
+  @Validate<List<String>>([MinLength(1), Unique()])
   final List<String> tags;
+
+  @Validate<String>([Email(), EndsWith('@example.com')])
+  final String workEmail;
+
+  @Validate<int>([Between(0, 150)])
+  final int age;
 
   final Car car;
 
@@ -49,6 +55,8 @@ class User {
     required this.username,
     required this.confirmEmail,
     required this.tags,
+    required this.workEmail,
+    required this.age,
     required this.car,
     this.spareCar,
     required this.previousCars,
@@ -64,7 +72,7 @@ class User {
   }
 
   @RefineFn(dependsOn: ['email', 'confirmEmail'])
-  void emailMatchesConfirm(
+  static void emailMatchesConfirm(
     FailFn fail, {
     String? email,
     String? confirmEmail,
@@ -99,4 +107,21 @@ class InternalFoo {
 FutureOr<bool> _checkUsernameAvailable(String? value) async {
   await Future<void>.delayed(Duration.zero);
   return value != 'taken';
+}
+
+@ValidateClass(generateFields: false, generateSchema: false)
+@RequiredAny(['email', 'phone'])
+@MatchesField(field: 'password', matchesField: 'passwordConfirmation')
+class ContactInfo {
+  final String? email;
+  final String? phone;
+  final String? password;
+  final String? passwordConfirmation;
+
+  const ContactInfo({
+    this.email,
+    this.phone,
+    this.password,
+    this.passwordConfirmation,
+  });
 }

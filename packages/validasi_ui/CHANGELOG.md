@@ -1,3 +1,11 @@
+## 0.1.0-dev.5
+
+### Added
+
+- Auto-discovery of `formValidator` methods in generated schema classes
+- Async validation support for individual fields with coordinated submit handling
+- Static method requirement enforcement for cross-field validation
+
 ## 0.1.0-dev.4
 
 ### Breaking Changes

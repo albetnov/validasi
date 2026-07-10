@@ -1,6 +1,6 @@
 name: validasi_annotation
 description: Annotations for Validasi - used to trigger code generation.
-version: 0.1.0-dev.3
+version: 0.1.0-dev.5
 repository: https://github.com/albetnov/validasi
 homepage: https://albetnov.github.io/validasi
 
