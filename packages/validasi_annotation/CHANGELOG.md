@@ -1,3 +1,13 @@
+## 0.1.0-dev.5
+
+### Added
+
+- Documentation comments for `@Required` and `@Nullable` annotations explaining auto-inference behavior
+
+### Changed
+
+- Cross-field validation methods must now be static (enforced via code generation)
+
 ## 0.1.0-dev.4
 
 ### Added
