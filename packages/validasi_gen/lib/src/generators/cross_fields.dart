@@ -17,7 +17,7 @@ String generateSchemaClass(
     final fieldName = f.field.name!;
     final typeName = f.dartTypeDisplay;
     body.writeln(
-        '$fieldName: reader.getValue($fieldsClassName.$fieldName) as $typeName,');
+        '$fieldName: reader.getValue($fieldsClassName.${f.accessorName}) as $typeName,');
   }
   body.write(');');
 

@@ -57,6 +57,8 @@ For every class annotated with `@ValidateClass`, the generator emits (into `*.g.
 | `X assemble_X(ValidasiFormController<X> ctrl)` | when `generateAssemble: true` | Materialise a `X` from a form controller. |
 | `ValidasiResult<X> validateForm_X(ValidasiFormController<X> ctrl)` | when `generateValidateForm: true` | Form-aware validation that reads per-field values and runs refines. |
 
+A field named `name`, `extract`, `validate`, or `validateAsync` would collide with the identically-named instance member `XFields<V>` inherits from `FieldDescriptor`/`ValidasiField` — a class can't declare both a static and instance member sharing a name. For those field names only, the generator suffixes the static accessor with an underscore (e.g. `XFields.name_`) to dodge the collision; the field's runtime `.name` still reports its real, unmangled name.
+
 ## Build options
 
 Set in the downstream package's `build.yaml`:

@@ -31,7 +31,7 @@ Future<void> main() async {
       expect(
           output,
           contains(
-              'static const SimpleFields<String> name = SimpleNameField();'));
+              'static const SimpleFields<String> name_ = SimpleNameField();'));
     });
 
     test('generates leaf class with name and extract', () {
@@ -57,7 +57,8 @@ Future<void> main() async {
               'static const ValidasiSchema<Simple> schema = _SimpleSchema();'));
       expect(output,
           contains('class _SimpleSchema extends ValidasiSchema<Simple>'));
-      expect(output, contains('reader.getValue(SimpleFields.name) as String,'));
+      expect(
+          output, contains('reader.getValue(SimpleFields.name_) as String,'));
     });
 
     test('generates validate extension', () {
@@ -84,7 +85,7 @@ Future<void> main() async {
       expect(
           output,
           contains(
-              'static const MixedFields<String> name = MixedNameField();'));
+              'static const MixedFields<String> name_ = MixedNameField();'));
       expect(
           output,
           contains(

@@ -45,6 +45,10 @@ bool? readGenerateSchemaOverride(ClassElement cls) {
   return null;
 }
 
+/// Instance members declared by `FieldDescriptor`/`ValidasiField` that a
+/// field's generated static const accessor must not collide with.
+const _reservedFieldAccessorNames = {'name', 'extract', 'validate', 'validateAsync'};
+
 class FieldRules {
   final FieldElement field;
   final List<RuleInfo> rules;
@@ -65,6 +69,19 @@ class FieldRules {
   bool get hasAsyncRule => rules.any((r) => r.isAsync);
 
   String get dartTypeDisplay => field.type.getDisplayString();
+
+  /// The Dart identifier used for this field's static const singleton on
+  /// the generated `XFields<V>` class. A field literally named `name` (or
+  /// `extract`/`validate`/`validateAsync`) would collide with the instance
+  /// member of the same name required by `FieldDescriptor`/`ValidasiField`
+  /// (a class can't declare both a static and instance member sharing a
+  /// name) — so those get a trailing underscore to dodge the collision.
+  /// The field's runtime `.name` getter is unaffected; only this generated
+  /// identifier changes.
+  String get accessorName =>
+      _reservedFieldAccessorNames.contains(field.name)
+          ? '${field.name}_'
+          : field.name!;
 
   /// True when the Dart type itself enforces non-null (e.g. `String`, not `String?`).
   /// Returns false for `dynamic` and `Object?` since nullability can't be reliably inferred.
