@@ -103,5 +103,27 @@ void main() {
             "LoginFields.nickname.validate(ctrl.getValue<String?>(LoginFields.nickname))"),
       );
     });
+
+    test('schema class auto-discovers the generated formValidator', () async {
+      final output = await generateForSourceWithOption(
+        generateValidateForm: true,
+      );
+      expect(
+        output,
+        contains('implements ValidasiFormValidatorSchema<Login>'),
+      );
+      expect(
+        output,
+        contains('get formValidator => validateForm_Login'),
+      );
+    });
+
+    test('schema class does not implement formValidator when disabled',
+        () async {
+      final output = await generateForSourceWithOption(
+        generateValidateForm: false,
+      );
+      expect(output, isNot(contains('ValidasiFormValidatorSchema')));
+    });
   });
 }

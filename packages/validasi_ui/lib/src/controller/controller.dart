@@ -24,6 +24,14 @@ bool _fieldErrorsEqual(List<FieldError> a, List<FieldError> b) {
   return true;
 }
 
+/// Implemented by a generated schema class when `generateValidateForm` is
+/// enabled, so [ValidasiFormController] can auto-discover the generated
+/// `validateForm_X` cross-field validator without it being passed explicitly.
+abstract interface class ValidasiFormValidatorSchema<T> {
+  FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)
+      get formValidator;
+}
+
 class ValidasiFormController<T> extends ChangeNotifier
     with WatchMixin<T>
     implements ValidasiFieldReader<T> {
@@ -60,8 +68,12 @@ class ValidasiFormController<T> extends ChangeNotifier
 
   ValidasiFormController({
     required this.schema,
-    this.formValidator,
-  }) {
+    FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?
+        formValidator,
+  }) : formValidator = formValidator ??
+            (schema is ValidasiFormValidatorSchema<T>
+                ? (schema as ValidasiFormValidatorSchema<T>).formValidator
+                : null) {
     final ctx = ValidasiControllerContext<T>._(this);
     _asyncCoordinator = ValidasiAsyncCoordinator<T>(ctx);
     _arrayRegistry = ValidasiArrayRegistry<T>(ctx, this);

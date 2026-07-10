@@ -113,6 +113,19 @@ class User {
 
 The method must be `static` — the generator calls it via a fully-qualified static reference (`ClassName.methodName(...)`) from both `validate()`/`validateAsync()` and `validateForm_X(ctrl)`, passing field values as named arguments (`ctrl.getValue(...)` in the form case). Return `Future<void>` for async refines — the generator detects it and inserts `await`.
 
+### Wiring `validateForm_X` into `ValidasiForm`
+
+When both `generateSchema` (on by default) and `generateValidateForm` are `true`, the generated schema class implements `ValidasiFormValidatorSchema<X>` and `ValidasiFormController`/`ValidasiForm` auto-discover `validateForm_X` from `schema:` alone — no need to also pass `formValidator:`:
+
+```dart
+ValidasiForm<User>(
+  schema: UserSchema(), // validateForm_User is picked up automatically
+  builder: ...,
+)
+```
+
+Pass `formValidator:` explicitly only if you hand-write your schema (`generateSchema: false`) or want to override the generated one.
+
 ## See also
 
 - `ARCH.md` — full pipeline walkthrough, file-by-file map, and extension guide.

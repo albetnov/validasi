@@ -71,7 +71,11 @@ class ValidasiGenerator extends Generator {
           generateSchema: generateSchema,
         ));
         if (generateSchema) {
-          buffer.write(generateSchemaClass(cls.name!, fields));
+          buffer.write(generateSchemaClass(
+            cls.name!,
+            fields,
+            implementFormValidator: shouldEmitValidateForm,
+          ));
         }
       }
 

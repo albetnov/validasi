@@ -86,6 +86,22 @@ Future<ValidasiResult<_Model>> _asyncFormValidator(
   return _formValidator(ctrl);
 }
 
+const _autoValidatedSchema = _ModelSchemaWithAutoValidator();
+
+class _ModelSchemaWithAutoValidator extends ValidasiSchema<_Model>
+    implements ValidasiFormValidatorSchema<_Model> {
+  const _ModelSchemaWithAutoValidator();
+  @override
+  _Model allocate(ValidasiFieldReader<_Model> reader) => _Model(
+        name: reader.getValue(const _NameField()) ?? '',
+        email: reader.getValue(const _EmailField()) ?? '',
+      );
+
+  @override
+  FutureOr<ValidasiResult<_Model>> Function(ValidasiFormController<_Model>)
+      get formValidator => _formValidator;
+}
+
 ValidasiFormController<_Model> _makeController({
   FutureOr<ValidasiResult<_Model>> Function(ValidasiFormController<_Model>)?
       formValidator,
@@ -351,6 +367,46 @@ void main() {
       // Refine error on email should NOT appear from validateField
       // (refine only runs via formValidator in validate())
       expect(controller.getErrors(emailField), isEmpty);
+    });
+  });
+
+  group('formValidator auto-discovery from schema', () {
+    test('controller picks up formValidator from schema when not passed',
+        () {
+      final controller = ValidasiFormController(schema: _autoValidatedSchema);
+      expect(controller.formValidator, isNotNull);
+    });
+
+    test('explicit formValidator argument still wins over schema', () {
+      var explicitCalled = false;
+      final controller = ValidasiFormController(
+        schema: _autoValidatedSchema,
+        formValidator: (ctrl) {
+          explicitCalled = true;
+          return const ValidasiResult(errors: [], isValid: true);
+        },
+      );
+
+      controller.validate();
+      expect(explicitCalled, isTrue);
+    });
+
+    test('revalidates a dependent field without passing formValidator',
+        () async {
+      final controller = ValidasiFormController(schema: _autoValidatedSchema);
+      const nameField = _NameField();
+      const emailField = _EmailField();
+
+      controller.register(nameField);
+      controller.register(emailField);
+      controller.setValue(nameField, 'Alice');
+      controller.setValue(emailField, 'bob@example.com');
+
+      await controller.validateFieldAsync(nameField);
+
+      expect(controller.getErrors(emailField), hasLength(1));
+      expect(controller.getErrors(emailField).first.message,
+          'Email must contain name');
     });
   });
 
