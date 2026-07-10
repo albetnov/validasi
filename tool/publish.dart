@@ -494,7 +494,7 @@ Future<void> main(List<String> args) async {
         stdout.writeln(entry.body);
         final releaseUrl = Uri.https('github.com', '/albetnov/validasi/releases/new', {
           'tag': tag,
-          'title': '$name ${pkg.version}',
+          'title': '$name-v${pkg.version}',
           'body': entry.body,
         });
         stdout.writeln('\nCreate the GitHub release here:\n$releaseUrl');

@@ -1,11 +1,5 @@
 ## 0.1.0-dev.6
 
-### Fixed
-
-- Null safety checks in validation handlers: handlers now use null assertion operators (`!`) where appropriate when nullable fields are checked, ensuring proper code generation for nullable field types
-
-## 0.1.0-dev.5
-
 ### Added
 
 - Auto-discovery of `formValidator` methods in generated schema classes
@@ -16,6 +10,12 @@
 
 - Name collision prevention: static accessors and helper methods now suffixed with underscores
 - Enhanced type safety by adding type arguments to `getValue` calls
+
+## 0.1.0-dev.5
+
+### Fixed
+
+- Update null safey checks in validatoin handlers to avoid cannot be promoted error
 
 ## 0.1.0-dev.4
 
