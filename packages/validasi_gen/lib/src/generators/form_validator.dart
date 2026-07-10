@@ -146,7 +146,7 @@ void _generateFormFieldBody(
   buf.writeln('// Field: $fieldName');
   buf.writeln('{');
   buf.writeln(
-      'final $resultVar = $awaitKw$fieldsClassName.$fieldName.$validateMethod(ctrl.getValue($fieldsClassName.$fieldName));');
+      'final $resultVar = $awaitKw$fieldsClassName.$fieldName.$validateMethod(ctrl.getValue<${ctx.dartTypeDisplay}>($fieldsClassName.$fieldName));');
   buf.writeln('if (!$resultVar.isValid) {');
   buf.writeln(
       '\$errors.addAll($resultVar.errors.map((e) => e..prefix(\'$fieldName\')));');
