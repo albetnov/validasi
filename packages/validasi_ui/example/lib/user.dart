@@ -23,7 +23,7 @@ class User {
   });
 
   @RefineFn(dependsOn: ['name', 'email'])
-  void emailDoesNotStartWithName(
+  static void emailDoesNotStartWithName(
     FailFn fail, {
     String? name,
     String? email,

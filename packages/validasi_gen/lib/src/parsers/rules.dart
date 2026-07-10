@@ -143,11 +143,19 @@ List<RefineMethodInfo> extractRefineMethods(ClassElement element) {
   final result = <RefineMethodInfo>[];
 
   for (final method in element.methods) {
-    if (method.isStatic) continue;
     if (method.name == null) continue;
 
     final annotation = _findRefineFn(method);
     if (annotation == null) continue;
+
+    if (!method.isStatic) {
+      throw InvalidGenerationSourceError(
+        '@RefineFn method "${method.name}" on ${element.name} must be '
+        'static (e.g. "static void ${method.name}(FailFn fail, {...})") so '
+        'it can be called from both validate() and '
+        'validateForm_${element.name}(ctrl).',
+      );
+    }
 
     final dependsOn = _readDependsOnList(annotation);
     final parameters = method.formalParameters
@@ -157,7 +165,7 @@ List<RefineMethodInfo> extractRefineMethods(ClassElement element) {
     final isAsync = _isAsyncMethod(method);
 
     result.add(RefineMethodInfo(
-      methodName: method.name!,
+      methodName: '${element.name}.${method.name}',
       dependsOn: dependsOn,
       parameters: parameters,
       isAsync: isAsync,

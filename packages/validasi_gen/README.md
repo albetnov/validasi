@@ -89,7 +89,7 @@ class Internal { ... }
 
 ## Refine (cross-field validation)
 
-For object- or form-level rules that span multiple fields, mark a method with `@RefineFn(dependsOn: [...])`. The method receives a `FailFn` as its first positional argument and named parameters matching the field names in `dependsOn`:
+For object- or form-level rules that span multiple fields, mark a `static` method with `@RefineFn(dependsOn: [...])`. The method receives a `FailFn` as its first positional argument and named parameters matching the field names in `dependsOn`:
 
 ```dart
 class User {
@@ -97,7 +97,7 @@ class User {
   final String confirmEmail;
 
   @RefineFn(dependsOn: ['email', 'confirmEmail'])
-  void emailsMatch(
+  static void emailsMatch(
     FailFn fail, {
     String? email,
     String? confirmEmail,
@@ -109,7 +109,7 @@ class User {
 }
 ```
 
-The generator wires the method into both `validate()` (using `this`) and `validateForm_X(ctrl)` (using `ctrl.getValue(...)`). Return `Future<void>` for async refines — the generator detects it and inserts `await`.
+The method must be `static` — the generator calls it via a fully-qualified static reference (`ClassName.methodName(...)`) from both `validate()`/`validateAsync()` and `validateForm_X(ctrl)`, passing field values as named arguments (`ctrl.getValue(...)` in the form case). Return `Future<void>` for async refines — the generator detects it and inserts `await`.
 
 ## See also
 

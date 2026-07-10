@@ -16,7 +16,7 @@ Future<void> main() async {
       expect(
         output,
         contains(
-          "\$fail_emailMustContainName = ({required String message, List<String> path = const []}) {",
+          "\$fail_Registration_emailMustContainName = ({required String message, List<String> path = const []}) {",
         ),
       );
     });
@@ -25,7 +25,7 @@ Future<void> main() async {
       expect(
         output,
         contains(
-          'emailMustContainName(\$fail_emailMustContainName, name: name, email: email);',
+          'Registration.emailMustContainName(\$fail_Registration_emailMustContainName, name: name, email: email);',
         ),
       );
     });
@@ -34,7 +34,7 @@ Future<void> main() async {
       expect(
         output,
         contains(
-          'emailMustContainName(\$fail_emailMustContainName, name: name, email: email);',
+          'Registration.emailMustContainName(\$fail_Registration_emailMustContainName, name: name, email: email);',
         ),
       );
     });

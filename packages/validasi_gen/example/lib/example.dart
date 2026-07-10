@@ -72,7 +72,7 @@ class User {
   }
 
   @RefineFn(dependsOn: ['email', 'confirmEmail'])
-  void emailMatchesConfirm(
+  static void emailMatchesConfirm(
     FailFn fail, {
     String? email,
     String? confirmEmail,

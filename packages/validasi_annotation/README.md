@@ -11,7 +11,7 @@ Class-level marker that triggers code generation. Both parameters are `bool?` â€
 Field-level declarative rule list. The named constructors narrow the rule type for type-safe usage.
 
 ### `@RefineFn(dependsOn: ['field1', 'field2'])`
-Class-level marker for cross-field validation. Placed on an instance method on the class. The method receives a `FailFn` callback as its first positional parameter, followed by named parameters matching the field names in `dependsOn`. Async is detected from the return type (`Future<void>` = async).
+Class-level marker for cross-field validation. Placed on a `static` method on the class â€” the method must be `static` because the generator calls it via a fully-qualified reference (`ClassName.methodName(...)`) from both the instance-level `validate()`/`validateAsync()` extension and the top-level `validateForm_X(ctrl)` function, so it can't rely on an implicit instance receiver. The method receives a `FailFn` callback as its first positional parameter, followed by named parameters matching the field names in `dependsOn`. Async is detected from the return type (`Future<void>` = async).
 
 ```dart
 class User {
@@ -19,7 +19,7 @@ class User {
   final String email;
 
   @RefineFn(dependsOn: ['name', 'email'])
-  void emailMatchesName(FailFn fail, {String? name, String? email}) {
+  static void emailMatchesName(FailFn fail, {String? name, String? email}) {
     if (email != null && name != null && !email.contains(name)) {
       fail(message: 'Email must contain name', path: ['email']);
     }

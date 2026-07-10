@@ -42,10 +42,10 @@ class UserEmailField extends UserFields<String> {
     if (value == null) {
       $errors.add(_Errors.required([name]));
     }
-    if (value != null && value.length < 3) {
+    if (value != null && value!.length < 3) {
       $errors.add(_Errors.minLength([name], 3));
     }
-    if (value != null && value.length > 100) {
+    if (value != null && value!.length > 100) {
       $errors.add(_Errors.maxLength([name], 100));
     }
     if (value != null && !NoSpaces.check(value)) {
@@ -89,10 +89,10 @@ class UserUsernameField extends UserFields<String> {
     if (value == null) {
       $errors.add(_Errors.required([name]));
     }
-    if (value != null && value.length < 3) {
+    if (value != null && value!.length < 3) {
       $errors.add(_Errors.minLength([name], 3));
     }
-    if (value != null && value.length > 100) {
+    if (value != null && value!.length > 100) {
       $errors.add(_Errors.maxLength([name], 100));
     }
     try {
@@ -123,10 +123,10 @@ class UserConfirmEmailField extends UserFields<String> {
     if (value == null) {
       $errors.add(_Errors.required([name]));
     }
-    if (value != null && value.length < 3) {
+    if (value != null && value!.length < 3) {
       $errors.add(_Errors.minLength([name], 3));
     }
-    if (value != null && value.length > 100) {
+    if (value != null && value!.length > 100) {
       $errors.add(_Errors.maxLength([name], 100));
     }
     return _Result.from($errors, value);
@@ -153,10 +153,10 @@ class UserTagsField extends UserFields<List<String>> {
     if (value == null) {
       $errors.add(_Errors.required([name]));
     }
-    if (value != null && value.length < 1) {
+    if (value != null && value!.length < 1) {
       $errors.add(_Errors.itMinLength([name], 1));
     }
-    if (value != null && value.toSet().length != value.length) {
+    if (value != null && value!.toSet().length != value!.length) {
       $errors.add(_Errors.unique([name]));
     }
     return _Result.from($errors, value);
@@ -187,7 +187,7 @@ class UserWorkEmailField extends UserFields<String> {
     }
     if (value != null &&
         (() {
-          final v = value;
+          final v = value!;
           final at = v.lastIndexOf('@');
           if (at <= 0 || at == v.length - 1) return true;
           final local = v.substring(0, at);
@@ -200,7 +200,8 @@ class UserWorkEmailField extends UserFields<String> {
           if (domain.isEmpty || domain.length > 255) return true;
           if (!RegExp(
             '^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\$',
-          ).hasMatch(domain)) return true;
+          ).hasMatch(domain))
+            return true;
           final labels = domain.split('.');
           if (!false && labels.length < 2) return true;
           for (final label in labels) {
@@ -213,7 +214,7 @@ class UserWorkEmailField extends UserFields<String> {
         })()) {
       $errors.add(_Errors.email([name]));
     }
-    if (value != null && !value.endsWith('@example.com')) {
+    if (value != null && !value!.endsWith('@example.com')) {
       $errors.add(_Errors.endsWith([name], '@example.com'));
     }
     return _Result.from($errors, value);
@@ -240,7 +241,7 @@ class UserAgeField extends UserFields<int> {
     if (value == null) {
       $errors.add(_Errors.required([name]));
     }
-    if (value != null && (value < 0 || value > 150)) {
+    if (value != null && (value! < 0 || value! > 150)) {
       $errors.add(_Errors.between([name], 0, 150));
     }
     return _Result.from($errors, value);
@@ -353,9 +354,11 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
       );
     }
     final $errors = <ValidationError>[];
-    for (var $previousCarsIndex = 0;
-        $previousCarsIndex < value.length;
-        $previousCarsIndex++) {
+    for (
+      var $previousCarsIndex = 0;
+      $previousCarsIndex < value.length;
+      $previousCarsIndex++
+    ) {
       final $previousCarsItem = value[$previousCarsIndex];
       final $previousCarsResult = $previousCarsItem.validate();
       if (!$previousCarsResult.isValid) {
@@ -377,9 +380,11 @@ class UserPreviousCarsField extends UserFields<List<Car>> {
       );
     }
     final $errors = <ValidationError>[];
-    for (var $previousCarsIndex = 0;
-        $previousCarsIndex < value.length;
-        $previousCarsIndex++) {
+    for (
+      var $previousCarsIndex = 0;
+      $previousCarsIndex < value.length;
+      $previousCarsIndex++
+    ) {
       final $previousCarsItem = value[$previousCarsIndex];
       final $previousCarsResult = await $previousCarsItem.validateAsync();
       if (!$previousCarsResult.isValid) {
@@ -491,7 +496,8 @@ extension $UserValidasi on User {
       if (domain.isEmpty || domain.length > 255) return true;
       if (!RegExp(
         '^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\$',
-      ).hasMatch(domain)) return true;
+      ).hasMatch(domain))
+        return true;
       final labels = domain.split('.');
       if (!false && labels.length < 2) return true;
       for (final label in labels) {
@@ -527,9 +533,11 @@ extension $UserValidasi on User {
       }
     }
     // Field: previousCars (nested Car)
-    for (var $previousCarsIndex = 0;
-        $previousCarsIndex < previousCars.length;
-        $previousCarsIndex++) {
+    for (
+      var $previousCarsIndex = 0;
+      $previousCarsIndex < previousCars.length;
+      $previousCarsIndex++
+    ) {
       final $previousCarsItem = previousCars[$previousCarsIndex];
       final $previousCarsItemResult = await $previousCarsItem.validateAsync();
       if (!$previousCarsItemResult.isValid) {
@@ -546,18 +554,18 @@ extension $UserValidasi on User {
         _Errors.inline(['customData'], 'inline', 'inline: validation failed.'),
       );
     }
-    final $fail_emailMatchesConfirm =
+    final $fail_User_emailMatchesConfirm =
         ({required String message, List<String> path = const []}) {
-      $errors.add(
-        ValidationError(
-          rule: 'Refine',
-          message: message,
-          path: path.isEmpty ? null : path,
-        ),
-      );
-    };
-    emailMatchesConfirm(
-      $fail_emailMatchesConfirm,
+          $errors.add(
+            ValidationError(
+              rule: 'Refine',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
+    User.emailMatchesConfirm(
+      $fail_User_emailMatchesConfirm,
       email: email,
       confirmEmail: confirmEmail,
     );
@@ -600,7 +608,7 @@ class CarMakeField extends CarFields<String> {
     if (value == null) {
       $errors.add(_Errors.required([name]));
     }
-    if (value != null && value.length < 2) {
+    if (value != null && value!.length < 2) {
       $errors.add(_Errors.minLength([name], 2));
     }
     return _Result.from($errors, value);
@@ -627,7 +635,7 @@ class CarModelField extends CarFields<String> {
     if (value == null) {
       $errors.add(_Errors.required([name]));
     }
-    if (value != null && value.length < 2) {
+    if (value != null && value!.length < 2) {
       $errors.add(_Errors.minLength([name], 2));
     }
     return _Result.from($errors, value);
@@ -712,14 +720,14 @@ extension $ContactInfoValidasi on ContactInfo {
     final $errors = <ValidationError>[];
     final $fail__ContactInfoCrossFieldRules_requiredAny_0 =
         ({required String message, List<String> path = const []}) {
-      $errors.add(
-        ValidationError(
-          rule: 'RequiredAny',
-          message: message,
-          path: path.isEmpty ? null : path,
-        ),
-      );
-    };
+          $errors.add(
+            ValidationError(
+              rule: 'RequiredAny',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
     _ContactInfoCrossFieldRules.requiredAny_0(
       $fail__ContactInfoCrossFieldRules_requiredAny_0,
       email: email,
@@ -727,14 +735,14 @@ extension $ContactInfoValidasi on ContactInfo {
     );
     final $fail__ContactInfoCrossFieldRules_matchesField_0 =
         ({required String message, List<String> path = const []}) {
-      $errors.add(
-        ValidationError(
-          rule: 'MatchesField',
-          message: message,
-          path: path.isEmpty ? null : path,
-        ),
-      );
-    };
+          $errors.add(
+            ValidationError(
+              rule: 'MatchesField',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
     _ContactInfoCrossFieldRules.matchesField_0(
       $fail__ContactInfoCrossFieldRules_matchesField_0,
       password: password,
@@ -750,14 +758,14 @@ extension $ContactInfoValidasi on ContactInfo {
     final $errors = <ValidationError>[];
     final $fail__ContactInfoCrossFieldRules_requiredAny_0 =
         ({required String message, List<String> path = const []}) {
-      $errors.add(
-        ValidationError(
-          rule: 'RequiredAny',
-          message: message,
-          path: path.isEmpty ? null : path,
-        ),
-      );
-    };
+          $errors.add(
+            ValidationError(
+              rule: 'RequiredAny',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
     _ContactInfoCrossFieldRules.requiredAny_0(
       $fail__ContactInfoCrossFieldRules_requiredAny_0,
       email: email,
@@ -765,14 +773,14 @@ extension $ContactInfoValidasi on ContactInfo {
     );
     final $fail__ContactInfoCrossFieldRules_matchesField_0 =
         ({required String message, List<String> path = const []}) {
-      $errors.add(
-        ValidationError(
-          rule: 'MatchesField',
-          message: message,
-          path: path.isEmpty ? null : path,
-        ),
-      );
-    };
+          $errors.add(
+            ValidationError(
+              rule: 'MatchesField',
+              message: message,
+              path: path.isEmpty ? null : path,
+            ),
+          );
+        };
     _ContactInfoCrossFieldRules.matchesField_0(
       $fail__ContactInfoCrossFieldRules_matchesField_0,
       password: password,
@@ -821,44 +829,40 @@ abstract final class _Errors {
     List<String> path,
     int length, {
     String? message,
-  }) =>
-      ValidationError(
-        rule: 'MinLength',
-        message: message ?? 'Minimum length is $length characters',
-        details: {'length': '$length'},
-        path: path,
-      );
+  }) => ValidationError(
+    rule: 'MinLength',
+    message: message ?? 'Minimum length is $length characters',
+    details: {'length': '$length'},
+    path: path,
+  );
 
   static ValidationError maxLength(
     List<String> path,
     int length, {
     String? message,
-  }) =>
-      ValidationError(
-        rule: 'MaxLength',
-        message: message ?? 'Maximum length is $length characters',
-        details: {'length': '$length'},
-        path: path,
-      );
+  }) => ValidationError(
+    rule: 'MaxLength',
+    message: message ?? 'Maximum length is $length characters',
+    details: {'length': '$length'},
+    path: path,
+  );
 
   static ValidationError inline(
     List<String> path,
     String rule,
     String message,
-  ) =>
-      ValidationError(rule: rule, message: message, path: path);
+  ) => ValidationError(rule: rule, message: message, path: path);
 
   static ValidationError itMinLength(
     List<String> path,
     int length, {
     String? message,
-  }) =>
-      ValidationError(
-        rule: 'MinLength',
-        message: message ?? 'List must have at least $length items',
-        details: {'length': '$length'},
-        path: path,
-      );
+  }) => ValidationError(
+    rule: 'MinLength',
+    message: message ?? 'List must have at least $length items',
+    details: {'length': '$length'},
+    path: path,
+  );
 
   static ValidationError unique(List<String> path, {String? message}) =>
       ValidationError(
@@ -878,32 +882,30 @@ abstract final class _Errors {
     List<String> path,
     String suffix, {
     String? message,
-  }) =>
-      ValidationError(
-        rule: 'EndsWith',
-        message: message ?? 'Must end with "$suffix"',
-        details: {'suffix': suffix},
-        path: path,
-      );
+  }) => ValidationError(
+    rule: 'EndsWith',
+    message: message ?? 'Must end with "$suffix"',
+    details: {'suffix': suffix},
+    path: path,
+  );
 
   static ValidationError between(
     List<String> path,
     num min,
     num max, {
     String? message,
-  }) =>
-      ValidationError(
-        rule: 'Between',
-        message: message ?? 'Value must be between $min and $max',
-        path: path,
-      );
+  }) => ValidationError(
+    rule: 'Between',
+    message: message ?? 'Value must be between $min and $max',
+    path: path,
+  );
 }
 
 abstract final class _Result {
   static ValidasiResult<T> from<T>(List<ValidationError> errors, T? value) =>
       errors.isEmpty
-          ? ValidasiResult(errors: const [], isValid: true, data: value)
-          : ValidasiResult(errors: errors, isValid: false);
+      ? ValidasiResult(errors: const [], isValid: true, data: value)
+      : ValidasiResult(errors: errors, isValid: false);
 
   static ValidasiResult<T> invalidSingle<T>(ValidationError error) =>
       ValidasiResult(errors: [error], isValid: false);
