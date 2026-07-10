@@ -14,7 +14,9 @@ class IterableRulesModel {
   @Validate<List<String>>([Unique()])
   final List<String> unique;
 
-  @Validate<List<String>>([ContainsAll(['a', 'b'])])
+  @Validate<List<String>>([
+    ContainsAll(['a', 'b'])
+  ])
   final List<String> containsAll;
 
   @Validate<List<String>>([NotContains('x')])

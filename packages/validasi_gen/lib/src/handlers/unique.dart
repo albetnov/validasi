@@ -28,7 +28,8 @@ class UniqueGen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName.toSet().length != $fieldName.length';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr.toSet().length != $expr.length';
   }
 
   @override

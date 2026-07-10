@@ -32,7 +32,8 @@ class RegexGen extends RuleGen {
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final pattern = info.params['pattern'] as String;
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard!RegExp(${escapeDartString(pattern)}).hasMatch($fieldName)';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard!RegExp(${escapeDartString(pattern)}).hasMatch($expr)';
   }
 
   @override

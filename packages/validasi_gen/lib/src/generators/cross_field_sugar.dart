@@ -104,8 +104,8 @@ String _bodyFor(CrossFieldRuleInfo info) {
       buf.writeln('    final hasAny = $checks;');
       buf.writeln('    if (!hasAny) {');
       buf.writeln('      fail(message: ${messageArg ?? escapeDartString(
-        'At least one of ${info.fields.join(', ')} is required',
-      )});');
+            'At least one of ${info.fields.join(', ')} is required',
+          )});');
       buf.writeln('    }');
     case 'RequiredOneOf':
       buf.writeln('    var presentCount = 0;');
@@ -114,8 +114,8 @@ String _bodyFor(CrossFieldRuleInfo info) {
       }
       buf.writeln('    if (presentCount != 1) {');
       buf.writeln('      fail(message: ${messageArg ?? escapeDartString(
-        'Exactly one of the following fields must be present: ${info.fields.join(', ')}',
-      )});');
+            'Exactly one of the following fields must be present: ${info.fields.join(', ')}',
+          )});');
       buf.writeln('    }');
     case 'RequiredAll':
       final anyChecks = info.fields.map((f) => '$f != null').join(' || ');
@@ -125,8 +125,8 @@ String _bodyFor(CrossFieldRuleInfo info) {
       buf.writeln('      final missingAny = $missingChecks;');
       buf.writeln('      if (missingAny) {');
       buf.writeln('        fail(message: ${messageArg ?? escapeDartString(
-        'All fields must be present: ${info.fields.join(', ')}',
-      )});');
+            'All fields must be present: ${info.fields.join(', ')}',
+          )});');
       buf.writeln('      }');
       buf.writeln('    }');
     case 'DependsOn':
@@ -136,8 +136,8 @@ String _bodyFor(CrossFieldRuleInfo info) {
       buf.writeln('    final hasDependency = $dependsOn != null;');
       buf.writeln('    if (hasField && !hasDependency) {');
       buf.writeln('      fail(message: ${messageArg ?? escapeDartString(
-        'Field $field requires $dependsOn',
-      )});');
+            'Field $field requires $dependsOn',
+          )});');
       buf.writeln('    }');
     case 'MutuallyExclusive':
       final a = info.fields[0];
@@ -146,8 +146,8 @@ String _bodyFor(CrossFieldRuleInfo info) {
       buf.writeln('    final hasB = $b != null;');
       buf.writeln('    if (hasA && hasB) {');
       buf.writeln('      fail(message: ${messageArg ?? escapeDartString(
-        'Fields $a and $b cannot both be present',
-      )});');
+            'Fields $a and $b cannot both be present',
+          )});');
       buf.writeln('    }');
     case 'MatchesField':
       final field = info.fields[0];
@@ -158,8 +158,8 @@ String _bodyFor(CrossFieldRuleInfo info) {
       buf.writeln('      final isEqual = $field == $matches;');
       buf.writeln('      if (!isEqual) {');
       buf.writeln('        fail(message: ${messageArg ?? escapeDartString(
-        'Field $field must match $matches',
-      )});');
+            'Field $field must match $matches',
+          )});');
       buf.writeln('      }');
       buf.writeln('    }');
   }

@@ -32,7 +32,8 @@ class EndsWithGen extends RuleGen {
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final suffix = info.params['suffix'] as String;
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard!$fieldName.endsWith(${escapeDartString(suffix)})';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard!$expr.endsWith(${escapeDartString(suffix)})';
   }
 
   @override

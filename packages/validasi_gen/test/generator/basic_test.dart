@@ -44,9 +44,9 @@ Future<void> main() async {
     });
 
     test('generates validate with MinLength and MaxLength checks', () {
-      expect(output, contains('if (value != null && value.length < 2)'));
+      expect(output, contains('if (value != null && value!.length < 2)'));
       expect(output, contains("_Errors.minLength("));
-      expect(output, contains('if (value != null && value.length > 50)'));
+      expect(output, contains('if (value != null && value!.length > 50)'));
       expect(output, contains("_Errors.maxLength("));
     });
 

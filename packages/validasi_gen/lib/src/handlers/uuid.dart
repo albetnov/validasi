@@ -41,8 +41,9 @@ class UuidGen extends RuleGen {
     final versionsLiteral = '[${versions.join(', ')}]';
     final guard = nullable ? '$fieldName != null && ' : '';
     final patternLiteral = escapeDartString(_pattern);
-    return '$guard(!RegExp($patternLiteral, caseSensitive: false).hasMatch($fieldName) || '
-        '!$versionsLiteral.contains(int.parse(RegExp($patternLiteral, caseSensitive: false).firstMatch($fieldName)!.group(1)!, radix: 16)))';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard(!RegExp($patternLiteral, caseSensitive: false).hasMatch($expr) || '
+        '!$versionsLiteral.contains(int.parse(RegExp($patternLiteral, caseSensitive: false).firstMatch($expr)!.group(1)!, radix: 16)))';
   }
 
   @override
@@ -62,13 +63,12 @@ class UuidGen extends RuleGen {
 
   @override
   Map<String, String> get helperMethods => {
-        'uuid':
-            "static ValidationError uuid(List<String> path, List<int> versions, {String? message}) =>\n"
-                '      ValidationError(\n'
-                "        rule: 'Uuid',\n"
-                "        message: message ?? 'Must be a valid UUID (v\${versions.join(\"/v\")})',\n"
-                "        details: {'versions': versions.join(', ')},\n"
-                '        path: path,\n'
-                '      );',
+        'uuid': "static ValidationError uuid(List<String> path, List<int> versions, {String? message}) =>\n"
+            '      ValidationError(\n'
+            "        rule: 'Uuid',\n"
+            "        message: message ?? 'Must be a valid UUID (v\${versions.join(\"/v\")})',\n"
+            "        details: {'versions': versions.join(', ')},\n"
+            '        path: path,\n'
+            '      );',
       };
 }

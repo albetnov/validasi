@@ -25,18 +25,18 @@ Future<void> main() async {
   });
 
   test('generates Between check', () {
-    expect(output, contains('< 1 || value > 10'));
+    expect(output, contains('< 1 || value! > 10'));
     expect(output, contains('_Errors.between('));
   });
 
   test('generates LessThan/LessThanEqual checks', () {
-    expect(output, contains('value >= 10'));
-    expect(output, contains('value > 10'));
+    expect(output, contains('value! >= 10'));
+    expect(output, contains('value! > 10'));
   });
 
   test('generates MoreThan/MoreThanEqual checks', () {
-    expect(output, contains('value <= 1'));
-    expect(output, contains('value < 1'));
+    expect(output, contains('value! <= 1'));
+    expect(output, contains('value! < 1'));
   });
 
   test('generates Negative/NonNegative/NonPositive/Positive checks', () {
@@ -47,7 +47,7 @@ Future<void> main() async {
   });
 
   test('generates Finite check', () {
-    expect(output, contains('!value.isFinite'));
+    expect(output, contains('!value!.isFinite'));
     expect(output, contains('_Errors.finite('));
   });
 }

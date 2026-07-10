@@ -67,8 +67,9 @@ class EmailGen extends RuleGen {
         ? ''
         : '    if (!${'[${domains.map(escapeDartString).join(', ')}]'}.contains(domain.toLowerCase())) return true;\n';
 
+    final expr = nullable ? '$fieldName!' : fieldName;
     final body = '(() {\n'
-        '    final v = $fieldName;\n'
+        '    final v = $expr;\n'
         "    final at = v.lastIndexOf('@');\n"
         '    if (at <= 0 || at == v.length - 1) return true;\n'
         '    final local = v.substring(0, at);\n'

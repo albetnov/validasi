@@ -52,7 +52,8 @@ class ContainsAllGen extends RuleGen {
     final elements = info.params['elements'] as List<String>;
     final elementsLiteral = '[${elements.join(', ')}]';
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard!$elementsLiteral.every($fieldName.contains)';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard!$elementsLiteral.every($expr.contains)';
   }
 
   @override

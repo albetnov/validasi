@@ -25,14 +25,16 @@ class LessThanGen extends RuleGen {
   @override
   RuleInfo parse(ConstantReader rule) {
     final max = literalForConstant(rule.read('max'));
-    return RuleInfo('LessThan', {'max': max}, rule.peek('message')?.stringValue);
+    return RuleInfo(
+        'LessThan', {'max': max}, rule.peek('message')?.stringValue);
   }
 
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final max = info.params['max'];
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName >= $max';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr >= $max';
   }
 
   @override

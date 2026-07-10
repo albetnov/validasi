@@ -17,14 +17,14 @@ void main() {
         final info = RuleInfo('MaxLength', {'length': 5}, null);
         final condition = gen.check(info, 'fieldName');
 
-        expect(condition, equals('fieldName != null && fieldName.length > 5'));
+        expect(condition, equals('fieldName != null && fieldName!.length > 5'));
       });
 
       test('generates correct condition for iterable', () {
         final info = RuleInfo('MaxLength', {'length': 3}, null);
         final condition = gen.check(info, 'items');
 
-        expect(condition, equals('items != null && items.length > 3'));
+        expect(condition, equals('items != null && items!.length > 3'));
       });
     });
 

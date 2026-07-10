@@ -32,7 +32,8 @@ class StartsWithGen extends RuleGen {
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final prefix = info.params['prefix'] as String;
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard!$fieldName.startsWith(${escapeDartString(prefix)})';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard!$expr.startsWith(${escapeDartString(prefix)})';
   }
 
   @override

@@ -25,8 +25,8 @@ class NotContainsGen extends RuleGen {
   @override
   RuleInfo parse(ConstantReader rule) {
     final value = _literal(rule.read('value'));
-    return RuleInfo('NotContains', {'value': value},
-        rule.peek('message')?.stringValue);
+    return RuleInfo(
+        'NotContains', {'value': value}, rule.peek('message')?.stringValue);
   }
 
   String _literal(ConstantReader reader) {
@@ -47,7 +47,8 @@ class NotContainsGen extends RuleGen {
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final value = info.params['value'] as String;
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName.contains($value)';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr.contains($value)';
   }
 
   @override

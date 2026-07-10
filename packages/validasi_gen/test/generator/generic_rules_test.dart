@@ -35,8 +35,7 @@ Future<void> main() async {
   });
 
   test('generates Having check without null guard', () {
-    expect(
-        output, contains('![Status.active, Status.inactive].contains('));
+    expect(output, contains('![Status.active, Status.inactive].contains('));
     expect(output, contains('_Errors.having('));
   });
 }

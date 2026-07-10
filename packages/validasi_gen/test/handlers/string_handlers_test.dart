@@ -25,7 +25,7 @@ void main() {
     test('check guards on null and matches pattern', () {
       final info = RuleInfo('Alpha', const {}, null);
       expect(gen.check(info, 'v'),
-          r"v != null && !RegExp('^[a-zA-Z]+\$').hasMatch(v)");
+          r"v != null && !RegExp('^[a-zA-Z]+\$').hasMatch(v!)");
     });
     test('helperMethods provides alpha', () {
       expect(gen.helperMethods.keys, contains('alpha'));
@@ -37,7 +37,7 @@ void main() {
     test('check', () {
       final info = RuleInfo('Alphanumeric', const {}, null);
       expect(gen.check(info, 'v'),
-          r"v != null && !RegExp('^[a-zA-Z0-9]+\$').hasMatch(v)");
+          r"v != null && !RegExp('^[a-zA-Z0-9]+\$').hasMatch(v!)");
     });
   });
 
@@ -46,7 +46,7 @@ void main() {
     test('check', () {
       final info = RuleInfo('Numeric', const {}, null);
       expect(gen.check(info, 'v'),
-          r"v != null && !RegExp('^[0-9]+\$').hasMatch(v)");
+          r"v != null && !RegExp('^[0-9]+\$').hasMatch(v!)");
     });
   });
 
@@ -54,12 +54,12 @@ void main() {
     test('Lowercase check', () {
       final info = RuleInfo('Lowercase', const {}, null);
       expect(LowercaseGen().check(info, 'v'),
-          'v != null && v != v.toLowerCase()');
+          'v != null && v! != v!.toLowerCase()');
     });
     test('Uppercase check', () {
       final info = RuleInfo('Uppercase', const {}, null);
       expect(UppercaseGen().check(info, 'v'),
-          'v != null && v != v.toUpperCase()');
+          'v != null && v! != v!.toUpperCase()');
     });
   });
 
@@ -67,14 +67,16 @@ void main() {
     test('StartsWith check and emitError', () {
       final gen = StartsWithGen();
       final info = RuleInfo('StartsWith', {'prefix': 'foo'}, null);
-      expect(gen.check(info, 'v'), "v != null && !v.startsWith('foo')");
-      expect(gen.emitError(info, "['f']", ''), "_Errors.startsWith(['f'], 'foo')");
+      expect(gen.check(info, 'v'), "v != null && !v!.startsWith('foo')");
+      expect(
+          gen.emitError(info, "['f']", ''), "_Errors.startsWith(['f'], 'foo')");
     });
     test('EndsWith check and emitError', () {
       final gen = EndsWithGen();
       final info = RuleInfo('EndsWith', {'suffix': 'bar'}, null);
-      expect(gen.check(info, 'v'), "v != null && !v.endsWith('bar')");
-      expect(gen.emitError(info, "['f']", ''), "_Errors.endsWith(['f'], 'bar')");
+      expect(gen.check(info, 'v'), "v != null && !v!.endsWith('bar')");
+      expect(
+          gen.emitError(info, "['f']", ''), "_Errors.endsWith(['f'], 'bar')");
     });
   });
 
@@ -84,7 +86,7 @@ void main() {
       final info = RuleInfo('Regex', {'pattern': r'^[a-z]+$'}, null);
       final result = gen.check(info, 'v');
       expect(result, contains('RegExp('));
-      expect(result, contains('.hasMatch(v)'));
+      expect(result, contains('.hasMatch(v!)'));
     });
   });
 
@@ -99,9 +101,14 @@ void main() {
   group('UuidGen', () {
     test('check validates pattern and extracted version', () {
       final gen = UuidGen();
-      final info = RuleInfo('Uuid', {'versions': [4, 7]}, null);
+      final info = RuleInfo(
+          'Uuid',
+          {
+            'versions': [4, 7]
+          },
+          null);
       final result = gen.check(info, 'v');
-      expect(result, contains('firstMatch(v)!.group(1)!'));
+      expect(result, contains('firstMatch(v!)!.group(1)!'));
       expect(result, contains('[4, 7].contains('));
     });
   });
@@ -109,7 +116,8 @@ void main() {
   group('UrlGen', () {
     test('check validates scheme and host by default', () {
       final gen = UrlGen();
-      final info = RuleInfo('Url',
+      final info = RuleInfo(
+          'Url',
           {'requireScheme': true, 'requireHost': true, 'httpsOnly': false},
           null);
       final result = gen.check(info, 'v');
@@ -120,7 +128,8 @@ void main() {
     });
     test('check enforces httpsOnly when set', () {
       final gen = UrlGen();
-      final info = RuleInfo('Url',
+      final info = RuleInfo(
+          'Url',
           {'requireScheme': true, 'requireHost': true, 'httpsOnly': true},
           null);
       expect(gen.check(info, 'v'), contains("!= 'https'"));
@@ -146,11 +155,14 @@ void main() {
   group('EmailGen', () {
     test('check builds an IIFE validating local/domain parts', () {
       final gen = EmailGen();
-      final info = RuleInfo('Email', {
-        'allowTopLevelDomain': false,
-        'allowInternational': false,
-        'domains': null,
-      }, null);
+      final info = RuleInfo(
+          'Email',
+          {
+            'allowTopLevelDomain': false,
+            'allowInternational': false,
+            'domains': null,
+          },
+          null);
       final result = gen.check(info, 'v');
       expect(result, contains("lastIndexOf('@')"));
       expect(result, contains('local.length > 64'));
@@ -158,11 +170,14 @@ void main() {
     });
     test('check adds domain allow-list when provided', () {
       final gen = EmailGen();
-      final info = RuleInfo('Email', {
-        'allowTopLevelDomain': false,
-        'allowInternational': false,
-        'domains': ['example.com'],
-      }, null);
+      final info = RuleInfo(
+          'Email',
+          {
+            'allowTopLevelDomain': false,
+            'allowInternational': false,
+            'domains': ['example.com'],
+          },
+          null);
       expect(gen.check(info, 'v'), contains("'example.com'"));
     });
   });

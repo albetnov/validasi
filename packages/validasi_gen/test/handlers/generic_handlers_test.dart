@@ -17,9 +17,12 @@ void main() {
   });
 
   test('HavingGen check ignores nullable guard (runs on null too)', () {
-    final info = RuleInfo('Having', {
-      'validValues': ["'a'", "'b'"]
-    }, null);
+    final info = RuleInfo(
+        'Having',
+        {
+          'validValues': ["'a'", "'b'"]
+        },
+        null);
     expect(HavingGen().check(info, 'v', nullable: true),
         "!['a', 'b'].contains(v)");
   });

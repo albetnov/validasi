@@ -45,7 +45,8 @@ class MinLengthGen extends RuleGen {
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final length = info.params['length'] as int;
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard$fieldName.length < $length';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard$expr.length < $length';
   }
 
   @override

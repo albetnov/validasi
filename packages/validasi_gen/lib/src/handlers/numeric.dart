@@ -31,7 +31,8 @@ class NumericGen extends RuleGen {
   @override
   String check(RuleInfo info, String fieldName, {bool nullable = true}) {
     final guard = nullable ? '$fieldName != null && ' : '';
-    return '$guard!RegExp(${escapeDartString(_pattern)}).hasMatch($fieldName)';
+    final expr = nullable ? '$fieldName!' : fieldName;
+    return '$guard!RegExp(${escapeDartString(_pattern)}).hasMatch($expr)';
   }
 
   @override
