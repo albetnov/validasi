@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:validasi/validasi.dart';
 import 'package:validasi_ui/validasi_ui.dart';
@@ -352,4 +353,118 @@ void main() {
       expect(controller.getErrors(emailField), isEmpty);
     });
   });
+
+  group('validateFieldAsync with formValidator', () {
+    test('revalidates a dependent field via formValidator', () async {
+      final controller = _makeController(formValidator: _formValidator);
+      const nameField = _NameField();
+      const emailField = _EmailField();
+
+      controller.register(nameField);
+      controller.register(emailField);
+      controller.setValue(nameField, 'Alice');
+      controller.setValue(emailField, 'bob@example.com');
+      await controller.validateFieldAsync(nameField);
+
+      // Refine error appears on the dependent field (email), even though
+      // only nameField's revalidation was triggered.
+      expect(controller.getErrors(emailField), hasLength(1));
+      expect(controller.getErrors(emailField).first.message,
+          'Email must contain name');
+
+      // Fixing the value that email depends on (name) clears the refine
+      // error on email, again triggered only via nameField.
+      controller.setValue(nameField, 'bob');
+      await controller.validateFieldAsync(nameField);
+      expect(controller.getErrors(emailField), isEmpty);
+    });
+
+    test('async formValidator revalidates dependent field too', () async {
+      final controller = _makeController(formValidator: _asyncFormValidator);
+      const nameField = _NameField();
+      const emailField = _EmailField();
+
+      controller.register(nameField);
+      controller.register(emailField);
+      controller.setValue(nameField, 'Alice');
+      controller.setValue(emailField, 'bob@example.com');
+
+      final result = await controller.validateFieldAsync(nameField);
+      expect(result, isFalse);
+      expect(controller.getErrors(emailField), hasLength(1));
+    });
+  });
+
+  group('validateFieldAsync without formValidator', () {
+    test('behaves like validateField but async-safe', () async {
+      final controller = _makeController();
+      const nameField = _NameField();
+      controller.register(nameField, initialValue: '');
+
+      final result = await controller.validateFieldAsync(nameField);
+      expect(result, isFalse);
+      expect(controller.getErrors(nameField).length, 1);
+    });
+
+    test('does not throw for a field with an async rule', () async {
+      final controller = ValidasiFormController(schema: _modelSchema);
+      const field = _AsyncNameField();
+      controller.register(field, initialValue: 'x');
+
+      expect(await controller.validateFieldAsync(field), isTrue);
+    });
+  });
+
+  group('ValidasiForm builder — submit.async', () {
+    testWidgets('awaits an async formValidator before calling onSubmit',
+        (tester) async {
+      final controller = _makeController(formValidator: _asyncFormValidator);
+      const nameField = _NameField();
+      const emailField = _EmailField();
+      controller.register(nameField);
+      controller.register(emailField);
+      controller.setValue(nameField, 'bob');
+      controller.setValue(emailField, 'bob@example.com');
+
+      _Model? captured;
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ValidasiForm<_Model>(
+            controller: controller,
+            schema: _modelSchema,
+            builder: (context, submit) => ElevatedButton(
+              onPressed: () => submit.async((model) => captured = model)(),
+              child: const Text('submit'),
+            ),
+          ),
+        ),
+      ));
+
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      expect(captured, isNotNull);
+      expect(captured!.name, 'bob');
+    });
+  });
+}
+
+class _AsyncNameField extends ValidasiField<_Model, String> {
+  const _AsyncNameField() : super();
+  @override
+  String get name => 'name';
+  @override
+  String? extract(_Model owner) => owner.name;
+  @override
+  ValidasiResult<String> validate(String? value) {
+    throw StateError(
+      'Async rules cannot be used with validate(). Use validateAsync() instead.',
+    );
+  }
+
+  @override
+  Future<ValidasiResult<String>> validateAsync(String? value) async {
+    return ValidasiResult.success(value ?? '');
+  }
 }

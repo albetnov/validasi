@@ -513,6 +513,29 @@ class ValidasiFormController<T> extends ChangeNotifier
     return result.isValid;
   }
 
+  /// Async-safe, cross-field-aware counterpart to [validateField].
+  ///
+  /// Used internally for per-field revalidation triggers (onChange/onBlur),
+  /// where the caller can't know in advance whether the field's rules are
+  /// async or whether cross-field/refine rules depend on it. Falls back to
+  /// the full [formValidator] when one is set, since it already re-validates
+  /// every field's own rules plus cross-field rules together — the only way
+  /// to correctly revalidate a dependent field (e.g. confirmPassword when
+  /// password changes).
+  Future<bool> validateFieldAsync<V>(ValidasiField<T, V> field) async {
+    _throwIfDisposed();
+    final fc = getFieldController(field);
+    if (fc.disabled) return true;
+    if (formValidator != null) {
+      return validateAsync();
+    }
+    final result = await field.validateAsync(fc.value);
+    _applyErrors(field, result.errors);
+    syncFieldErrors();
+    notifyListeners();
+    return result.isValid;
+  }
+
   bool validate() {
     _throwIfDisposed();
     if (formValidator != null) {
