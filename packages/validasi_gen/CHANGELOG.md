@@ -1,3 +1,9 @@
+## 0.1.0-dev.5
+
+### Fixed
+
+- Update null safey checks in validatoin handlers to avoid cannot be promoted error
+
 ## 0.1.0-dev.4
 
 ### Added
