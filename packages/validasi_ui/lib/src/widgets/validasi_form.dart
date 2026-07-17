@@ -25,7 +25,7 @@ class ValidasiForm<T> extends StatefulWidget {
   final Widget Function(BuildContext context, ValidasiSubmit<T> submit)
       builder;
   final ValidasiFormController<T>? controller;
-  final ValidasiSchema<T> schema;
+  final ValidasiSchema<T>? schema;
   final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?
       formValidator;
   final ValidationMode mode;
@@ -35,7 +35,7 @@ class ValidasiForm<T> extends StatefulWidget {
 
   const ValidasiForm({
     required this.builder,
-    required this.schema,
+    this.schema,
     this.controller,
     this.formValidator,
     this.mode = ValidationMode.onSubmit,
@@ -43,7 +43,8 @@ class ValidasiForm<T> extends StatefulWidget {
     this.initialValues,
     this.shouldUnregister = false,
     super.key,
-  });
+  }) : assert(controller != null || schema != null,
+            'ValidasiForm needs a `controller` or a `schema`.');
 
   static ValidasiFormController<T> of<T>(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<_FormScope<T>>();
@@ -78,7 +79,7 @@ class _FormState<T> extends State<ValidasiForm<T>> {
     super.initState();
     _controller = widget.controller ??
         ValidasiFormController<T>(
-          schema: widget.schema,
+          schema: widget.schema!,
           formValidator: widget.formValidator,
         );
     if (widget.initialValues != null) {

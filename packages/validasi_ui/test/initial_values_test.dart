@@ -73,7 +73,6 @@ Widget _buildForm({
     home: Scaffold(
       body: ValidasiForm(
         controller: controller,
-        schema: _testModelSchema,
         initialValues: initialValues,
         builder: (context, submit) => Column(
           children: [

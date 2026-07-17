@@ -94,7 +94,6 @@ Future<
       home: Scaffold(
         body: ValidasiForm(
           controller: controller,
-          schema: _schema,
           builder: (context, submit) => Column(
             children: [
               for (final f in fields)
@@ -262,7 +261,6 @@ void main() {
             home: Scaffold(
               body: ValidasiForm(
                 controller: controller,
-                schema: _schema,
                 builder: (context, submit) => Column(
                   children: [
                     for (final f in fields)

@@ -3,16 +3,16 @@
 ## `ValidasiForm<T>`
 
 The root form widget. Creates and scopes a `ValidasiFormController<T>` via `InheritedWidget`.
-`T` is inferred from the `schema` argument.
+`T` is inferred from the `schema` **or** `controller` argument.
 
 ```dart
 ValidasiForm(
-  schema: UserFields.schema,
+  schema: UserFields.schema,       // omit when you pass your own `controller`
   mode: ValidationMode.onSubmit,
   reValidateMode: ReValidationMode.onChange,
   initialValues: null,
   shouldUnregister: false,
-  controller: myController,       // optional — pass your own
+  controller: myController,       // optional — pass your own (then drop `schema`)
   formValidator: myFormValidator,  // optional — custom form-level validation
   builder: (context, submit) {
     // `submit` is a ValidasiSubmit<T> — a callable class, not a plain function type.
@@ -32,9 +32,9 @@ ValidasiForm(
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `schema` | `ValidasiSchema<T>` | required | Builds model from controller on submit |
+| `schema` | `ValidasiSchema<T>?` | `null` | Builds model from controller on submit. Provide this **or** a `controller` (at least one required); omit it when you pass your own controller |
 | `builder` | `Widget Function(BuildContext, ValidasiSubmit<T>)` | required | Your form UI |
-| `controller` | `ValidasiFormController<T>?` | `null` | External controller (form auto-creates one if not provided) |
+| `controller` | `ValidasiFormController<T>?` | `null` | External controller (form auto-creates one from `schema` if not provided). Provide this **or** a `schema` |
 | `formValidator` | `FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?` | `null` | Custom form-level validation (runs after all field validation) |
 | `mode` | `ValidationMode` | `onSubmit` | When fields first validate |
 | `reValidateMode` | `ReValidationMode` | `onChange` | How fields re-validate after first validation |

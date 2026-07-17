@@ -72,7 +72,7 @@ class _MyPageState extends State<MyPage> {
   @override
   Widget build(BuildContext context) => ValidasiForm<User>(
     controller: _controller,
-    schema: UserFields.schema,
+    // no `schema:` — the controller already holds it.
     builder: (context, submit) => /* ... */,
   );
 }
@@ -129,7 +129,7 @@ forms where a later step's field must still hold its value when an earlier step 
 | Task | Approach |
 |------|----------|
 | Simple form, no external control needed | `ValidasiForm(schema: ..., builder: ...)` with no `controller:` — it owns and disposes it |
-| Need to submit/reset from outside the form's builder | Create + hold `ValidasiFormController` yourself, pass it in, dispose it in your own `dispose()` |
+| Need to submit/reset from outside the form's builder | Create + hold `ValidasiFormController` yourself, pass it in (drop `schema:` on the form — the controller holds it), dispose it in your own `dispose()` |
 | Text field needs an externally-readable `.text` | Create + hold a `ValidasiTextController`, pass it in, dispose it yourself |
 | Wizard/multi-step form — keep values across steps | Leave `shouldUnregister: false` (the default) |
 | A conditional field should reset when hidden | `shouldUnregister: true` on that `ValidasiFormField` (or form-wide) |

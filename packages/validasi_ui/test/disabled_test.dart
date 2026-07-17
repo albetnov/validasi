@@ -235,7 +235,6 @@ void main() {
             home: Scaffold(
               body: ValidasiForm(
                 controller: controller,
-                schema: _stringSchema,
                 builder: (context, submit) => ValidasiFormField(
                   field: const _TestKey(),
                   disabled: true,
@@ -262,7 +261,6 @@ void main() {
             home: Scaffold(
               body: ValidasiForm(
                 controller: controller,
-                schema: _stringSchema,
                 builder: (context, submit) => ValidasiFormField(
                   field: field,
                   disabled: true,
@@ -293,7 +291,6 @@ void main() {
             home: Scaffold(
               body: ValidasiForm(
                 controller: controller,
-                schema: _stringSchema,
                 builder: (context, submit) => ValidasiFormField(
                   field: field,
                   disabled: false,
@@ -315,7 +312,6 @@ void main() {
             home: Scaffold(
               body: ValidasiForm(
                 controller: controller,
-                schema: _stringSchema,
                 builder: (context, submit) => ValidasiFormField(
                   field: field,
                   disabled: true,

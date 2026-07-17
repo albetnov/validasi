@@ -1,3 +1,12 @@
+## 0.1.0-dev.6
+
+### Changed
+
+- `ValidasiForm`'s `schema` is now optional. When you pass your own `controller` (which already
+  holds the schema), you no longer repeat `schema:` on the form. A dev-mode assertion enforces that
+  at least one of `controller` or `schema` is provided. Backward compatible — passing both still
+  works (the form ignores its `schema` when a `controller` is present, as before).
+
 ## 0.1.0-dev.5
 
 ### Added

@@ -75,7 +75,6 @@ Widget _buildFormWithWatch({
     home: Scaffold(
       body: ValidasiForm(
         controller: controller,
-        schema: _emptyStringSchema,
         shouldUnregister: shouldUnregister,
         builder: (context, submit) => ValidasiWatch.form(
           controller: controller,
@@ -119,7 +118,6 @@ void main() {
           home: Scaffold(
             body: ValidasiForm(
               controller: controller,
-              schema: _emptyStringSchema,
               builder: (context, submit) => ValidasiWatch.form(
                 controller: controller,
                 builder: (context, c) => ValueListenableBuilder(
@@ -178,7 +176,6 @@ void main() {
           home: Scaffold(
             body: ValidasiForm(
               controller: controller,
-              schema: _emptyStringSchema,
               builder: (context, submit) => ValidasiWatch.form(
                 controller: controller,
                 builder: (context, c) => SizedBox(
@@ -230,7 +227,6 @@ void main() {
           home: Scaffold(
             body: ValidasiForm(
               controller: controller,
-              schema: _emptyStringSchema,
               builder: (context, submit) => ValueListenableBuilder(
                 valueListenable: showField,
                 builder: (_, show, __) => Column(
