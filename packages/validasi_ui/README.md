@@ -159,7 +159,7 @@ The root widget. Provides an `InheritedWidget` scope for descendant `ValidasiFor
 | `mode` | When fields first validate: `onSubmit` (default), `onBlur`, `onChange` |
 | `reValidateMode` | After first validation: `onChange` (default), `onBlur` |
 | `initialValues` | Optional `T` used to seed every registered field |
-| `shouldUnregister` | When `true` (default), fields auto-unregister on widget unmount; `false` keeps values (wizards) |
+| `shouldUnregister` | When `true`, fields auto-unregister on widget unmount; `false` (default) keeps values (wizards) |
 
 `SubmitHandler<T>` is `VoidCallback Function(void Function(T) onSubmit)` — call the returned `VoidCallback` from your button's `onPressed` to trigger submit with validation + assembly.
 
