@@ -47,7 +47,12 @@ bool? readGenerateSchemaOverride(ClassElement cls) {
 
 /// Instance members declared by `FieldDescriptor`/`ValidasiField` that a
 /// field's generated static const accessor must not collide with.
-const _reservedFieldAccessorNames = {'name', 'extract', 'validate', 'validateAsync'};
+const _reservedFieldAccessorNames = {
+  'name',
+  'extract',
+  'validate',
+  'validateAsync'
+};
 
 class FieldRules {
   final FieldElement field;
@@ -78,10 +83,9 @@ class FieldRules {
   /// name) — so those get a trailing underscore to dodge the collision.
   /// The field's runtime `.name` getter is unaffected; only this generated
   /// identifier changes.
-  String get accessorName =>
-      _reservedFieldAccessorNames.contains(field.name)
-          ? '${field.name}_'
-          : field.name!;
+  String get accessorName => _reservedFieldAccessorNames.contains(field.name)
+      ? '${field.name}_'
+      : field.name!;
 
   /// True when the Dart type itself enforces non-null (e.g. `String`, not `String?`).
   /// Returns false for `dynamic` and `Object?` since nullability can't be reliably inferred.

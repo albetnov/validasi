@@ -59,7 +59,8 @@ void main() {
       output = await _generate();
     });
 
-    test('calls the refine method with a qualified static reference in '
+    test(
+        'calls the refine method with a qualified static reference in '
         'validateForm_X', () {
       expect(
         output,
@@ -71,7 +72,8 @@ void main() {
       );
     });
 
-    test('calls the refine method with a qualified static reference in '
+    test(
+        'calls the refine method with a qualified static reference in '
         'validate()/validateAsync()', () {
       expect(
         output,

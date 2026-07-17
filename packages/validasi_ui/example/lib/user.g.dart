@@ -138,14 +138,14 @@ extension $UserValidasi on User {
     }
     final $fail_User_emailDoesNotStartWithName =
         ({required String message, List<String> path = const []}) {
-          $errors.add(
-            ValidationError(
-              rule: 'Refine',
-              message: message,
-              path: path.isEmpty ? null : path,
-            ),
-          );
-        };
+      $errors.add(
+        ValidationError(
+          rule: 'Refine',
+          message: message,
+          path: path.isEmpty ? null : path,
+        ),
+      );
+    };
     User.emailDoesNotStartWithName(
       $fail_User_emailDoesNotStartWithName,
       name: name,
@@ -179,14 +179,14 @@ extension $UserValidasi on User {
     }
     final $fail_User_emailDoesNotStartWithName =
         ({required String message, List<String> path = const []}) {
-          $errors.add(
-            ValidationError(
-              rule: 'Refine',
-              message: message,
-              path: path.isEmpty ? null : path,
-            ),
-          );
-        };
+      $errors.add(
+        ValidationError(
+          rule: 'Refine',
+          message: message,
+          path: path.isEmpty ? null : path,
+        ),
+      );
+    };
     User.emailDoesNotStartWithName(
       $fail_User_emailDoesNotStartWithName,
       name: name,
@@ -219,41 +219,44 @@ abstract final class _Errors {
     List<String> path,
     int length, {
     String? message,
-  }) => ValidationError(
-    rule: 'MinLength',
-    message: message ?? 'Minimum length is $length characters',
-    details: {'length': '$length'},
-    path: path,
-  );
+  }) =>
+      ValidationError(
+        rule: 'MinLength',
+        message: message ?? 'Minimum length is $length characters',
+        details: {'length': '$length'},
+        path: path,
+      );
 
   static ValidationError maxLength(
     List<String> path,
     int length, {
     String? message,
-  }) => ValidationError(
-    rule: 'MaxLength',
-    message: message ?? 'Maximum length is $length characters',
-    details: {'length': '$length'},
-    path: path,
-  );
+  }) =>
+      ValidationError(
+        rule: 'MaxLength',
+        message: message ?? 'Maximum length is $length characters',
+        details: {'length': '$length'},
+        path: path,
+      );
 
   static ValidationError oneOf(
     List<String> path,
     List<Object?> options, {
     String? message,
-  }) => ValidationError(
-    rule: 'OneOf',
-    message: message ?? 'Value must be one of: ${options.join(", ")}',
-    details: {'options': '${options.join(",")}'},
-    path: path,
-  );
+  }) =>
+      ValidationError(
+        rule: 'OneOf',
+        message: message ?? 'Value must be one of: ${options.join(", ")}',
+        details: {'options': '${options.join(",")}'},
+        path: path,
+      );
 }
 
 abstract final class _Result {
   static ValidasiResult<T> from<T>(List<ValidationError> errors, T? value) =>
       errors.isEmpty
-      ? ValidasiResult(errors: const [], isValid: true, data: value)
-      : ValidasiResult(errors: errors, isValid: false);
+          ? ValidasiResult(errors: const [], isValid: true, data: value)
+          : ValidasiResult(errors: errors, isValid: false);
 
   static ValidasiResult<T> invalidSingle<T>(ValidationError error) =>
       ValidasiResult(errors: [error], isValid: false);

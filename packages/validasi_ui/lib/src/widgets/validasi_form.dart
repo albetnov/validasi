@@ -22,8 +22,7 @@ class ValidasiSubmit<T> {
 }
 
 class ValidasiForm<T> extends StatefulWidget {
-  final Widget Function(BuildContext context, ValidasiSubmit<T> submit)
-      builder;
+  final Widget Function(BuildContext context, ValidasiSubmit<T> submit) builder;
   final ValidasiFormController<T>? controller;
   final ValidasiSchema<T>? schema;
   final FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?

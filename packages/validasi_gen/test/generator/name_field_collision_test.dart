@@ -43,7 +43,8 @@ void main() {
       output = await _generate();
     });
 
-    test('gets a mangled static accessor to avoid colliding with '
+    test(
+        'gets a mangled static accessor to avoid colliding with '
         'FieldDescriptor.name', () {
       expect(
         output,
@@ -61,12 +62,12 @@ void main() {
       expect(output, contains("=> 'name';"));
     });
 
-    test('schema, validate(), and validateForm_X all reference the mangled '
+    test(
+        'schema, validate(), and validateForm_X all reference the mangled '
         'accessor', () {
       expect(
         output,
-        contains(
-            'reader.getValue(NameClashModelFields.name_) as String,'),
+        contains('reader.getValue(NameClashModelFields.name_) as String,'),
       );
       expect(
         output,

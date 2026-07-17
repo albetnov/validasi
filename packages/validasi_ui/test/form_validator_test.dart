@@ -371,8 +371,7 @@ void main() {
   });
 
   group('formValidator auto-discovery from schema', () {
-    test('controller picks up formValidator from schema when not passed',
-        () {
+    test('controller picks up formValidator from schema when not passed', () {
       final controller = ValidasiFormController(schema: _autoValidatedSchema);
       expect(controller.formValidator, isNotNull);
     });
