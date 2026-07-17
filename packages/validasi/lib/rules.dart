@@ -314,8 +314,8 @@ class _IterableRules {
 class _MapRules {
   const _MapRules();
 
-  HasFields hasFields(Map<String, FieldRules<Object?>> fields) =>
-      HasFields(fields);
+  HasFields<T> hasFields<T>(Map<String, FieldRules<Object?>> fields) =>
+      HasFields<T>(fields);
 
   HasFieldKeys<T> hasFieldKeys<T>(Set<String> keys) => HasFieldKeys<T>(keys);
 

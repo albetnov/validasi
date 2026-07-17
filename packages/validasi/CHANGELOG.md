@@ -1,3 +1,12 @@
+## 1.0.0-rc.5
+
+### Fixed
+
+- `Rules.map.hasFields()` / `HasFields` now carry the map value generic (`HasFields<T> extends Rule<Map<String, T>>`),
+  matching every other map rule. Previously `HasFields` was hardcoded to `Rule<Map<String, dynamic>>`, so it only fit
+  `Validasi.map<dynamic>()` and failed to compile inside a typed map such as `Validasi.map<int>()`. Source-compatible:
+  an omitted type argument defaults to `dynamic`, so existing call sites are unchanged.
+
 ## 1.0.0-rc.4
 
 ### Added
