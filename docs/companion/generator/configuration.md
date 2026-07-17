@@ -19,14 +19,16 @@ targets:
 
 | Option | Type | Default | Description |
 |--------|------|:---:|-------------|
-| `generateFields` | `bool` | `true` | Emit `sealed class XFields<V>` + per-field leaf classes + `validateField()` |
+| `generateFields` | `bool` | `true` | Emit `sealed class XFields<V>` + per-field leaf classes + `validateField()`. **Gates `generateSchema` and `generateValidateForm`** — if this is `false`, those two produce nothing even when set to `true`. |
 | `generateSchema` | `bool` | `true` | Emit `static const ValidasiSchema<X> schema` on the fields class + `_XSchema` implementation |
-| `generateValidateForm` | `bool` | `false` | Emit `validateForm_X(controller)` top-level function (requires `validasi_ui`) |
+| `generateValidateForm` | `bool` | `false` | Emit `validateForm_X(controller)` top-level function (requires `validasi_ui`). **No per-class override** — see below. |
 | `generateIndexedFields` | `bool` | `false` | Emit `indexedFields`, `reconstructItem`, `reconstructAll` (requires `validasi_ui`; for field arrays) |
 
 ## Per-class overrides
 
-Each `@ValidateClass()` parameter overrides the corresponding global option:
+`@ValidateClass(...)` takes exactly three parameters — `generateFields`, `generateSchema`, and
+`generateIndexedFields` — each overriding the corresponding global option for that class only.
+**`generateValidateForm` has no per-class override; it's build-level only.**
 
 ```dart
 @ValidateClass(generateFields: true, generateSchema: true)
@@ -40,7 +42,7 @@ class InternalOnly {
 }
 ```
 
-Per-class settings take precedence over `build.yaml`.
+Per-class settings take precedence over `build.yaml` for the three flags that support them.
 
 ## Recommended configs
 
@@ -93,9 +95,11 @@ generateFields: true     →  sealed class UserFields<V>
 
 generateSchema: true     →  UserFields.schema (ValidasiSchema<User>)
                             class _UserSchema
+                            (no-op unless generateFields is also true)
 
 generateValidateForm: true → validateForm_User(ValidasiFormController<User>)
                             (reads from controller, runs refines)
+                            (no-op unless generateFields is also true)
 
 generateIndexedFields: true → UserFields.name_indexed(index)
                               UserFields.indexedFields()

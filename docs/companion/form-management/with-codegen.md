@@ -20,7 +20,7 @@ class User {
   @Validate<String>([MinLength(5)])
   final String email;
 
-  @Validate<int>([MinLength(1)])
+  @Validate<int>([Positive()])
   final int age;
 
   const User({required this.name, required this.email, required this.age});
@@ -178,8 +178,16 @@ class User {
 ```
 
 The generator wires `AsyncInline` into the field's `validateAsync()`. The form
-controller automatically runs async validation when the field is validated. The
-builder receives `state.isValidating` to show a spinner:
+controller automatically runs async validation when the field is validated.
+
+> **Once any field has an async rule, switch your submit button to `submit.async(...)`.**
+> The generated sync `validate()` (and therefore the sync `submit(...)` path from steps 3-5)
+> throws `StateError('Async rules cannot be used with validate(). Use validateAsync() instead.')`
+> the moment it reaches a field with an async rule like this `AsyncInline`. Use
+> `submit.async((user) async { ... })` instead — see the `ValidasiSubmit<T>` section of
+> [Widgets Reference](/companion/form-management/widgets) for both entry points.
+
+The builder receives `state.isValidating` to show a spinner:
 
 ```dart
 ValidasiTextField(
@@ -209,7 +217,7 @@ class SignUpForm {
   final String confirmPassword;
 
   @RefineFn(dependsOn: ['password', 'confirmPassword'])
-  void passwordsMatch(FailFn fail, {String? password, String? confirmPassword}) {
+  static void passwordsMatch(FailFn fail, {String? password, String? confirmPassword}) {
     if (password != null && confirmPassword != null && password != confirmPassword) {
       fail(message: 'Passwords do not match', path: ['confirmPassword']);
     }

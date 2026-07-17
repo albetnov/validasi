@@ -137,3 +137,7 @@ claude mcp add --transport stdio validasi_docs -- validasi_mcp
 
 The AI will automatically discover the available tools and can query the
 documentation as needed.
+
+If you're specifically using Claude Code, also see [Claude Code Skills](/companion/skills) — this
+MCP server is a *lookup tool* Claude calls at runtime, whereas the skills are authored guidance
+already loaded before Claude writes any code. They're complementary, not alternatives.

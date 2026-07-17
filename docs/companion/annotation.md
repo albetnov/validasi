@@ -46,7 +46,7 @@ class User {
   @Validate<String>([Required(), MinLength(3)])
   final String name;
 
-  @Validate<int>([MinLength(1)])
+  @Validate<int>([Positive()])
   final int age;
 }
 ```
@@ -60,7 +60,10 @@ class User {
 ## Rule annotations
 
 All rule annotations extend `Rule<T>` and carry an optional `message` parameter for
-custom error messages.
+custom error messages. **This page shows a representative subset** — there are around 50 rule
+annotations in total, mirroring almost every `Rules.*` factory from the core `validasi` package.
+For the full, current catalog, check `package:validasi_annotation/validasi_annotation.dart`'s
+exports or the generated API docs on pub.dev; a rule not listed here likely still exists.
 
 ### Generic rules
 
@@ -68,8 +71,8 @@ custom error messages.
 |------------|------------|-------------|
 | `Required<T>` | `{String? message}` | Value must be non-null |
 | `Nullable<T>` | _(none)_ | Marks a field as nullable (no Required check) |
-| `Inline<T>` | `validator`, `{String? name, String? message, bool runOnNull}` | Inline sync validation function, body will be inlined in generated code |
-| `AsyncInline<T>` | `validator`, `{String? name, String? message}` | Inline async validation function (e.g. database lookup) |
+| `Inline<T>` | `validator`, `{String? name, String? message, bool runOnNull}` | Inline sync validation function, body will be inlined in generated code. `validator` must be a `static` or top-level function — the generator emits a qualified reference to it. |
+| `AsyncInline<T>` | `validator`, `{String? name, String? message}` | Inline async validation function (e.g. database lookup). Same `static`/top-level requirement as `Inline`. |
 | `CustomRule<T>` | `{required String name, String? message, bool runOnNull}` | Base class — subclass it and add a `static bool check(T?)` |
 
 ### String / Iterable rules
@@ -79,10 +82,34 @@ custom error messages.
 | `MinLength<T>` | `int length`, `{String? message}` | `string`, `iterable` | Min chars / min items |
 | `MaxLength<T>` | `int length`, `{String? message}` | `string`, `iterable` | Max chars / max items |
 | `OneOf<T>` | `List<T> options`, `{String? message}` | `string`, `generic` | Value must be one of the options |
+| `Email<T>` | `{String? message}` | `string` | Value must be a valid email address |
+| `Regex<T>` | `Pattern pattern`, `{String? message}` | `string` | Value must match the pattern |
+| `Alphanumeric<T>` / `Alpha<T>` | `{String? message}` | `string` | Character-class checks |
+| `Uuid<T>` / `Ulid<T>` / `Url<T>` | `{String? message}` | `string` | Format checks |
+
+Applying `MinLength`/`MaxLength` (or any handler that checks context) to an unsupported context —
+e.g. a bare `int` field — fails the build with `InvalidGenerationSourceError`, not a silent no-op.
+
+### Numeric rules
+
+| Annotation | Parameters | Description |
+|------------|------------|-------------|
+| `MoreThan<T extends num>` / `MoreThanEqual<T extends num>` | `T value`, `{String? message}` | Value must be greater than (or equal to) `value` |
+| `LessThan<T extends num>` / `LessThanEqual<T extends num>` | `T value`, `{String? message}` | Value must be less than (or equal to) `value` |
+| `Between<T extends num>` | `T min, T max`, `{String? message}` | Value must fall within the range |
+| `Positive<T extends num>` / `Negative<T extends num>` | `{String? message}` | Sign checks |
 
 > **Context-dependent rules:** `MinLength` and `MaxLength` behave differently depending
 > on the `T` in `@Validate<T>`. With `@Validate<String>` they check character length;
 > with `@Validate<List<T>>` they check item count.
+
+### Cross-field sugar
+
+`@RequiredAny`, `@RequiredOneOf`, `@RequiredAll`, `@DependsOn`, `@MutuallyExclusive`, and
+`@MatchesField` cover common multi-field shapes (confirm-password, at-least-one-of, mutually
+exclusive fields) without hand-writing a `@RefineFn`. See
+[Cross-field & Async](/companion/generator/cross-field#cross-field-sugar-annotations) for the
+full list with signatures and a worked example.
 
 ## Custom rule: `CustomRule<T>` and `AsyncCustomRule<T>`
 
@@ -117,7 +144,7 @@ class User {
   final String confirmEmail;
 
   @RefineFn(dependsOn: ['email', 'confirmEmail'])
-  void emailsMatch(FailFn fail, {String? email, String? confirmEmail}) {
+  static void emailsMatch(FailFn fail, {String? email, String? confirmEmail}) {
     if (email != null && confirmEmail != null && email != confirmEmail) {
       fail(message: 'Emails do not match', path: ['confirmEmail']);
     }
@@ -125,6 +152,8 @@ class User {
 }
 ```
 
+- **The method must be `static`** — an instance method throws `InvalidGenerationSourceError` at
+  build time, since the generator emits a qualified `ClassName.methodName(...)` call.
 - The first parameter is always `FailFn` — call `fail(...)` to register an error.
 - Named parameters match the field names in `dependsOn`.
 - The generator detects `Future<void>` return types and inserts `await`.

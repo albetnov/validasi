@@ -15,12 +15,16 @@ ValidasiForm(
   controller: myController,       // optional — pass your own
   formValidator: myFormValidator,  // optional — custom form-level validation
   builder: (context, submit) {
-    // `submit` is SubmitHandler<T>: VoidCallback Function(void Function(T) onSubmit)
+    // `submit` is a ValidasiSubmit<T> — a callable class, not a plain function type.
     //
-    // Usage:
+    // Sync usage:
     //   submit((user) { saveUser(user); })
     //
-    // Returns a VoidCallback that validates then calls your callback.
+    // Async usage (validates async rules too):
+    //   submit.async((user) async { await saveUser(user); })
+    //
+    // submit(...) returns a VoidCallback; submit.async(...) returns a
+    // Future<void> Function().
     return YourFormContent(submit: submit);
   },
 );
@@ -29,7 +33,7 @@ ValidasiForm(
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `schema` | `ValidasiSchema<T>` | required | Builds model from controller on submit |
-| `builder` | `Widget Function(BuildContext, SubmitHandler<T>)` | required | Your form UI |
+| `builder` | `Widget Function(BuildContext, ValidasiSubmit<T>)` | required | Your form UI |
 | `controller` | `ValidasiFormController<T>?` | `null` | External controller (form auto-creates one if not provided) |
 | `formValidator` | `FutureOr<ValidasiResult<T>> Function(ValidasiFormController<T>)?` | `null` | Custom form-level validation (runs after all field validation) |
 | `mode` | `ValidationMode` | `onSubmit` | When fields first validate |
@@ -73,6 +77,7 @@ ValidasiFormField(
     //   state.errorText     — String?  (first error message)
     //   state.hasError      — bool
     //   state.isDirty       — bool
+    //   state.isPristine    — bool  (!isDirty)
     //   state.isTouched     — bool
     //   state.isValidating  — bool
     //   state.disabled      — bool
@@ -139,9 +144,10 @@ ValidasiTextField(
 
 The widget handles:
 - Creating a `ValidasiTextController` if none provided
-- Syncing form value → controller text (when `initialValues` is set)
+- Syncing form value → controller text on every build (not conditional on `initialValues`)
 - Syncing controller text → form value (when user types)
-- Disposing the controller on unmount (if auto-created)
+- Disposing the controller on unmount, but **only if it created it** — if you pass your own
+  `controller:`, you own it and must dispose it yourself
 
 ## `ValidasiTextController`
 
@@ -196,31 +202,47 @@ ValidasiWatch.field(
 
 Rebuilds only when that field's value changes.
 
-## `SubmitHandler<T>`
+## `ValidasiSubmit<T>`
 
-The type of the `submit` parameter in `ValidasiForm.builder`:
+The type of the `submit` parameter in `ValidasiForm.builder`. It's a small callable class, not a
+plain function type — it has two entry points:
 
 ```dart
-typedef SubmitHandler<T> = VoidCallback Function(void Function(T) onSubmit);
+class ValidasiSubmit<T> {
+  VoidCallback call(void Function(T) onSubmit);              // sync: controller.submit(...)
+  Future<void> Function() async(void Function(T) onSubmit);  // async: controller.submitAsync(...)
+}
 ```
 
-Usage:
+- `submit(onSubmit)` — calling the object directly (Dart lets a class with a `call()` method be
+  invoked like a function) runs sync `validate()`, then calls `onSubmit` with the built model if
+  valid.
+- `submit.async(onSubmit)` — runs `validateAsync()` instead, which awaits any async rules
+  (`AsyncInline`, `AsyncCustomRule`, an async `@RefineFn`) before calling `onSubmit`.
+
+**Use `submit.async(...)` if the form has any async validation at all.** The sync `submit(...)`
+path throws `StateError` the moment it hits a field with an async rule — see
+[With Codegen](/companion/form-management/with-codegen) for the exact failure mode.
 
 ```dart
 builder: (context, submit) {
-  // Auto-validate on tap
   return ElevatedButton(
-    onPressed: submit((user) => saveUser(user)),
+    onPressed: submit((user) => saveUser(user)), // sync form — no async rules
     child: const Text('Submit'),
   );
 }
 ```
 
-For async submit:
+For a form with async validation:
 
 ```dart
-onPressed: submit((user) async {
-  await saveUser(user);
-  if (context.mounted) Navigator.pop(context);
-}),
+builder: (context, submit) {
+  return ElevatedButton(
+    onPressed: submit.async((user) async {
+      await saveUser(user);
+      if (context.mounted) Navigator.pop(context);
+    }),
+    child: const Text('Submit'),
+  );
+}
 ```

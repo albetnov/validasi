@@ -50,8 +50,12 @@ final isValid = controller.validate();   // bool
 // Async: validates all fields (sync + async rules) + cross-field
 final isValid = await controller.validateAsync();   // bool
 
-// Validate a single field
+// Validate a single field (sync)
 controller.validateField(UserFields.email);
+
+// Validate a single field, awaiting its async rules too (falls back to the
+// whole-form validator if one is set, since cross-field rules may depend on it)
+await controller.validateFieldAsync(UserFields.email);
 
 // Trigger async validation on a field (debounced)
 await controller.triggerAsyncValidation(UserFields.email);
@@ -162,10 +166,23 @@ final count = controller.getArrayItemCount(UserFields.tags);
 final itemField = controller.getArrayItemField(UserFields.tags, 0);
 ```
 
-For object arrays (nested `@ValidateClass`), use `generateIndexedFields: true` in
-your build options. This enables `YourFields.withIndex(int)` for nested sub-fields:
+For object arrays (nested `@ValidateClass`), use `generateIndexedFields: true` in your build
+options — for a `List<Car> previousCars` field, that generates `indexedFields<FormType>`,
+`reconstructItem<FormType>`, and `reconstructAll<FormType>` static methods on `CarFields` (the
+generated fields class for the nested `Car` model). Wrap them in closures binding the parent
+field/path when passing them to `appendArrayItem`/`insertArrayItem`, so the controller knows how
+to create and reconstruct each row's sub-fields:
 
 ```dart
+controller.appendArrayItem(
+  UserFields.previousCars,
+  newCar,
+  indexedFields: (index) => CarFields.indexedFields<User>('previousCars', index),
+  reconstructItem: (ctrl, index) =>
+      CarFields.reconstructItem<User>(ctrl, UserFields.previousCars, index),
+  reconstructAll: (ctrl) => CarFields.reconstructAll<User>(ctrl, UserFields.previousCars),
+);
+
 // Access a nested object's field
 final nestedField = controller.getArraySubField(
     UserFields.previousCars, 0, 'model');
@@ -192,6 +209,27 @@ signals.disabled;
 
 You rarely need to access signals directly — `ValidasiFormField` and
 `ValidasiWatch` consume them internally. Use them for custom widget bindings.
+
+## Watching values without a widget
+
+`ValidasiFormController<T>` mixes in `WatchMixin<T>`, which exposes two helpers returning
+`package:signals` readonly signals — read them inside a `SignalBuilder`/`Watch` you already
+control, or anywhere else you'd read a signal's `.value`:
+
+```dart
+// One field's value as a signal
+final emailSignal = controller.watchValue<String>(UserFields.email); // ReadonlySignal<String?>
+
+// Derive a value from several same-typed fields — selector gets a Map keyed by field
+final fullNameSignal = controller.watch<String, String>(
+  [UserFields.firstName, UserFields.lastName],
+  (values) => '${values[UserFields.firstName] ?? ''} ${values[UserFields.lastName] ?? ''}',
+); // ReadonlySignal<String>
+```
+
+Prefer `ValidasiWatch.field`/`ValidasiWatch.form` for widget trees — reach for `watchValue`/`watch`
+when you need the underlying signal somewhere `ValidasiWatch` doesn't fit naturally (e.g. composing
+it into another `computed`).
 
 ## Disposal
 

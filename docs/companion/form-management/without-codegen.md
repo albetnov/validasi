@@ -18,37 +18,69 @@ class User {
   const User({required this.name, required this.email});
 }
 
-// Define fields manually
-final nameField = ValidasiField<User, String>(
-  name: 'name',
-  extract: (user) => user.name,
-  validate: Validasi.string([Rules.string.minLength(2)]).validate,
-);
+// Define fields manually by subclassing ValidasiField<T, V> — it's abstract with
+// only a `const` constructor, so there's no generative `ValidasiField(name: ..., ...)`.
+class NameField extends ValidasiField<User, String> {
+  const NameField();
 
-final emailField = ValidasiField<User, String>(
-  name: 'email',
-  extract: (user) => user.email,
-  validate: Validasi.string([Rules.string.minLength(5)]).validate,
-);
+  @override
+  String get name => 'name';
+
+  @override
+  String? extract(User owner) => owner.name;
+
+  @override
+  ValidasiResult<String> validate(String? value) =>
+      Validasi.string([Rules.string.minLength(2)]).validate(value);
+}
+
+class EmailField extends ValidasiField<User, String> {
+  const EmailField();
+
+  @override
+  String get name => 'email';
+
+  @override
+  String? extract(User owner) => owner.email;
+
+  @override
+  ValidasiResult<String> validate(String? value) =>
+      Validasi.string([Rules.string.minLength(5)]).validate(value);
+}
+
+// Keep one const instance per field, the same way generated code exposes
+// `UserFields.name`/`UserFields.email` — the controller keys its internal
+// state off the field object itself, so reuse these instances everywhere.
+const nameField = NameField();
+const emailField = EmailField();
 ```
 
-`ValidasiField<T, V>` takes three required parameters:
+`ValidasiField<T, V>` is abstract — subclass it and override:
 
-| Parameter | Description |
-|-----------|-------------|
-| `name` | Unique field identifier (for error paths) |
-| `extract` | `V? Function(T)` — reads the field value from a model instance |
-| `validate` | `ValidasiResult<V> Function(V?)` — the validation pipeline |
+| Member | Description |
+|--------|-------------|
+| `name` | `String` getter — unique field identifier (used for error paths) |
+| `extract(T owner)` | `V? Function(T)` — reads the field value from a model instance |
+| `validate(V? value)` | `ValidasiResult<V> Function(V?)` — the sync validation pipeline |
+| `validateAsync(V? value)` | Optional — defaults to calling `validate`; override to add async rules (see below) |
 
 ## Defining a schema
 
+`ValidasiSchema<T>` is likewise abstract with only a `const` constructor — subclass it and
+override `allocate`:
+
 ```dart
-final userSchema = ValidasiSchema<User>(
-  allocate: (reader) => User(
+class UserSchema extends ValidasiSchema<User> {
+  const UserSchema();
+
+  @override
+  User allocate(ValidasiFieldReader<User> reader) => User(
     name: reader.getValue(nameField) as String,
     email: reader.getValue(emailField) as String,
-  ),
-);
+  );
+}
+
+const userSchema = UserSchema();
 ```
 
 ## Form widget
@@ -109,13 +141,28 @@ form-value sync, and disposal — just pass `controller` to your `TextField`.
 
 ## Manual ValidasiField with async validation
 
+`validateAsync` is a regular overridable method on `ValidasiField<T, V>` — its default
+implementation just delegates to `validate`, so override it to layer async checks on top:
+
 ```dart
-final emailField = ValidasiField<User, String>(
-  name: 'email',
-  extract: (user) => user.email,
-  validate: Validasi.string([Rules.string.minLength(5)]).validate,
-  validateAsync: (value) async {
-    // Runs after sync validation
+class EmailField extends ValidasiField<User, String> {
+  const EmailField();
+
+  @override
+  String get name => 'email';
+
+  @override
+  String? extract(User owner) => owner.email;
+
+  @override
+  ValidasiResult<String> validate(String? value) =>
+      Validasi.string([Rules.string.minLength(5)]).validate(value);
+
+  @override
+  Future<ValidasiResult<String>> validateAsync(String? value) async {
+    final syncResult = validate(value);
+    if (!syncResult.isValid) return syncResult; // don't hit the network on invalid input
+
     if (value != null && value.isNotEmpty) {
       final available = await checkEmailAvailability(value);
       if (!available) {
@@ -124,13 +171,14 @@ final emailField = ValidasiField<User, String>(
         );
       }
     }
-    return ValidasiResult.success(value);
-  },
-);
+    return syncResult;
+  }
+}
 ```
 
-Pass `validateAsync` to define async validation for a manual field. The form
-controller runs it when `validateAsync()` is called.
+The form controller calls `validateAsync` when the form/field is validated via
+`controller.validateAsync()`/`validateFieldAsync()` — which is also what `submit.async(...)`
+uses under the hood (see [Widgets Reference](/companion/form-management/widgets)).
 
 ## When to skip codegen
 

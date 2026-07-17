@@ -105,7 +105,7 @@ Read more in the [Transformations Guide](/guide/transformations.md) and [Engine 
 Validasi also ships with two companion packages:
 
 - **`validasi_annotation` + `validasi_gen`** *(experimental)* — annotation-based code generation. Decorate your model with `@ValidateClass()` and `@Validate()`, and the generator produces a typed `XFields<V>` hierarchy plus `validate()` / `validateAsync()` extension. No Runtime codegen — the generator runs at build time via `build_runner`.
-- **`validasi_ui`** *(experimental)* — headless form management for Flutter. A `ValidasiFormController<T>` bridges generated schemas to the widget tree with hooks-style ergonomics: `watch`, `watchField`, `setError`, `formErrors`. Pair it with `validasi_gen` using `generateFields: true`, `generateAssemble: true`, and `generateValidateForm: true` for a fully type-safe form experience.
+- **`validasi_ui`** *(experimental)* — headless form management for Flutter. A `ValidasiFormController<T>` bridges generated schemas to the widget tree with hooks-style ergonomics: `watchValue`, `watch`, `setError`, `formErrors`. Pair it with `validasi_gen` using `generateFields: true`, `generateSchema: true`, and `generateValidateForm: true` for a fully type-safe form experience.
 
 ::: warning Experimental
 Both `validasi_gen` and `validasi_ui` are in active development. APIs may change without a major version bump. Feedback and contributions are welcome!
@@ -113,8 +113,10 @@ Both `validasi_gen` and `validasi_ui` are in active development. APIs may change
 
 See the dedicated guides for detailed usage:
 
-- [Code Generation](/guide/code-generation) — using `validasi_annotation` + `validasi_gen`
-- [Form Management](/guide/form-management) — using `validasi_ui` for Flutter forms
+- [Code Generation](/companion/generator/overview) — using `validasi_annotation` + `validasi_gen`
+- [Form Management](/companion/form-management/overview) — using `validasi_ui` for Flutter forms
+- [Claude Code Skills](/companion/skills) — if you're using Claude Code, these ship with the same
+  guidance baked in so it writes correct `validasi`/`validasi_gen`/`validasi_ui` code by default
 
 ## Community & Support
 

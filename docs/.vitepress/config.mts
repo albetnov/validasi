@@ -142,6 +142,7 @@ export default defineConfig({
               ]
             },
             { text: 'MCP Server', link: '/companion/mcp-server' },
+            { text: 'Claude Code Skills', link: '/companion/skills' },
           ]
         }
       ]

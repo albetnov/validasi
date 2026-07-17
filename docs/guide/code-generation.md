@@ -1,3 +1,0 @@
----
-redirect: /companion/generator/overview
----

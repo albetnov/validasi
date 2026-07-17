@@ -31,7 +31,7 @@ class User {
   @Validate<String>([MinLength(5)])
   final String email;
 
-  @Validate<int>([MinLength(1)])
+  @Validate<int>([Positive()])
   final int age;
 
   const User({required this.name, required this.email, required this.age});
@@ -71,15 +71,18 @@ MaxLength(100)
 | `Rules.string.minLength(n)` | `MinLength(n)` in `@Validate<String>` | Context from `T` |
 | `Rules.iterable.minLength(n)` | `MinLength(n)` in `@Validate<List<T>>` | Same class, different context |
 | `Rules.string.required()` | `Required()` | — |
-| `Rules.string.email()` | — | Not yet available as annotation |
-| `Rules.number.moreThan(n)` | — | Not yet available as annotation |
+| `Rules.string.email()` | `Email()` | — |
+| `Rules.number.moreThan(n)` | `MoreThan(n)` | Also `LessThan`, `Between`, `Positive`, `Negative`, and more |
 
 - **No namespace prefix** — write `MinLength(3)` instead of `Rules.string.minLength(3)`.
 - **Unified rules** — `MinLength`, `MaxLength`, etc. work across contexts. The `T` in
-  `@Validate<T>` tells the generator which check to emit (string-length vs item-count).
-- **Not all `Rules.*` rules have annotation equivalents yet** — this package is in heavy
-  development. New rule annotations are added as the API stabilizes. See
-  [Annotations](/companion/annotation) for the current list.
+  `@Validate<T>` tells the generator which check to emit (string-length vs item-count) — but
+  each annotation only supports specific contexts (e.g. `MinLength`/`MaxLength` support
+  `string`/`iterable`, not a bare `int`/`num`). Using one in an unsupported context throws
+  `InvalidGenerationSourceError` at build time, not a silent no-op.
+- **Around 50 rule annotations exist** across string, numeric, and cross-field categories —
+  this table only shows a few for contrast. See [Annotations](/companion/annotation) for the
+  fuller catalog.
 
 ## Generated artifacts
 
@@ -92,6 +95,12 @@ MaxLength(100)
 | `static const ValidasiSchema<X> schema` | `generateSchema` | Schema for form allocation |
 | `class _XSchema extends ValidasiSchema<X>` | `generateSchema` | Private implementation of `allocate()` |
 | `validateForm_X(controller)` | `generateValidateForm` | Form-aware validation (requires `validasi_ui`) |
+
+`generateSchema` and `generateValidateForm` only take effect while `generateFields` is also
+`true` — it gates both of them. Setting `generateFields: false` silently drops the schema and
+form-validator output too, even if those two flags are still `true`. See
+[Configuration](/companion/generator/configuration) for the full flag reference, including which
+flags can be overridden per-class.
 
 ## Basic usage
 

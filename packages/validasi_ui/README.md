@@ -19,10 +19,25 @@ Headless form management for Flutter, built on top of [`validasi`](https://pub.d
 
 ## Recommended: pair with `validasi_gen`
 
-`validasi_ui` is designed to be driven by code-generated field schemas. Annotate your model with `@ValidateClass(generateFields: true)` and `validasi_gen` emits a typed `YourModelFields<V>` sealed hierarchy plus an `assemble_YourModel` function — no hand-written field plumbing.
+`validasi_ui` is designed to be driven by code-generated field schemas. Annotate your model with
+`@ValidateClass()` and enable `generateSchema`/`generateValidateForm` in your build options, and
+`validasi_gen` emits a typed `YourModelFields<V>` sealed hierarchy plus a `schema` your `ValidasiForm`
+can consume directly — no hand-written field plumbing.
 
 ```yaml
 flutter pub get validasi_ui validasi_annotation dev:validasi_gen dev:build_runner
+```
+
+```yaml
+# build.yaml
+targets:
+  $default:
+    builders:
+      validasi_gen:validasi:
+        options:
+          generateFields: true
+          generateSchema: true
+          generateValidateForm: true
 ```
 
 Define the model and its rules in one place:
@@ -34,30 +49,24 @@ import 'package:validasi_annotation/validasi_annotation.dart';
 
 part 'user.g.dart';
 
-String? _emailMatchesName(V? Function<V>(ValidasiField<User, V>) get) {
-  final email = get(UserFields.email);
-  final name = get(UserFields.name);
-  if (email != null && name != null && email.startsWith(name)) {
-    return 'Email should not start with name';
-  }
-  return null;
-}
-
-@ValidateClass(generateFields: true)
+@ValidateClass()
 class User {
-  @Validate.string([MinLength(2), MaxLength(100)])
+  @Validate<String>([Required(), MinLength(2), MaxLength(100)])
   final String name;
 
-  @Validate.string([MinLength(3), MaxLength(100)])
-  @ValidateWith(_emailMatchesName, dependsOn: {#name})
+  @Validate<String>([Required(), MinLength(3), MaxLength(100)])
   final String email;
 
-  @Validate([MinLength(1)])
+  @Validate<int>([Positive()])
   final int age;
 
   const User({required this.name, required this.email, required this.age});
 }
 ```
+
+Cross-field checks — e.g. a confirm-password field, or a check that spans `name` and `email` —
+go through `@RefineFn` or a cross-field sugar annotation instead of a per-field annotation; see
+[Cross-field validation](#cross-field-validation) below.
 
 Run the generator:
 
@@ -65,7 +74,11 @@ Run the generator:
 dart run build_runner build
 ```
 
-This produces `user.g.dart` containing the `UserFields<V>` hierarchy, `assemble_User`, and a `UserCrossFields` cross-field key class. You can also pass `assemble_User` directly to `ValidasiForm.assembler`.
+This produces `user.g.dart` containing the `UserFields<V>` sealed hierarchy and, because
+`generateSchema`/`generateValidateForm` are on, `UserFields.schema` (pass straight to
+`ValidasiForm(schema: UserFields.schema)`) and `validateForm_User(controller)` for the cross-field
+rules. Both `generateSchema` and `generateValidateForm` are no-ops unless `generateFields` is also
+`true` — it gates them.
 
 ## Quick start
 
@@ -153,15 +166,19 @@ The root widget. Provides an `InheritedWidget` scope for descendant `ValidasiFor
 
 | Parameter | Description |
 |---|---|
-| `builder` | `Widget Function(BuildContext, SubmitHandler<T>)` — your UI |
+| `schema` | Required. `ValidasiSchema<T>` — builds your model `T` from the controller state on submit (use the generated `UserFields.schema`) |
+| `builder` | `Widget Function(BuildContext, ValidasiSubmit<T>)` — your UI |
 | `controller` | Optional. Pass your own `ValidasiFormController<T>` for external control |
-| `assembler` | Builds your model `T` from the controller state on submit (use the generated `assemble_YourModel`) |
+| `formValidator` | Optional. Custom form-level/cross-field validator; auto-discovered from the schema when `generateValidateForm` generated one |
 | `mode` | When fields first validate: `onSubmit` (default), `onBlur`, `onChange` |
 | `reValidateMode` | After first validation: `onChange` (default), `onBlur` |
 | `initialValues` | Optional `T` used to seed every registered field |
 | `shouldUnregister` | When `true`, fields auto-unregister on widget unmount; `false` (default) keeps values (wizards) |
 
-`SubmitHandler<T>` is `VoidCallback Function(void Function(T) onSubmit)` — call the returned `VoidCallback` from your button's `onPressed` to trigger submit with validation + assembly.
+`ValidasiSubmit<T>` is a callable class, not a plain function type — call it directly for sync
+submit (`submit((user) { ... })`), or use `submit.async((user) async { ... })` when any field has
+async rules (it awaits `validateAsync()` first; the sync path throws `StateError` if it hits an
+async rule).
 
 ### `ValidasiFormField<T, V>`
 
@@ -291,7 +308,9 @@ For external/imperative control. Lives on `ValidasiForm.of<T>(context)`. Methods
 | `validateField<V>(field)` | Validate one field |
 | `isFieldDirty<V>(field)` / `isFieldTouched<V>(field)` | Per-field state |
 | `markSubmitted()` | Set `isSubmitted = true` |
-| `submit(onSubmit)` | Returns a `VoidCallback` that validates, then calls `onSubmit(assembler(this))` |
+| `submit(onSubmit)` | Returns a `VoidCallback` that runs sync `validate()`, then calls `onSubmit(schema.allocate(this))` |
+| `submitAsync(onSubmit)` | Async counterpart — returns a `Future<void> Function()` that runs `validateAsync()` first |
+| `validateAsync()` / `validateFieldAsync<V>(field)` | Async counterparts of `validate()`/`validateField()` — await any async rules |
 | `reset()` | Restore initial values, clear all errors + touched + submitted |
 | `isValid` | `true` if every field has no errors |
 | `setFieldDisabled<V>(field, disabled)` | Enable/disable a field at runtime |
@@ -311,12 +330,13 @@ For external/imperative control. Lives on `ValidasiForm.of<T>(context)`. Methods
 
 ### Field errors
 
-Errors come back as a sealed `FieldError` hierarchy:
+Errors come back as a sealed `FieldError` hierarchy — currently a single variant,
+`FieldValidationError`, wrapping the underlying `ValidationError` (`rule`, `message`, `path`,
+`details`). Cross-field errors distributed by a form-level validator (see
+[Cross-field validation](#cross-field-validation)) arrive the same way, routed to whichever field
+name they're `path`-targeted at.
 
-- `FieldValidationError` — produced by the field's own rules
-- `FieldCrossError` — produced by a `crossValidator` across multiple fields; carries `crossFieldName` and `dependsOn` for UI
-
-`FieldErrors` groups them per field: `name`, `errors`, `isValid`, `hasCrossErrors`, `errorText`.
+`FieldErrors` groups them per field: `name`, `errors`, `isValid`, `errorText`.
 
 ## Validation modes
 
@@ -424,15 +444,28 @@ Array sub-fields are excluded from `getValues()` — only the parent list field 
 
 #### Object arrays
 
-When `validasi_gen` emits field classes with `withIndex(int)`, you can manage arrays of objects with full sub-field support:
+With `generateIndexedFields: true` in your build options, `validasi_gen` emits
+`indexedFields`/`reconstructItem`/`reconstructAll` static methods on the nested item's own fields
+class (e.g. `PersonFields` for a `List<Person>` field), which you wire into
+`appendArrayItem`/`insertArrayItem` so the controller can create and reconstruct each row's
+sub-fields:
 
 ```dart
-// index is the row number
-final nameField = PersonFields.name.withIndex(0);
-final ageField = PersonFields.age.withIndex(0);
+controller.appendArrayItem(
+  UserFields.previousPeople,
+  newPerson,
+  indexedFields: (index) => PersonFields.indexedFields<User>('previousPeople', index),
+  reconstructItem: (ctrl, index) =>
+      PersonFields.reconstructItem<User>(ctrl, UserFields.previousPeople, index),
+  reconstructAll: (ctrl) => PersonFields.reconstructAll<User>(ctrl, UserFields.previousPeople),
+);
+
+// Access an indexed sub-field, e.g. row 0's `name`
+final nameField = controller.getArraySubField(UserFields.previousPeople, 0, 'name');
 ```
 
-Each indexed field has `name = 'parentName[0].name'`, delegates `validate()` to the original field, and works with `ValidasiFormField<T, V>` in the widget tree.
+Each sub-field has `name = 'previousPeople[0].name'`, delegates `validate()` to the original leaf
+field, and works with `ValidasiFormField<T, V>` in the widget tree like any other field.
 
 ### Async validation
 
@@ -468,25 +501,77 @@ Set `disabled: true` on `ValidasiFormField` to skip validation, dirty/touched tr
 
 ### Cross-field validation
 
-Cross-field errors are returned alongside the field's own errors and surface as `FieldCrossError`, so you can render cross-field messages inline at the dependent field. With `validasi_gen`, define the rule as a top-level function and tag the field with `@ValidateWith`:
+Cross-field checks are defined with `@RefineFn` (or a cross-field sugar annotation like
+`@MatchesField`/`@RequiredAny`) on the model, not per-field. With `generateValidateForm: true`,
+`validasi_gen` emits `validateForm_User(ValidasiFormController<User> controller)`, which
+`ValidasiForm` auto-discovers and runs as its `formValidator` — cross-field errors are then
+distributed to whichever field they're `path`-targeted at, appearing alongside that field's own
+errors in `state.errors`/`controller.getErrors(field)`.
 
 ```dart
-String? _emailMatchesName(V? Function<V>(ValidasiField<User, V>) get) { ... }
+@ValidateClass()
+class SignUpForm {
+  @Validate<String>([Required(), MinLength(6)])
+  final String password;
 
-@Validate.string([MinLength(3)])
-@ValidateWith(_emailMatchesName, dependsOn: {#name})
-final String email;
+  @Validate<String>([Required()])
+  final String confirmPassword;
+
+  @RefineFn(dependsOn: ['password', 'confirmPassword'])
+  static void passwordsMatch(FailFn fail, {String? password, String? confirmPassword}) {
+    if (password != null && confirmPassword != null && password != confirmPassword) {
+      fail(message: 'Passwords do not match', path: ['confirmPassword']);
+    }
+  }
+
+  const SignUpForm({required this.password, required this.confirmPassword});
+}
 ```
 
-The generated `crossValidator` and `crossDependsOn` wire the error into the dependent field automatically.
+`@RefineFn` methods must be `static` — the generator emits a qualified call and has no instance to
+call it on. See the `validasi_gen`/`validasi_annotation` docs for the full set of cross-field sugar
+annotations.
 
 ## Manual fields (without codegen)
 
-`validasi_ui` does not require `validasi_gen` — you can implement `ValidasiField<T, V>` by hand. You'll typically want to:
+`validasi_ui` does not require `validasi_gen` — you can implement `ValidasiField<T, V>` and
+`ValidasiSchema<T>` by hand. Both are abstract classes with only a `const` constructor — there's no
+generative `ValidasiField(name: ..., extract: ..., validate: ...)` constructor, you subclass them:
 
-1. Declare a sealed field class (mirroring what `validasi_gen` would emit) holding static `const` instances.
-2. Implement `name`, `extract`, `validate`, and — for cross-field rules — `crossFieldKey`, `crossValidator`, and `crossDependsOn`.
-3. Write your own `assemble_User(ValidasiFormController<User> c)` that calls `c.getValue(...)` for each field.
+```dart
+class NameField extends ValidasiField<User, String> {
+  const NameField();
+
+  @override
+  String get name => 'name';
+
+  @override
+  String? extract(User owner) => owner.name;
+
+  @override
+  ValidasiResult<String> validate(String? value) =>
+      Validasi.string([Rules.string.minLength(2)]).validate(value);
+
+  // Optional — defaults to calling validate(); override for async rules.
+  @override
+  Future<ValidasiResult<String>> validateAsync(String? value) async => validate(value);
+}
+
+class UserSchema extends ValidasiSchema<User> {
+  const UserSchema();
+
+  @override
+  User allocate(ValidasiFieldReader<User> reader) => User(
+    name: reader.getValue(const NameField()) as String,
+    // ...one line per field
+  );
+}
+```
+
+Keep one `const` instance per field (mirroring how generated code exposes `UserFields.name`) since
+the controller keys its internal state off the field object. There's no `crossFieldKey`/
+`crossValidator`/`crossDependsOn` on manual fields — cross-field checks for hand-written fields go
+through `ValidasiForm`'s `formValidator` parameter instead, which receives the controller directly.
 
 This works, but it's boilerplate the generator removes. The generated path is the recommended one; reach for manual fields only when codegen isn't an option (e.g. dynamic schemas).
 
@@ -511,7 +596,7 @@ This works, but it's boilerplate the generator removes. The generated path is th
 | Manual `setError` (with `overwrite` control) | ✅ |
 | `clearErrors` / `clearAllErrors` | ✅ |
 | Scalar field arrays (`append`/`insert`/`remove`/`swap`) | ✅ |
-| Object field arrays (`withIndex` codegen) | ✅ |
+| Object field arrays (`generateIndexedFields` codegen) | ✅ |
 | `unregister` / `shouldUnregister` | ✅ |
 | Field focus API | 🔮 |
 

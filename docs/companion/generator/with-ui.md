@@ -30,9 +30,9 @@ targets:
 
 | Option | What it does |
 |--------|-------------|
-| `generateFields` | Emit `UserFields` sealed class — used in `ValidasiFormField(field: UserFields.name)` |
+| `generateFields` | Emit `UserFields` sealed class — used in `ValidasiFormField(field: UserFields.name)`. **Gates the two rows below** — turning it off silently drops `generateSchema`/`generateValidateForm` output too, even if those stay `true`. |
 | `generateSchema` | Emit `UserFields.schema` — passed to `ValidasiForm(schema: UserFields.schema)` |
-| `generateValidateForm` | Emit `validateForm_User(controller)` — form-aware validation that reads from controller state |
+| `generateValidateForm` | Emit `validateForm_User(controller)` — form-aware validation that reads from controller state. **Build-level only** — unlike the other flags, this one has no per-class `@ValidateClass(...)` override. |
 
 ## Model definition
 
@@ -51,7 +51,7 @@ class User {
   @Validate<String>([MinLength(5)])
   final String email;
 
-  @Validate<int>([MinLength(1)])
+  @Validate<int>([Positive()])
   final int age;
 
   const User({required this.name, required this.email, required this.age});

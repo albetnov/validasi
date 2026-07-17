@@ -29,7 +29,7 @@ class User {
   @Validate<String>([MinLength(6)])
   final String password;
 
-  @Validate<int>([MinLength(18)])
+  @Validate<int>([MoreThanEqual(18)])
   final int age;
 
   const User({required this.username, required this.password, required this.age});
