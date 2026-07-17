@@ -2,20 +2,13 @@
 
 > **Experimental** — API subject to change. Feedback and contributions are welcome!
 
-Code generator for [Validasi](https://pub.dev/packages/validasi). Turns `@ValidateClass()` and `@Validate(...)` annotations on a Dart model into a typed `XFields<V>` hierarchy, a `validate()` / `validateAsync()` extension, and (optionally) a form-aware `validateForm_X(ctrl)`.
+Code generator for [Validasi](https://pub.dev/packages/validasi). Turns `@ValidateClass()` and `@Validate<T>(...)` annotations on a Dart model into a typed `XFields<V>` hierarchy, a `validate()` / `validateAsync()` extension, and (optionally) a schema and a form-aware `validateForm_X(ctrl)`.
 
 ## Quick start
 
-`pubspec.yaml`:
-
-```yaml
-dependencies:
-  validasi: ^1.0.0-rc.1
-  validasi_annotation: ^0.1.0-dev.2
-
-dev_dependencies:
-  build_runner: ^2.4.0
-  validasi_gen: ^0.1.0-dev.2
+```bash
+dart pub add validasi validasi_annotation
+dart pub add --dev build_runner validasi_gen
 ```
 
 Source model:
@@ -28,7 +21,7 @@ part 'user.g.dart';
 
 @ValidateClass()
 class User {
-  @Validate.string([MinLength(3), MaxLength(100)])
+  @Validate<String>([MinLength(3), MaxLength(100)])
   final String email;
 
   const User({required this.email});
@@ -54,7 +47,7 @@ For every class annotated with `@ValidateClass`, the generator emits (into `*.g.
 | `class XFieldNameField extends XFields<String>` | per field | Leaf that runs the field's rules. |
 | `extension $XValidasi on X { validate(), validateAsync() }` | always | Whole-object validation. |
 | `extension $XValidasi on X { validateField<V>(field), validateFieldAsync<V>(field) }` | when `generateFields: true` | Per-field validation using a `XFields<V>` key. |
-| `X assemble_X(ValidasiFormController<X> ctrl)` | when `generateAssemble: true` | Materialise a `X` from a form controller. |
+| `ValidasiSchema<X>`, exposed as `XFields.schema` | when `generateSchema: true` | A reusable schema for the class, consumed by `validasi_ui` form controllers. |
 | `ValidasiResult<X> validateForm_X(ValidasiFormController<X> ctrl)` | when `generateValidateForm: true` | Form-aware validation that reads per-field values and runs refines. |
 
 A field named `name`, `extract`, `validate`, or `validateAsync` would collide with the identically-named instance member `XFields<V>` inherits from `FieldDescriptor`/`ValidasiField` — a class can't declare both a static and instance member sharing a name. For those field names only, the generator suffixes the static accessor with an underscore (e.g. `XFields.name_`) to dodge the collision; the field's runtime `.name` still reports its real, unmangled name.
@@ -70,24 +63,64 @@ targets:
       validasi_gen:validasi:
         options:
           generateFields: true
-          generateAssemble: true
+          generateSchema: true
           generateValidateForm: false
+          generateIndexedFields: false
 ```
 
 | Option | Default | What it controls |
 |---|---|---|
 | `generateFields` | `true` | Emit `XFields` sealed hierarchy + `validateField()` on the extension. |
-| `generateAssemble` | `true` | Emit `X assemble_X(ValidasiFormController<X> ctrl)`. |
+| `generateSchema` | `true` | Emit `ValidasiSchema<X>`, exposed as `XFields.schema`. |
 | `generateValidateForm` | `false` | Emit `ValidasiResult<X> validateForm_X(ValidasiFormController<X> ctrl)`. |
+| `generateIndexedFields` | `false` | Emit `indexedFields`/`reconstructItem`/`reconstructAll` static methods, for list-backed/repeatable form sections. |
 
-`generateValidateForm` is **off by default** because the emitted function references `ValidasiFormController`, which lives in the Flutter-dependent `validasi_ui` package. Flutter consumers opt in by setting it to `true` and importing `validasi_ui` in the source file. Pure-Dart packages leave it off.
+`generateSchema` and `generateValidateForm` only take effect while `generateFields` is also `true`
+— turning `generateFields` off (e.g. for a purely internal type) silently drops the schema and
+form validator too, even if you left those flags on.
 
-Per-class overrides always win:
+`generateValidateForm` and `generateIndexedFields` are **off by default** because the code they
+emit references `ValidasiFormController`/`IndexedField`, which live in the Flutter-dependent
+`validasi_ui` package. Flutter consumers opt in by setting the flag(s) to `true` and importing
+`validasi_ui` in the source file. Pure-Dart packages leave them off.
+
+Per-class overrides win over the build-level default for `generateFields`, `generateSchema`, and
+`generateIndexedFields` — but **not** `generateValidateForm`, which is build-level only:
 
 ```dart
-@ValidateClass(generateFields: false, generateAssemble: false)
+@ValidateClass(generateFields: false, generateSchema: false)
 class Internal { ... }
 ```
+
+## Custom & extensible rules
+
+Beyond the built-in rule catalog, four mechanisms extend what a `@Validate<T>([...])` list can do:
+
+| Rule | Use it when | Shape |
+|---|---|---|
+| `Inline` | a one-off synchronous check local to this field | `Inline(bool Function(T?) validator, {name, message, runOnNull})` — `validator` must be a `static` or top-level function |
+| `AsyncInline` | same, but needs `await` (an HTTP call, a DB lookup) | `AsyncInline(FutureOr<bool> Function(T?) validator, {name, message})` |
+| `CustomRule` | a reusable, parameterizable rule shared across fields/classes | subclass with a `static bool check(T? value, {...})` method |
+| `AsyncCustomRule` | same, but async | subclass with a `static FutureOr<bool> check(T? value, {...})` method |
+
+```dart
+class NoSpaces extends CustomRule<String> {
+  const NoSpaces({String? message, super.runOnNull})
+      : super(name: 'noSpaces', message: message);
+
+  static bool check(String? value) => value == null || !value.contains(' ');
+}
+
+@Validate<String>([MinLength(3), MaxLength(100), NoSpaces()])
+final String email;
+```
+
+For `CustomRule`/`AsyncCustomRule`, `check`'s first parameter must be positional (the value); any
+further parameters must be named and must match a field name declared on the rule subclass — their
+values are read off the const rule instance and threaded through as config.
+
+Any `AsyncInline`/`AsyncCustomRule` rule anywhere on a class makes its generated `validate()`
+throw `StateError` — use `validateAsync()` for that class from then on.
 
 ## Refine (cross-field validation)
 
@@ -112,6 +145,33 @@ class User {
 ```
 
 The method must be `static` — the generator calls it via a fully-qualified static reference (`ClassName.methodName(...)`) from both `validate()`/`validateAsync()` and `validateForm_X(ctrl)`, passing field values as named arguments (`ctrl.getValue(...)` in the form case). Return `Future<void>` for async refines — the generator detects it and inserts `await`.
+
+### Cross-field sugar
+
+For the common cross-field shapes, a class-level annotation desugars into a synthetic `@RefineFn`
+so you don't have to hand-write one. They're stackable:
+
+```dart
+@ValidateClass(generateFields: false, generateSchema: false)
+@RequiredAny(['email', 'phone'])
+@MatchesField(field: 'password', matchesField: 'passwordConfirmation')
+class ContactInfo {
+  final String? email;
+  final String? phone;
+  final String? password;
+  final String? passwordConfirmation;
+  const ContactInfo({this.email, this.phone, this.password, this.passwordConfirmation});
+}
+```
+
+| Annotation | Checks |
+|---|---|
+| `RequiredAny(fields, {message})` | at least one of `fields` is present |
+| `RequiredOneOf(fields, {message})` | exactly one of `fields` is present (XOR) |
+| `RequiredAll(fields, {message})` | if any of `fields` is present, all are present |
+| `DependsOn({field, dependsOn, message})` | if `field` is present, `dependsOn` is present |
+| `MutuallyExclusive(fieldA, fieldB, {message})` | not both present |
+| `MatchesField({field, matchesField, message})` | the two fields are equal |
 
 ### Wiring `validateForm_X` into `ValidasiForm`
 

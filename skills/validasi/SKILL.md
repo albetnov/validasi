@@ -194,9 +194,12 @@ solving one problem — a dedicated skill will cover these in depth; for now, ju
 
 - **`validasi_annotation` + `validasi_gen`** — annotate a class (`@Validate`, rule annotations) and
   generate typed validators at build time with `build_runner`. Reach for it when you want
-  compile-time schemas instead of hand-written ones.
+  compile-time schemas instead of hand-written ones. See the `validasi-gen` skill for build flags
+  and codegen-specific rule extensibility (Inline, AsyncInline, CustomRule, RefineFn).
 - **`validasi_ui`** — headless form management for Flutter (controllers, signals, widgets), which can
   bind generated field classes or manual descriptors. Reach for it when wiring validation into forms.
+  See the `validasi-ui` skill for controller ownership/disposal, register/unregister, and
+  `shouldUnregister` lifecycle rules.
 
 ## Quick reference
 
