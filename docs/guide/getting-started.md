@@ -115,8 +115,10 @@ See the dedicated guides for detailed usage:
 
 - [Code Generation](/companion/generator/overview) — using `validasi_annotation` + `validasi_gen`
 - [Form Management](/companion/form-management/overview) — using `validasi_ui` for Flutter forms
-- [Claude Code Skills](/companion/skills) — if you're using Claude Code, these ship with the same
-  guidance baked in so it writes correct `validasi`/`validasi_gen`/`validasi_ui` code by default
+- [Agent Skills](/companion/skills) — if you use an AI coding agent (Claude Code, Cursor, Codex,
+  and others all support the open `SKILL.md` format), these ship with the same guidance baked in
+  so it writes correct `validasi`/`validasi_gen`/`validasi_ui` code by default. Install with
+  `npx skills add albetnov/validasi --all`
 
 ## Community & Support
 
