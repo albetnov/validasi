@@ -5,17 +5,17 @@ description: >-
   validasi_annotation, instead of hand-writing validasi schemas. Use this whenever the user
   annotates a class with @ValidateClass or @Validate<T>, runs build_runner for validation code,
   asks which validasi_gen build flag to turn on (generateFields/generateSchema/generateValidateForm/
-  generateIndexedFields), needs a *.g.dart validator regenerated, or wants a custom, async, or
+  generateIndexedFields), needs a *.validasi.dart validator regenerated, or wants a custom, async, or
   cross-field rule wired into a generated class — Inline, AsyncInline, CustomRule, AsyncCustomRule,
   RefineFn, or the cross-field sugar annotations (@RequiredAny, @MatchesField, etc). Reach for this
-  skill whenever validasi_gen, validasi_annotation, @ValidateClass, or a generated validasi *.g.dart
+  skill whenever validasi_gen, validasi_annotation, @ValidateClass, or a generated validasi *.validasi.dart
   file appears in the code or request, even if the user doesn't name the package explicitly.
 ---
 
 # Validasi Gen
 
 `validasi_gen` is the `build_runner` code generator for `validasi`: annotate a plain Dart class
-with `@ValidateClass` and field-level `@Validate<T>([...])`, run the build, and get a `*.g.dart`
+with `@ValidateClass` and field-level `@Validate<T>([...])`, run the build, and get a `*.validasi.dart`
 part file with a sealed field hierarchy plus `validate()`/`validateAsync()` extension methods —
 instead of hand-writing a `Validasi.*` builder. This skill is the curated, always-in-context
 reference for the codegen decisions; deep catalogs live in `references/`.
@@ -31,7 +31,7 @@ dart pub add --dev build_runner validasi_gen
 import 'package:validasi/validasi.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 
-part 'user.g.dart';
+part 'user.validasi.dart';
 
 @ValidateClass()
 class User {
@@ -44,7 +44,7 @@ class User {
 
 Run `dart run build_runner build --delete-conflicting-outputs` (or `watch`) to (re)generate. The
 builder declares `auto_apply: dependents` and `build_to: source`, so any package depending on
-`validasi_gen` gets its `.g.dart` written next to the source file automatically — the `part`
+`validasi_gen` gets its `.validasi.dart` written next to the source file automatically — the `part`
 directive is the only manual wiring needed.
 
 ## Build flags

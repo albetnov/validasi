@@ -47,7 +47,7 @@ Define the model and its rules in one place:
 import 'package:validasi/validasi.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 
-part 'user.g.dart';
+part 'user.validasi.dart';
 
 @ValidateClass()
 class User {
@@ -74,7 +74,7 @@ Run the generator:
 dart run build_runner build
 ```
 
-This produces `user.g.dart` containing the `UserFields<V>` sealed hierarchy and, because
+This produces `user.validasi.dart` containing the `UserFields<V>` sealed hierarchy and, because
 `generateSchema`/`generateValidateForm` are on, `UserFields.schema` (pass straight to
 `ValidasiForm(schema: UserFields.schema)`) and `validateForm_User(controller)` for the cross-field
 rules. Both `generateSchema` and `generateValidateForm` are no-ops unless `generateFields` is also

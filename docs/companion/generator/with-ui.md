@@ -41,7 +41,7 @@ targets:
 import 'package:validasi/validasi.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 
-part 'user.g.dart';
+part 'user.validasi.dart';
 
 @ValidateClass()
 class User {
@@ -66,7 +66,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 ## What gets generated
 
-The generator produces `user.g.dart` with:
+The generator produces `user.validasi.dart` with:
 
 ```dart
 // Sealed field key hierarchy — one const per field

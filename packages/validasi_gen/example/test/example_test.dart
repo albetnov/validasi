@@ -567,7 +567,7 @@ void main() {
     });
 
     test('opt-out suppresses XFields from generated source', () {
-      final generated = File('lib/example.g.dart').readAsStringSync();
+      final generated = File('lib/example.validasi.dart').readAsStringSync();
       expect(generated, isNot(contains('class InternalFooFields')));
       expect(generated, isNot(contains('InternalFooFields<')));
       expect(generated, isNot(contains('validateField<InternalFooFields')));

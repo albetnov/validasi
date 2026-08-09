@@ -10,15 +10,15 @@ class UserSummary extends StatelessWidget {
     return ValidasiWatch.form<User>(
       builder: (context, controller) {
         final preview = controller.watch<String, String>(
-          [UserFields.name, UserFields.email],
+          [UserFields.name_, UserFields.email],
           (values) {
-            final name = values[UserFields.name] ?? '?';
+            final name = values[UserFields.name_] ?? '?';
             final email = values[UserFields.email] ?? '?';
             return '$name <$email>';
           },
         );
 
-        final nameSignal = controller.watchValue(UserFields.name);
+        final nameSignal = controller.watchValue(UserFields.name_);
         final emailSignal = controller.watchValue(UserFields.email);
         final ageSignal = controller.watchValue(UserFields.age);
         final isReady = nameSignal.value != null &&

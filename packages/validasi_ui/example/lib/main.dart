@@ -67,7 +67,7 @@ class UserFormPage extends StatelessWidget {
               const UserSummary(),
               const SizedBox(height: 16),
               ValidasiTextField(
-                field: UserFields.name,
+                field: UserFields.name_,
                 builder: (context, state, ctrl) => TextField(
                   controller: ctrl,
                   onChanged: state.onChanged,

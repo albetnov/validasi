@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:validasi/validasi.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 
-part 'example.g.dart';
+part 'example.validasi.dart';
 
 // Custom rule example — define a class extending CustomRule<T>,
 // with a static bool check(T? value, {required ...}) method.

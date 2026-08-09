@@ -1,3 +1,12 @@
+## 1.0.0-rc.1
+
+### Breaking Changes
+
+- Generated output extension changed from `.g.dart` to `.validasi.dart` to avoid build
+  conflicts with other `build_runner` generators (e.g. `json_serializable`) sharing `.g.dart`.
+  Existing `part 'x.g.dart';` directives must be updated to `part 'x.validasi.dart';` and
+  projects must regenerate (`dart run build_runner build --delete-conflicting-outputs`).
+
 ## 0.1.0-dev.6
 
 ### Added

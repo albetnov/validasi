@@ -37,7 +37,7 @@ obviously-named field doesn't compile, check whether it's one of these four rese
 
 ## Regenerate after any annotation change
 
-Because `.g.dart` is a checked-in-adjacent generated `part` file, editing an annotation
+Because `.validasi.dart` is a checked-in-adjacent generated `part` file, editing an annotation
 (`@Validate<T>([...])`, `@ValidateClass(...)`, a `@RefineFn`, adding a field) has no effect until
 you rerun the build:
 
@@ -46,7 +46,7 @@ dart run build_runner build --delete-conflicting-outputs
 ```
 
 Prefer `--delete-conflicting-outputs` over debugging stale build errors — a renamed or removed
-field can leave an orphaned `.g.dart` output that the builder refuses to overwrite silently.
+field can leave an orphaned `.validasi.dart` output that the builder refuses to overwrite silently.
 
 ## Docs vs. source
 

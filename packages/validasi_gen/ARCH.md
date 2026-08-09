@@ -49,7 +49,7 @@
                │
                ▼
 ┌───────────────────────────────┐
-│ Output: user.g.dart             │
+│ Output: user.validasi.dart             │
 │   sealed class UserFields<V> …  │
 │   class _UserSchema … { … }     │
 │   extension $UserValidasi on User {
@@ -90,7 +90,7 @@ The `build_runner` entry point. It:
 2. Instantiates `ValidasiGenerator` with those four as its `*Default` constructor parameters.
 3. Reads the source library and runs the generator.
 4. If the generator returns non-empty output, wraps it in the `part of '…';` header and runs it through `DartFormatter` (page width 80, latest language version) — falling back to the unformatted source if formatting throws.
-5. Writes to `*.g.dart` next to the source.
+5. Writes to `*.validasi.dart` next to the source.
 
 ### 3.2 `lib/src/generator.dart`
 
@@ -575,7 +575,7 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 import 'package:validasi_ui/validasi_ui.dart';
 
-part 'user.g.dart';
+part 'user.validasi.dart';
 
 @ValidateClass()
 class User { ... }

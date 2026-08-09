@@ -17,7 +17,7 @@ Source model:
 import 'package:validasi/validasi.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 
-part 'user.g.dart';
+part 'user.validasi.dart';
 
 @ValidateClass()
 class User {
@@ -38,7 +38,7 @@ You now have `UserFields<V>`, `UserNameField`, `UserEmailField`, and an `extensi
 
 ## What you get
 
-For every class annotated with `@ValidateClass`, the generator emits (into `*.g.dart` as a `part of` file):
+For every class annotated with `@ValidateClass`, the generator emits (into `*.validasi.dart` as a `part of` file):
 
 | Artifact | When | Purpose |
 |---|---|---|

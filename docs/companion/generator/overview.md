@@ -21,7 +21,7 @@ Annotate a model:
 import 'package:validasi/validasi.dart';
 import 'package:validasi_annotation/validasi_annotation.dart';
 
-part 'user.g.dart';
+part 'user.validasi.dart';
 
 @ValidateClass()
 class User {
@@ -44,7 +44,7 @@ Run the generator:
 dart run build_runner build
 ```
 
-This produces `user.g.dart` containing a sealed field class hierarchy and validation
+This produces `user.validasi.dart` containing a sealed field class hierarchy and validation
 extension methods on `User`.
 
 ## Annotation rules vs `Rules.*`

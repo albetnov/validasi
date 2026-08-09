@@ -31,6 +31,7 @@ include: package:lints/recommended.yaml
 analyzer:
   exclude:
     - "**/*.g.dart" # Ignore all files ending with .g.dart
+    - "**/*.validasi.dart" # Ignore all files ending with .validasi.dart
     - "build/**"    # Ignore the entire 'build' directory
     - ".dart_tool/build/**" # Ignore the build directory under .dart_tool
     - "**/*.mocks.dart" # Ignore all files ending with .mocks.dart

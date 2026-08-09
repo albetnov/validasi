@@ -29,7 +29,7 @@ void main() {
       expect(
           builder.buildExtensions,
           equals({
-            '.dart': ['.g.dart']
+            '.dart': ['.validasi.dart']
           }));
     });
   });

@@ -44,6 +44,14 @@ class InternalOnly {
 
 Per-class settings take precedence over `build.yaml` for the three flags that support them.
 
+## Name-collision suffixing
+
+A field literally named `name`, `extract`, `validate`, or `validateAsync` collides with an
+instance member the generated `XFields` hierarchy requires, so the generator suffixes the
+static accessor with an underscore (`UserFields.name_` instead of `UserFields.name`). The
+field's runtime `.name` getter still reports the real, unsuffixed name — only the static
+accessor identifier changes.
+
 ## Recommended configs
 
 ### Dart-only (no Flutter, no forms)

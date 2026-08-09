@@ -5,6 +5,6 @@ builders:
       - validasiBuilder
     build_extensions:
       ".dart":
-        - ".g.dart"
+        - ".validasi.dart"
     auto_apply: dependents
     build_to: source

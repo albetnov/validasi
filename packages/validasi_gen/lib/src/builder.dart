@@ -18,7 +18,7 @@ class _ValidasiBuilder implements Builder {
 
   @override
   Map<String, List<String>> get buildExtensions => const {
-        '.dart': ['.g.dart'],
+        '.dart': ['.validasi.dart'],
       };
 
   @override
@@ -45,7 +45,7 @@ class _ValidasiBuilder implements Builder {
     if (output.isEmpty) return;
 
     final inputFile = buildStep.inputId.pathSegments.last;
-    final outputId = buildStep.inputId.changeExtension('.g.dart');
+    final outputId = buildStep.inputId.changeExtension('.validasi.dart');
 
     final unformatted = '''// GENERATED CODE - DO NOT MODIFY BY HAND
 
