@@ -1,3 +1,11 @@
+## 1.0.0-rc.6
+
+### Changed
+
+- Widened the `build_runner` dev constraint to `>=2.4.12 <3.0.0` so the workspace
+  resolves the latest `build_runner` 2.x alongside newer `analyzer`/`test` releases
+  (e.g. in Flutter projects using `validasi_gen`). No runtime changes.
+
 ## 1.0.0-rc.5
 
 ### Fixed
