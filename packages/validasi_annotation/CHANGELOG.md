@@ -1,3 +1,8 @@
+## 1.0.0-rc.1
+
+- Promote `0.1.0-dev.5` to release candidate. No API changes; the annotation
+  surface is considered stable for `1.0.0`.
+
 ## 0.1.0-dev.5
 
 ### Added
