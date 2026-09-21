@@ -1,3 +1,14 @@
+## 1.0.0-rc.1
+
+- Promote `0.1.0-dev.6` to release candidate. No API changes; the form
+  management surface is considered stable for `1.0.0`.
+
+### Changed
+
+- Widened `test` dev constraint to `^1.24.0` (was `^1.31.0`) so the package
+  resolves the latest `test` 1.x in any project.
+- Bumped `validasi` dependency to `^1.0.0-rc.6`.
+
 ## 0.1.0-dev.6
 
 ### Changed
