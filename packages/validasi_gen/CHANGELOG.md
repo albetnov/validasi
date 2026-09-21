@@ -1,3 +1,15 @@
+## 1.0.0-rc.2
+
+### Changed
+
+- Widened `analyzer` to `>=12.0.0 <15.0.0` so the generator resolves alongside
+  other code generators requiring newer `analyzer` releases (e.g. `drift_dev`)
+  and the latest `test`/`mockito`/`build_runner` versions. Previously capped at
+  `^12.0.0`, which conflicted in Flutter projects and with `analyzer` 13/14.
+- Widened `build_runner` dev constraint to `>=2.4.12 <3.0.0`.
+- Bumped `validasi` dependency to `^1.0.0-rc.6` and `validasi_annotation`
+  dependency to `^1.0.0-rc.1`.
+
 ## 1.0.0-rc.1
 
 ### Breaking Changes
