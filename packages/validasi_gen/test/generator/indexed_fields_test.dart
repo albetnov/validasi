@@ -62,9 +62,10 @@ Future<void> main() async {
     });
 
     test('reconstructItem reads sub-fields to construct object', () {
-      expect(output, contains('ctrl.getArraySubField(field, index, \'name\')'));
       expect(
-          output, contains('ctrl.getArraySubField(field, index, \'count\')'));
+          output, contains('ctrl.getArraySubField(field, index, \'name\')!'));
+      expect(
+          output, contains('ctrl.getArraySubField(field, index, \'count\')!'));
       expect(output, contains('return Struct('));
       expect(output, contains('name: ctrl.getValue('));
       expect(output, contains('count: ctrl.getValue('));

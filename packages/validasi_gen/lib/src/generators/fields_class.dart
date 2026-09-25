@@ -368,7 +368,7 @@ Method _buildReconstructItemMethod(
     final isNullable = valueType.endsWith('?');
     constructorArgs.add(
       '$fieldName: ctrl.getValue('
-      'ctrl.getArraySubField(field, index, \'$fieldName\'))'
+      'ctrl.getArraySubField(field, index, \'$fieldName\')!)'
       '${isNullable ? '' : ' as $valueType'}',
     );
   }
