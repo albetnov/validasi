@@ -327,7 +327,7 @@ Method _buildIndexedFieldsMethod(
   }
 
   final body = StringBuffer();
-  body.writeln('return <ValidasiField<FormType, dynamic>>[');
+  body.writeln('return <IndexedFieldDescriptor<FormType>>[');
   for (var i = 0; i < entries.length; i++) {
     body.write(entries[i]);
     if (i < entries.length - 1) {
@@ -342,7 +342,7 @@ Method _buildIndexedFieldsMethod(
     m.name = 'indexedFields';
     m.static = true;
     m.types.add(refer('FormType'));
-    m.returns = refer('List<ValidasiField<FormType, dynamic>>');
+    m.returns = refer('List<IndexedFieldDescriptor<FormType>>');
     m.requiredParameters.add(Parameter((p) {
       p.name = 'parentPath';
       p.type = refer('String');
@@ -368,7 +368,7 @@ Method _buildReconstructItemMethod(
     final isNullable = valueType.endsWith('?');
     constructorArgs.add(
       '$fieldName: ctrl.getValue('
-      'ctrl.getArraySubField(field, index, \'$fieldName\')!)'
+      'ctrl.getArraySubField<$valueType>(field, index, \'$fieldName\')!)'
       '${isNullable ? '' : ' as $valueType'}',
     );
   }

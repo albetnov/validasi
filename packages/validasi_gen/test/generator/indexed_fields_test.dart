@@ -29,7 +29,7 @@ Future<void> main() async {
       expect(
         output,
         contains(
-          'static List<ValidasiField<FormType, dynamic>> indexedFields<FormType>',
+          'static List<IndexedFieldDescriptor<FormType>> indexedFields<FormType>',
         ),
       );
       expect(output, contains('String parentPath'));
@@ -38,6 +38,7 @@ Future<void> main() async {
 
     test('includes IndexedField entries for each field', () {
       expect(output, contains('IndexedField<FormType, String>'));
+      expect(output, contains('IndexedField<FormType, int>'));
       expect(output, contains("fieldName: 'name'"));
       expect(output, contains("fieldName: 'count'"));
     });
@@ -63,9 +64,15 @@ Future<void> main() async {
 
     test('reconstructItem reads sub-fields to construct object', () {
       expect(
-          output, contains('ctrl.getArraySubField(field, index, \'name\')!'));
+          output,
+          contains(
+            'ctrl.getArraySubField<String>(field, index, \'name\')!',
+          ));
       expect(
-          output, contains('ctrl.getArraySubField(field, index, \'count\')!'));
+          output,
+          contains(
+            'ctrl.getArraySubField<int>(field, index, \'count\')!',
+          ));
       expect(output, contains('return Struct('));
       expect(output, contains('name: ctrl.getValue('));
       expect(output, contains('count: ctrl.getValue('));
