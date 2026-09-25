@@ -27,7 +27,7 @@ class _ArrayItemField<T, V> extends ValidasiField<T, V> {
 
 /// Internal structure describing how to index and reconstruct object-array items.
 class _ObjectArrayStructure<T> {
-  final List<ValidasiField<T, dynamic>> Function(int index) indexedFields;
+  final List<IndexedFieldDescriptor<T>> Function(int index) indexedFields;
   final dynamic Function(ValidasiFormController<T>, int) reconstructItem;
   final List<dynamic> Function(ValidasiFormController<T>) reconstructAll;
 
@@ -170,7 +170,7 @@ class ValidasiArrayRegistry<T> {
   void appendArrayItem<V>(
     ValidasiField<T, List<V>> field,
     V value, {
-    List<ValidasiField<T, dynamic>> Function(int index)? indexedFields,
+    List<IndexedFieldDescriptor<T>> Function(int index)? indexedFields,
     dynamic Function(ValidasiFormController<T>, int)? reconstructItem,
     List<dynamic> Function(ValidasiFormController<T>)? reconstructAll,
   }) {
@@ -195,7 +195,7 @@ class ValidasiArrayRegistry<T> {
     ValidasiField<T, List<V>> field,
     int index,
     V value, {
-    List<ValidasiField<T, dynamic>> Function(int index)? indexedFields,
+    List<IndexedFieldDescriptor<T>> Function(int index)? indexedFields,
     dynamic Function(ValidasiFormController<T>, int)? reconstructItem,
     List<dynamic> Function(ValidasiFormController<T>)? reconstructAll,
   }) {
@@ -224,11 +224,10 @@ class ValidasiArrayRegistry<T> {
       }
       if (structure != null) {
         final subFields = structure.indexedFields(index);
-        for (final subField in subFields) {
-          final existingField = _ctx.fieldByName(subField.name);
+        for (final descriptor in subFields) {
+          final existingField = _ctx.fieldByName(descriptor.name);
           if (existingField == null) continue;
-          final indexedField = existingField as IndexedField<T, dynamic>;
-          final subValue = indexedField.extractFromItem(list[index]);
+          final subValue = descriptor.extractFromItem(list[index]);
           final fc = _ctx.fieldSignal(existingField);
           if (fc != null) {
             fc.setInitialValue(subValue);
@@ -303,11 +302,10 @@ class ValidasiArrayRegistry<T> {
     for (var i = 0; i < list.length; i++) {
       if (structure != null) {
         final subFields = structure.indexedFields(i);
-        for (final subField in subFields) {
-          _ctx.register(subField);
+        for (final descriptor in subFields) {
           final item = list[i];
-          final indexedField = subField as IndexedField<T, dynamic>;
-          final subValue = indexedField.extractFromItem(item);
+          final subValue = descriptor.extractFromItem(item);
+          final subField = descriptor.register(_ctx.register, subValue);
           final fc = _ctx.fieldSignal(subField)!;
           fc.setInitialValue(subValue);
           _arrayItemFields.add(subField);
@@ -334,10 +332,9 @@ class ValidasiArrayRegistry<T> {
     final newSubs = <ValidasiField<T, dynamic>>[];
     if (structure != null) {
       final subFields = structure.indexedFields(newIndex);
-      for (final subField in subFields) {
-        _ctx.register(subField);
-        final indexedField = subField as IndexedField<T, dynamic>;
-        final subValue = indexedField.extractFromItem(list[newIndex]);
+      for (final descriptor in subFields) {
+        final subValue = descriptor.extractFromItem(list[newIndex]);
+        final subField = descriptor.register(_ctx.register, subValue);
         final fc = _ctx.fieldSignal(subField)!;
         fc.setInitialValue(subValue);
         _arrayItemFields.add(subField);

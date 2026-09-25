@@ -9,6 +9,7 @@ import 'package:validasi/validasi.dart';
 import 'package:validasi_ui/src/controller/array_field_names.dart';
 import 'package:validasi_ui/src/controller/array_registry.dart';
 import 'package:validasi_ui/src/controller/async_coordinator.dart';
+import 'package:validasi_ui/src/controller/indexed_field.dart';
 import 'package:validasi_ui/src/controller/watch_mixin.dart';
 import 'package:validasi_ui/src/models/error.dart';
 import 'package:validasi_ui/src/signals/field_signals.dart';
@@ -370,7 +371,7 @@ class ValidasiFormController<T> extends ChangeNotifier
   void appendArrayItem<V>(
     ValidasiField<T, List<V>> field,
     V value, {
-    List<ValidasiField<T, dynamic>> Function(int index)? indexedFields,
+    List<IndexedFieldDescriptor<T>> Function(int index)? indexedFields,
     dynamic Function(ValidasiFormController<T>, int)? reconstructItem,
     List<dynamic> Function(ValidasiFormController<T>)? reconstructAll,
   }) {
@@ -388,7 +389,7 @@ class ValidasiFormController<T> extends ChangeNotifier
     ValidasiField<T, List<V>> field,
     int index,
     V value, {
-    List<ValidasiField<T, dynamic>> Function(int index)? indexedFields,
+    List<IndexedFieldDescriptor<T>> Function(int index)? indexedFields,
     dynamic Function(ValidasiFormController<T>, int)? reconstructItem,
     List<dynamic> Function(ValidasiFormController<T>)? reconstructAll,
   }) {

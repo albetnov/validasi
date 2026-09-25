@@ -21,7 +21,7 @@ class _PersonListField extends ValidasiField<String, List<_Person>> {
       ValidasiResult.success(value as List<_Person>);
 }
 
-List<ValidasiField<String, dynamic>> _indexedFields(int index) {
+List<IndexedFieldDescriptor<String>> _indexedFields(int index) {
   return [
     IndexedField<String, String>(
       fieldName: 'name',
@@ -61,8 +61,12 @@ List<ValidasiField<String, dynamic>> _indexedFields(int index) {
 dynamic _reconstructItem(ValidasiFormController<String> ctrl, int index) {
   const field = _PersonListField();
   return _Person(
-    name: ctrl.getValue(ctrl.getArraySubField(field, index, 'name')!),
-    age: ctrl.getValue(ctrl.getArraySubField(field, index, 'age')!),
+    name: ctrl.getValue(
+      ctrl.getArraySubField<String>(field, index, 'name')!,
+    )!,
+    age: ctrl.getValue(
+      ctrl.getArraySubField<int>(field, index, 'age')!,
+    )!,
   );
 }
 

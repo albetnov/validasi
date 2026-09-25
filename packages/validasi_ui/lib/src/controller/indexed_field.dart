@@ -1,6 +1,25 @@
 import 'package:validasi/validasi.dart';
 
-class IndexedField<T, V> extends ValidasiField<T, V> {
+typedef IndexedFieldRegistrar<T> = void Function<V>(
+  ValidasiField<T, V> field, {
+  V? initialValue,
+});
+
+/// A value-type-erased indexed field that preserves its concrete value type
+/// when it registers itself with a controller.
+abstract interface class IndexedFieldDescriptor<T> {
+  String get name;
+
+  Object? extractFromItem(dynamic item);
+
+  ValidasiField<T, dynamic> register(
+    IndexedFieldRegistrar<T> registrar,
+    Object? initialValue,
+  );
+}
+
+class IndexedField<T, V> extends ValidasiField<T, V>
+    implements IndexedFieldDescriptor<T> {
   final String _name;
   final ValidasiResult<V> Function(V?) _validateFn;
   final Future<ValidasiResult<V>> Function(V?) _validateAsyncFn;
@@ -24,7 +43,17 @@ class IndexedField<T, V> extends ValidasiField<T, V> {
   @override
   V? extract(T owner) => null;
 
+  @override
   V? extractFromItem(dynamic item) => _extractItemFn(item);
+
+  @override
+  ValidasiField<T, dynamic> register(
+    IndexedFieldRegistrar<T> registrar,
+    Object? initialValue,
+  ) {
+    registrar(this, initialValue: initialValue as V);
+    return this;
+  }
 
   @override
   ValidasiResult<V> validate(V? value) => _validateFn(value);

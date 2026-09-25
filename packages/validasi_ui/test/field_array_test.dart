@@ -64,7 +64,7 @@ class _PersonListField extends ValidasiField<String, List<_Person>> {
       ValidasiResult.success(value as List<_Person>);
 }
 
-List<ValidasiField<String, dynamic>> _indexedFields(int index) {
+List<IndexedFieldDescriptor<String>> _indexedFields(int index) {
   return [
     IndexedField<String, String>(
       fieldName: _nameField.name,
@@ -88,8 +88,12 @@ List<ValidasiField<String, dynamic>> _indexedFields(int index) {
 dynamic _reconstructItem(ValidasiFormController<String> ctrl, int index) {
   const field = _PersonListField();
   return _Person(
-    name: ctrl.getValue(ctrl.getArraySubField(field, index, 'name')!),
-    age: ctrl.getValue(ctrl.getArraySubField(field, index, 'age')!),
+    name: ctrl.getValue(
+      ctrl.getArraySubField<String>(field, index, 'name')!,
+    )!,
+    age: ctrl.getValue(
+      ctrl.getArraySubField<int>(field, index, 'age')!,
+    )!,
   );
 }
 
@@ -362,8 +366,37 @@ void main() {
         expect(controller.getValue(field), hasLength(1));
         expect(controller.getValue(field)![0].name, 'Alice');
 
-        final nameField = controller.getArraySubField(field, 0, 'name')!;
+        final nameField =
+            controller.getArraySubField<String>(field, 0, 'name')!;
         expect(controller.getValue(nameField), 'Alice');
+      });
+
+      test('indexed sub-fields preserve their concrete signal types', () {
+        final controller = _makeController();
+        const field = _PersonListField();
+
+        controller.appendArrayItem(
+          field,
+          const _Person(name: 'Alice', age: 30),
+          indexedFields: _indexedFields,
+          reconstructItem: _reconstructItem,
+          reconstructAll: _reconstructAll,
+        );
+
+        final nameField =
+            controller.getArraySubField<String>(field, 0, 'name')!;
+        final ageField = controller.getArraySubField<int>(field, 0, 'age')!;
+
+        expect(
+          controller.getFieldController(nameField),
+          isA<ValidasiFieldSignals<String>>(),
+        );
+        expect(
+          controller.getFieldController(ageField),
+          isA<ValidasiFieldSignals<int>>(),
+        );
+        expect(controller.getFieldController(nameField).value, 'Alice');
+        expect(controller.getFieldController(ageField).value, 30);
       });
 
       test('appendArrayItem sets initial values from object', () {
@@ -560,12 +593,19 @@ void main() {
           reconstructAll: _reconstructAll,
         );
 
-        final nameField = controller.getArraySubField(field, 0, 'name')!;
+        final nameField =
+            controller.getArraySubField<String>(field, 0, 'name')!;
         controller.setValue(nameField, 'Changed');
 
         controller.reset();
 
-        expect(controller.getValue(nameField), 'Alice');
+        final rebuiltNameField =
+            controller.getArraySubField<String>(field, 0, 'name')!;
+        expect(
+          controller.getFieldController(rebuiltNameField),
+          isA<ValidasiFieldSignals<String>>(),
+        );
+        expect(controller.getValue(rebuiltNameField), 'Alice');
       });
     });
   });

@@ -88,7 +88,7 @@ ValidasiResult<String> _validateTitle(String? value) {
   return ValidasiResult<String>.success(value);
 }
 
-List<ValidasiField<_Form, dynamic>> _indexedFields(int index) {
+List<IndexedFieldDescriptor<_Form>> _indexedFields(int index) {
   return [
     IndexedField<_Form, String>(
       fieldName: 'title',
@@ -101,7 +101,8 @@ List<ValidasiField<_Form, dynamic>> _indexedFields(int index) {
 }
 
 _Item _reconstructItem(ValidasiFormController<_Form> ctrl, int index) {
-  final titleField = ctrl.getArraySubField(_itemsField, index, 'title')!;
+  final titleField =
+      ctrl.getArraySubField<String>(_itemsField, index, 'title')!;
   return _Item(title: ctrl.getValue(titleField) as String);
 }
 
@@ -138,7 +139,8 @@ void main() {
       reconstructAll: _reconstructAll,
     );
 
-    final titleField = controller.getArraySubField(_itemsField, 0, 'title')!;
+    final titleField =
+        controller.getArraySubField<String>(_itemsField, 0, 'title')!;
     controller.setValue(titleField, 'After');
 
     final form = const _FormSchema().allocate(controller);
@@ -160,7 +162,8 @@ void main() {
 
   test('validate reads current indexed values for an object-array parent', () {
     final controller = _makeControllerWithItem();
-    final titleField = controller.getArraySubField(_itemsField, 0, 'title')!;
+    final titleField =
+        controller.getArraySubField<String>(_itemsField, 0, 'title')!;
     controller.setValue(titleField, 'invalid');
 
     expect(controller.validate(), isFalse);
@@ -176,7 +179,8 @@ void main() {
   test('validateAsync reads current indexed values for an object-array parent',
       () async {
     final controller = _makeControllerWithItem();
-    final titleField = controller.getArraySubField(_itemsField, 0, 'title')!;
+    final titleField =
+        controller.getArraySubField<String>(_itemsField, 0, 'title')!;
     controller.setValue(titleField, 'invalid');
 
     expect(await controller.validateAsync(), isFalse);
@@ -188,7 +192,8 @@ void main() {
   test('validateField reads current indexed values for an object-array parent',
       () {
     final controller = _makeControllerWithItem();
-    final titleField = controller.getArraySubField(_itemsField, 0, 'title')!;
+    final titleField =
+        controller.getArraySubField<String>(_itemsField, 0, 'title')!;
     controller.setValue(titleField, 'invalid');
 
     expect(controller.validateField(_itemsField), isFalse);
@@ -199,7 +204,8 @@ void main() {
       'validateFieldAsync reads current indexed values for an object-array parent',
       () async {
     final controller = _makeControllerWithItem();
-    final titleField = controller.getArraySubField(_itemsField, 0, 'title')!;
+    final titleField =
+        controller.getArraySubField<String>(_itemsField, 0, 'title')!;
     controller.setValue(titleField, 'invalid');
 
     expect(await controller.validateFieldAsync(_itemsField), isFalse);
