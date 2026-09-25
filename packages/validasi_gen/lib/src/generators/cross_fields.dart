@@ -14,11 +14,16 @@ String generateSchemaClass(
   final body = StringBuffer();
   body.writeln('return $className(');
   for (final f in allFields) {
-    if (f.isNested) continue;
+    if (f.isNested && !f.isNestedIterable) continue;
     final fieldName = f.field.name!;
     final typeName = f.dartTypeDisplay;
-    body.writeln(
-        '$fieldName: reader.getValue($fieldsClassName.${f.accessorName}) as $typeName,');
+    final value = 'reader.getValue($fieldsClassName.${f.accessorName})';
+    if (f.isNestedIterable && f.isTypeRequired) {
+      body.writeln(
+          '$fieldName: $value as $typeName? ?? ${_emptyNestedIterableValue(f)},');
+    } else {
+      body.writeln('$fieldName: $value as $typeName,');
+    }
   }
   body.write(');');
 
@@ -58,4 +63,12 @@ String generateSchemaClass(
   buf.writeln();
   buf.write(schemaClass.accept(_emitter));
   return buf.toString();
+}
+
+String _emptyNestedIterableValue(FieldRules field) {
+  final typeName = field.dartTypeDisplay;
+  if (typeName.startsWith('Set<')) {
+    return 'const <${field.nestedClassName}>{}';
+  }
+  return 'const <${field.nestedClassName}>[]';
 }

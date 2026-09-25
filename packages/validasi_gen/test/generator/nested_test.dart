@@ -33,6 +33,13 @@ Future<void> main() async {
               'static const UserWithNestedFields<List<Car>> previousCars = UserWithNestedPreviousCarsField();'));
     });
 
+    test('includes List<Nested> in schema allocation', () {
+      expect(
+          output,
+          contains(
+              'previousCars: reader.getValue(UserWithNestedFields.previousCars) as List<Car>? ?? const <Car>[],'));
+    });
+
     test('non-nullable nested validate calls value.validate()', () {
       expect(output, contains('final \$carResult = value.validate();'));
       expect(
@@ -83,6 +90,24 @@ Future<void> main() async {
     test('Car generates its own fields class and extension', () {
       expect(output, contains('sealed class CarFields<V>'));
       expect(output, contains('extension \$CarValidasi on Car'));
+    });
+  });
+
+  group('Nested schema allocation', () {
+    late String output;
+
+    setUpAll(() async {
+      output = await generateForSource(
+        'test/generator/src',
+        'schema_nested_source.dart',
+      );
+    });
+
+    test('includes a nested iterable in the generated schema', () {
+      expect(
+          output,
+          contains(
+              'items: reader.getValue(FormFields.items) as List<Item>? ?? const <Item>[],'));
     });
   });
 }
