@@ -518,7 +518,7 @@ class ValidasiFormController<T> extends ChangeNotifier
     _throwIfDisposed();
     final fc = getFieldController(field);
     if (fc.disabled) return true;
-    final result = field.validate(fc.value);
+    final result = field.validate(getValue(field));
     _applyErrors(field, result.errors);
     syncFieldErrors();
     notifyListeners();
@@ -541,7 +541,7 @@ class ValidasiFormController<T> extends ChangeNotifier
     if (formValidator != null) {
       return validateAsync();
     }
-    final result = await field.validateAsync(fc.value);
+    final result = await field.validateAsync(getValue(field));
     _applyErrors(field, result.errors);
     syncFieldErrors();
     notifyListeners();
@@ -566,7 +566,7 @@ class ValidasiFormController<T> extends ChangeNotifier
     batch(() {
       for (final entry in _fields.entries) {
         if (entry.value.disabled) continue;
-        final result = entry.key.validate(entry.value.value);
+        final result = entry.key.validate(getValue(entry.key));
         _applyErrors(entry.key, result.errors);
       }
     });
@@ -586,7 +586,7 @@ class ValidasiFormController<T> extends ChangeNotifier
     }
     for (final entry in _fields.entries) {
       if (entry.value.disabled) continue;
-      final result = await entry.key.validateAsync(entry.value.value);
+      final result = await entry.key.validateAsync(getValue(entry.key));
       _applyErrors(entry.key, result.errors);
     }
     syncFieldErrors();

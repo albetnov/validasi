@@ -39,8 +39,29 @@ class _ItemsField extends ValidasiField<_Form, List<_Item>> {
   List<_Item>? extract(_Form owner) => owner.items;
 
   @override
-  ValidasiResult<List<_Item>> validate(List<_Item>? value) =>
-      ValidasiResult<List<_Item>>.success(value);
+  ValidasiResult<List<_Item>> validate(List<_Item>? value) {
+    if (value == null) {
+      return ValidasiResult<List<_Item>>.error(
+        ValidationError(rule: 'Required', message: 'Items are required'),
+      );
+    }
+
+    final errors = <ValidationError>[];
+    for (var index = 0; index < value.length; index++) {
+      if (value[index].title == 'invalid') {
+        errors.add(ValidationError(
+          rule: 'ItemTitle',
+          message: 'Item title is invalid',
+          path: ['items[$index].title'],
+        ));
+      }
+    }
+
+    if (errors.isNotEmpty) {
+      return ValidasiResult(errors: errors, isValid: false);
+    }
+    return ValidasiResult<List<_Item>>.success(value);
+  }
 }
 
 const _titleField = _TitleField();
@@ -91,6 +112,19 @@ List<_Item> _reconstructAll(ValidasiFormController<_Form> ctrl) {
   );
 }
 
+ValidasiFormController<_Form> _makeControllerWithItem() {
+  final controller = ValidasiFormController<_Form>(schema: const _FormSchema());
+  controller.setValue(_titleField, 'Form title');
+  controller.appendArrayItem(
+    _itemsField,
+    const _Item(title: 'Before'),
+    indexedFields: _indexedFields,
+    reconstructItem: _reconstructItem,
+    reconstructAll: _reconstructAll,
+  );
+  return controller;
+}
+
 void main() {
   test('schema allocation preserves reconstructed nested array values', () {
     final controller =
@@ -122,5 +156,53 @@ void main() {
     final form = const _FormSchema().allocate(controller);
 
     expect(form.items, isEmpty);
+  });
+
+  test('validate reads current indexed values for an object-array parent', () {
+    final controller = _makeControllerWithItem();
+    final titleField = controller.getArraySubField(_itemsField, 0, 'title')!;
+    controller.setValue(titleField, 'invalid');
+
+    expect(controller.validate(), isFalse);
+    expect(controller.getErrors(_itemsField), isNotEmpty);
+    expect(controller.getErrors(_itemsField).first.message,
+        'Item title is invalid');
+
+    controller.setValue(titleField, 'Before');
+    expect(controller.validate(), isTrue);
+    expect(controller.getErrors(_itemsField), isEmpty);
+  });
+
+  test('validateAsync reads current indexed values for an object-array parent',
+      () async {
+    final controller = _makeControllerWithItem();
+    final titleField = controller.getArraySubField(_itemsField, 0, 'title')!;
+    controller.setValue(titleField, 'invalid');
+
+    expect(await controller.validateAsync(), isFalse);
+    expect(controller.getErrors(_itemsField), isNotEmpty);
+    expect(controller.getErrors(_itemsField).first.message,
+        'Item title is invalid');
+  });
+
+  test('validateField reads current indexed values for an object-array parent',
+      () {
+    final controller = _makeControllerWithItem();
+    final titleField = controller.getArraySubField(_itemsField, 0, 'title')!;
+    controller.setValue(titleField, 'invalid');
+
+    expect(controller.validateField(_itemsField), isFalse);
+    expect(controller.getErrors(_itemsField), isNotEmpty);
+  });
+
+  test(
+      'validateFieldAsync reads current indexed values for an object-array parent',
+      () async {
+    final controller = _makeControllerWithItem();
+    final titleField = controller.getArraySubField(_itemsField, 0, 'title')!;
+    controller.setValue(titleField, 'invalid');
+
+    expect(await controller.validateFieldAsync(_itemsField), isFalse);
+    expect(controller.getErrors(_itemsField), isNotEmpty);
   });
 }
