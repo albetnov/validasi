@@ -1,3 +1,9 @@
+## 1.0.0-rc.4
+
+### Fixed
+
+- Generated indexed-field APIs now expose `IndexedFieldDescriptor` entries and use explicit value types when reconstructing nested array fields.
+
 ## 1.0.0-rc.3
 
 ### Fixed

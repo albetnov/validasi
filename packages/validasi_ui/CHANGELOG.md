@@ -1,3 +1,9 @@
+## 1.0.0-rc.3
+
+### Fixed
+
+- Object-array indexed fields now preserve their concrete generic value types when registered, rebuilt, migrated, and submitted through generated forms.
+
 ## 1.0.0-rc.2
 
 ### Fixed
