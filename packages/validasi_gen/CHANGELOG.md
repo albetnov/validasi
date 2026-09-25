@@ -1,3 +1,10 @@
+## 1.0.0-rc.3
+
+### Fixed
+
+- Generated indexed-field reconstruction now asserts nullable `getArraySubField` results before reading values, keeping generated code compatible with `validasi_ui`.
+- Generated schemas now include nested iterable fields and use the reader's current reconstructed value, including an empty-collection fallback for uninitialized non-nullable arrays.
+
 ## 1.0.0-rc.2
 
 ### Changed

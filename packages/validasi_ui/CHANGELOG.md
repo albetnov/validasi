@@ -1,3 +1,9 @@
+## 1.0.0-rc.2
+
+### Fixed
+
+- Object-array parent validation now reads reconstructed current values through `getValue()` in synchronous and asynchronous form and field validation, preventing stale errors after indexed edits.
+
 ## 1.0.0-rc.1
 
 - Promote `0.1.0-dev.6` to release candidate. No API changes; the form

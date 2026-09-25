@@ -1,6 +1,6 @@
 name: validasi_gen
 description: Code generator for Validasi - compile-time validation with zero-cost abstraction.
-version: 1.0.0-rc.2
+version: 1.0.0-rc.3
 repository: https://github.com/albetnov/validasi
 homepage: https://albetnov.github.io/validasi
 
