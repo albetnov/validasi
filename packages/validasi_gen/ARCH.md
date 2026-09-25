@@ -268,7 +268,7 @@ Builds (via `code_builder`, `Allocator.none`, no imports since this is a `part o
 - The sealed base class `${className}Fields<V> extends ValidasiKey<$className> implements ValidasiField<$className, V>` with a private const constructor.
 - If `generateSchema`, a static const `schema` field referring to `_${className}Schema()` (from `cross_fields.dart`).
 - One static const accessor per field (name from `FieldRules.accessorName`) plus a generated leaf class `${className}${Field}Field` implementing `name`/`extract(owner)`/`validate`/`validateAsync` — either flat (`_addLeafValidate`, using `field_snippets.dart`) or delegating to a nested object/iterable's own `validate()`/`validateAsync()` (`_addNestedValidate`).
-- If `generateIndexedFields`, three additional static methods on the sealed class for list-backed/repeatable form sections: `indexedFields<FormType>(parentPath, index)`, `reconstructItem<FormType>(ctrl, field, index)`, `reconstructAll<FormType>(ctrl, field)` — all referencing `IndexedField` from `validasi_ui`.
+- If `generateIndexedFields`, three additional static methods on the sealed class for list-backed/repeatable form sections: `indexedFields<FormType>(parentPath, index)`, `reconstructItem<FormType>(ctrl, field, index)`, `reconstructAll<FormType>(ctrl, field)`. The first returns a heterogeneous `List<IndexedFieldDescriptor<FormType>>` whose concrete entries retain each field's value type; all three reference types from `validasi_ui`.
 
 ### 3.10 `lib/src/generators/extension.dart`
 
@@ -557,7 +557,7 @@ Per-class `@ValidateClass(generateFields: …, generateSchema: …, generateInde
 
 ### Why `generateValidateForm`/`generateIndexedFields` are off by default
 
-The code they emit references `ValidasiFormController`/`IndexedField`, which live in the Flutter-dependent `validasi_ui` package. Pure-Dart consumers of `validasi_gen` would fail to compile if either were on by default. Flutter consumers opt in per-project via `build.yaml` and must also depend on and import `validasi_ui` in the source file.
+The code they emit references `ValidasiFormController`/`IndexedFieldDescriptor`, which live in the Flutter-dependent `validasi_ui` package. Pure-Dart consumers of `validasi_gen` would fail to compile if either were on by default. Flutter consumers opt in per-project via `build.yaml` and must also depend on and import `validasi_ui` in the source file.
 
 ### Opting in (Flutter consumer example)
 

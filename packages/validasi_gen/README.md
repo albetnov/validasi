@@ -80,7 +80,7 @@ targets:
 form validator too, even if you left those flags on.
 
 `generateValidateForm` and `generateIndexedFields` are **off by default** because the code they
-emit references `ValidasiFormController`/`IndexedField`, which live in the Flutter-dependent
+emit references `ValidasiFormController`/`IndexedFieldDescriptor`, which live in the Flutter-dependent
 `validasi_ui` package. Flutter consumers opt in by setting the flag(s) to `true` and importing
 `validasi_ui` in the source file. Pure-Dart packages leave them off.
 

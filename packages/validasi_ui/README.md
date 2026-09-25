@@ -461,11 +461,14 @@ controller.appendArrayItem(
 );
 
 // Access an indexed sub-field, e.g. row 0's `name`
-final nameField = controller.getArraySubField(UserFields.previousPeople, 0, 'name');
+final nameField =
+    controller.getArraySubField<String>(UserFields.previousPeople, 0, 'name');
 ```
 
 Each sub-field has `name = 'previousPeople[0].name'`, delegates `validate()` to the original leaf
-field, and works with `ValidasiFormField<T, V>` in the widget tree like any other field.
+field, and works with `ValidasiFormField<T, V>` in the widget tree like any other field. The
+generated descriptor preserves each concrete value type, so `getArraySubField<String>` returns a
+field backed by `ValidasiFieldSignals<String>` without a manual cast.
 
 ### Async validation
 

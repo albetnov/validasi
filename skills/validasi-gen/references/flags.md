@@ -13,7 +13,7 @@ is read as a plain `bool`; a non-bool value throws at build time.
 | `generateFields` | `true` | The sealed `class XFields<V>` hierarchy (one `static const` singleton + leaf class per field), and `validateField<V>()`/`validateFieldAsync<V>()` on the generated extension. |
 | `generateSchema` | `true` | `ValidasiSchema<X>`, exposed as `XFields.schema`. |
 | `generateValidateForm` | `false` | `ValidasiResult<X> validateForm_X(ValidasiFormController<X> ctrl)`. References `validasi_ui` — off by default so plain-Dart consumers of `validasi_gen` aren't forced to depend on Flutter form plumbing. |
-| `generateIndexedFields` | `false` | `indexedFields<FormType>`, `reconstructItem`, `reconstructAll` static methods on the sealed field class — for list-backed / repeatable form sections. References `IndexedField` from `validasi_ui`. |
+| `generateIndexedFields` | `false` | `indexedFields<FormType>`, `reconstructItem`, `reconstructAll` static methods on the sealed field class — for list-backed / repeatable form sections. `indexedFields` returns heterogeneous `IndexedFieldDescriptor<FormType>` entries from `validasi_ui`, each retaining its concrete value type. |
 
 ## Gating: these flags are not independent
 

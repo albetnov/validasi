@@ -184,8 +184,11 @@ controller.appendArrayItem(
 );
 
 // Access a nested object's field
-final nestedField = controller.getArraySubField(
-    UserFields.previousCars, 0, 'model');
+final nestedField = controller.getArraySubField<String>(
+  UserFields.previousCars,
+  0,
+  'model',
+);
 ```
 
 ## Signals (reactivity)
