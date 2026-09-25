@@ -1,0 +1,6 @@
+targets:
+  $default:
+    builders:
+      validasi_gen:validasi:
+        generate_for:
+          - test/fixtures/**
