@@ -5,6 +5,9 @@ references that shape how an AI coding agent writes `validasi` code, rather than
 go looking for. They live in this repo's `skills/` directory, one per package, mirroring the same
 split as the rest of these docs.
 
+Each package's README carries an **AI Agents** section pointing back here, so an agent that only
+ever sees a package README — on pub.dev, say — still finds the matching skill.
+
 **They aren't Claude Code–specific.** `SKILL.md` is an open format — YAML frontmatter (`name`,
 `description`) plus a Markdown body, with optional `references/`, `scripts/`, and `assets/`
 subfolders — that originated at Anthropic and has since been adopted by Claude Code, Cursor, Codex

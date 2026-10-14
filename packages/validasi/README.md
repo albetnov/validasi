@@ -94,6 +94,34 @@ final result = schema.validate(['item1', 'item2', 'item3']);
 
 Refer to the [examples](example/) folder to see more usage samples or see the [documentation](https://albetnov.github.io/validasi/).
 
+## AI Agents
+
+This package ships a curated [Agent Skill](https://albetnov.github.io/validasi/companion/skills) —
+an always-loadable reference that teaches coding agents (Claude Code, Cursor, Codex, OpenCode, …)
+the right API shape for `validasi`, so the first attempt is usually correct.
+
+```bash
+# Install the skill for this package (your agent is auto-detected)
+npx skills add albetnov/validasi --skill validasi
+
+# Or install every skill in the repo
+npx skills add albetnov/validasi --all
+```
+
+Prefer no Node? Copy the `skills/validasi/` folder from the
+[repository](https://github.com/albetnov/validasi) into your agent's skills directory
+(`.claude/skills/`, `.agents/skills/`, …) unchanged.
+
+For lookups beyond what the skill covers, the optional
+[`validasi_mcp`](https://pub.dev/packages/validasi_mcp) server exposes these docs as MCP tools:
+
+```bash
+dart pub global activate validasi_mcp
+```
+
+Then register the `validasi_mcp` command with your agent — see
+[MCP server setup](https://albetnov.github.io/validasi/companion/mcp-server).
+
 ## Features
 
 ### Type-Safe Validation Engine

@@ -158,6 +158,35 @@ class UserFormPage extends StatelessWidget {
 
 A full working example lives in [`example/`](./example) — `dart run` it from `packages/validasi_ui/example` to see it live.
 
+## AI Agents
+
+This package ships a curated [Agent Skill](https://albetnov.github.io/validasi/companion/skills) —
+an always-loadable reference that teaches coding agents (Claude Code, Cursor, Codex, OpenCode, …)
+the right API shape for `validasi_ui`, so the first attempt is usually correct.
+
+```bash
+# Install the skill for this package (your agent is auto-detected)
+npx skills add albetnov/validasi --skill validasi-ui
+
+# Or install every skill in the repo
+npx skills add albetnov/validasi --all
+```
+
+Prefer no Node? Copy the `skills/validasi-ui/` folder from the
+[repository](https://github.com/albetnov/validasi) into your agent's skills directory
+(`.claude/skills/`, `.agents/skills/`, …) unchanged.
+
+`validasi_ui` is designed around code-generated field schemas, so the `validasi-gen` skill is a
+useful companion. For lookups beyond what the skills cover, the optional
+[`validasi_mcp`](https://pub.dev/packages/validasi_mcp) server exposes these docs as MCP tools:
+
+```bash
+dart pub global activate validasi_mcp
+```
+
+Then register the `validasi_mcp` command with your agent — see
+[MCP server setup](https://albetnov.github.io/validasi/companion/mcp-server).
+
 ## Concepts
 
 ### `ValidasiForm<T>`

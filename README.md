@@ -49,8 +49,8 @@ void main() {
 ```dart
 final schema = Validasi.map<dynamic>([
   Rules.map.hasFields({
-    'name': Validasi.string([Rules.string.minLength(1)]),
-    'age': Validasi.number<int>([Rules.number.moreThan(0)]),
+    'name': FieldRules<String>([Rules.string.minLength(1)]),
+    'age': FieldRules<int>([Rules.number.moreThan(0)]),
   }),
 ]);
 
@@ -61,9 +61,9 @@ final result = schema.validate({'name': 'John', 'age': 30});
 
 ```dart
 final schema = Validasi.list<String>([
-  Rules.iterable.forEach<String>(
-    Validasi.string([Rules.string.minLength(1)]),
-  ),
+  Rules.iterable.forEach<String>([
+    Rules.string.minLength(1),
+  ]),
 ]);
 
 final result = schema.validate(['item1', 'item2', 'item3']);

@@ -47,3 +47,22 @@ overridden via the `--base-url` CLI flag or `DocsConfig.baseUrl` in code.
 
 The cache directory defaults to `.validasi_mcp_cache/` in the current working
 directory (project-local). Cache entries are considered fresh for 24 hours.
+
+## Skills — the complementary piece
+
+This server is a *lookup tool*: your agent calls it at runtime to search or fetch these
+docs. The repository also ships three [Agent Skills](https://albetnov.github.io/validasi/companion/skills) —
+curated guidance that is already loaded *before* the agent writes code, so it reaches for the
+right API shape by default.
+
+```bash
+# Install all three skills (your agent is auto-detected)
+npx skills add albetnov/validasi --all
+
+# Or just the one matching your project
+npx skills add albetnov/validasi --skill validasi-ui
+```
+
+Use both together: skills supply the judgment, this server answers whatever a skill
+doesn't cover. Per-agent setup for the MCP server is documented in the
+[docs](https://albetnov.github.io/validasi/companion/mcp-server).
