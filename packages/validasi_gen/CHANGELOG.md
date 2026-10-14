@@ -1,5 +1,13 @@
 ## 1.0.0-rc.4
 
+### Changed
+
+- Raised the `analyzer` floor to `>=13.0.0 <15.0.0`: `analyzer` 13 is still
+  supported and 14 is allowed once upstream `test`/`build_runner` releases
+  permit it (`analyzer` 12 is no longer supported).
+- Capped `build` below `4.1.0` until `build_runner` 2.17 is resolvable (`build`
+  4.1 requires a `BuildStep` API that `build_runner` 2.16 does not implement).
+
 ### Fixed
 
 - Generated indexed-field APIs now expose `IndexedFieldDescriptor` entries and use explicit value types when reconstructing nested array fields.
