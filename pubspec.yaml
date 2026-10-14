@@ -54,3 +54,6 @@ melos:
       run: |
         cd packages/validasi_mcp && \
         LOCAL_DOCS=http://localhost:4173/validasi dart test
+    outdated:
+      description: Check for outdated dependencies including major versions.
+      run: dart run melos exec -- dart pub outdated --show-all
