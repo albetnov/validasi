@@ -34,6 +34,12 @@ melos:
     format:fix:
       description: Format all workspace packages.
       run: dart run melos exec -- dart format .
+    skills:sync:
+      description: Regenerate the legacy top-level skills mirror from packages.
+      run: dart run tool/sync_skills.dart
+    skills:check:
+      description: Verify the legacy top-level skills mirror is up to date.
+      run: dart run tool/sync_skills.dart --check
     test:
       description: Run tests for all workspace packages.
       run: dart run melos exec --fail-fast --concurrency=1 --ignore=validasi_ui_example --ignore=validasi_ui -- dart test

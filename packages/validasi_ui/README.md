@@ -165,16 +165,20 @@ an always-loadable reference that teaches coding agents (Claude Code, Cursor, Co
 the right API shape for `validasi_ui`, so the first attempt is usually correct.
 
 ```bash
-# Install the skill for this package (your agent is auto-detected)
+# Install skills from your dependency tree (recommended)
+dart run skills@ get --all
+
+# Legacy: install with npx skills
 npx skills add albetnov/validasi --skill validasi-ui
 
-# Or install every skill in the repo
+# Legacy: install every skill in the repo
 npx skills add albetnov/validasi --all
 ```
 
-Prefer no Node? Copy the `skills/validasi-ui/` folder from the
+Prefer a manual copy? Copy `packages/validasi_ui/skills/validasi-ui-guide/` from the
 [repository](https://github.com/albetnov/validasi) into your agent's skills directory
-(`.claude/skills/`, `.agents/skills/`, …) unchanged.
+(`.claude/skills/`, `.agents/skills/`, …) unchanged. The legacy `skills/validasi-ui/` mirror
+remains available for `npx skills`.
 
 `validasi_ui` is designed around code-generated field schemas, so the `validasi-gen` skill is a
 useful companion.

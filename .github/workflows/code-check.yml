@@ -32,6 +32,9 @@ jobs:
       - name: Verify formatting
         run: dart run melos run format:check
 
+      - name: Verify skill mirrors
+        run: dart run melos run skills:check
+
       - name: Analyze all packages
         run: dart run melos run analyze
 

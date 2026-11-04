@@ -101,16 +101,20 @@ an always-loadable reference that teaches coding agents (Claude Code, Cursor, Co
 the right API shape for `validasi`, so the first attempt is usually correct.
 
 ```bash
-# Install the skill for this package (your agent is auto-detected)
+# Install skills from your dependency tree (recommended)
+dart run skills@ get --all
+
+# Legacy: install with npx skills
 npx skills add albetnov/validasi --skill validasi
 
-# Or install every skill in the repo
+# Legacy: install every skill in the repo
 npx skills add albetnov/validasi --all
 ```
 
-Prefer no Node? Copy the `skills/validasi/` folder from the
+Prefer a manual copy? Copy `packages/validasi/skills/validasi-guide/` from the
 [repository](https://github.com/albetnov/validasi) into your agent's skills directory
-(`.claude/skills/`, `.agents/skills/`, …) unchanged.
+(`.claude/skills/`, `.agents/skills/`, …) unchanged. The legacy `skills/validasi/` mirror remains
+available for `npx skills`.
 
 ## Features
 

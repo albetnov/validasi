@@ -49,9 +49,10 @@ flutter pub add validasi:^1.0.0-rc.6 validasi_ui:^1.0.0-rc.3
 ```
 
 See the [companion package documentation](https://albetnov.github.io/validasi/companion/overview)
-for setup and generated artifacts. If you use an AI coding agent, the repo also ships
-[Agent Skills](https://albetnov.github.io/validasi/companion/skills) for `validasi`,
-`validasi-gen`, and `validasi-ui`.
+for setup and generated artifacts. If you use an AI coding agent, each package ships its own
+[Agent Skills](https://albetnov.github.io/validasi/companion/skills); install them from your
+dependency tree with `dart run skills@ get --all` (or the legacy
+`npx skills add albetnov/validasi --all`).
 
 ## Quick Usage
 
