@@ -1,3 +1,12 @@
+# Changelog
+
+## Unreleased
+
+### Deprecated
+
+- This package is superseded by the repository's Agent Skills. The docs server is no longer
+  documented on the Validasi site.
+
 ## 0.1.0-beta.4
 
 ### Added

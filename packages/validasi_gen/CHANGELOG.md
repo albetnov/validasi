@@ -1,3 +1,11 @@
+## 1.0.0-rc.6
+
+### Changed
+
+- Widened the `build` dependency to `>=4.0.0 <6.0.0`. `build` 5.0.0 works with
+  `build_runner` 2.17.1 and `analyzer` 14; projects pinned to the current
+  `flutter_test`/`test` release continue resolving `build` 4.x.
+
 ## 1.0.0-rc.5
 
 ### Changed
