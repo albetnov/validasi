@@ -29,7 +29,7 @@ export default defineConfig({
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/getting-started' },
       {
-        text: 'v1.0.0-rc',
+        text: 'v1.0.0',
         items: [
           { text: 'v1 Documentation (Current)', link: '/guide/getting-started' },
           { text: 'v0 Documentation', link: '/v0/' }
@@ -141,7 +141,6 @@ export default defineConfig({
                 { text: 'Controller & Signals', link: '/companion/form-management/controller' },
               ]
             },
-            { text: 'MCP Server', link: '/companion/mcp-server' },
             { text: 'Agent Skills', link: '/companion/skills' },
           ]
         }

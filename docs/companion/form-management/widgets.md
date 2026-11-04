@@ -1,5 +1,9 @@
 # Widgets Reference
 
+Examples use `UserFields.name_`: a field literally named `name` gets a trailing underscore on its
+static accessor because `name` is already an instance getter on `ValidasiField`. Other field names
+are used as-is.
+
 ## `ValidasiForm<T>`
 
 The root form widget. Creates and scopes a `ValidasiFormController<T>` via `InheritedWidget`.
@@ -62,7 +66,7 @@ signals change (fine-grained reactivity).
 
 ```dart
 ValidasiFormField(
-  field: UserFields.name,
+  field: UserFields.name_,
   mode: null,                    // override form's ValidationMode
   reValidateMode: null,          // override form's ReValidationMode
   disabled: false,
@@ -114,7 +118,7 @@ Replaces the removed `ValidasiTextFormField` and `ValidasiParsedTextFormField`.
 
 ```dart
 ValidasiTextField(
-  field: UserFields.name,
+  field: UserFields.name_,
   controller: myController,     // optional — auto-creates one if not provided
   builder: (context, state, controller) {
     // controller is a ValidasiTextController (extends TextEditingController)
@@ -157,7 +161,7 @@ A trivial `TextEditingController` subclass for use with `ValidasiTextField`.
 final controller = ValidasiTextController(text: 'initial text');
 
 ValidasiTextField(
-  field: UserFields.name,
+  field: UserFields.name_,
   controller: controller,
   builder: (context, state, ctrl) => TextField(controller: ctrl),
 );
@@ -193,7 +197,7 @@ Rebuilds whenever the controller notifies (dirty, touched, errors change).
 
 ```dart
 ValidasiWatch.field(
-  field: UserFields.name,
+  field: UserFields.name_,
   builder: (context, value) {
     return Text('Name length: ${value?.length ?? 0}');
   },

@@ -55,7 +55,7 @@ class User {
   `FieldContext` (`string`, `iterable`, `generic`) for each rule handler.
 - **`rules`** is required. Passing an empty list `[]` means "no rules to check" (the
   generator still emits the field class so form libraries can discover it).
-- Rules are checked in order. The first failing rule's error is emitted.
+- Rules are checked in order, and every failing rule adds an error to the result.
 
 ## Rule annotations
 
@@ -107,7 +107,8 @@ e.g. a bare `int` field — fails the build with `InvalidGenerationSourceError`,
 
 `@RequiredAny`, `@RequiredOneOf`, `@RequiredAll`, `@DependsOn`, `@MutuallyExclusive`, and
 `@MatchesField` cover common multi-field shapes (confirm-password, at-least-one-of, mutually
-exclusive fields) without hand-writing a `@RefineFn`. See
+exclusive fields) without hand-writing a `@RefineFn`. Apply these annotations to the class,
+alongside `@ValidateClass`, rather than to individual fields. See
 [Cross-field & Async](/companion/generator/cross-field#cross-field-sugar-annotations) for the
 full list with signatures and a worked example.
 
@@ -166,7 +167,7 @@ For a class annotated with `@ValidateClass(generateSchema: true)`:
 User
   ├── sealed class UserFields<V> extends ValidasiKey<User>
   │     └── implements ValidasiField<User, V>
-  │     ├── static const UserFields<String> name
+  │     ├── static const UserFields<String> name_
   │     ├── static const UserFields<int>  age
   │     └── static const ValidasiSchema<User> schema
   │
@@ -176,5 +177,8 @@ User
         ├── ValidasiResult<V> validateField<V>(UserFields<V>)
         └── Future<ValidasiResult<V>> validateFieldAsync<V>(UserFields<V>)
 ```
+
+`name` is suffixed to `name_` because a static `name` member would collide with the
+`ValidasiField.name` instance getter. See [Configuration](/companion/generator/configuration#name-collision-suffixing).
 
 See [Code Generation](/companion/generator/overview) for details.

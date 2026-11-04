@@ -34,15 +34,15 @@ features:
   
   - icon: 🔌
     title: Extensible
-    details: Create custom rules with InlineRule or Having. Extend the library to fit your specific needs perfectly.
+    details: Create custom rules with InlineRule or by extending Rule. Extend the library to fit your specific needs perfectly.
 
 ---
 
 <VersionBanner
-  type="warning"
-  icon="📢"
-  title="v1.0.0-dev Documentation"
-  message="You are viewing the documentation for Validasi v1.0.0-dev (development version). This version includes significant API changes and new features."
+  type="info"
+  icon="📦"
+  title="v1.0.0 Documentation"
+  message="You are viewing the documentation for Validasi v1.0.0."
   link="/v0/"
   linkText="View v0 Documentation"
 />
@@ -106,7 +106,7 @@ Add Validasi to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  validasi: ^1.0.0-rc.1
+  validasi: ^1.0.0-rc.6
 ```
 
 Then run:

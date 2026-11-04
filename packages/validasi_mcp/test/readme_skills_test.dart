@@ -60,7 +60,7 @@ void main() {
         );
       });
 
-      test('$readme links the skills and MCP docs', () {
+      test('$readme links the skills docs', () {
         final body = read(readme);
         expect(
           body,
@@ -68,7 +68,8 @@ void main() {
         );
         expect(
           body,
-          contains('https://albetnov.github.io/validasi/companion/mcp-server'),
+          isNot(contains('companion/mcp-server')),
+          reason: 'The MCP docs page is removed; READMEs must point at skills.',
         );
       });
     });

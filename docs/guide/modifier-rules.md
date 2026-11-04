@@ -79,12 +79,10 @@ Runs custom validation inline without using context.
 ```dart
 final passwordSchema = Validasi.string([
   Rules.string.minLength(8),
-  Rules.inline<String>((value) {
-    if (!value.contains(RegExp(r'[A-Z]'))) {
-      return 'Must contain at least one uppercase letter';
-    }
-    return null;
-  }),
+  Rules.inline<String>(
+    (value) => value != null && value.contains(RegExp(r'[A-Z]')),
+    message: 'Must contain at least one uppercase letter',
+  ),
 ]);
 ```
 
@@ -119,12 +117,10 @@ final schema = Validasi.string([
   Rules.nullable<String>(),
   Rules.transform<String>((value) => value?.trim()),
   Rules.transform<String>((value) => value?.toLowerCase()),
-  Rules.inline<String>((value) {
-    if (value != null && value.length < 3) {
-      return 'Too short';
-    }
-    return null;
-  }),
+  Rules.inline<String>(
+    (value) => value == null || value.length >= 3,
+    message: 'Too short',
+  ),
   Rules.string.maxLength(50),
 ]);
 ```
@@ -135,7 +131,7 @@ final schema = Validasi.string([
 - Use `Rules.required<String>()` when you want to make non-null intent explicit.
 - Use `Rules.transform<String>()` for normalization or data cleanup.
 - Use `Rules.transformAsync<String>()` for async normalization.
-- Use `Rules.having<String>()` when the rule needs validation context.
+- Use `Rules.having<String>()` when the value must be one of a fixed set of options.
 - Use `Rules.inline<String>()` for simple custom validation.
 - Use `Rules.inlineAsync<String>()` for async custom validation (e.g., database checks).
 

@@ -31,7 +31,7 @@ final controller = ValidasiFormController(schema: UserFields.schema);
 
 ```dart
 // Read a single field value
-final name = controller.getValue(UserFields.name);  // String?
+final name = controller.getValue(UserFields.name_);  // String?
 
 // Write a single field value
 controller.setValue(UserFields.email, 'new@email.com');
@@ -107,8 +107,8 @@ controller.reset();
 ## Dirty / touched per field
 
 ```dart
-controller.isFieldDirty(UserFields.name);
-controller.isFieldTouched(UserFields.name);
+controller.isFieldDirty(UserFields.name_);
+controller.isFieldTouched(UserFields.name_);
 ```
 
 ## Field lifecycle
@@ -197,7 +197,7 @@ Each field is backed by a `ValidasiFieldSignals<V>` instance, which holds reacti
 signals for the value, errors, dirty, touched, disabled, and isValidating flags.
 
 ```dart
-final signals = controller.getFieldController(UserFields.name);
+final signals = controller.getFieldController(UserFields.name_);
 // ValidasiFieldSignals<String>
 
 signals.value;                    // current value

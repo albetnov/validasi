@@ -11,7 +11,6 @@ Use `Validasi.string()` for text values.
 ```dart
 import 'package:validasi/validasi.dart';
 import 'package:validasi/rules.dart';
-import 'package:validasi/engine.dart';
 
 final nameSchema = Validasi.string([
   Rules.string.minLength(2),
@@ -79,9 +78,10 @@ Use `Validasi.any<T>()` when you want to validate a value with custom rules.
 
 ```dart
 final termsSchema = Validasi.any<bool>([
-  Rules.inline<bool>((value) {
-    return value == true ? null : 'You must accept the terms';
-  }),
+  Rules.inline<bool>(
+    (value) => value == true,
+    message: 'You must accept the terms',
+  ),
 ]);
 
 print(termsSchema.validate(true).isValid);
@@ -95,9 +95,10 @@ Schemas are easy to extend because the API lets you reuse existing schemas as bu
 final emailRules = <Rule<String>>[
   Rules.transform<String>((value) => value?.trim().toLowerCase()),
   Rules.string.minLength(5),
-  Rules.inline<String>((value) {
-    return value.contains('@') ? null : 'Invalid email format';
-  }),
+  Rules.inline<String>(
+    (value) => value != null && value.contains('@'),
+    message: 'Invalid email format',
+  ),
 ];
 
 final passwordRules = <Rule<String>>[
@@ -110,11 +111,11 @@ final registrationSchema = Validasi.map<dynamic>([
     'password': FieldRules<String>(passwordRules),
     'confirmPassword': FieldRules<String>(passwordRules),
   }),
-  Rules.inline<Map<String, dynamic>>((value) {
-    return value['password'] == value['confirmPassword']
-        ? null
-        : 'Passwords do not match';
-  }),
+  Rules.inline<Map<String, dynamic>>(
+    (value) =>
+        value != null && value['password'] == value['confirmPassword'],
+    message: 'Passwords do not match',
+  ),
 ]);
 ```
 

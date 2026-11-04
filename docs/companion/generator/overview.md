@@ -70,7 +70,7 @@ MaxLength(100)
 |---|---|---|
 | `Rules.string.minLength(n)` | `MinLength(n)` in `@Validate<String>` | Context from `T` |
 | `Rules.iterable.minLength(n)` | `MinLength(n)` in `@Validate<List<T>>` | Same class, different context |
-| `Rules.string.required()` | `Required()` | — |
+| `Rules.required()` | `Required()` | — |
 | `Rules.string.email()` | `Email()` | — |
 | `Rules.number.moreThan(n)` | `MoreThan(n)` | Also `LessThan`, `Between`, `Positive`, `Negative`, and more |
 

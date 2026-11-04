@@ -9,6 +9,7 @@ control over generated code.
 
 ```dart
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
 import 'package:validasi_ui/validasi_ui.dart';
 
 class User {
@@ -49,7 +50,7 @@ class EmailField extends ValidasiField<User, String> {
 }
 
 // Keep one const instance per field, the same way generated code exposes
-// `UserFields.name`/`UserFields.email` — the controller keys its internal
+// `UserFields.name_`/`UserFields.email` — the controller keys its internal
 // state off the field object itself, so reuse these instances everywhere.
 const nameField = NameField();
 const emailField = EmailField();
@@ -145,6 +146,9 @@ form-value sync, and disposal — just pass `controller` to your `TextField`.
 implementation just delegates to `validate`, so override it to layer async checks on top:
 
 ```dart
+import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
+
 class EmailField extends ValidasiField<User, String> {
   const EmailField();
 
@@ -191,7 +195,7 @@ uses under the hood (see [Widgets Reference](/companion/form-management/widgets)
 ## When to use codegen
 
 - **Type safety** — generated `XFields<V>` ensures `field` and `value` types match.
-- **Ergonomics** — `UserFields.name` instead of manually tracking const field objects.
+- **Ergonomics** — `UserFields.name_` instead of manually tracking const field objects.
 - **Maintainability** — add a field to the model and `build_runner` emits everything.
 - **Cross-field** — `@RefineFn` is only available through codegen.
 - **Refactoring** — rename a field and the generated code follows.
