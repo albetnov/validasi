@@ -43,6 +43,9 @@ melos:
     test:
       description: Run tests for all workspace packages.
       run: dart run melos exec --fail-fast --concurrency=1 --ignore=validasi_ui_example --ignore=validasi_ui -- dart test
+    test:ci:
+      description: Run CI tests, excluding Flutter UI and network-dependent MCP e2e tests.
+      run: dart run melos exec --fail-fast --concurrency=1 --ignore=validasi_ui_example --ignore=validasi_ui --ignore=validasi_mcp -- dart test
     test:validasi:
       description: Run tests for the root validasi package.
       run: dart run melos exec --scope=validasi -- dart test

@@ -39,7 +39,7 @@ jobs:
         run: dart run melos run analyze
 
       - name: Run tests
-        run: dart run melos run test
+        run: dart run melos run test:ci
 
       - name: Run tests for validasi_ui package
         run: dart run melos run test:ui
