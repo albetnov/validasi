@@ -33,7 +33,8 @@ generation and Flutter form management:
 | [`validasi_gen`](https://pub.dev/packages/validasi_gen) | `build_runner` generator that emits typed field classes and validators at build time | Dev only |
 | [`validasi_ui`](https://pub.dev/packages/validasi_ui) | Headless form management for Flutter (controllers, signals, widgets) | Flutter |
 
-`validasi_gen` and `validasi_ui` are experimental and may change without a major version bump.
+`validasi_annotation`, `validasi_gen`, and `validasi_ui` are published as release candidates ahead
+of 1.0.0.
 
 ```bash
 # Core library

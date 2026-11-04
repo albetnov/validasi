@@ -1,6 +1,6 @@
-# `validasi_gen` (experimental)
+# `validasi_gen`
 
-> **Experimental** — API subject to change. Feedback and contributions are welcome!
+> **Release candidate** — API is stabilizing ahead of 1.0.0. Feedback and contributions are welcome!
 
 Code generator for [Validasi](https://pub.dev/packages/validasi). Turns `@ValidateClass()` and `@Validate<T>(...)` annotations on a Dart model into a typed `XFields<V>` hierarchy, a `validate()` / `validateAsync()` extension, and (optionally) a schema and a form-aware `validateForm_X(ctrl)`.
 

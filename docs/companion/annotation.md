@@ -1,4 +1,4 @@
-# Annotations (`validasi_annotation`) <Badge type="warning" text="experimental" />
+# Annotations (`validasi_annotation`)
 
 The `validasi_annotation` package provides annotations that drive `validasi_gen`'s
 compile-time code generation. Every annotation is a zero-cost marker — none of them

@@ -1,4 +1,4 @@
-# Code Generation (`validasi_gen`) <Badge type="warning" text="experimental" />
+# Code Generation (`validasi_gen`)
 
 The `validasi_gen` package works with `validasi_annotation` to produce typed,
 zero-overhead validators at compile time via `build_runner`. Instead of calling

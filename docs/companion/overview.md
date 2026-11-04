@@ -5,16 +5,14 @@ set of [Agent Skills](/companion/skills) — installable with `npx skills` — f
 AI coding agent on a `validasi` project. Use them independently or together depending on your
 needs.
 
-Package stability: <Badge type="warning" text="experimental" /> packages are still evolving — API changes are expected.
-
 ## Package Map
 
 | Package | Purpose | Status | Runtime dep? |
 |---------|---------|:---:|:---:|
 | [validasi](https://pub.dev/packages/validasi) | Core validation engine | — | Required |
-| [validasi_annotation](https://pub.dev/packages/validasi_annotation) | Annotations for code generation (`@Validate`, `@RefineFn`, rules) | <Badge type="warning" text="experimental" /> | Codegen only |
-| [validasi_gen](https://pub.dev/packages/validasi_gen) | `build_runner` generator — emit typed validators at compile time | <Badge type="warning" text="experimental" /> | Dev only |
-| [validasi_ui](https://pub.dev/packages/validasi_ui) | Headless form management for Flutter (controllers, signals, widgets) | <Badge type="warning" text="experimental" /> | Flutter |
+| [validasi_annotation](https://pub.dev/packages/validasi_annotation) | Annotations for code generation (`@Validate`, `@RefineFn`, rules) | <Badge type="info" text="rc" /> | Codegen only |
+| [validasi_gen](https://pub.dev/packages/validasi_gen) | `build_runner` generator — emit typed validators at compile time | <Badge type="info" text="rc" /> | Dev only |
+| [validasi_ui](https://pub.dev/packages/validasi_ui) | Headless form management for Flutter (controllers, signals, widgets) | <Badge type="info" text="rc" /> | Flutter |
 | [Agent Skills](/companion/skills) | `SKILL.md` guidance for `validasi`/`validasi_gen`/`validasi_ui`, not a pub.dev package | — | Optional, any agent supporting `SKILL.md` |
 
 ## Which packages do I need?

@@ -1,4 +1,4 @@
-# Form Management (`validasi_ui`) <Badge type="warning" text="experimental" />
+# Form Management (`validasi_ui`)
 
 `validasi_ui` provides headless form management for Flutter, built on top of Validasi.
 It brings a React Hook Form–style controller + builder pattern, using [signals](https://pub.dev/packages/signals)
