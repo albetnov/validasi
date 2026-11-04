@@ -1,3 +1,9 @@
+# Changelog
+
+## 1.0.0
+
+- Promote `1.0.0-rc.1` to stable. No API changes.
+
 ## 1.0.0-rc.1
 
 - Promote `0.1.0-dev.5` to release candidate. No API changes; the annotation

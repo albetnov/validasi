@@ -2,6 +2,13 @@
 
 Annotations for [Validasi](https://pub.dev/packages/validasi) code generation.
 
+## Installation
+
+```bash
+dart pub add validasi_annotation
+dart pub add dev:build_runner dev:validasi_gen
+```
+
 ## Annotations
 
 ### `@ValidateClass(generateFields: ..., generateSchema: ..., generateIndexedFields: ...)`
