@@ -2,8 +2,6 @@
 
 Headless form management for Flutter, built on top of [`validasi`](https://pub.dev/packages/validasi). Brings the React Hook Form–style controller + builder pattern to Flutter, using [signals](https://pub.dev/packages/signals) for fine-grained reactivity.
 
-> **Release candidate** — API is stabilizing ahead of 1.0.0. Feedback and contributions are welcome!
-
 [Repository](https://github.com/albetnov/validasi) | [Documentation](https://albetnov.github.io/validasi)
 
 ## Why
@@ -15,7 +13,8 @@ Headless form management for Flutter, built on top of [`validasi`](https://pub.d
 - **Reactive** — only the widgets that read a changed signal rebuild.
 - **Immutable models** — assemble your model from controller state on submit.
 
-`validasi` is re-exported from this package, so you do **not** need to add it as a separate dependency.
+`validasi_ui` depends on `validasi`. Add `validasi` directly too when you import
+`package:validasi/validasi.dart` in application code.
 
 ## Recommended: pair with `validasi_gen`
 
@@ -24,8 +23,9 @@ Headless form management for Flutter, built on top of [`validasi`](https://pub.d
 `validasi_gen` emits a typed `YourModelFields<V>` sealed hierarchy plus a `schema` your `ValidasiForm`
 can consume directly — no hand-written field plumbing.
 
-```yaml
-flutter pub get validasi_ui validasi_annotation dev:validasi_gen dev:build_runner
+```bash
+flutter pub add validasi validasi_ui validasi_annotation
+flutter pub add dev:validasi_gen dev:build_runner
 ```
 
 ```yaml

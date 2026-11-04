@@ -1,3 +1,11 @@
+# Changelog
+
+## 1.0.0
+
+- Promote `1.0.0-rc.3` to stable. No API changes.
+- Ship the `validasi-ui-guide` Agent Skill inside the package, discoverable with
+  `dart run skills@ get`.
+
 ## 1.0.0-rc.3
 
 ### Fixed
