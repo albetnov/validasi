@@ -540,3 +540,24 @@
   transform: translateX(4px);
 }
 
+
+.global-version-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.global-version-banner a {
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+}
+
+.global-version-banner a:hover {
+  text-decoration: underline;
+}

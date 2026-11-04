@@ -360,8 +360,8 @@ When bumping `validasi` core version, update all dependants:
 4. Update `packages/validasi_gen/pubspec.yaml` dev dependency constraint (no version bump needed — dev deps don't affect consumers).
 5. Run `dart run melos run analyze` and `dart run melos run format:fix`.
 
-**Codegen experimental types** (like `ValidasiKey<T>`) marked `@experimental` in `validasi` core.
-These are for generated code use only — avoid referencing them directly in application code.
+**Codegen types** (like `ValidasiKey<T>`) are public for generated code use — avoid referencing them
+directly in application code.
 
 ## Code Style
 

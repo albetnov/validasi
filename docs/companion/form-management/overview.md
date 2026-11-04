@@ -16,7 +16,7 @@ flutter pub add validasi validasi_ui
 With code generation:
 
 ```bash
-flutter pub add validasi_ui validasi_annotation
+flutter pub add validasi validasi_ui validasi_annotation
 flutter pub add dev:build_runner dev:validasi_gen
 ```
 

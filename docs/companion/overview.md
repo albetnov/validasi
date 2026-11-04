@@ -9,10 +9,10 @@ independently or together depending on your needs.
 
 | Package | Purpose | Status | Runtime dep? |
 |---------|---------|:---:|:---:|
-| [validasi](https://pub.dev/packages/validasi) | Core validation engine | — | Required |
-| [validasi_annotation](https://pub.dev/packages/validasi_annotation) | Annotations for code generation (`@Validate`, `@RefineFn`, rules) | <Badge type="info" text="rc" /> | Codegen only |
-| [validasi_gen](https://pub.dev/packages/validasi_gen) | `build_runner` generator — emit typed validators at compile time | <Badge type="info" text="rc" /> | Dev only |
-| [validasi_ui](https://pub.dev/packages/validasi_ui) | Headless form management for Flutter (controllers, signals, widgets) | <Badge type="info" text="rc" /> | Flutter |
+| [validasi](https://pub.dev/packages/validasi) | Core validation engine | <Badge type="tip" text="stable" /> | Required |
+| [validasi_annotation](https://pub.dev/packages/validasi_annotation) | Annotations for code generation (`@Validate`, `@RefineFn`, rules) | <Badge type="tip" text="stable" /> | Codegen only |
+| [validasi_gen](https://pub.dev/packages/validasi_gen) | `build_runner` generator — emit typed validators at compile time | <Badge type="tip" text="stable" /> | Dev only |
+| [validasi_ui](https://pub.dev/packages/validasi_ui) | Headless form management for Flutter (controllers, signals, widgets) | <Badge type="tip" text="stable" /> | Flutter |
 | [Agent Skills](/companion/skills) | `SKILL.md` guidance shipped inside each package and installed with `dart run skills@ get` | — | Optional, any agent supporting `SKILL.md` |
 
 ## Which packages do I need?

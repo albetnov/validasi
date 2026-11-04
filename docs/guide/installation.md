@@ -5,16 +5,15 @@ Get Validasi up and running in your Dart or Flutter project.
 ## Add Dependency
 
 ```bash
-# Dart projects (v1 is currently published as a pre-release)
-dart pub add validasi:^1.0.0-rc.6
+# Dart projects
+dart pub add validasi
 
 # Flutter projects
-flutter pub add validasi:^1.0.0-rc.6
+flutter pub add validasi
 ```
 
-> v1 is published as a pre-release for now, so the explicit constraint selects it. Once
-> `1.0.0` is the default version, `dart pub add validasi` resolves to v1 without a constraint.
-> Check the [pub.dev versions page](https://pub.dev/packages/validasi/versions) for the latest.
+> v1 is stable. The previous major version remains on the [v0 documentation](/v0/) and can be
+> installed with `dart pub add validasi:^0.0.10`.
 
 ## Import the Library
 

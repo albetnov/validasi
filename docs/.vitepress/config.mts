@@ -84,7 +84,8 @@ export default defineConfig({
           items: [
             { text: 'Introduction', link: '/guide/getting-started' },
             { text: 'Installation', link: '/guide/installation' },
-            { text: 'Quick Start', link: '/guide/quick-start' }
+            { text: 'Quick Start', link: '/guide/quick-start' },
+            { text: 'Migrating from v0', link: '/guide/migration' }
           ]
         },
         {

@@ -38,15 +38,6 @@ features:
 
 ---
 
-<VersionBanner
-  type="info"
-  icon="📦"
-  title="v1.0.0 Documentation"
-  message="You are viewing the documentation for Validasi v1.0.0."
-  link="/v0/"
-  linkText="View v0 Documentation"
-/>
-
 ## Quick Example
 
 Get started with Validasi in seconds:
@@ -106,7 +97,7 @@ Add Validasi to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  validasi: ^1.0.0-rc.6
+  validasi: ^1.0.0
 ```
 
 Then run:

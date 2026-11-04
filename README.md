@@ -16,7 +16,7 @@ To use this package, add `validasi` as a dependency in your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  validasi: ^1.0.0-rc.6
+  validasi: ^1.0.0
 ```
 
 > Check the [pub.dev page](https://pub.dev/packages/validasi/versions) for the latest pre-release version.
@@ -33,19 +33,18 @@ generation and Flutter form management:
 | [`validasi_gen`](https://pub.dev/packages/validasi_gen) | `build_runner` generator that emits typed field classes and validators at build time | Dev only |
 | [`validasi_ui`](https://pub.dev/packages/validasi_ui) | Headless form management for Flutter (controllers, signals, widgets) | Flutter |
 
-`validasi_annotation`, `validasi_gen`, and `validasi_ui` are published as release candidates ahead
-of 1.0.0.
+`validasi`, `validasi_annotation`, `validasi_gen`, and `validasi_ui` are stable at 1.0.0.
 
 ```bash
 # Core library
-dart pub add validasi:^1.0.0-rc.6
+dart pub add validasi
 
 # Code generation
-dart pub add validasi_annotation:^1.0.0-rc.1
-dart pub add dev:build_runner dev:validasi_gen:^1.0.0-rc.5
+dart pub add validasi_annotation
+dart pub add dev:build_runner dev:validasi_gen
 
 # Flutter forms
-flutter pub add validasi:^1.0.0-rc.6 validasi_ui:^1.0.0-rc.3
+flutter pub add validasi validasi_ui
 ```
 
 See the [companion package documentation](https://albetnov.github.io/validasi/companion/overview)

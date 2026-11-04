@@ -1,5 +1,6 @@
 // https://vitepress.dev/guide/custom-theme
 import { h } from 'vue'
+import { useData, useRoute, withBase } from 'vitepress'
 import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 
@@ -11,12 +12,31 @@ import CodeShowcase from './components/CodeShowcase.vue'
 import VersionBanner from './components/VersionBanner.vue'
 import CopyOrDownMd from './components/CopyOrDownMd.vue'
 
+const versionBanner = () =>
+  h('div', { class: 'global-version-banner' }, [
+    h('span', 'Validasi v1 documentation'),
+    h('a', { href: withBase('/v0/') }, 'View v0 docs →'),
+  ])
+
 export default {
   extends: DefaultTheme,
   Layout: () => {
-    return h(DefaultTheme.Layout, null, {
-      // https://vitepress.dev/guide/extending-default-theme#layout-slots
-    })
+    const route = useRoute()
+    const { site } = useData()
+    const base = site.value.base.replace(/\/$/, '')
+    const path = route.path.startsWith(base)
+      ? route.path.slice(base.length)
+      : route.path
+    const isV0 = path.startsWith('/v0')
+    return h(
+      DefaultTheme.Layout,
+      null,
+      isV0
+        ? {}
+        : {
+            'layout-top': () => versionBanner(),
+          },
+    )
   },
   enhanceApp({ app, router, siteData }) {
     // Register custom components globally

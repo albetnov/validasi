@@ -2,6 +2,10 @@
 
 Welcome to Validasi! This guide will help you get started with the most flexible and type-safe validation library for Dart and Flutter.
 
+::: tip Upgrading from v0?
+v1 is a rewrite with typed schemas and explicit rules. See the [migration guide](/guide/migration) for a side-by-side mapping of the old API.
+:::
+
 ## What is Validasi?
 
 <GradientText>Validasi</GradientText> is a powerful validation library that brings type safety, composability, and elegance to data validation in Dart and Flutter applications. Whether you're validating user input, API responses, or configuration files, Validasi makes it simple and maintainable.

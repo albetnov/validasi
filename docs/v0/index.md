@@ -26,8 +26,8 @@ features:
 <VersionBanner
   type="tip"
   icon="📦"
-  title="v0 Documentation (Stable)"
-  message="You are viewing the documentation for Validasi v0 (stable version)."
+  title="v0 Documentation (Previous)"
+  message="You are viewing the documentation for Validasi v0, the previous major version."
   link="/"
   linkText="Check out v1.0.0 Documentation"
 />
