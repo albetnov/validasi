@@ -7,11 +7,12 @@ annotations → generated code → form widgets.
 ## Dependencies
 
 ```bash
-flutter pub add validasi_ui validasi_annotation
+flutter pub add validasi validasi_ui validasi_annotation
 flutter pub add dev:build_runner dev:validasi_gen
 ```
 
-> `validasi_ui` re-exports `validasi`, so you don't need to add it separately.
+`validasi_ui` depends on `validasi`, but the generated model file imports `package:validasi/validasi.dart`
+directly, so keep `validasi` as a direct dependency as well.
 
 ## Build options
 
@@ -30,7 +31,7 @@ targets:
 
 | Option | What it does |
 |--------|-------------|
-| `generateFields` | Emit `UserFields` sealed class — used in `ValidasiFormField(field: UserFields.name)`. **Gates the two rows below** — turning it off silently drops `generateSchema`/`generateValidateForm` output too, even if those stay `true`. |
+| `generateFields` | Emit `UserFields` sealed class — used in `ValidasiFormField(field: UserFields.name_)`. **Gates the two rows below** — turning it off silently drops `generateSchema`/`generateValidateForm` output too, even if those stay `true`. |
 | `generateSchema` | Emit `UserFields.schema` — passed to `ValidasiForm(schema: UserFields.schema)` |
 | `generateValidateForm` | Emit `validateForm_User(controller)` — form-aware validation that reads from controller state. **Build-level only** — unlike the other flags, this one has no per-class `@ValidateClass(...)` override. |
 
@@ -70,11 +71,12 @@ The generator produces `user.validasi.dart` with:
 
 ```dart
 // Sealed field key hierarchy — one const per field
+// (`name` is suffixed to `name_` to avoid colliding with the instance `name` getter)
 sealed class UserFields<V> extends ValidasiKey<User>
     implements ValidasiField<User, V> {
   const UserFields._();
 
-  static const UserFields<String> name = UserNameField();
+  static const UserFields<String> name_ = UserNameField();
   static const UserFields<String> email = UserEmailField();
   static const UserFields<int> age = UserAgeField();
 
@@ -89,7 +91,7 @@ class _UserSchema extends ValidasiSchema<User> {
   @override
   User allocate(ValidasiFieldReader<User> reader) {
     return User(
-      name: reader.getValue(UserFields.name) as String,
+      name: reader.getValue(UserFields.name_) as String,
       email: reader.getValue(UserFields.email) as String,
       age: reader.getValue(UserFields.age) as int,
     );
@@ -118,7 +120,7 @@ class UserFormPage extends StatelessWidget {
           child: Column(
             children: [
               ValidasiTextField(
-                field: UserFields.name,
+                field: UserFields.name_,
                 builder: (context, state, controller) => TextField(
                   controller: controller,
                   onChanged: state.onChanged,

@@ -1,6 +1,6 @@
-# `validasi_gen` (experimental)
+# `validasi_gen`
 
-> **Experimental** — API subject to change. Feedback and contributions are welcome!
+> **Release candidate** — API is stabilizing ahead of 1.0.0. Feedback and contributions are welcome!
 
 Code generator for [Validasi](https://pub.dev/packages/validasi). Turns `@ValidateClass()` and `@Validate<T>(...)` annotations on a Dart model into a typed `XFields<V>` hierarchy, a `validate()` / `validateAsync()` extension, and (optionally) a schema and a form-aware `validateForm_X(ctrl)`.
 
@@ -55,15 +55,7 @@ Prefer no Node? Copy the `skills/validasi-gen/` folder from the
 (`.claude/skills/`, `.agents/skills/`, …) unchanged.
 
 The code this generates runs on `validasi` and is usually consumed by `validasi_ui` — `--all`
-installs the matching skills for those too. For lookups beyond what the skills cover, the optional
-[`validasi_mcp`](https://pub.dev/packages/validasi_mcp) server exposes these docs as MCP tools:
-
-```bash
-dart pub global activate validasi_mcp
-```
-
-Then register the `validasi_mcp` command with your agent — see
-[MCP server setup](https://albetnov.github.io/validasi/companion/mcp-server).
+installs the matching skills for those too.
 
 ## What you get
 

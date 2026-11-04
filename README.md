@@ -16,10 +16,42 @@ To use this package, add `validasi` as a dependency in your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  validasi: ^1.0.0-rc.1
+  validasi: ^1.0.0-rc.6
 ```
 
 > Check the [pub.dev page](https://pub.dev/packages/validasi/versions) for the latest pre-release version.
+
+## Packages
+
+This is a Melos monorepo. The core package is `validasi`; companion packages add compile-time
+generation and Flutter form management:
+
+| Package | Purpose | Runtime dependency |
+|---|---|---|
+| [`validasi`](https://pub.dev/packages/validasi) | Core validation engine, schemas, rules, and results | Required |
+| [`validasi_annotation`](https://pub.dev/packages/validasi_annotation) | Annotations and contracts for code generation (`@ValidateClass`, `@Validate<T>`, `@RefineFn`) | Codegen only |
+| [`validasi_gen`](https://pub.dev/packages/validasi_gen) | `build_runner` generator that emits typed field classes and validators at build time | Dev only |
+| [`validasi_ui`](https://pub.dev/packages/validasi_ui) | Headless form management for Flutter (controllers, signals, widgets) | Flutter |
+
+`validasi_annotation`, `validasi_gen`, and `validasi_ui` are published as release candidates ahead
+of 1.0.0.
+
+```bash
+# Core library
+dart pub add validasi:^1.0.0-rc.6
+
+# Code generation
+dart pub add validasi_annotation:^1.0.0-rc.1
+dart pub add dev:build_runner dev:validasi_gen:^1.0.0-rc.5
+
+# Flutter forms
+flutter pub add validasi:^1.0.0-rc.6 validasi_ui:^1.0.0-rc.3
+```
+
+See the [companion package documentation](https://albetnov.github.io/validasi/companion/overview)
+for setup and generated artifacts. If you use an AI coding agent, the repo also ships
+[Agent Skills](https://albetnov.github.io/validasi/companion/skills) for `validasi`,
+`validasi-gen`, and `validasi-ui`.
 
 ## Quick Usage
 
@@ -155,9 +187,6 @@ dart run melos run test
 
 # Run tests for root package only
 dart run melos run test:validasi
-
-# Run tests for MCP package only
-dart run melos run test:mcp
 
 # Run tests with coverage
 pushd packages/validasi

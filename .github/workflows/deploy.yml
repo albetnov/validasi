@@ -41,15 +41,14 @@ jobs:
       - name: Setup Aube
         uses: jdx/mise-action@v4
         with:
-          version: 2026.6.12
-          install_args: "aube@1.23.0"      
-      - run: mise use aube@1.23.0
+          install_args: "bun"
+      - run: mise use bun
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
-        run: aube install --frozen-lockfile
+        run: bun install --frozen-lockfile
       - name: Build with VitePress
-        run: aube run docs:build
+        run: bun run docs:build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

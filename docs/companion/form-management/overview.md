@@ -1,16 +1,16 @@
-# Form Management (`validasi_ui`) <Badge type="warning" text="experimental" />
+# Form Management (`validasi_ui`)
 
 `validasi_ui` provides headless form management for Flutter, built on top of Validasi.
 It brings a React Hook Form–style controller + builder pattern, using [signals](https://pub.dev/packages/signals)
 for fine-grained reactivity.
 
-`validasi` is re-exported from this package, so you do **not** need to add it as a
-separate dependency.
+`validasi` is a runtime dependency of `validasi_ui`. Add it as a direct dependency too when you
+import `package:validasi/validasi.dart` directly (for builders, rules, and custom fields).
 
 ## Setup
 
 ```bash
-flutter pub add validasi_ui
+flutter pub add validasi validasi_ui
 ```
 
 With code generation:

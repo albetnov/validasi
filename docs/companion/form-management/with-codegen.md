@@ -67,7 +67,7 @@ class UserFormPage extends StatelessWidget {
             children: [
               // Text field with auto TextEditingController
               ValidasiTextField(
-                field: UserFields.name,
+                field: UserFields.name_,
                 builder: (context, state, controller) => TextField(
                   controller: controller,
                   decoration: InputDecoration(

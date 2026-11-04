@@ -22,6 +22,7 @@ Every custom rule extends `Rule<T>` and implements the `apply` method:
 
 ```dart
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
 
 class MyCustomRule extends Rule<String> {
   const MyCustomRule({super.message});
@@ -228,6 +229,8 @@ Here's a comprehensive example demonstrating all concepts:
 
 ```dart
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
+import 'package:validasi/engine.dart';
 
 class UrlRule extends Rule<String> {
   const UrlRule({
@@ -361,8 +364,8 @@ class NotEqual<T> extends Rule<T> {
 }
 
 // Works with any type
-ValidasiEngine<int, int>(rules: [NotEqual(0)]);
-ValidasiEngine<String, String>(rules: [NotEqual('')]);
+final intRule = ValidasiEngine<int, int>(rules: [NotEqual(0)]);
+final stringRule = ValidasiEngine<String, String>(rules: [NotEqual('')]);
 ```
 
 ### Composite Validation
@@ -413,6 +416,8 @@ Always test your custom rules thoroughly:
 ```dart
 import 'package:test/test.dart';
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
+import 'package:validasi/engine.dart';
 
 void main() {
   group('UrlRule', () {
@@ -446,6 +451,7 @@ For rules that need async operations (e.g., database lookups), extend `AsyncRule
 
 ```dart
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
 
 class UniqueEmailRule extends AsyncRule<String> {
   const UniqueEmailRule(this.userRepository, {super.message});
@@ -472,11 +478,13 @@ class UniqueEmailRule extends AsyncRule<String> {
 }
 
 // Usage
-final schema = Validasi.string([
-  Rules.required(),
-  UniqueEmailRule(userRepository),
-]);
-final result = await schema.validateAsync('user@example.com');
+Future<void> main() async {
+  final schema = Validasi.string([
+    Rules.required(),
+    UniqueEmailRule(userRepository),
+  ]);
+  final result = await schema.validateAsync('user@example.com');
+}
 ```
 
 Key differences from sync rules:

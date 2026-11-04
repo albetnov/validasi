@@ -1,5 +1,9 @@
 # validasi_mcp
 
+> **Deprecated.** The standalone docs server is superseded by the repository's
+> [Agent Skills](https://github.com/albetnov/validasi/tree/main/skills). It is no longer
+> documented on the Validasi site and receives no new documentation coverage.
+
 MCP server providing Validasi documentation and API reference for AI assistants.
 
 Fetches the Validasi VitePress docs from the hosted site, caches them locally,
@@ -63,6 +67,5 @@ npx skills add albetnov/validasi --all
 npx skills add albetnov/validasi --skill validasi-ui
 ```
 
-Use both together: skills supply the judgment, this server answers whatever a skill
-doesn't cover. Per-agent setup for the MCP server is documented in the
-[docs](https://albetnov.github.io/validasi/companion/mcp-server).
+Use the skills instead: they supply the judgment up front, with no server to install.
+See the [Agent Skills](https://github.com/albetnov/validasi/tree/main/skills).

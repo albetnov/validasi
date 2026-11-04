@@ -29,6 +29,6 @@ features:
   title="v0 Documentation (Stable)"
   message="You are viewing the documentation for Validasi v0 (stable version)."
   link="/"
-  linkText="Check out v1.0.0-dev Documentation"
+  linkText="Check out v1.0.0 Documentation"
 />
 

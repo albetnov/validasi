@@ -46,17 +46,17 @@ If preprocessing throws or fails, validation returns a `Preprocess` error.
 
 ## Stage 2: Type Check
 
-After preprocessing, engine verifies the value matches `T` (nullable-aware check).
+After preprocessing, the engine verifies the value matches `T` (nullable-aware check).
 
 ```dart
+// Simplified excerpt from ValidasiEngine<T, TInput>.execute
 if (processedValue is! T?) {
-  return ValidasiResult<T>.error(
-    ValidationError(
-      rule: 'TypeCheck',
-      message: 'Expected type $T, got ${processedValue.runtimeType}',
-      details: {'value': processedValue},
-    ),
-  );
+  state.addError(ValidationError(
+    rule: 'TypeCheck',
+    message: 'Expected type $T, got ${processedValue.runtimeType}',
+    details: {'value': processedValue},
+  ));
+  return null;
 }
 ```
 
@@ -68,7 +68,7 @@ Rules run in declaration order. Each rule receives the current `value` (`T?`) an
 
 ```dart
 final schema = Validasi.string([
-  Transform((s) => s?.trim()),
+  Rules.transform<String>((s) => s?.trim()),
   Rules.string.minLength(3),
 ]);
 ```
@@ -135,7 +135,7 @@ fromString.validate('10'); // OK
 
 If input is unknown at compile time:
 
-- Use `ValidasiEngine<T, dynamic>` when callers are truly dynamic
+- Use `ValidasiEngine<T, dynamic>` (from `package:validasi/engine.dart`) when callers are truly dynamic
 - Prefer `withPreprocess` with explicit input type when possible
 
 This gives the best balance of static safety and runtime validation.

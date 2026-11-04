@@ -120,6 +120,7 @@ For reusable or more complex logic, create a custom rule class (documented separ
 
 ```dart
 import 'package:validasi/validasi.dart';
+import 'package:validasi/rules.dart';
 
 class AdultAgeRule extends Rule<int> {
 	const AdultAgeRule({super.message});
@@ -139,12 +140,14 @@ class AdultAgeRule extends Rule<int> {
 	}
 }
 
-final ageSchema = Validasi.any<int>([
-	const AdultAgeRule(),
-]);
+void main() {
+  final ageSchema = Validasi.any<int>([
+    const AdultAgeRule(),
+  ]);
 
-print(ageSchema.validate(21).isValid); // true
-print(ageSchema.validate(16).isValid); // false
+  print(ageSchema.validate(21).isValid); // true
+  print(ageSchema.validate(16).isValid); // false
+}
 ```
 
 ## Combining Modifier Rules
@@ -154,7 +157,7 @@ print(ageSchema.validate(16).isValid); // false
 ```dart
 final normalizedCodeSchema = Validasi.any<String>([
 	Rules.nullable(),
-	Rules.transform((value) => value?.trim().toUpperCase()),
+	Rules.transform<String>((value) => value?.trim().toUpperCase()),
 	Rules.inline<String>(
 		(value) => value == null || value.startsWith('SKU-'),
 		message: 'Code must start with SKU-',

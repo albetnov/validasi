@@ -2,7 +2,7 @@
 
 Headless form management for Flutter, built on top of [`validasi`](https://pub.dev/packages/validasi). Brings the React Hook Form–style controller + builder pattern to Flutter, using [signals](https://pub.dev/packages/signals) for fine-grained reactivity.
 
-> **Experimental** — API subject to change. Feedback and contributions are welcome!
+> **Release candidate** — API is stabilizing ahead of 1.0.0. Feedback and contributions are welcome!
 
 [Repository](https://github.com/albetnov/validasi) | [Documentation](https://albetnov.github.io/validasi)
 
@@ -177,15 +177,7 @@ Prefer no Node? Copy the `skills/validasi-ui/` folder from the
 (`.claude/skills/`, `.agents/skills/`, …) unchanged.
 
 `validasi_ui` is designed around code-generated field schemas, so the `validasi-gen` skill is a
-useful companion. For lookups beyond what the skills cover, the optional
-[`validasi_mcp`](https://pub.dev/packages/validasi_mcp) server exposes these docs as MCP tools:
-
-```bash
-dart pub global activate validasi_mcp
-```
-
-Then register the `validasi_mcp` command with your agent — see
-[MCP server setup](https://albetnov.github.io/validasi/companion/mcp-server).
+useful companion.
 
 ## Concepts
 

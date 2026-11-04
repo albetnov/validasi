@@ -16,7 +16,7 @@ To use this package, add `validasi` as a dependency in your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  validasi: ^1.0.0-rc.1
+  validasi: ^1.0.0-rc.6
 ```
 
 > Check the [pub.dev page](https://pub.dev/packages/validasi/versions) for the latest pre-release version.
@@ -111,16 +111,6 @@ npx skills add albetnov/validasi --all
 Prefer no Node? Copy the `skills/validasi/` folder from the
 [repository](https://github.com/albetnov/validasi) into your agent's skills directory
 (`.claude/skills/`, `.agents/skills/`, …) unchanged.
-
-For lookups beyond what the skill covers, the optional
-[`validasi_mcp`](https://pub.dev/packages/validasi_mcp) server exposes these docs as MCP tools:
-
-```bash
-dart pub global activate validasi_mcp
-```
-
-Then register the `validasi_mcp` command with your agent — see
-[MCP server setup](https://albetnov.github.io/validasi/companion/mcp-server).
 
 ## Features
 

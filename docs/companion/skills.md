@@ -77,17 +77,8 @@ description whenever a task calls for it (writing a schema, wiring a form, debug
 build). This isn't specific to any one agent — it's how project-level skill discovery works across
 the whole ecosystem.
 
-## Skills vs. the MCP server
+## MCP server (deprecated)
 
-These solve different problems, and you can use either or both:
-
-- **[MCP server](/companion/mcp-server)** (`validasi_mcp`) is a *lookup tool* — your agent calls it
-  at runtime to search or fetch this docs site when it needs to look something up. Useful for
-  anything not baked into a skill, or for keeping up with docs changes without updating a skill.
-- **Skills** are *authored guidance* — they're already loaded before the agent writes a line of
-  code, encoding the lifecycle rules, gotchas, and "reach for X, not Y" decisions that are tedious
-  to re-derive from a documentation lookup every time.
-
-Using both means your agent starts from the skill's curated judgment and can still fall back to
-the MCP server for anything the skill doesn't cover. Both work the same way regardless of which
-MCP-and-skills-compatible agent you're using.
+The standalone `validasi_mcp` documentation server is deprecated in favor of these Agent Skills.
+Skills ship the same guidance directly to your agent, so there is no runtime lookup step to
+install or configure. The package is no longer documented or promoted on this site.

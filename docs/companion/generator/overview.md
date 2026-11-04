@@ -1,4 +1,4 @@
-# Code Generation (`validasi_gen`) <Badge type="warning" text="experimental" />
+# Code Generation (`validasi_gen`)
 
 The `validasi_gen` package works with `validasi_annotation` to produce typed,
 zero-overhead validators at compile time via `build_runner`. Instead of calling
@@ -70,7 +70,7 @@ MaxLength(100)
 |---|---|---|
 | `Rules.string.minLength(n)` | `MinLength(n)` in `@Validate<String>` | Context from `T` |
 | `Rules.iterable.minLength(n)` | `MinLength(n)` in `@Validate<List<T>>` | Same class, different context |
-| `Rules.string.required()` | `Required()` | — |
+| `Rules.required()` | `Required()` | — |
 | `Rules.string.email()` | `Email()` | — |
 | `Rules.number.moreThan(n)` | `MoreThan(n)` | Also `LessThan`, `Between`, `Positive`, `Negative`, and more |
 

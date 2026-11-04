@@ -98,7 +98,7 @@ options:
 class User { ... }
 
 generateFields: true     →  sealed class UserFields<V>
-                            UserFields.name, .email, .age constants
+                            UserFields.name_, .email, .age constants
                             extension: validateField<V>(UserFields<V>)
 
 generateSchema: true     →  UserFields.schema (ValidasiSchema<User>)
@@ -109,10 +109,9 @@ generateValidateForm: true → validateForm_User(ValidasiFormController<User>)
                             (reads from controller, runs refines)
                             (no-op unless generateFields is also true)
 
-generateIndexedFields: true → UserFields.name_indexed(index)
-                              UserFields.indexedFields()
-                              UserFields.reconstructItem(...)
-                              UserFields.reconstructAll(...)
+generateIndexedFields: true →  UserFields.indexedFields<FormType>(parentPath, index)
+                              UserFields.reconstructItem<FormType>(ctrl, field, index)
+                              UserFields.reconstructAll<FormType>(ctrl, field)
 ```
 
 ## Example: full build.yaml

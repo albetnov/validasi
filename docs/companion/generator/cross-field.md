@@ -158,15 +158,15 @@ writing a `@RefineFn`:
 | `@RequiredAny(['field1', 'field2'])` | At least one of the listed fields must be non-null/non-empty |
 | `@RequiredOneOf(['field1', 'field2'])` | Exactly one of the listed fields must be present |
 | `@RequiredAll(['field1', 'field2'])` | All listed fields must be present together, or none |
-| `@DependsOn(field: 'a', requires: 'b')` | Field `a` being present requires field `b` to also be present |
-| `@MutuallyExclusive(['field1', 'field2'])` | At most one of the listed fields may be present |
+| `@DependsOn(field: 'a', dependsOn: 'b')` | Field `a` being present requires field `b` to also be present |
+| `@MutuallyExclusive('field1', 'field2')` | At most one of the listed fields may be present |
 | `@MatchesField(field: 'password', matchesField: 'confirmPassword')` | Two fields must hold equal values (confirm-password style) |
 
 ```dart
 @ValidateClass()
+@MatchesField(field: 'password', matchesField: 'confirmPassword')
 class SignUpForm {
   @Validate<String>([Required(), MinLength(6)])
-  @MatchesField(field: 'password', matchesField: 'confirmPassword')
   final String password;
 
   @Validate<String>([Required()])
@@ -175,6 +175,9 @@ class SignUpForm {
   const SignUpForm({required this.password, required this.confirmPassword});
 }
 ```
+
+Cross-field sugar annotations are class-level: apply them to the class alongside `@ValidateClass`,
+not to individual fields.
 
 These desugar into the same generated `validateForm_X`/refine machinery as a hand-written
 `@RefineFn` — reach for one of these first, and only drop down to `@RefineFn` when the check
