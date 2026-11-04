@@ -12,10 +12,19 @@ import CodeShowcase from './components/CodeShowcase.vue'
 import VersionBanner from './components/VersionBanner.vue'
 import CopyOrDownMd from './components/CopyOrDownMd.vue'
 
-const versionBanner = () =>
+const versionBanner = (isV0: boolean) =>
   h('div', { class: 'global-version-banner' }, [
-    h('span', 'Validasi v1 documentation'),
-    h('a', { href: withBase('/v0/') }, 'View v0 docs →'),
+    h(
+      'span',
+      isV0
+        ? 'You are viewing v0 documentation'
+        : 'Validasi v1 documentation',
+    ),
+    h(
+      'a',
+      { href: withBase(isV0 ? '/' : '/v0/') },
+      isV0 ? 'View v1 docs →' : 'View v0 docs →',
+    ),
   ])
 
 export default {
@@ -28,15 +37,9 @@ export default {
       ? route.path.slice(base.length)
       : route.path
     const isV0 = path.startsWith('/v0')
-    return h(
-      DefaultTheme.Layout,
-      null,
-      isV0
-        ? {}
-        : {
-            'layout-top': () => versionBanner(),
-          },
-    )
+    return h(DefaultTheme.Layout, null, {
+      'layout-top': () => versionBanner(isV0),
+    })
   },
   enhanceApp({ app, router, siteData }) {
     // Register custom components globally

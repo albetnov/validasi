@@ -23,12 +23,3 @@ features:
     details: Validate any types of data, from simple strings to complex objects or use transformer to handle type conversion
 ---
 
-<VersionBanner
-  type="tip"
-  icon="📦"
-  title="v0 Documentation (Previous)"
-  message="You are viewing the documentation for Validasi v0, the previous major version."
-  link="/"
-  linkText="Check out v1.0.0 Documentation"
-/>
-
