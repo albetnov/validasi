@@ -542,6 +542,9 @@
 
 
 .global-version-banner {
+  position: sticky;
+  top: var(--vp-nav-height);
+  z-index: 29;
   display: flex;
   align-items: center;
   justify-content: center;
