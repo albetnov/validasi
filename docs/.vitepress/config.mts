@@ -4,9 +4,10 @@ import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   vite: {
-    plugins: [llmstxt()],
+    plugins: [llmstxt({ ignoreFiles: ['PRODUCT.md', 'DESIGN.md'] })],
   },
   title: "Validasi",
+  srcExclude: ['PRODUCT.md', 'DESIGN.md'],
   description: "A flexible, composable, and type-safe validation library for Dart & Flutter",
   base: '/validasi/',
   head: [

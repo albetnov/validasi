@@ -455,6 +455,11 @@
   padding: 2rem 0;
 }
 
+.VPSidebarItem .link {
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
 /* Sidebar active link highlight with glow effect */
 .VPSidebarItem.is-active .link {
   color: var(--vp-c-brand-1);
@@ -462,8 +467,6 @@
   position: relative;
   background: rgba(30, 136, 229, 0.1);
   border-radius: 6px;
-  padding: 0.25rem 0.5rem;
-  margin: 0 -0.5rem;
 }
 
 .VPSidebarItem.is-active .link::before {
@@ -482,10 +485,6 @@
 /* Sidebar links hover effect */
 .VPSidebarItem .link:hover {
   background: rgba(30, 136, 229, 0.05);
-  border-radius: 6px;
-  padding: 0.25rem 0.5rem;
-  margin: 0 -0.5rem;
-  transition: all 0.2s ease;
 }
 
 /* ToC links styling */

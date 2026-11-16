@@ -5,6 +5,7 @@ import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 
 import './style.css'
+import './atlas-docs.css'
 
 // Import custom components
 import GradientText from './components/GradientText.vue'
