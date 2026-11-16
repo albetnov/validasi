@@ -25,6 +25,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  material_ui: ^1.11.0
   test: ^1.24.0
   validasi_annotation: ^1.0.0
   validasi_gen: ^1.0.0
