@@ -9,7 +9,7 @@ export default defineConfig({
   title: "Validasi",
   srcExclude: ['PRODUCT.md', 'DESIGN.md'],
   description: "A flexible, composable, and type-safe validation library for Dart & Flutter",
-  base: '/validasi/',
+  base: process.env.DOCS_BASE || '/validasi/',
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
     ['meta', { name: 'theme-color', content: '#1e88e5' }],

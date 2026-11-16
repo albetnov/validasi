@@ -197,3 +197,9 @@ dart pub global activate coverage
 dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib
 popd
 ```
+
+## Documentation deployment
+
+The GitHub Pages workflow chooses the build base from the repository's Pages settings: `/validasi/` for the default project URL, or `/` for a custom domain configured on this repository. After changing the Pages domain, run the deployment workflow again so the site is rebuilt for that address.
+
+For local builds, `bun run docs:build` uses `/validasi/` and `bun run docs:build:root` uses `/`. Both write to `docs/.vitepress/dist`.
