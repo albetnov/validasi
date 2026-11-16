@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:validasi/validasi.dart';
 import 'package:validasi_ui/validasi_ui.dart';
 
@@ -49,11 +49,7 @@ class _FormSchema extends ValidasiSchema<Map<String, dynamic>> {
   @override
   Map<String, dynamic> allocate(
     ValidasiFieldReader<Map<String, dynamic>> reader,
-  ) =>
-      {
-        'role': reader.getValue(_role),
-        'adminToken': reader.getValue(_token),
-      };
+  ) => {'role': reader.getValue(_role), 'adminToken': reader.getValue(_token)};
 }
 
 class ConditionalFormPage extends StatelessWidget {
@@ -102,9 +98,9 @@ class ConditionalFormPage extends StatelessWidget {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: submit((result) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Saved: $result')),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text('Saved: $result')));
                   }),
                   child: const Text('Submit'),
                 ),

@@ -12,15 +12,11 @@ class User {
   final String email;
 
   @Validate<int>([
-    OneOf<int>([1, 2, 3])
+    OneOf<int>([1, 2, 3]),
   ])
   final int age;
 
-  const User({
-    required this.name,
-    required this.email,
-    required this.age,
-  });
+  const User({required this.name, required this.email, required this.age});
 
   @RefineFn(dependsOn: ['name', 'email'])
   static void emailDoesNotStartWithName(
@@ -29,10 +25,7 @@ class User {
     String? email,
   }) {
     if (email != null && name != null && email.startsWith(name)) {
-      fail(
-        message: 'Email should not start with name',
-        path: ['email'],
-      );
+      fail(message: 'Email should not start with name', path: ['email']);
     }
   }
 }

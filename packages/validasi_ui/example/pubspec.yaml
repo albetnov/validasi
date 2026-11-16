@@ -3,14 +3,15 @@ publish_to: none
 version: 0.1.0
 
 environment:
-  sdk: ^3.5.0
-  flutter: ">=1.17.0"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 resolution: workspace
 
 dependencies:
   flutter:
     sdk: flutter
+  material_ui: ^1.11.0
   validasi:
     path: ../../validasi
   validasi_annotation:

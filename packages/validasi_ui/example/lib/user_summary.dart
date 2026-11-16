@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:validasi_ui/validasi_ui.dart';
+
 import 'user.dart';
 
 class UserSummary extends StatelessWidget {
@@ -21,7 +22,8 @@ class UserSummary extends StatelessWidget {
         final nameSignal = controller.watchValue(UserFields.name_);
         final emailSignal = controller.watchValue(UserFields.email);
         final ageSignal = controller.watchValue(UserFields.age);
-        final isReady = nameSignal.value != null &&
+        final isReady =
+            nameSignal.value != null &&
             emailSignal.value != null &&
             ageSignal.value != null;
 
@@ -38,8 +40,10 @@ class UserSummary extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
                 const SizedBox(height: 4),
-                Text(preview.value,
-                    style: Theme.of(context).textTheme.bodyLarge),
+                Text(
+                  preview.value,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
                 const SizedBox(height: 8),
                 Row(
                   children: [

@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:validasi_ui/validasi_ui.dart';
+
 import 'conditional_form_page.dart';
 import 'user.dart';
 import 'user_summary.dart';
@@ -32,9 +33,8 @@ class ExampleMenuPage extends StatelessWidget {
           ListTile(
             title: const Text('User Form'),
             subtitle: const Text('Basic registration form'),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const UserFormPage()),
-            ),
+            onTap: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => const UserFormPage())),
           ),
           ListTile(
             title: const Text('Conditional Form'),
